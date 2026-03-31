@@ -1,0 +1,217 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <h5 class="panel-title pull-left" style="padding-top: 9px;">Manage Department</h5>
+        <button onclick="clearForm();" type="button" data-toggle="modal" data-target="#departmentModal" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus-sign"></span>Add Department</button>
+    </div>
+    <div class="panel-body">
+        <table id="departments" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Department</th>
+                    <th style="width: 150px;">Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<form id="formDepartment" method="post">
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="departmentModal" tabindex="-1" role="dialog" aria-labelledby="departmentModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+
+                    <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                    <div class="form-group">
+                        <label>Department</label>
+                        <input id="name" name="name" placeholder="Enter department name" type="text" value="" class="form-control" style="min-width: 100%" />
+                    </div>
+
+                    <div class="clearfix">
+                        <button type="button" class="btn btn-danger pull-right" data-dismiss="modal">Close</button>
+                        <button type="button" id="btnSave" class="btn btn-primary pull-right" onclick="Save();">Save</button>
+                        <button type="button" id="btnUpdate" class="btn btn-primary pull-right js-update" onclick="Update();">Update</button>
+                    </div>
+
+                    <div id="loaderDiv" style="text-align:center; display:none;">
+                        <img src="~/Content/InternetSlowdown_Day.gif" width="100" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            GetDepartments();
+
+            $('#departmentModal').on('shown.bs.modal', function () {
+                $('#name').focus();
+            });
+        });
+
+        var table = [];
+
+        function GetDepartments() {
+            table = $('#departments').DataTable({
+                ajax: {
+                    url: "/api/departments",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a href='#' onclick='Edit(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><span class='glyphicon glyphicon-trash'></span> Delete</a>";
+                        }
+                    }
+                ]
+            });
+        }
+
+        //Update
+        function Update() {
+            var res = validate();
+            if (res === false) {
+                return false;
+            }
+
+            $("#loaderDiv").show();
+
+            var data = {
+                id: $('#id').val(),
+                name: $('#name').val()
+            };
+
+            $.ajax({
+                url: "/api/departments/" + data.id,
+                data: JSON.stringify(data),
+                type: "PUT",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    toastr.success("Department has been updated.");
+                    $('#id').val("");
+                    $('#name').val("");
+                    table.ajax.reload();
+                    $("#loaderDiv").hide();
+                    $('#departmentModal').modal('hide');
+                },
+                error: function (errormessage) {
+                    console.log(errormessage);
+                    toastr.error("Something unexpected happen.");
+                }
+            });
+        }
+
+        //Edit
+        function Edit(id) {
+
+            $("#name").css('border-color', '#cccccc');
+
+            $.ajax({
+                url: "/api/departments/" + id,
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#id').val(result.id);
+                    $('#name').val(result.name);
+
+                    $('#departmentModal').modal('show');
+                    $('#btnUpdate').show();
+                    $('#btnSave').hide();
+                },
+                error: function (errormessage) {
+                    toastr.error("Something unexpected happen.");
+                }
+            });
+            return false;
+        }
+
+        //Save
+        function Save() {
+            var res = validate();
+            if (res === false) {
+                return false;
+            }
+
+            $("#loaderDiv").show();
+
+            var data = {
+                name: $('#name').val()
+            };
+
+            $.ajax({
+                url: "/api/departments",
+                data: JSON.stringify(data),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    toastr.success("Department has been added to the database.");
+                    $('[name="name"]').val('');
+                    table.ajax.reload();
+                    $("#loaderDiv").hide();
+                    $('#departmentModal').modal('hide');
+                },
+                error: function (errormessage) {
+                    toastr.error("Something unexpected happen.");
+                }
+            });
+        }
+
+        //Delete
+        function Delete(id) {
+            bootbox.confirm("Are you sure you want to delete this?", function (result) {
+                if (result) {
+                    $.ajax({
+                        url: "/api/departments/" + id,
+                        method: "DELETE",
+                        success: function () {
+                            table.ajax.reload();
+                            toastr.success("Deleted successfully.", "Server Response");
+                        }
+                    });
+                }
+            });
+        }
+
+        //ClearModalInput
+        function clearForm() {
+            $('#id').val('');
+            $('#name').val('');
+            $('#btnUpdate').hide();
+            $('#btnSave').show();
+            $('#id').css('border-color', '#cccccc');
+            $('#name').css('border-color', '#cccccc');
+        }
+
+        //Validate
+        function validate() {
+            var isValid = true;
+            if ($('#name').val().trim() == "") {
+                $('#name').css('border-color', 'red');
+                $('#name').focus();
+                isValid = false;
+            } else {
+                $('#name').css('border-color', '#cccccc');
+            }
+
+            return isValid;
+        }
+    </script>
+}

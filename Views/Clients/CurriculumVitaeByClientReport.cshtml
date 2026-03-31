@@ -1,0 +1,27 @@
+﻿@using ReportViewerForMvc;
+
+<div class="container-fluid" style="margin-top: 10px;">
+
+    <div class="row">
+        <div class="col-md-2">
+                <button onclick="filterByAssessedDate();" class="btn btn-primary btn-sm btn-block">
+                    <span class="glyphicon glyphicon-backward"></span> backward
+                </button>
+        </div>
+    </div>
+    <div class="row">
+        @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer)
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        function filterByAssessedDate()
+        {
+            var url = "/manage-clients";
+            window.location.href = url;
+        }
+    </script>
+}
+

@@ -1,0 +1,76 @@
+﻿@model MtpApp.ViewModels.EmployerViewModel
+
+<div class="container-fluid">
+    <div class="panel panel-primary" style="margin-top: 10px;">
+        <div class="panel-heading clearfix">
+            <h5 class="modal-title">Manage Employers</h5>
+        </div>
+        <div class="panel-body">
+            <div class="form-inline row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="displayStatus">Display Corporate Employer: </label>
+                        <select class="form-control input-sm" id="displayStatus">
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+                    <button data-toggle="modal" data-target="#newPartnerFilter" class="btn btn-primary btn-sm" style="margin-right: 5px">
+                        <span class="glyphicon glyphicon-search"></span> Filter New Partner
+                    </button>
+                    <button onclick="resetFilter();" class="btn btn-primary btn-sm" style="margin-right: 5px">
+                        <span class="glyphicon glyphicon-search"></span> Reset Filter
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button onclick="clearForm();" data-toggle="modal" data-target="#employerModal" class="btn btn-primary btn-sm pull-right">
+                        <span class="glyphicon glyphicon-briefcase"></span> Add Employer
+                    </button>
+                    <button data-toggle="modal" data-target="#jobCategoryModal" class="btn btn-primary btn-sm pull-right" style="margin-right: 5px">
+                        <span class="glyphicon glyphicon-plus-sign"></span> Add Job Category
+                    </button>
+                    <button data-toggle="modal" data-target="#jobPositionModal" class="btn btn-primary btn-sm pull-right" style="margin-right: 5px">
+                        <span class="glyphicon glyphicon-plus-sign"></span> Add Job Position
+                    </button>
+                    @Html.ActionLink("Manage Vacancy", "Index", "Vacancies", null, new { @class = "btn btn-primary btn-sm pull-right", @style = "margin-right: 5px" })
+                </div>
+            </div>
+            <hr />
+            <div id="overflowTable" style="overflow-x: auto;">
+                <table id="employers" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 35px">E.ID</th>
+                            <th style="width: 95px">Corporate Date</th>
+                            <th style="width: 60px">Duration</th>
+                            <th>Employer Name</th>
+                            <th>Sector</th>
+                            <th>Contact Person</th>
+                            <th>Contact Phone</th>
+                            <th>Email</th>
+                            <th style="width: 90px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Html.Partial("_EmployerModal")
+
+@Html.Partial("_JobCategoryModal")
+
+@Html.Partial("_JobPositionModal")
+
+@Html.Partial("_NewPartnerFilter")
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/Functions/jobposition.js")
+    @Scripts.Render("~/Scripts/Functions/jobcategory.js")
+    @Scripts.Render("~/Scripts/Functions/employer.js")
+}
+

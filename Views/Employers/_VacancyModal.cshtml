@@ -1,0 +1,54 @@
+﻿<form id="formEmployer" method="post">
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="vacancyModal" tabindex="-1" role="dialog" aria-labelledby="vacancyModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="btn btn-danger btn-xs pull-right" data-dismiss="modal" style="color:white;">X</button>
+                    <h4 class="modal-title">Vacancies Information:</h4>
+                </div>
+                <div class="panel-body">
+                    <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="sector">Sector</label>
+                                <select class="form-control input-sm" id="sector">
+                                    <option>Bar Tender</option>
+                                    <option>Art</option>
+                                    <option>Beauty</option>
+                                    <option>Business</option>
+                                    <option>Construction</option>
+                                    <option>Education</option>
+                                    <option>Hospitality</option>
+                                    <option>Repairs</option>
+                                    <option>Manufacturing</option>
+                                    <option>Transport</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Company Name</label>
+                                <input id="name" name="name" placeholder="Enter company name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-footer panel-primary">
+                    <div class="clearfix">
+                        <button type="button" class="btn btn-danger btn-sm pull-right" data-dismiss="modal">Close</button>
+                        <button type="button" id="btnSave" class="btn btn-primary btn-sm pull-right" onclick="Save();">Save</button>
+                        <button type="button" id="btnUpdate" class="btn btn-primary btn-sm pull-right js-update" onclick="Update();">Update</button>
+                    </div>
+
+                    <div id="loaderDiv" style="text-align:center; display:none;">
+                        <img src="~/Content/InternetSlowdown_Day.gif" width="100" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

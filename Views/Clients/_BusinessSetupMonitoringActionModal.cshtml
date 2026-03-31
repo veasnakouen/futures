@@ -1,0 +1,142 @@
+﻿
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="businessSetuptMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="businessSetuptMonitoringActionModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Add Business Setup Monitoring <span id="BusinessSetuptMonitoringCompany"> </span></h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!--Monitoring-->
+                    <input id="businessSetupMonitoringId" name="businessSetupMonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <input id="businessSetupMonitoringCategoryShown" name="businessSetupMonitoringCategoryShown" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <input id="businessSetupMonitoringCounttimeId" name="businessSetupMonitoringCounttimeId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <input id="businessSetupMonitoringenrollby" name="businessSetupMonitoringenrollby" type="text" style="display: none;" disabled="disabled" value="Admin Manager" class="form-control" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="businessSetupmonitoringDate">Monitoiring date</label>
+                        <input id="businessSetupmonitoringDate" name="businessSetupmonitoringDate" placeholder="Enter monitoring date" class="form-control input-sm js-date " style="min-width: 100%">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="businessSetupnextmonitoringdate">Next businessSetup monitoring Date</label>
+                        <input id="businessSetupnextmonitoringdate" name="businessSetupnextmonitoringdate" placeholder="Enter next monitoring date" class="form-control input-sm js-date " style="min-width: 100%">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="businessSetupmonitoringtype">Monitoring type</label>
+                        <select class="form-control input-sm" id="businessSetupmonitoringtype" name="businessSetupmonitoringtype" style="min-width: 100%">
+                            <option value="">Select monitor type</option>
+                            <option value="1">1st : 1 month</option>
+                            <option value="2">2nd : 2 months</option>
+                            <option value="3">3rd : 3 months</option>
+                            <option value="4">4th : 4 months</option>
+                            <option value="5">5th : 5 months</option>
+                            <option value="6">6th : 6 months</option>
+                            <option value="8">8th : 8 months</option>
+                            <option value="10">10th : 10 months</option>
+                            <option value="12">Final</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!--BusinessSetupcontrol-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="businessSetupcontrol">
+                            <input id="businessMonitoringId" name="businessSetupMonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                            <hr />
+                            <label for="businessSetupMonitoringstatus">Still in Business Set up</label>
+                            <div class="row">
+                                <!-- Still in business  -->
+                                <div class="col-md-12">
+                                    <label class="radio-inline col-md-2">
+                                        <input type="radio" name="businessSetupMonitoringstatus" id="stillinbusinessSetupMonitoringYes" value="Yes" checked>Yes
+                                    </label>
+                                    <label class="radio-inline col-md-2">
+                                        <input type="radio" name="businessSetupMonitoringstatus" id="stillinbusinessSetupMonitoringNo" value="No">No
+                                    </label>
+                                    <label class="radio-inline col-md-4">
+                                        <input type="radio" name="businessSetupMonitoringstatus" id="stillinbusinessSetupChangeJobMonitoring" value="ChangedBusiness">Changed Business
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <input id="businessSetupmonitoringsId" name="businessSetupmonitoringsId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                                <div class="col-md-6">
+                                    <label for="businessSetupTypeCatagory">Completed</label>
+                                    <select class="form-control input-sm" id="businessSetupTypeCatagory" name="businessSetupTypeCatagory" style="min-width: 100%">
+                                        <option value="">Please select this</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="businessSetupcompleted">Completed</label>
+                                    <select class="form-control input-sm" id="businessSetupcompleted" name="businessSetupcompleted" style="min-width: 100%">
+                                        <option value="">Please select this</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="businessSetupIncome">Income</label>
+                                    <input id="businessSetupIncome" name="businessSetupIncome" type="number" placeholder="Enter Income" class="form-control input-sm " style="min-width: 100%">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="businessSetupExpense">Expense</label>
+                                    <input id="businessSetupExpense" name="businessSetupExpense" type="number" placeholder="Enter Expense" class="form-control input-sm " style="min-width: 100%">
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="businessSetupsalarynotes">Business Setup note</label>
+                                    <input id="businessSetupsalarynotes" name="businessSetupsalarynotes" placeholder="Enter placement progress note" class="form-control input-sm " style="min-width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="overflowTable" style="overflow-x: auto;">
+                            <table id="BusinessSetupMonitoringActionTable" class="table table-hover table-bordered" style="width: 100%">
+                                <thead>
+                                    <tr>
+
+                                        <th>MonitoringDate</th>
+                                        <th>Next Moniotoring</th>
+                                        <th>Monitoring Type</th>
+                                        <th>Status</th>
+                                        <th>Still in business</th>
+                                        <th>Expense</th>
+                                        <th>Income</th>
+                                        <th>Note</th>
+                                        <th style="width: 90px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="overflow:auto;">
+                <div style="float:right;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="BusinessSetupMonitoringAction();" id="btnBusinessSetupProgressMonitoringAction" class="btn btn-primary btn-sm">Add New</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> <!-- modal -->

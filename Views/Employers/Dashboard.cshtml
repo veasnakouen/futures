@@ -1,0 +1,93 @@
+﻿@model MtpApp.ViewModels.JobsViewModel
+
+<div class="container-fluid">
+    <div class="row" style="margin-top: 10px">
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5 class="modal-title">Salary Range</h5>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>From</label>
+                                <input id="start" name="start" placeholder="0" type="number" value="150" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>To</label>
+                                <input id="end" name="end" placeholder="0" type="number" value="300" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="button" id="btnFilterSalary" class="btn btn-primary btn-block btn-sm js-filter-salary" onclick="FilterBySalary();"><span class="glyphicon glyphicon-search"></span> Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5 class="modal-title">Available Jobs By Category</h5>
+                </div>
+                <div class="panel-body">
+                    @foreach (var job in Model.JobsByCategory)
+                    {
+                        <p><a href="#" onclick='FilterByCategory("@job.Name");'><span class="glyphicon glyphicon-briefcase"></span> <b>@job.Name</b> <span class="badge pull-right"> @job.Total positions</span></a></p>
+                    }
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5 class="modal-title">Available Jobs By Employer</h5>
+                </div>
+                <div class="panel-body">
+                    @foreach (var job in Model.JobsByEmployer)
+                    {
+                        <p><a href="#" onclick='FilterByEmployer("@job.EmployerName");'><span class="glyphicon glyphicon-briefcase"></span> <b>@job.EmployerName</b> <span class="badge pull-right"> @job.Total position(s)</span></a></p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" id="btnJobList" class="btn btn-success pull-right btn-xs" onclick="ShowAllJobs();"><span class="glyphicon glyphicon-refresh"></span> Show All Available Jobs</button>
+                    <h5 class="modal-title">Job List <span id="jobCategoryTitle"></span></h5>
+                </div>
+                <div class="panel-body">
+                    <div id="overflowTable" style="overflow-x: auto;">
+                        <table id="jobList" class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 35px">V.ID</th>
+                                    <th>Job Position</th>
+                                    <th style="width: 75px">Posted</th>
+                                    <th style="width: 75px">Closing Date</th>
+                                    <th style="width: 80px">Availability</th>
+                                    <th style="width: 85px">Contract Type</th>
+                                    <th style="width: 50px">Salary</th>
+                                    <th style="width: 40px">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Html.Partial("_JobDetailModal")
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/Functions/futuresdashboard.js")  
+}

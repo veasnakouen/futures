@@ -1,0 +1,96 @@
+﻿@using ReportViewerForMvc;
+
+
+<div class="container-fluid" style="margin-top: 10px;">
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="dropdown">
+                    <div class="form-group ">
+                        <div class="dropdown">
+                            <select class="form-control input-sm btn btn-primary btn-sm dropdown-toggle" id="FindbusinessSetup" name="FindbusinessSetup" style="min-width: 100%">
+                                <option value="0">--Click to choose--</option>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input id="startDate" name="startDate" placeholder="Start Date" type="text" value="" class="form-control input-sm js-date" style="width: 100%" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input id="endDate" name="endDate" placeholder="End Date" type="text" value="" class="form-control input-sm js-date" style="width: 100%" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button onclick="filterByAssessedDate();" class="btn btn-primary btn-sm btn-block">
+                    <span class="glyphicon glyphicon-search"></span> Search
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer)
+
+</div>
+
+@section scripts
+{
+    <script>
+        function filterByAssessedDate()
+        {
+            var start = $('#startDate').val();
+            var end = $('#endDate').val();
+
+
+            if (start == '' || end == '') {
+                toastr.error("Please enter required field.");
+                $('#startDate').css('border-color', 'red');
+                $('#endDate').css('border-color', 'red');
+            }
+            else
+            {
+                $('#startDate').css('border-color', '#cccccc');
+                $('#endDate').css('border-color', '#cccccc');
+                var url = "/clients/Client-Lookfor-bussinesss-Setup-Report/FindbusinessSetup=" + $('#FindbusinessSetup').val() + "/startdate=" + moment($('#startDate').val()).format('MM-DD-YYYY') + "/enddate=" + moment($('#endDate').val()).format('MM-DD-YYYY');
+                window.location.href = url; 
+            }
+        }
+
+        var data = {};
+        $.ajax({
+            url: "/api/businesscategories",
+            data: JSON.stringify(data),
+            type: "get",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                $('#FindbusinessSetup .DynamicOption').remove();
+                for (var i = 0; i < result.length; i++) {
+                    $('#FindbusinessSetup').append('<option class="DynamicOption" value="' + result[i].id + '">' + result[i].busCategoryName + '</option>');
+                    }
+                $.ajax(data);
+            },
+            error: function (errormessage) {
+            }
+        });
+
+        $(function () {
+            $(".js-date").datepicker({
+                dateFormat: 'mm/dd/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '1950:2100'
+            });
+        });
+    </script>
+}
+

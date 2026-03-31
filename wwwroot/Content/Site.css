@@ -1,0 +1,246 @@
+﻿body {
+    padding-top: 50px;
+    /*padding-bottom: 0;*/
+    overflow-x: hidden;
+    font-family: 'Source Sans Pro', sans-serif !important;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 30px;
+}
+
+.input-validation-error {
+    border-color: red;
+}
+
+footer {
+    background: #2c3e50;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color: #fff;    
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: 100;
+}
+
+
+#assignedRole{
+  cursor: default;
+}
+#assignedRole:hover{
+  cursor: pointer;
+}
+
+#divLoading
+{
+display : none;
+}
+#divLoading.show
+{
+display : block;
+position : fixed;
+z-index: 100;
+background-image : url('loading.gif');
+background-color: aliceblue;
+opacity : 0.4;
+background-repeat : no-repeat;
+background-position : center;
+left : 0;
+bottom : 0;
+right : 0;
+top : 0;
+}
+#loadinggif.show
+{
+left : 50%;
+top : 50%;
+position : absolute;
+z-index : 101;
+width : 32px;
+height : 32px;
+margin-left : -16px;
+margin-top : -16px;
+}
+div.content {
+width : 1000px;
+height : 1000px;
+}
+
+#divLoadingModal.show
+{
+display : block;
+position : fixed;
+z-index: 100;
+background-image : url('loading.gif');
+opacity : 0.4;
+background-repeat : no-repeat;
+background-position : center;
+left : 0;
+bottom : 0;
+right : 0;
+top : 0;
+}
+
+
+.main-cover-photo {
+    height: 90vh;
+    background-image: linear-gradient(to right bottom,#6f93d5bf,#28b4b4bf), url(/Images/cover-main.jpg);
+    background-size: cover;
+    background-position: top;
+    /*clip-path: polygon(0 0, 100% 0, 100% 75vh, 0 100%);*/
+    position: relative;
+}
+
+.logo-box {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+}
+
+.logo {
+    height: 35px;
+}
+
+.text-box {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.heading-primary {
+    color: #fff;
+    text-transform: uppercase;
+    backface-visibility: hidden;
+    margin-bottom: 30px;
+}
+
+.heading-primary-main {
+    display: block;
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: 15px;
+    animation-name: moveInLeft;
+    animation-duration: 1s;
+    animation-timing-function: ease-out;
+    margin-bottom: 20px;
+    /*
+    animation-iteration-count: 3;
+    animation-delay: 3s;
+    */
+}
+
+.heading-primary-sub {
+    display: block;
+    font-size: 17.5px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    animation: moveInRight 1s ease-out;
+}
+
+@keyframes moveInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+
+    80% {
+        transform: translateX(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes moveInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+
+    80% {
+        transform: translateX(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.btns:link,
+.btns:visited {
+    text-decoration: none;
+    padding: 15px 15px;
+    display: inline-block;
+    border-radius: 100px;
+    transition: all .2s;
+    position: relative;
+    color: #000;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 180px;
+}
+
+.btns:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,.2);
+}
+
+.btns:active {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.btns-white {
+    background-color: #fff;
+    color: #777;
+}
+
+.btns::after {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    border-radius: 100px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: all .4s;
+}
+
+.btns-white::after {
+    background-color: #fff;
+}
+
+.btns:hover::after {
+    transform: scaleX(1.4) scaleY(1.6);
+    opacity: 0;
+}
+
+@keyframes moveFromBottom {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btns-animated {
+    animation: moveFromBottom .5s ease-out .75s;
+    animation-fill-mode: backwards;
+}

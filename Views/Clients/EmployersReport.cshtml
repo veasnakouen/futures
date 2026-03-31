@@ -1,0 +1,73 @@
+﻿@using ReportViewerForMvc;
+
+<div class="container-fluid" style="margin-top: 10px;">
+
+    <div class="row">
+        <div class="col-md-2">
+                <div class="form-group ">
+                    <div class="dropdown">
+                        <select class="form-control input-sm btn btn-primary btn-sm dropdown-toggle" id="EmployerStatus" name="EmployerStatus" style="min-width: 100%">
+                            <option value="All Employer">All Employer</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input id="startDate" name="startDate" placeholder="Start Date" type="text" value="" class="form-control input-sm js-date" style="width: 100%" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input id="endDate" name="endDate" placeholder="End Date" type="text" value="" class="form-control input-sm js-date" style="width: 100%" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button onclick="filterByAssessedDate();" class="btn btn-primary btn-sm btn-block">
+                    <span class="glyphicon glyphicon-search"></span> Search
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer)
+
+</div>
+
+@section scripts
+{
+    <script>
+        function filterByAssessedDate()
+        {
+            var start = $('#startDate').val();
+            var end = $('#endDate').val();
+
+            if (start == '' || end == '') {
+                toastr.error("Please enter required field.");
+                $('#startDate').css('border-color', 'red');
+                $('#endDate').css('border-color', 'red');
+            }
+            else
+            {
+                $('#startDate').css('border-color', '#cccccc');
+                $('#endDate').css('border-color', '#cccccc');
+                var url = "/clients/employers-report/status=" + $('#EmployerStatus').val() + "/startdate=" + moment($('#startDate').val()).format('MM-DD-YYYY') + "/enddate=" + moment($('#endDate').val()).format('MM-DD-YYYY');
+                window.location.href = url;
+            }
+        }
+
+        $(function () {
+            $(".js-date").datepicker({
+                dateFormat: 'mm/dd/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '1950:2100'
+            });
+        });
+    </script>
+}
+

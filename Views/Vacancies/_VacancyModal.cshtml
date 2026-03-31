@@ -1,0 +1,151 @@
+﻿@model MtpApp.ViewModels.VacancyViewModel
+
+<div class="modal fade" id="vacancyModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-body">
+            <div class="panel panel-primary">
+                <div class="panel-heading clearfix">
+                    <button type="button" class="btn btn-danger btn-xs pull-right" data-dismiss="modal">&times;</button>
+                    <p class="modal-title">Vacancy Information <span id="titleVacancy"></span></p>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+
+                        <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                        <input id="employerId" name="employerId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>*Position</label>
+                                <select class="form-control input-sm" id="jobPositionId" name="jobPositionId" style="min-width: 100%">
+                                    @foreach (var jobPosition in Model.JobPositions)
+                                    {
+                                        <option value=@jobPosition.Id>@jobPosition.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>*Job Category</label>
+                                <select class="form-control input-sm" id="jobCategoryId" name="jobCategoryId" style="min-width: 100%">
+                                    @foreach (var jobCategory in Model.JobCategories)
+                                    {
+                                        <option value=@jobCategory.Id>@jobCategory.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>*Position Available</label>
+                                <input id="positionAvailable" name="positionAvailable" placeholder="# Position(s)" type="number" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="contractType">*Contract Type</label>
+                                <select class="form-control input-sm" id="contractType">
+                                    <option>Full-Time</option>
+                                    <option>Part-Time</option>
+                                    <option>Volunteer</option>
+                                    <option>Internship</option>
+                                    <option>Apprenticeship</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>*Salary length from </label>
+                                        <input id="salary" name="salary" placeholder="0" type="number" value="" class="form-control input-sm" style="min-width: 100%" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label> to Salary</label>
+                                        <input id="salaryMax" name="salaryMax" placeholder="0" type="number" value="" class="form-control input-sm" style="min-width: 100%" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Schedule</label>
+                                <input id="schedule" name="schedule" placeholder="Enter schedule" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input id="location" name="location" placeholder="Enter location" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Responsibilities</label>
+                                <textarea class="form-control input-sm" id="responsibilities" placeholder="Enter Responsibilities" rows="4" style="min-width: 100%; max-width: 100%"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Requirement</label>
+                                <textarea class="form-control input-sm" id="requirement" placeholder="Enter requirement" rows="4" style="min-width: 100%; max-width: 100%"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Other benefic</label>
+                                <textarea class="form-control input-sm" id="applicationInformation" placeholder="Enter application information" rows="3" style="min-width: 100%; max-width: 100%"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>*Posting Date</label>
+                                <input id="postingDate" name="postingDate" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>*Deadline</label>
+                                <input id="deadline" name="deadline" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="status">*Status</label>
+                                <select class="form-control input-sm" id="status">
+                                    <option>Open</option>
+                                    <option>Close</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer panel-primary">
+                    <div class="clearfix">
+                        <button type="button" class="btn btn-danger btn-sm pull-right" data-dismiss="modal" style="margin-left: 5px"><span class="	glyphicon glyphicon-log-out"></span> Close</button>
+                        <button type="button" id="btnSave" class="btn btn-primary btn-sm pull-right" onclick="Save();"><span class="glyphicon glyphicon-floppy-saved"></span> Save</button>
+                        <button type="button" id="btnUpdate" class="btn btn-primary btn-sm pull-right js-update" onclick="Update();"><span class="glyphicon glyphicon-floppy-saved"></span> Update</button>
+                        <button type="button" id="btnActivate" class="btn btn-primary btn-sm pull-right js-update" onclick="Activate();"><span class="glyphicon glyphicon-floppy-saved"></span> Activate</button>
+                    </div>
+                </div>
+                <div id="divLoadingModal"></div>
+            </div>
+        </div>
+    </div>
+</div>

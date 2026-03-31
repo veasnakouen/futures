@@ -1,0 +1,102 @@
+﻿@model MtpApp.ViewModels.UserRoleViewModel
+@{
+    ViewBag.Title = "AssignRoles";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="panel panel-primary" style="margin-top: 10px;">
+            <div class="panel-heading clearfix">
+                <h5 class="modal-title">Manage Role</h5>
+            </div>
+            <div class="panel-body">
+                <table class="table table-hover table-bordered" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Assign Role To:  <span style="color:blue;">@Model.User.Email</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ var check = false; }
+                        @foreach (var role in Model.Role.Roles)
+                        {
+                            check = false;
+                            foreach (var assignedRole in Model.User.Roles)
+                            {
+                                if (role.Id == assignedRole.RoleId)
+                                {
+                                    check = true;
+                                    break;
+                                }
+                            }
+                            if (check == true)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="checkbox" id="Role">
+                                            <label><input class="js-delete" type="checkbox" data-user-id="@Model.User.Id" data-role-name="@role.Name" value="@role.Id" checked="checked">@role.Name</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="checkbox" id="Role">
+                                            <label><input class="js-delete" type="checkbox" data-user-id="@Model.User.Id" data-role-name="@role.Name" value="@role.Id">@role.Name</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            // subscribe to change events
+            $('#Role .js-delete').change(function () {
+                var checkbox = $(this);
+                var isChecked = checkbox.is(':checked');
+                if (isChecked == false) {
+                    $("div#divLoading").addClass('show');
+                    $.ajax({
+                        url: "/api/users/" + checkbox.attr("data-user-id") + "/roles/" + checkbox.attr("data-role-name"),
+                        method: "DELETE",
+                        success: function () {
+                            $("div#divLoading").removeClass('show');
+                            toastr.success("Role removed successfully.", "Server Reponse");
+                        },
+                        error: function () {
+                            $("div#divLoading").removeClass('show');
+                            toastr.error("Unable to remove user from role", "Server Reponse");
+                        }
+                    });
+                }
+                else {
+                    $("div#divLoading").addClass('show');
+                    $.ajax({
+                        url: "/api/users/" + checkbox.attr("data-user-id") + "/roles/" + checkbox.attr("data-role-name"),
+                        method: "POST",
+                        success: function () {
+                            $("div#divLoading").removeClass('show');
+                            toastr.success("Role assigned successfully.", "Server Reponse");
+                        },
+                        error: function () {
+                            $("div#divLoading").removeClass('show');
+                            toastr.error("Unable to remove user from role", "Server Reponse");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

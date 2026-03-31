@@ -1,0 +1,103 @@
+﻿
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="futureTrainingMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Add Monitoring <span id="SubjectFutureTrainingId"></span> <span id="subjectfuturetrainingName"></span></h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!--Monitoring-->
+                    <input id="futureTrainingmonitoringActionId" name="futureTrainingmonitoringActionId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <input id="subjectfutureTrainingActionId" name="subjectfutureTrainingActionId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="monitoringDateAction">Study date / Monitor date</label>
+                        <input id="monitoringDateAction" name="monitoringDateAction" placeholder="Enter monitoring date" class="form-control input-sm js-date " style="min-width: 100%">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nextmonitoringdateAction">Next monitoring Date</label>
+                        <input id="nextmonitoringdateAction" name="nextmonitoringdateAction" placeholder="Enter next monitoring date" class="form-control input-sm js-date " style="min-width: 100%">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="futureTrainingLessonActionId">Lession</label>
+                        <select class="form-control input-sm" id="futureTrainingLessonActionId" name="futureTrainingLessonActionId" style="min-width: 100%">
+                            <option value="">Select lession</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="monitoringTypeAction">MonitoringType (During)</label>
+                        <input id="monitoringTypeAction" name="monitoringTypeAction" placeholder="Enter MonitoringType" class="form-control input-sm " style="min-width: 100%">
+                    </div>
+                </div>
+
+                <!--FuturetrainingControl-->
+                <div class="futuretrainingcontrol">
+                    <input id="futuretrainingprocessActionId" name="futuretrainingprocessActionId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <div class="row">
+                        <div class="col-md-6">
+                                <label>Graduate date</label>
+                            <input id="futuretraininggraduatedateAction" name="futuretraininggraduatedateAction" placeholder="Enter graduate date" class="form-control input-sm js-date  " style="min-width: 100%">
+                        </div>
+                        <div class="col-md-6">
+                                <label>Drop out date</label>
+                            <input id="futuretrainingdropoutdateAction" name="futuretrainingdropoutdateAction" placeholder="Enter drop out date" class="form-control input-sm js-date   " style="min-width: 100%">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="futuretrainingOntrainingIdAction">On training</label>
+                            <select class="form-control input-sm" id="futuretrainingOntrainingIdAction" name="futuretrainingOntrainingIdAction" style="min-width: 100%">
+                                <option value="">Selcet on training</option>
+                                <option value="Ongoing">Ongoing</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Permission">Permission</option>
+                                <option value="Suspend">Suspend</option>
+                                <option value="dropout">Drop out</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="futuretrainingreasonAction">Reason</label>
+                            <input id="futuretrainingreasonAction" name="futuretrainingreasonAction" placeholder="Enter reason" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="overflowTable" style="overflow-x: auto;">
+                                <table id="futureTrainingMonitoringActionTable" class="table table-hover table-bordered" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 35px">ID</th>
+                                            <th>Monitoring Date</th>
+                                            <th>Lession</th>
+                                            <th>On Training</th>
+                                            <th>Reason</th>
+                                            <th style="width: 90px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            <div class="modal-footer" style="overflow:auto;">
+                <div style="float:right;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="FutureTrainingMonitoringAction();" id="btnFutureTrainingMonitoringAction" class="btn btn-primary btn-sm">Add New</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> <!-- modal -->

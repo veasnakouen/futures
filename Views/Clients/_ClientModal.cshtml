@@ -1,0 +1,1180 @@
+﻿<form id="clients" method="post" enctype="multipart/form-data">
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="clientModal" tabindex="-1" role="dialog" aria-labelledby="clientModal" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="width: 100%; height: 100px; margin: 0; padding: 0;">
+            <div class="panel panel-primary">
+
+                <div class="panel-heading clearfix">
+                    <button type="button" class="btn btn-danger btn-xs pull-right" data-dismiss="modal">&times;</button>
+                    <p class="modal-title">Client Information</p>
+                </div>
+
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="panel panel-primary">
+
+                                <div class="panel-heading clearfix">
+                                    <h5 class="modal-title">
+                                        Manage Clients
+                                        <span id="titleClient" style="color:ghostwhite; font-size: 13px; float: right;"></span>
+                                    </h5>
+                                </div>
+
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-7">
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="clientCode">Client's Code</label>
+                                                        <select class="form-control input-sm" id="clientCode">
+                                                            <option value="">Please select client's code</option>
+                                                            <option value="FM">FM: File Maker</option>
+                                                            <option value="FS">FS: Future sytem database</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="firstName">First Name</label>
+                                                        <input id="firstName" name="firstName" placeholder="Enter first name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="lastName">Last Name</label>
+                                                        <input id="lastName" name="lastName" placeholder="Enter last name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="gender">Gender</label>
+                                                        <select class="form-control input-sm" id="gender">
+                                                            <option>Female</option>
+                                                            <option>Male</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="dateOfBirth">Date of birth</label>
+                                                        <input id="dateOfBirth" name="dateOfBirth" placeholder="Enter Date of birth" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-5">
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <img class="center img-responsive img-thumbnail" id="photo" src="~/Images/blank_profile.png" />
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Upload Photo</label>
+                                                    <input onchange="readURL(this);" type="file" name="file" id="file" style="width: 100%;" />
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        @*<label for="clientHeights">Height</label>*@
+                                                        <input id="clientHeights" name="clientHeights" placeholder="Enter Height" type="text" style="display: none;" disabled="disabled" value="NONE" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        @*<label for="clientWeights">Weight</label>*@
+                                                        <input id="clientWeights" name="clientWeights" placeholder="Enter Weight" type="text" style="display: none;" disabled="disabled" value="NONE" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="maritalStatus">Marital Status</label>
+                                                        <select class="form-control input-sm" id="maritalStatus">
+                                                            <option>Single</option>
+                                                            <option>Married</option>
+                                                            <option>Widowed</option>
+                                                            <option>Divorced</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="age">Age</label>
+                                                        <input id="age" name="age" placeholder="" type="text" value="" class="form-control input-sm" disabled style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="contactPhone">Contact Phone</label>
+                                                        <input id="contactPhone" name="contactPhone" placeholder="Enter contact phone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="relativePhone">Relative Phone</label>
+                                                        <input id="relativePhone" name="relativePhone" placeholder="Enter relative phone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="email">Email</label>
+                                                        <input id="email" name="email" placeholder="Enter email" type="email" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="address">Address</label>
+                                                        <input id="address" name="address" placeholder="Enter address" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="clientplaceOfBirth">Place of birth</label>
+                                                        <input id="clientplaceOfBirth" name="clientplaceOfBirth" placeholder="Enter place of birth" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="clientNationality">Nationality</label>
+                                                        <input id="clientNationality" name="clientNationality" placeholder="Enter Nationality" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="clientCitizenship">Citizenship</label>
+                                                        <input id="clientCitizenship" name="clientCitizenship" placeholder="Enter Citizenship" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="currentSituation">Current Situation</label>
+                                                        <select class="form-control input-sm" id="currentSituation">
+                                                            <option>Unemployed</option>
+                                                            <option>Employed</option>
+                                                            <option>Self-employed</option>
+                                                            <option>Family worker</option>
+                                                            <option>VT Student</option>
+                                                            <option>University Student</option>
+                                                            <option>Seasonal</option>
+                                                            <option>Other</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="province">Province</label>
+                                                        <select class="form-control input-sm" id="province">
+                                                            <option>Preah Sihanouk</option>
+                                                            <option>Phnom Penh</option>
+                                                            <option>Banteay Meanchey</option>
+                                                            <option>Battambang</option>
+                                                            <option>Kampong Cham</option>
+                                                            <option>Kampong Chhnang</option>
+                                                            <option>Kampong Speu</option>
+                                                            <option>Kampong Thom</option>
+                                                            <option>Kampot</option>
+                                                            <option>Kandal</option>
+                                                            <option>Koh Kong</option>
+                                                            <option>Kep</option>
+                                                            <option>Kratié</option>
+                                                            <option>Mondulkiri</option>
+                                                            <option>Oddar Meanchey</option>
+                                                            <option>Pailin</option>
+                                                            <option>Preah Vihear</option>
+                                                            <option>Pursat</option>
+                                                            <option>Prey Veng</option>
+                                                            <option>Ratanakiri</option>
+                                                            <option>Siem Reap</option>
+                                                            <option>Stung Treng</option>
+                                                            <option>Svay Rieng</option>
+                                                            <option>Takéo</option>
+                                                            <option>Tbong Khmum</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="registerdateClient">Register's date</label>
+                                                        <input id="registerdateClient" name="registerdateClient" placeholder="Enter register date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="registerdateClientnd">Register's date 2nd</label>
+                                                        <input id="registerdateClientnd" name="registerdateClientnd" placeholder="Enter register date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="registerdateClientrd">Register's date 3rd</label>
+                                                        <input id="registerdateClientrd" name="registerdateClientrd" placeholder="Enter register date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="expextedsupport">Expected Support from future</label>
+                                                        <select class="form-control input-sm" id="expextedsupport">
+                                                            <option value="">Please select option </option>
+                                                            <option value="furthereducation ">Further Education </option>
+                                                            <option value="placement">Placement</option>
+                                                            <option value="futurestraining">Futures Training</option>
+                                                            <option value="socialsupport">Social Support</option>
+                                                            <option value="Self-employment">Self-employment</option>
+                                                            <option value="apprenticeship">Apprenticeship</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="checkbox">
+                                                        <label><input id="furtherEducation" type="checkbox" value="">Further Education (Meeting with social worker)</label>
+                                                    </div>
+
+                                                    <div class="checkbox">
+                                                        <label><input id="placement" type="checkbox" value="">Placement (Skills assessment)</label>
+                                                    </div>
+
+                                                    <div class="checkbox">
+                                                        <label><input id="futuresTraining" type="checkbox" value="">Futures Training</label>
+                                                    </div>
+
+                                                    <div class="checkbox">
+                                                        <label><input id="socialSupport" type="checkbox" value="">Social Support</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <hr />
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="hearBy">Where did you hear about Futures?</label>
+                                                        <select class="form-control input-sm" id="hearBy">
+                                                            <option>Internet</option>
+                                                            <option>Social Media</option>
+                                                            <option>Radio</option>
+                                                            <option>Newspaper</option>
+                                                            <option>Friend</option>
+                                                            <option>Teacher</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <hr />
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="HaveProblemCase">Does the client a problem? </label>
+                                                    <div class="form-group">
+                                                        <label class="radio-inline col-md-4">
+                                                            <input type="radio" name="HaveProblemCase" id="NohaveProblemCase" checked value="NohaveProblem">No Have Problem
+                                                        </label>
+                                                        <label class="radio-inline col-md-4">
+                                                            <input type="radio" name="HaveProblemCase" id="HaveProblemCase" value="HaveProblem">Have Problem
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <hr />
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="ClientidpoorStatus">Id Poor status </label>
+                                                    <div class="form-group">
+                                                        <label class="radio-inline col-md-3">
+                                                            <input type="radio" name="clientidpoorStatus" id="ClientidpoorStatusNohave" checked value="Nohave">No have
+                                                        </label>
+                                                        <label class="radio-inline col-md-3">
+                                                            <input type="radio" name="clientidpoorStatus" id="ClientidpoorStatusIsValid" value="IsValid">Is Valid
+                                                        </label>
+                                                        <label class="radio-inline col-md-3">
+                                                            <input type="radio" name="clientidpoorStatus" id="ClientidpoorStatusExpired" value="Expired">Expired
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <br />
+
+                                            <div class="row">
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="ClientIdpoorvalidDate">Id poor valid date</label>
+                                                        <input id="ClientIdpoorvalidDate" name="ClientIdpoorvalidDate" placeholder="Enter Date of birth" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="ClientIdpoorlevel">Id poor level</label>
+                                                        <select class="form-control input-sm" id="clientIdpoorlevel" name="clientIdpoorlevel">
+                                                            <option value="">Please select option</option>
+                                                            <option value="Level 1 ">Level 1 </option>
+                                                            <option value="Level 2">Level 2</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="ClientIdpooraccountnumber">Id poor account number</label>
+                                                        <input id="ClientIdpooraccountnumber" name="ClientIdpooraccountnumber" placeholder="Enter Id poor account number" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Upload Id Card</label>
+                                                        <input onchange="readURLIdCard(this);" type="file" name="fileIdCard" id="fileIdCard" style="width: 100%;" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- col-md-8 -->
+                                </div>
+                                <!-- panel-body -->
+
+                                <div class="panel-footer panel-primary">
+                                    <div class="clearfix">
+                                        <button type="button" id="btnSave" class="btn btn-primary btn-sm pull-right" onclick="Save();"><span class="glyphicon glyphicon-floppy-saved"></span> Save</button>
+                                        <button type="button" id="btnUpdate" class="btn btn-primary btn-sm pull-right js-update" onclick="Update();"><span class="glyphicon glyphicon-floppy-saved"></span> Update</button>
+                                    </div>
+                                </div>
+
+                            </div> <!-- panel -->
+
+                        </div> <!-- col-md-6 -->
+
+                        <div class="col-md-8">
+
+                            <ul class="nav nav-pills">
+
+                                <li>
+                                    <a href="#further-education" id="furtherEducationTab">Further Education</a>
+                                </li>
+                                <li>
+                                    <a href="#education" id="educationTab">Education</a>
+                                </li>
+                                <li>
+                                    <a href="#job-specification" id="jobSpecificationTab">Job Specification</a>
+                                </li>
+                                <li>
+                                    <a href="#beneficiary" id="beneficiaryTab">Dependents</a>
+                                </li>
+                                <li>
+                                    <a href="#client-placement" id="placementTab">Placement</a>
+                                </li>
+                                <li>
+                                    <a href="#futures-training" id="futuresTrainingTab">Futures Training</a>
+                                </li>
+                                <li>
+                                    <a href="#social-support" id="socialSupportTab">Social Support</a>
+                                </li>
+
+                                <li>
+                                    <a href="#monitoring" id="monitoringTab">Monitoring</a>
+                                </li>
+                            </ul>
+
+                            <hr style="margin-top:10px; margin-bottom:10px;" />
+
+                            <!--All function-->
+                            <div class="tab-content">
+                                <!--case-management-->
+                                <div id="case-management" class="tab-pane fade in active">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <button data-toggle="modal" data-target="#caseModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New</button>
+                                            <button data-toggle="modal" data-target="#caseWorkerModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Add Case Worker</button>
+                                            Case Information
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="caseTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">ID</th>
+                                                            <th>Client</th>
+                                                            <th>Case Worker</th>
+                                                            <th>Case Type</th>
+                                                            <th>Open Date</th>
+                                                            <th>Close Date</th>
+                                                            <th>Status</th>
+                                                            <th style="width: 90px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="beneficiary" class="tab-pane fade">
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">Dependents (Children & Youth & Adult)</div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <input id="beneficiaryId" name="beneficiaryId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="beneficiaryGender">Gender</label>
+                                                        <select class="form-control input-sm" id="beneficiaryGender">
+                                                            <option>Female</option>
+                                                            <option>Male</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="beneficiaryAge">Age</label>
+                                                        <input id="beneficiaryAge" name="beneficiaryAge" placeholder="Enter age" type="number" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="button" id="btnsaveBeneficiaryAction" class="btn btn-primary btn-sm m-2" style="min-width: 105px;" onclick="SaveBeneficiary();">Save</button>
+                                            <button type="button" id="btnupdateBeneficiaryAction" class="btn btn-primary btn-sm m-2" style="min-width: 105px;" onclick="UpdateBeneficiary();">Update</button>
+
+                                            <hr />
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div id="overflowTable" style="overflow-x: auto;">
+                                                        <table id="beneficiaryTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Gender</th>
+                                                                    <th>Age</th>
+                                                                    <th style="width: 90px;">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> <!-- Beneficiary -->
+
+                                </div>
+
+                                <div id="further-education" class="tab-pane fade">
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">Education Type</div>
+                                        <div class="panel-body">
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <b>Choose the education type:</b>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="checkbox">
+                                                        <label><input id="university" type="checkbox" value="">University</label>
+                                                    </div>
+                                                    <div class="checkbox">
+                                                        <label><input id="publicSchool" type="checkbox" value="">Public School</label>
+                                                    </div>
+                                                    <div class="checkbox">
+                                                        <label><input id="vocationalTraining" type="checkbox" value="">Vocational Training (VT)</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="checkbox">
+                                                        <label><input id="computerSchool" type="checkbox" value="">Computer School</label>
+                                                    </div>
+                                                    <div class="checkbox">
+                                                        <label><input id="englishSchool" type="checkbox" value="">English School</label>
+                                                    </div>
+                                                    <div class="checkbox">
+                                                        <label><input id="chineseSchool" type="checkbox" value="">Chinese School</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="availableTime">Available Time:</label>
+                                                        <input id="availableTime" name="availableTime" placeholder="Enter available time" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="button" style="width: 105px" class="btn btn-primary btn-sm" onclick="SaveFurtherEducation();">Save changes</button>
+                                        </div>
+                                    </div>
+                                    <!-- Further Education -->
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <button data-toggle="modal" data-target="#referralEducation" class="btn btn-success btn-xs m-2 pull-right" onclick="ReferralEducationAction();" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New</button>
+                                            <button data-toggle="modal" data-target="#referralSource" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Add Referral Source</button>
+                                            Referal History
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="referralEducationTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">ID</th>
+                                                            <th>Referral On</th>
+                                                            <th>Referral To</th>
+                                                            <th>Subject/Skill</th>
+                                                            <th>Duration</th>
+                                                            <th>Referral By</th>
+                                                            <th style="width: 90px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Referral -->
+                                </div>
+
+                                <div id="job-specification" class="tab-pane fade">
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">Job Expecation</div>
+                                        <div class="panel-body">
+                                            <input id="jobExpectationId" name="jobExpectationId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>*Job Category</label>
+                                                        <select class="form-control input-sm" id="jobCategoryId1" style="min-width: 100%">
+                                                            <option value="0">--Click to choose--</option>
+                                                            @foreach (var jobCategory in Model.JobCategories)
+                                                            {
+                                                                <option value=@jobCategory.Id>@jobCategory.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>*Job Position</label>
+                                                        <select class="form-control input-sm" id="jobPositionId1" style="min-width: 100%">
+                                                            <option value="0">--Click to choose--</option>
+                                                            @foreach (var jobPosition in Model.JobPositions)
+                                                            {
+                                                                <option value=@jobPosition.Id>@jobPosition.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <select class="form-control input-sm" id="jobCategoryId2" style="min-width: 100%">
+                                                            <option value="0">--Click to choose--</option>
+                                                            @foreach (var jobCategory in Model.JobCategories)
+                                                            {
+                                                                <option value=@jobCategory.Id>@jobCategory.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <select class="form-control input-sm" id="jobPositionId2" style="min-width: 100%">
+                                                            <option value="0">--Click to choose--</option>
+                                                            @foreach (var jobPosition in Model.JobPositions)
+                                                            {
+                                                                <option value=@jobPosition.Id>@jobPosition.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <select class="form-control input-sm" id="jobCategoryId3" style="min-width: 100%">
+                                                            <option value="0">--Click to choose--</option>
+                                                            @foreach (var jobCategory in Model.JobCategories)
+                                                            {
+                                                                <option value=@jobCategory.Id>@jobCategory.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <select class="form-control input-sm" id="jobPositionId3" style="min-width: 100%">
+                                                            <option value="0">--Click to choose--</option>
+                                                            @foreach (var jobPosition in Model.JobPositions)
+                                                            {
+                                                                <option value=@jobPosition.Id>@jobPosition.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="employmenttype">Employment Type:</label>
+                                                <select class="form-control input-sm" id="employmenttype" name="employmenttype" style="min-width: 100%">
+                                                    <option value="Permanent">Permanent</option>
+                                                    <option value="Temporary">Temporary</option>
+                                                    <option value="Seasonal">Seasonal</option>
+                                                </select>
+                                            </div>
+
+
+                                            <div class="row" style="display: none;" disabled="disabled">
+                                                <div class="col-md-4">
+                                                    <div class="checkbox">
+                                                        <label><input id="permanent" type="checkbox" style="display: none;" disabled="disabled" value="">Permanent</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="checkbox">
+                                                        <label><input id="temporary" type="checkbox" style="display: none;" disabled="disabled" value="">Temporary</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="checkbox">
+                                                        <label><input id="seasonal" type="checkbox" style="display: none;" disabled="disabled" value="">Seasonal</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="jobExpectationAvailableTime">Available Time:</label>
+                                                        <input id="jobExpectationAvailableTime" name="jobExpectationAvailableTime" placeholder="Enter available time" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="salaryExpectation">Salary Expectation</label>
+                                                        <input id="salaryExpectation" name="salaryExpectation" placeholder="From - To" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="jobExpectationNote">Note:</label>
+                                                        <input id="jobExpectationNote" name="jobExpectationNote" placeholder="Enter note" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="jobExpectationCandidate">Candidate:</label>
+                                                        <input id="jobExpectationCandidate" name="jobExpectationCandidate" placeholder="Enter Candidate" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="jobExpectationHobby">Hobby:</label>
+                                                        <textarea class="form-control input-sm" id="jobExpectationHobby" name="jobExpectationHobby" placeholder="Enter Hobby" rows="3" style="min-width: 100%; max-width: 100%"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div style="display:none">
+                                                    <div class="checkbox">
+                                                        <label><input id="jobExpectationSelfEmployment" type="checkbox" checked value="">Self Employment</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+
+                                                    <label for="jobExpectationBusinessTypeCategory">Business Type Category:</label>
+                                                    <select class="form-control input-sm" id="jobExpectationBusinessTypeCategory" style="min-width: 100%">
+                                                        <option value="0">--Click to choose--</option>
+                                                        @foreach (var BusinessCategory in Model.BusinessSetUpCategories)
+                                                        {
+                                                            <option value=@BusinessCategory.Id>@BusinessCategory.BusCategoryName</option>
+                                                        }
+                                                    </select>
+
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Business Type:</label>
+                                                        <input id="jobExpectationBusinessType" name="jobExpectationBusinessType" placeholder="Enter business type" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-4">
+
+                                                    <label for="jobExpectationStatus">Job expectation status :</label>
+                                                    <select class="form-control input-sm" id="jobExpectationStatus" style="min-width: 100%">
+                                                        <option value="Active">Active</option>
+                                                        <option value="Inactive">Inactive</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <hr />
+
+                                            <button type="button" style="width: 105px" class="btn btn-primary btn-sm" onclick="SaveJobExpectation();">Save changes</button>
+                                        </div>
+                                    </div> <!-- Job Expectation -->
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <button data-toggle="modal" data-target="#cvReferenceModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New Record</button>
+                                            Job Reference
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="cvReferenceTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">ID</th>
+                                                            <th>Name</th>
+                                                            <th>Position</th>
+                                                            <th>Organization</th>
+                                                            <th>Phone</th>
+                                                            <th style="width: 90px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div> <!-- CV Reference -->
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <button data-toggle="modal" data-target="#jobExperienceModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New Record</button>
+                                            Job Experience
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="jobExperienceTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">ID</th>
+                                                            <th>Position</th>
+                                                            <th>Employer</th>
+                                                            <th>Sector</th>
+                                                            <th>Duration</th>
+                                                            <th>Salary</th>
+                                                            <th style="width: 90px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div> <!-- Job Experience -->
+
+                                </div>
+
+                                <div id="education" class="tab-pane fade">
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <button data-toggle="modal" data-target="#EducationHistoryModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New Record</button>
+                                            Education History
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="EducationHistoryTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">ID</th>
+                                                            <th>Education Level</th>
+                                                            <th>Grade</th>
+                                                            <th>Subject</th>
+                                                            <th>Graduated Year</th>
+                                                            <th>School Name</th>
+                                                            <th style="width: 90px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <button data-toggle="modal" data-target="#LanguageModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New Record</button>
+                                            Languages
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="languageTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">ID</th>
+                                                            <th>Language</th>
+                                                            <th>Level</th>
+                                                            <th style="width: 90px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading clearfix">
+                                            <button data-toggle="modal" data-target="#ComputerSkillModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New Record</button>
+                                            Computer Skills
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="computerSkillTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">ID</th>
+                                                            <th>Skills/Subjects</th>
+                                                            <th>Level</th>
+                                                            <th>Certified</th>
+                                                            <th style="width: 90px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Strenght</label>
+                                                <textarea class="form-control input-sm" id="strength" placeholder="Enter his/her strength point" rows="3" style="min-width: 100%; max-width: 100%"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Weakness</label>
+                                                <textarea class="form-control input-sm" id="weakness" placeholder="Enter his/her weakness point" rows="3" style="min-width: 100%; max-width: 100%"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" style="width: 105px" class="btn btn-primary btn-sm" onclick="SavePersonality();">Save changes</button>
+
+                                </div>
+
+                                <div id="client-placement" class="tab-pane fade">
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+
+                                                <div class="panel-heading clearfix">
+                                                    <button data-toggle="modal" data-target="#placementModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New Record</button>
+                                                    Jobs Placement History
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div id="overflowTable" style="overflow-x: auto;">
+                                                        <table id="placementTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 35px">ID</th>
+                                                                    <th>Count time</th>
+                                                                    <th>Placement Date</th>
+                                                                    <th>TotalIncome</th>
+                                                                    <th>Position</th>
+                                                                    <th style="width: 90px;">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+
+                                                <div class="panel-heading clearfix">
+                                                    <button data-toggle="modal" data-target="#businessSetUpModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add Business set up</button>
+                                                    <button data-toggle="modal" data-target="#businessSetUpCategoryModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Add Business set up category</button>
+                                                    @*Business-Setup*@                                Business Setup History
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div id="overflowTable" style="overflow-x: auto;">
+                                                        <table id="tableBusinessSetup" class="table table-hover table-bordered" style="width: 100%;">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 35px">ID</th>
+                                                                    <th>Business cateogry</th>
+                                                                    <th>Business type</th>
+                                                                    <th>Income</th>
+                                                                    <th>Expense</th>
+                                                                    <th>Job place by</th>
+                                                                    <th style="width: 90px;">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--futures-training-->
+                                <div id="futures-training" class="tab-pane fade">
+                                    <div class="tab-content">
+
+                                        <div id="futures-training" class="tab-pane fade in active">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <button data-toggle="modal" data-target="#FuturestrainingModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add New FuturesTraning</button>
+                                                    <button data-toggle="modal" data-target="#subjectModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span>  Add New Subject</button>
+                                                    <button data-toggle="modal" data-target="#lessonModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span>  Add New Lesson</button>
+                                                    Futures-Training
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div id="overflowTable" style="overflow-x: auto;">
+                                                        <table id="futures" class="table table-hover table-bordered" style="width: 100%;">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 35px">ID</th>
+                                                                    <th>Subject</th>
+                                                                    <th>Open Date</th>
+                                                                    <th>Close Date</th>
+                                                                    <th>Note</th>
+                                                                    <th style="width: 90px;">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--social-support-->
+                                <div id="social-support" class="tab-pane fade">
+                                    <div class="tab-content">
+
+                                        <div id="social-support" class="tab-pane fade in active">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <button data-toggle="modal" data-target="#socialSupportCaseModel" class="btn btn-success btn-xs m-2 pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add Social Support</button>
+                                                    <button data-toggle="modal" data-target="#caseWorkerModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Add Case Worker</button>
+                                                    Social Support History
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div id="overflowTable" style="overflow-x: auto;">
+                                                        <table id="SocialsSupportCaseTable" class="table table-hover table-bordered" style="width: 100%;">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 35px">ID</th>
+                                                                    <th>Have case</th>
+                                                                    <th>Case worker</th>
+                                                                    <th>Open date</th>
+                                                                    <th>Close date</th>
+                                                                    <th>Problem</th>
+                                                                    <th style="width: 90px;">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Monitoring-->
+                                <div id="monitoring" class="tab-pane fade">
+                                    <div class="tab-content">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <button data-toggle="modal" data-target="#businessSetupMonitoringModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Business setup Monitoring</button>
+                                                <button data-toggle="modal" data-target="#futureTrainingMonitoringModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Future training Monitoring</button>
+                                                <!-- <button data-toggle="modal" data-target="#placementMonitoringModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Placement Monitoring</button> -->
+                                                
+                                                Monitoring Information
+                                            </div>
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="MonitoringTableshow" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">Id</th>
+                                                            <th>Type</th>
+
+                                                            <th>Monitoring Date</th>
+                                                            <th>Next Monitoring Date</th>
+                                                            <th>Monitoring Type</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+
+                                            <div class="panel-heading">
+                                                <button data-toggle="modal" data-target="#placementMonitoringModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Placement Monitoring</button>
+                                                Monitoring Placement Information
+                                            </div>
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="MonitoringPlacementTableshow" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">Id</th>
+                                                            <th>Type</th>
+
+                                                            <th>Monitoring Date</th>
+                                                            <th>Next Monitoring Date</th>
+                                                            <th>Monitoring Type</th>
+                                                            <th>Company Name</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            <!-- monitoring placement -->
+                            
+                                @*<div id="monitoring" class="tab-pane fade">
+                                    <div class="tab-content">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <button data-toggle="modal" data-target="#businessSetupMonitoringModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Business setup Monitoring</button>
+                                                <button data-toggle="modal" data-target="#futureTrainingMonitoringModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Future training Monitoring</button>
+                                                <button data-toggle="modal" data-target="#placementMonitoringModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px;"><span class="glyphicon glyphicon-plus-sign"></span> Placement Monitoring</button>
+                                                Monitoring Placement Information
+                                            </div>
+                                            <div id="overflowTable" style="overflow-x: auto;">
+                                                <table id="MonitoringTableshow" class="table table-hover table-bordered" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 35px">Id</th>
+                                                            <th>Type</th>
+
+                                                            <th>Monitoring Date</th>
+                                                            <th>Next Monitoring Date</th>
+                                                            <th>Monitoring Type</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+                                
+
+                            </div> <!-- tab-content -->
+
+                        </div> <!-- col-md-6 -->
+
+                    </div>
+                </div>
+
+
+                <div id="divLoadingModal"></div>
+
+            </div> <!-- panel-->
+        </div>
+    </div> <!-- modal -->
+
+</form>

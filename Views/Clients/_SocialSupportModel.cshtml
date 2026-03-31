@@ -1,0 +1,92 @@
+﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="socialSupportModel" tabindex="-1" role="dialog" aria-labelledby="socialSupportModel" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Social Support Problem and Case</h5>
+            </div>
+
+            <div class="modal-body">
+
+                <h5><u>Social Support Information</u></h5>
+               
+
+                    <div class="row">
+
+                        <input id="socialSupportId" name="socialSupportId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="caseIds">Case</label>
+                            <select class="form-control input-sm" id="caseIdss" name="caseIdss" style="min-width: 100%">
+                                @foreach (var caseId in Model.Cases)
+                                {
+                                    <option value=@caseId.Id>@caseId.Id | @caseId.Client.FirstName @caseId.Client.LastName | @caseId.ServiceType | @caseId.OpenDate</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                    <hr />
+
+                    <h5><u>Problem Information</u></h5>
+                   <div class="row">
+                        <div class="col-md-6">
+                            <div class="checkbox">
+                                <label><input class="form-group-lg" id="healthProblemCheckbox" type="checkbox" value="">Health Problem</label>
+                                <input id="healthProblem" name="healthProblem" placeholder="Enter health problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+
+                       <div class="col-md-6">
+                           <div class="checkbox">
+                               <label><input id="drugProblemCheckbox" type="checkbox" value="">Drug Problem</label>
+                               <input id="drugProblem" name="drugProblem" placeholder="Enter drug problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                           </div>
+                       </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="checkbox">
+                                <label><input id="babycareProblemCheckbox" type="checkbox" value="">Baby care problem</label>
+                                <input id="babycareProblem" name="babycareProblem" placeholder="Enter baby care problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="checkbox">
+                                <label><input id="personalProblemCheckbox" type="checkbox" value="">Personal problem</label>
+                                <input id="personalProblem" name="personalProblem" placeholder="Enter personal problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="checkbox">
+                                <label><input id="legalProblemCheckbox" type="checkbox" value="">Legal problem</label>
+                                <input id="legalProblem" name="legalProblem" placeholder="Enter legal Problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="checkbox">
+                                <label><input id="otherProblemCheckbox" type="checkbox" value="">Other problem</label>
+                                <input id="otherProblem" name="otherProblem" placeholder="Enter other problem" type="text" value="" class="form-control input-sm" style="min-width: 100%; max-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" onclick="SocialSupportAction();" id="btnSocialSupportsAction" class="btn btn-primary btn-sm">Add New</button>
+            </div>
+        </div>
+    </div>
+</div> <!-- modal -->

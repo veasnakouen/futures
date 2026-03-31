@@ -1,0 +1,577 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M'Lop Tapang Organization</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+</head>
+<body id="FutureSystemId">
+
+    @Html.Partial("_Navbar")
+
+
+    
+    <div class="body-content" style="padding-top: 10px;">
+        @RenderBody()
+    </div>
+
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="placementMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="placementMonitoringActionModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header clearfix">
+                    <h5 class="modal-title">Add Placement Monitoring <span id="PlacementMonitoringCompany"> </span></h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!--Monitoring-->
+                        <input id="PlacementMonitoringId" name="PlacementMonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                        <input id="placementclientId" name="placementclientId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                        <input id="PlacementMonitoringCounttimeId" name="PlacementMonitoringCounttimeId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                        <input id="placementMonitoringenrollby" name="placementMonitoringenrollby" type="text" style="display: none;" disabled="disabled" value="Admin Manager" class="form-control" />
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <label for="placementnextmonitoringdate">Next placement monitoring Date</label>
+                            <input id="placementnextmonitoringdate" name="placementnextmonitoringdate" placeholder="Enter next monitoring date" class="form-control input-sm js-date " style="min-width: 100%">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="placementmonitoringtype">Monitoring type</label>
+                            <select class="form-control input-sm" id="placementmonitoringtype" name="placementmonitoringtype" style="min-width: 100%">
+                                <option value="">Select monitor type</option>
+                                <option value="1">1st : 1 month</option>
+                                <option value="2">2nd : 2 months</option>
+                                <option value="3">3rd : 3 months</option>
+                                <option value="4">4th : 4 months</option>
+                                <option value="5">5th : 5 months</option>
+                                <option value="6">6th : 6 months</option>
+                                <option value="8">8th : 8 months</option>
+                                <option value="10">10th : 10 months</option>
+                                <option value="12">Final</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="placementcompleted">Completed</label>
+                            <select class="form-control input-sm" id="placementcompleted" name="placementcompleted" style="min-width: 100%">
+                                <option value="">Please select this</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="placementsalary">Salary</label>
+                            <input id="placementsalary" name="placementsalary" placeholder="Enter salary" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+                    </div>
+
+                    <!--Placementcontrol-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="Placementcontrol">
+                                <input id="placementprocessMonitoringId" name="placementprocessMonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                                <hr />
+                                <label for="placementMonitoringstatus">Still in Placement</label>
+                                <div class="row">
+                                    <!-- Still in business  -->
+                                    <div class="col-md-12">
+                                        <label class="radio-inline col-md-2">
+                                            <input type="radio" name="placementMonitoringstatus" id="stillinPlacementMonitoringYes" value="Yes" checked>Yes
+                                        </label>
+                                        <label class="radio-inline col-md-2">
+                                            <input type="radio" name="placementMonitoringstatus" id="stillinPlacementMonitoringNo" value="No">No
+                                        </label>
+                                        <label class="radio-inline col-md-4">
+                                            <input type="radio" name="placementMonitoringstatus" id="stillinPlacementChangeJobMonitoring" value="ChangedJob">Changed Job
+                                        </label>
+                                    </div>
+                                </div><div class="row">
+                                    <input id="placementpmonitoringsId" name="placementpmonitoringsId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="placementprogressnotes">Placement progress note</label>
+                                        <input id="placementprogressnotes" name="placementprogressnotes" placeholder="Enter placement progress note" class="form-control input-sm " style="min-width: 100%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="overflowTable" style="overflow-x: auto;">
+                                <table id="PlacementMonitoringActionTable" class="table table-hover table-bordered" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Monitor date</th>
+                                            <th>Complete</th>
+                                            <th>Placement</th>
+                                            <th>Place Status</th>
+                                            <th>Salary</th>
+                                            <th>Note</th>
+                                            <th style="width: 90px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer" style="overflow:auto;">
+                    <div style="float:right;">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="button" onclick="PlacementMonitoringActionNotification();" id="btnPlacementProcessMonitoringAction" class="btn btn-primary btn-sm">Add New</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container-fluid">
+            <span>&copy; @DateTime.Now.Year - M'Lop Tapang</span>
+            <span class="pull-right">Developed by: IT Team</span>
+        </div>
+    </footer>
+
+    <div id="divLoading"></div>
+    @Html.Partial("_placementMonitoringActionModal")
+    @Scripts.Render("~/bundles/lib")
+    @RenderSection("scripts", required: false)
+    <script>
+        function GetCurrentDate() {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+
+            if (dd < 10) {
+                dd = '0' + dd
+            }
+
+            if (mm < 10) {
+                mm = '0' + mm
+            }
+
+            return mm + '/' + dd + '/' + yyyy;
+        }
+        function ShowLoadingScreen() {
+            $("div#divLoadingModal").addClass('show');
+        }
+
+        function RemoveLoadingScreen() {
+            $("div#divLoadingModal").removeClass('show');
+        }
+    </script>
+
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script type="text/javascript">
+        $(function () {
+            var hubNotify = $.connection.placementMonitorHub;
+
+            $.connection.hub.start().done(function () {
+                getAll(0);
+            });
+
+            hubNotify.client.refreshEmployeeData = function () {
+                getAll(0);
+            };
+        });
+
+        function getClientPlacementNotification(PlacementId ,ClientId ,ClientName) {
+            //console.log(PlacementId + " / " + ClientId + " / " + ClientName)
+            $('#placementMonitoringActionModal').modal('show');
+            $('#placementclientId').val(ClientId);
+            GetplacementMonitoringActionByPlacementIdNotification(PlacementId)
+            document.getElementById('btnPlacementProcessMonitoringAction').innerText = "Add New";
+            ClearPlacmentMonitor();
+            ControlPlacmentprocesssMonitor(false);
+            document.getElementById("PlacementMonitoringCompany").innerHTML = (" : " + ClientName);
+        }
+
+        function ClearPlacmentMonitor() {
+            $('#placementnextmonitoringdate').val('');
+            $('#placementmonitoringtype').val('');
+            $('.placementMonitoringstatus').val('');
+            $('#placementcompleted').val('');
+            $('#placementsalary').val('');
+            $('#placementprogressnotes').val('');
+        }
+
+        function ControlPlacmentprocesssMonitor(bool) {
+            document.getElementById('placementnextmonitoringdate').disabled = bool;
+            document.getElementById('placementmonitoringtype').disabled = bool;
+            document.getElementById('placementcompleted').disabled = bool;
+            document.getElementById('placementsalary').disabled = bool;
+            document.getElementById('placementprogressnotes').disabled = bool;
+            document.getElementsByName("placementMonitoringstatus").disabled = bool;
+        }
+
+        function placementMonitoringNoficationDelete(Id) {
+            bootbox.confirm("Are you sure you want to delete this?", function (result) {
+                if (result) {
+                    $.ajax({
+                        url: "/api/placementmonitoring?id=" + Id,
+                        method: "DELETE",
+                        success: function () {
+                            tableplacementMonitoringAction.ajax.reload();
+                            tableMonitoring.ajax.reload();
+                            ClearPlacmentMonitor();
+                            ControlPlacmentprocesssMonitor(true);
+                            toastr.success("Deleted successfully.", "Server Response");
+                        },
+                        error: function () {
+                            toastr.error("This business set up monitoring cannot saved.", "Server Response");
+                        }
+                    });
+                }
+            });;
+        }
+
+        function validatePlacementMonitoring() {
+            var isvalid = true;
+            if ($('#placementnextmonitoringdate').val().trim() === "") {
+                $('#placementnextmonitoringdate').css('border-color', 'red');
+                $('#placementnextmonitoringdate').focus();
+                isvalid = false;
+            }
+            else {
+                $('#placementnextmonitoringdate').css('border-color', '#cccccc');
+                if ($('#placementmonitoringtype').val().trim() === "") {
+                    $('#placementmonitoringtype').css('border-color', 'red');
+                    $('#placementmonitoringtype').focus();
+                    isvalid = false;
+                }
+                else {
+                    $('#placementmonitoringtype').css('border-color', '#cccccc');
+                    if ($('#placementcompleted').val().trim() === "") {
+                        $('#placementcompleted').css('border-color', 'red');
+                        $('#placementcompleted').focus();
+                        isvalid = false;
+                    }
+                    else {
+                        $('#placementcompleted').css('border-color', '#cccccc');
+                    }
+                }
+            }
+            return isvalid
+        }
+
+        function placementMonitoringNotificationEdit(Id) {
+            $.ajax({
+                url: "/api/PlacementMonitoring?Id=" + Id,
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    ControlPlacmentprocesssMonitor(false);
+                    $('#placementprocessMonitoringId').val(result[0]['id']);
+                    $('#PlacementMonitoringId').val(result[0]['monitoringId']);
+                    var monitoringDate = new Date(result[0]['monitoring']['monitoringDate']);
+                    var dd = monitoringDate.getDate();
+                    var mm = monitoringDate.getMonth() + 1; //January is 0!
+                    var yyyy = monitoringDate.getFullYear();
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    monitoringDate = mm + '/' + dd + '/' + yyyy;
+
+                    var NextmonitoringDate = new Date(result[0]['monitoring']['nextMonitoringDate']);
+                    var dd = NextmonitoringDate.getDate();
+                    var mm = NextmonitoringDate.getMonth() + 1; //January is 0!
+                    var yyyy = NextmonitoringDate.getFullYear();
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    NextmonitoringDate = mm + '/' + dd + '/' + yyyy;
+                    $('#placementnextmonitoringdate').val(NextmonitoringDate);
+                    $('#placementmonitoringtype').val(result[0]['monitoring']['monitoringtype']);
+
+                    if ((result[0]['placementStatus']) == "Yes") {
+                        $("input[name='placementMonitoringstatus'][value='Yes']").prop('checked', true);
+                    } else if ((result[0]['placementStatus']) == "No") {
+                        $("input[name='placementMonitoringstatus'][value='No']").prop('checked', true);
+                    } else {
+                        $("input[name='placementMonitoringstatus'][value='ChangedJob']").prop('checked', true);
+                    };
+                    $("#placementcompleted").val(result[0]['completed']);
+                    $('#placementsalary').val(result[0]['salary']);
+                    $('#placementprogressnotes').val(result[0]['note']);
+                    $('#placementclientId').val(result[0].monitoring.placementId);
+                    document.getElementById('btnPlacementProcessMonitoringAction').innerText = "Update";
+                },
+                error: function (errormessage) {
+                    toastr.error("Something unexpected happen.", "Server Response");
+                }
+            });
+        }
+
+        function PlacementMonitoringActionNotification() {
+            var action = '';
+            action = document.getElementById('btnPlacementProcessMonitoringAction').innerText;
+            if (action === "Save changes") {
+                var ResM = validatePlacementMonitoring();
+                if (ResM === false) {
+                    return false;
+                }
+                console.log(" :::: " + $('#placementclientId').val());
+                var monitoringobj = {
+                    MonitoringTime: 1,
+                    Enroll: "Get in API",
+                    Type: "Placement",
+                    ClientId: $('#placementclientId').val(),
+                    MonitoringDate: $('#placementnextmonitoringdate').val(),// update to getdate in server side
+                    NextMonitoringDate: $('#placementnextmonitoringdate').val(),
+                    Monitoringtype: $('#placementmonitoringtype').val(),
+                    PlacementId: $('#placementclientId').val()
+                };
+                var Placementobj =
+                    {
+                        Completed: $('#placementcompleted').val(),
+                        PlacementStatus: $('input[name=placementMonitoringstatus]:checked').val(),
+                        Salary: $('#placementsalary').val(),
+                        Note: $('#placementprogressnotes').val()
+                    };
+                var PlacementMonitoringMulObj = {
+                    "pLacementProcessDto": Placementobj,
+                    "monitoringDto": monitoringobj
+                };
+
+                $.ajax({
+                    url: "/api/PlacementMonitoring/",
+                    data: JSON.stringify(PlacementMonitoringMulObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        toastr.success("Placement monitoring has been updated.", "Server Response");
+                        tableplacementMonitoringAction.ajax.reload();
+                        //tableMonitoring.ajax.reload();
+                        ClearPlacmentMonitor();
+                        ControlPlacmentprocesssMonitor(true);
+                        document.getElementById('btnPlacementProcessMonitoringAction').innerText = "Add New";
+                    },
+                    error: function (errormessage) {
+                        toastr.error("This Placement monitoring cannot saved!", "Server Response");
+
+                    }
+                });
+            }
+            else if (action === "Add New") {
+
+                document.getElementById('btnPlacementProcessMonitoringAction').innerText = "Save changes";
+                ControlPlacmentprocesssMonitor(false);
+            }
+            else if (action === "Update") {
+                console.log(" :::: " + $('#placementclientId').val());
+                var ResM = validatePlacementMonitoring();
+                if (ResM === false) {
+                    return false;
+                }
+
+                var monitoringobj = {
+                    Id: $('#PlacementMonitoringId').val(),
+                    MonitoringTime: 1,
+                    Enroll: "Get in API",
+                    Type: "Placement",
+                    ClientId: $('#placementclientId').val(),
+                    MonitoringDate: $('#placementnextmonitoringdate').val(),
+                    NextMonitoringDate: $('#placementnextmonitoringdate').val(),
+                    Monitoringtype: $('#placementmonitoringtype').val(),
+                    PlacementId: $('#placementclientId').val()
+                };
+
+                var Placementobj =
+                    {
+                        Id: $('#placementprocessMonitoringId').val(),
+                        Completed: $('#placementcompleted').val(),
+                        MonitoringId: monitoringobj.Id,
+                        PlacementStatus: $('input[name=placementMonitoringstatus]:checked').val(),
+                        Salary: $('#placementsalary').val(),
+                        Note: $('#placementprogressnotes').val()
+                    };
+                var PlacementMonitoringMulObj = {
+                    "pLacementProcessDto": Placementobj,
+                    "monitoringDto": monitoringobj
+                };
+
+                $.ajax({
+                    url: "/api/PlacementMonitoring/",
+                    data: JSON.stringify(PlacementMonitoringMulObj),
+                    type: "PUT",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        toastr.success("Placement monitoring has been updated.", "Server Response");
+                        tableplacementMonitoringAction.ajax.reload();
+                        //tableMonitoring.ajax.reload();
+                        ClearPlacmentMonitor();
+                        ControlPlacmentprocesssMonitor(true);
+                        document.getElementById('btnPlacementProcessMonitoringAction').innerText = "Add New";
+                    },
+                    error: function (errormessage) {
+                        toastr.error("This Placement monitoring cannot saved!", "Server Response");
+
+                    }
+                });
+            }
+        }
+
+        var tableplacementMonitoringAction = [];
+        function GetplacementMonitoringActionByPlacementIdNotification(PlacementId) {
+            tableplacementMonitoringAction = $('#PlacementMonitoringActionTable').DataTable({
+                ajax: {
+                    url: "/api/PlacementMonitoring?PlacementId=" + PlacementId,
+                    dataSrc: ""
+                },
+                "lengthMenu": [[3, 10, 25, 50, -1], [3, 10, 25, 50, "All"]],
+                columns: [
+                       {
+                           data: "monitoring",
+                           render: function (data) {
+                               var date = new Date(data.nextMonitoringDate);
+                               var month = date.getMonth() + 1;
+                               return (month.length > 1 ? month : month) + "-" + date.getDate() + "-" + date.getFullYear();
+                           },
+                           "width": "150px"
+                       },
+                      {
+                          data: "monitoring",
+                          render: function (data) {
+                              var month = "Month"
+                              if (data.monitoringtype > 1) {
+                                  month = "Months"
+                              }
+                              return data.monitoringtype + " " + month;
+                          }
+                      },
+                      {
+                          data: "completed"
+                      },
+                      {
+                          data: "placementStatus",
+                          "width": "120px"
+                      },
+                      {
+                          data: "salary"
+                      },
+                      {
+                          data: "note"
+                      },
+                     {
+                         data: { a: "id", b: "countedTime" },
+                         render: function (data) {
+                             return "<a href='#' onclick='placementMonitoringNotificationEdit(" + data.id + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a> <a href='#' onclick='placementMonitoringNoficationDelete(" + data.monitoringId + ")'><span class='glyphicon glyphicon-edit'></span>Delete</a>"
+                             ;
+                         },
+                         "width": "250px"
+                     }
+                ],
+
+                destroy: true,
+                "order": [[2, "desc"]]
+            });
+        }
+
+        function getAll(countskip)
+        {
+            $.ajax({
+                url: '/api/PlacementMonitoring?countskip=' + countskip,
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result.arrayobj[1] > 0) {
+                        $("b.NumberNotification").html
+                         (
+                            "<b class='NumberNotification'>" + result.arrayobj[1] + "</b>"
+                         );
+                        for (i = 0; i < result.arrayobj[0].length; i++) {
+                           var clientname = result.arrayobj[0][i].client.lastName + " " + result.arrayobj[0][i].client.firstName
+                            var nextMonitoringDate = new Date(result.arrayobj[0][i].monitorings.nextMonitoringDate);
+                            var dd = nextMonitoringDate.getDate();
+                            var mm = nextMonitoringDate.getMonth() + 1; //January is 0!
+                            var yyyy = nextMonitoringDate.getFullYear();
+                            if (dd < 10) {
+                                dd = '0' + dd;
+                            }
+                            if (mm < 10) {
+                                mm = '0' + mm;
+                            }
+                            monitoringDate = mm + '/' + dd + '/' + yyyy;
+
+                            var image = result.arrayobj[0][i].client.photo;
+                            if ((image == "")) {
+                                image = 'blank_profile.png';
+                                $(".drop-content").append(
+                                 "<li><div class='col-md-3 col-sm-3 col-xs-3'><div class='notify-img'> <img width='45' height='45' src='../Images/" + image + "' alt=''> </div></div>   <div class='col-md-9 col-sm-9 col-xs-9 pd-l0'><a href=''>Id :</a> " + result.arrayobj[0][i].client.clientCode + result.arrayobj[0][i].client.id + ". <a href='#' onclick='getClientPlacementNotification(" + result.arrayobj[0][i].monitorings.placementId + ',' + '"' + result.arrayobj[0][i].client.id + '"' + ',' + '"' + clientname + '"' + ")'>Fullname : " + result.arrayobj[0][i].client.lastName + " " + result.arrayobj[0][i].client.firstName + "</a> <a href='' class='rIcon'><i class='fa fa-dot-circle-o'></i></a><p> Next monitordate on :</p><p  class='time'>" + monitoringDate + "</p> </div></li>"
+                               );
+                            }
+                            else if ((image != null))
+                            {
+                                $(".drop-content").append(
+                                   "<li><div class='col-md-3 col-sm-3 col-xs-3'><div class='notify-img'> <img width='45' height='45' src='../Images/" + image + "' alt=''> </div></div>   <div class='col-md-9 col-sm-9 col-xs-9 pd-l0'><a href=''>Id :</a> " + result.arrayobj[0][i].client.clientCode + result.arrayobj[0][i].client.id + ". <a href='#' onclick='getClientPlacementNotification(" + result.arrayobj[0][i].monitorings.placementId + ',' + '"' + result.arrayobj[0][i].client.id + '"' + ',' + '"' + clientname + '"' + ")'>Fullname : " + result.arrayobj[0][i].client.lastName + " " + result.arrayobj[0][i].client.firstName + "</a> <a href='' class='rIcon'><i class='fa fa-dot-circle-o'></i></a><p> Next monitordate on :</p><p  class='time'>" + monitoringDate + "</p> </div></li>"
+                                );
+                            }
+                            else {
+                                image = 'blank_profile.png';
+                                $(".drop-content").append(
+                                 "<li><div class='col-md-3 col-sm-3 col-xs-3'><div class='notify-img'> <img width='45' height='45' src='../Images/" + image + "' alt=''> </div></div>   <div class='col-md-9 col-sm-9 col-xs-9 pd-l0'><a href=''>Id :</a> " + result.arrayobj[0][i].client.clientCode + result.arrayobj[0][i].client.id + ". <a href='#' onclick='getClientPlacementNotification(" + result.arrayobj[0][i].monitorings.placementId + ',' + '"' + result.arrayobj[0][i].client.id + '"' + ',' + '"' + clientname + '"' + ")' >Fullname : " + result.arrayobj[0][i].client.lastName + " " + result.arrayobj[0][i].client.firstName + "</a> <a href='' class='rIcon'><i class='fa fa-dot-circle-o'></i></a><p> Next monitordate on :</p><p class='time'>" + monitoringDate + "</p> </div></li>"
+                               );
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        var scrollHeight = "0";
+        var scrolldown = "0";
+        jQuery(function ($) {
+            $('.drop-content').on('scroll', function () {
+
+                var scrollHeight = document.getElementsByClassName("drop-content")[0].scrollHeight;
+                if (scrolldown < $(this).scrollTop()) {
+                    var a = parseInt($(this)[0].scrollHeight - 1);
+                    var b = parseInt($(this).scrollTop());
+                    var c = $(this).outerHeight();
+                    if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight || (a - b == c)) {
+                        //console.log("detect bottom");
+                        var value = parseInt(document.getElementById('countskipNumber').value, 10);
+                        value = isNaN(value) ? 0 : value;
+                        value = value + 5;
+                        document.getElementById('countskipNumber').value = value;
+
+                        getAll($('#countskipNumber').val());
+                        //console.log($('#countskipNumber').val());
+
+                    }
+                }
+                scrolldown = $(this).scrollTop();
+            });
+        });
+    </script>
+    
+</body>
+</html>
+
+

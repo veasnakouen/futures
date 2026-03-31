@@ -1,0 +1,69 @@
+﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="EducationHistoryModal" tabindex="-1" role="dialog" aria-labelledby="EducationHistoryModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header clearfix">
+                <h5 class="modal-title" id="exampleModalLabel">Education History</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <input id="educationHistoryId" name="educationHistoryId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="educationHistoryLevel">Education Level</label>
+                            <input id="educationHistoryLevel" name="educationHistoryLevel" placeholder="Enter education level" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="educationHistoryGrade">Grade</label>
+                            <input id="educationHistoryGrade" name="educationHistoryGrade" placeholder="Enter grade" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="educationHistorySubject">Subject</label>
+                            <input id="educationHistorySubject" name="educationHistorySubject" placeholder="Enter subject" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="educationHistoryGraduatedYear">Graduated Year</label>
+                            <input id="educationHistoryGraduatedYear" name="educationHistoryGraduatedYear" placeholder="Enter graduated year" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="educationHistorySchoolName">School Name</label>
+                            <input id="educationHistorySchoolName" name="educationHistorySchoolName" placeholder="Enter school name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="educationHistoryDescription">Description</label>
+                            <input id="educationHistoryDescription" name="educationHistoryDescription" placeholder="Enter Description" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" onclick="EducationHistoryAction();" id="btnEducationHistoryAction" class="btn btn-primary btn-sm">Add New</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>

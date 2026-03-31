@@ -1,0 +1,375 @@
+﻿@model MtpApp.ViewModels.ClientViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid clientForm">
+    <div class="panel panel-primary" style="margin-top: 10px;">
+        <div class="panel-heading clearfix">
+
+            <button onclick="clearForm();" data-toggle="modal" data-target="#clientModal" class="btn btn-success btn-xs pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add Client</button>
+            
+            <h5 class="modal-title">Manage Clients</h5>
+        </div>
+        <div class="panel-body">
+            <div id="overflowTable" style="overflow-x: auto;">
+                <table id="clients" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 35px">ID</th>
+                            <th>Client code</th>
+                            <th>Client's name</th>
+                            <th>Gender</th>
+                            <th>Age</th>
+                            <th>Contact Phone</th>
+                            <th>Province</th>
+                            <th>Assessed Duration</th>
+                            <th style="width: 160px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@Html.Partial("_ClientModal")
+@Html.Partial("_ReferralEducation")
+@Html.Partial("_ReferralSource")
+@Html.Partial("_JobExperienceModal")
+@Html.Partial("_EducationHistoryModal")
+@Html.Partial("_LanguageModal")
+@Html.Partial("_ComputerSkillModal")
+@Html.Partial("_CaseWorkerModal")
+@Html.Partial("_CaseModal")
+@Html.Partial("_PlacementModal")
+@Html.Partial("_SubjectModal")
+@Html.Partial("_FuturesTrainingModal")
+@Html.Partial("_SocialSupportModel")
+@Html.Partial("_BusinessSetUpCategory")
+@Html.Partial("_BusinessSetUp")
+@Html.Partial("_MonitoringModal")
+@Html.Partial("_LessionModal")
+@Html.Partial("_MonitoiringChoicesModal")   
+@Html.Partial("_FutureTrainingMonitoringModal")
+@Html.Partial("_FutureTrainingMonitoringActionModal")
+@Html.Partial("_PlacementMonitoringModal")
+@*@Html.Partial("_placementMonitoringActionModal")*@
+@Html.Partial("_SocialSupportCaseModel")
+@Html.Partial("_businessSetupMonitoringModal")
+@Html.Partial("_BusinessSetupMonitoringActionModal")
+@Html.Partial("_CvReferenceModal")
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/Functions/client.js")
+    @Scripts.Render("~/Scripts/Functions/furthereducation.js")
+    @Scripts.Render("~/Scripts/Functions/beneficiary.js")
+    @Scripts.Render("~/Scripts/Functions/referralsource.js")
+    @Scripts.Render("~/Scripts/Functions/referraleducation.js")
+    @Scripts.Render("~/Scripts/Functions/jobexpectation.js")
+    @Scripts.Render("~/Scripts/Functions/jobexperience.js")
+    @Scripts.Render("~/Scripts/Functions/educationhistory.js")
+    @Scripts.Render("~/Scripts/Functions/language.js")
+    @Scripts.Render("~/Scripts/Functions/computerskill.js")
+    @Scripts.Render("~/Scripts/Functions/personality.js")
+    @Scripts.Render("~/Scripts/Functions/caseworker.js")
+    @Scripts.Render("~/Scripts/Functions/case.js")
+    @Scripts.Render("~/Scripts/Functions/placement.js")
+    @Scripts.Render("~/Scripts/Functions/subject.js")
+    @Scripts.Render("~/Scripts/Functions/futurestraining.js")
+    @Scripts.Render("~/Scripts/Functions/socialsupport.js")
+    @Scripts.Render("~/Scripts/Functions/socialcare.js")
+    @Scripts.Render("~/Scripts/Functions/businesssetupcategory.js")
+    @Scripts.Render("~/Scripts/Functions/businesssetup.js")
+    @Scripts.Render("~/Scripts/Functions/monitoring.js")
+    @Scripts.Render("~/Scripts/Functions/lession.js")    
+    @Scripts.Render("~/Scripts/Functions/futuretrainingmonitoring.js")  
+    @Scripts.Render("~/Scripts/Functions/placementmonitoring.js")
+    @Scripts.Render("~/Scripts/Functions/socialsupportCase.js")
+    @Scripts.Render("~/Scripts/Functions/businessSetupmonitoring.js")
+    @Scripts.Render("~/Scripts/Functions/cvReference.js")
+ 
+    <script>
+        $(document).ready(function () {
+
+            GetClients();
+
+            TabChanged();
+
+            HideTab();
+
+            ageCalculation();
+
+            $('#clientModal').on('show.bs.modal', function () {
+
+                activateTab('education');
+                if ($('#id').val().trim() == "") {
+
+                    $('#EducationHistoryTable').dataTable().fnClearTable();
+                    $('#languageTable').dataTable().fnClearTable();
+                    $('#computerSkillTable').dataTable().fnClearTable();
+
+                    $('#strength').val('');
+                    $('#weakness').val('');
+                    //toastr.error("You must create client first.", "Server Response");
+                }
+                else {
+                    getEducationHistories();
+                    getLanguages();
+                    getComputerSkill();
+                    GetPersonalitiesByClientId($('#id').val());
+                }
+            });
+
+            $('#subjectModal').on('show.bs.modal', function () {
+                GetSubjects();
+                document.getElementById('subjectName').disabled = true;
+                document.getElementById('btnSubjectAction').innerText = "Add New";
+                $('#subjectName').val('');
+            });
+
+            $('#lessonModal').on('show.bs.modal', function () {
+                GetLessions();
+                document.getElementById('SubjectLesson').disabled = true;
+                document.getElementById('lessionSub').disabled = true;
+                document.getElementById('btnLessionAction').innerText = "Add New";
+                $('#lession').val('');
+                document.getElementById("SubjectLesson").selectedIndex = "0";
+            });
+
+          
+
+            $(".nav-pills a").click(function () {
+                var menu = $(this).context.innerHTML.trim();
+                if (menu == "Dependents") {
+                    if ($('#id').val().trim() == "") {
+                        tableBeneficiary.clear().draw();
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        GetBeneficiariesByClientId($('#id').val());
+                    }
+                }
+                else if (menu == "Further Education") {
+                    if ($('#id').val().trim() == "") {
+                        tableReferralEducation.clear().draw();
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        GetFurtherEducationByClientId($('#id').val());
+                        GetReferralSources();
+                        GetReferralEducation();
+                    }
+                }
+                else if (menu == "Education") {
+                    if ($('#id').val().trim() == "") {
+                        $('#strength').val('');
+                        $('#weakness').val('');
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        getEducationHistories();
+                        getLanguages();
+                        getComputerSkill();
+                        GetPersonalitiesByClientId($('#id').val());
+                    }
+                }
+                else if (menu == "Job Specification") {
+                    if ($('#id').val().trim() == "") {
+                        $('#jobExpectationId').val('');
+                        $('#jobExpectationAvailableTime').val('');
+                        $('#salaryExpectation').val('');
+                        $('#jobExpectationNote').val('');
+                        $('#jobPositionId1').val('');
+                        $('#jobPositionId2').val('');
+                        $('#jobPositionId3').val('');
+                        $('#jobCategoryId1').val('');
+                        $('#jobCategoryId2').val('');
+                        $('#jobCategoryId3').val('');
+                        $('#employmenttype').val('');
+                        $('#jobExpectationCandidate').val('');
+                        $('#jobExpectationHobby').val('');
+                        $('#permanent').prop('checked', false);
+                        $('#temporary').prop('checked', false);
+                        $('#seasonal').prop('checked', false);
+                        tableJobExperience.clear().draw();
+                        tablecvReference.clear().draw();
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        GetJobExpectationByClientId($('#id').val());
+                        getJobExperiences();
+                        getcvReference();
+                    }
+                }
+                else if (menu == "Placement") {
+                    if ($('#id').val().trim() == "") {
+                        tableBusinessSetUps.clear().draw();
+                        tablePlacements.clear().draw();
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        GetBusinessSetUpByClientId($('#id').val());
+                        GetPlacementByClientId($('#id').val());    
+                    }
+                }
+                else if (menu == "Futures Training") {
+                    if ($('#id').val().trim() == "") {
+                        tableFuturesTraining.clear().draw();
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        GetFuturesTrainingsByClientId($('#id').val());
+                    }
+                }
+                else if (menu == "Social Support") {
+                    if ($('#id').val().trim() == "") {
+                        tableSocialSupportCase.clear().draw();
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        GetSocialSupportsByClientId($('#id').val());
+                    }
+                }
+                else if (menu == "Monitoring") {
+                    if ($('#id').val().trim() == "") {
+                        //tableMonitoring.clear().draw();
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        GetMonitoringByClientId($('#id').val());
+                    }
+                }
+            });
+
+            // After close bootbox, it doesn't hide scroll bar
+            $(document).on('hidden.bs.modal', function () {
+                $('body').addClass('modal-open');
+            });
+
+            $('#clients').on('length.dt', function (e, settings, len) {
+                $("body").removeClass('modal-open');
+            });
+
+            $('#referralSource').on('show.bs.modal', function () {
+                $('#referralSourceName').css('border-color', '#cccccc');
+                $('#origin').css('border-color', '#cccccc');
+                document.getElementById('referralSourceName').disabled = true;
+                document.getElementById('origin').disabled = true;
+                document.getElementById('btnReferralAction').innerText = "Add New";
+                $('#referralSourceName').val('');
+            });
+
+            $('#caseWorkerModal').on('show.bs.modal', function () {
+                $('#caseWorkerName').css('border-color', '#cccccc');
+                $('#caseWorkerStatus').css('border-color', '#cccccc');
+                $('#Program').css('border-color', '#cccccc');
+                GetCaseWorkers();
+                document.getElementById('caseWorkerName').disabled = true;
+                document.getElementById('Program').disabled = true;
+                document.getElementById('caseWorkerStatus').disabled = true;
+                document.getElementById('btnCaseWorkerAction').innerText = "Add New";
+                $('#caseWorkerName').val('');
+            });
+
+            $('#jobExperienceModal').on('show.bs.modal', function () {
+                resetFormJobExperience();
+                disableForm();
+                document.getElementById('btnJobExperienceAction').innerText = "Add New";
+            });
+
+
+            $('#cvReferenceModal').on('show.bs.modal', function () {
+                resetFormReferecnce();
+                disableFormReferecnce();
+                document.getElementById('btncvReferenceAction').innerText = "Add New";
+            });
+
+            $('#EducationHistoryModal').on('show.bs.modal', function () {
+                resetFormEducationHistory();
+                disableFormEducationHistory();
+                document.getElementById('btnEducationHistoryAction').innerText = "Add New";
+            });
+
+            $('#LanguageModal').on('show.bs.modal', function () {
+                resetFormLanguage();
+                disableFormLanguage();
+                document.getElementById('btnLanguageAction').innerText = "Add New";
+            });
+
+            $('#ComputerSkillModal').on('show.bs.modal', function () {
+                resetFormComputerSkill();
+                disableFormComputerSkill();
+                document.getElementById('btnComputerSkillAction').innerText = "Add New";
+            });
+        });
+
+
+
+
+        //function ClientCloseForm() {
+        //    $('body').addClass('modal-open');
+
+        //    alert("HI");
+        //}
+
+
+        function activateTab(tab) {
+            $('.nav-pills a[href="#' + tab + '"]').tab('show');
+        };
+
+        function ageCalculation() {
+            $('#dateOfBirth').change(function () {
+                $('#age').val('');
+                var currentDate = new Date();
+                var year = new Date($('#dateOfBirth').val());
+                var age = currentDate.getFullYear() - year.getFullYear();
+                var value = Number(age) + ' years old';
+                $('#age').val(value);
+            });
+        }
+
+        function TabChanged() {
+            $(".nav-pills a").click(function () {
+                $(this).tab('show');
+            });
+        }
+
+        function HideTab() {
+            $('#furtherEducation').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#furtherEducationTab').show();
+                } else {
+                    $('#furtherEducationTab').hide();
+                };
+            });
+
+            $('#placement').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#placementTab').show();
+                    //$('#educationTab').show();
+                    $('#jobSpecificationTab').show();
+                    $('#beneficiaryTab').show();
+                } else {
+                    $('#placementTab').hide();
+                    //$('#educationTab').hide();
+                    $('#jobSpecificationTab').hide();
+                    $('#beneficiaryTab').hide();
+                };
+            });
+
+            $('#futuresTraining').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#futuresTrainingTab').show();
+                } else {
+                    $('#futuresTrainingTab').hide();
+                };
+            });
+
+            $('#socialSupport').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#socialSupportTab').show();
+                } else {
+                    $('#socialSupportTab').hide();
+                };
+            });
+        }
+    </script>
+}

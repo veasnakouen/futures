@@ -1,0 +1,268 @@
+﻿
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="placementModal" tabindex="-1" role="dialog" aria-labelledby="placementModal" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Job Placement</h5>
+            </div>
+
+            <div class="modal-body">
+
+                <h5><u>Placement Information</u></h5>
+
+                <div class="row">
+
+                    <input id="placementId" name="placementId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="caseIds">Count Time</label>
+                            <select class="form-control input-sm" id="caseIds" name="caseIds" style="min-width: 100%">
+                                <option value="1st">1st</option>
+                                <option value="2nd">2nd</option>
+                                <option value="3rd">3rd</option>
+                                <option value="4th">4th</option>
+                                <option value="5th">5th</option>
+                                <option value="6th">6th</option>
+                                <option value="7th">7th</option>
+                                <option value="8th">8th</option>
+                                <option value="9th">9th</option>
+                                <option value="10th">10th</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="placementDate">Placement Date</label>
+                            <input id="placementDate" name="placementDate" placeholder="Enter placement date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="placementType">Placement Type</label>
+                            <select class="form-control input-sm" id="placementType">
+                                <option>Fixed Term</option>
+                                <option>Unspecific Term</option>
+                                <option>Internship</option>
+                                <option>Apprenticeship</option>
+                                <option>Volunteer</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="positionId">Position</label>
+                            <select class="form-control input-sm" id="positionId" name="positionId" style="min-width: 100%">
+                                @foreach (var position in Model.JobPositions)
+                                {
+                                    <option value=@position.Id>@position.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="placementBy">Placed By</label>
+                            <select class="form-control input-sm" id="placementBy">
+                                <option>Futures</option>
+                                <option>Her/Him self</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <h5><u>Company Information</u></h5>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="companyName">Company Name</label>
+                            <input id="companyName" name="companyName" placeholder="Enter Company Name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="companyContactName">Contact Person</label>
+                            <input id="companyContactName" name="companyContactName" placeholder="Enter contact person" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="companyContactPhone">Contact Phone</label>
+                            <input id="companyContactPhone" name="companyContactPhone" placeholder="Enter contact phone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="companyEmail">Email</label>
+                            <input id="companyEmail" name="companyEmail" placeholder="Enter email" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="companyAddress">Address</label>
+                            <textarea class="form-control input-sm" id="companyAddress" placeholder="Enter address" rows="4" style="min-width: 100%; max-width: 100%"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <h5><u>Benefits</u></h5>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="placementSalary">Salary</label>
+                            <input id="placementSalary" name="placementSalary" placeholder="Enter salary" type="number" value="0" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="placementTip">Tips</label>
+                            <input id="placementTip" name="placementTip" placeholder="Enter tips" type="number" value="0" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="totalIncome">Total Income</label>
+                            <input id="totalIncome" name="totalIncome" disabled placeholder="Enter total income" type="number" value="0" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="workingTime">Working Time</label>
+                            <input id="workingTime" name="workingTime" placeholder="Enter working time" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="numberOfDayOff">#Days Off</label>
+                            <input id="numberOfDayOff" name="numberOfDayOff" placeholder="Enter number of day off" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="numberOfAnnualLeave">#Annual Leave</label>
+                            <input id="numberOfAnnualLeave" name="numberOfAnnualLeave" placeholder="Enter number of annual leave" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <h5><u>Other Benefits</u></h5>
+
+                <div class="row">
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementHealth" type="checkbox" value="">Health</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementMeal" type="checkbox" value="">Meal(s)</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementTransport" type="checkbox" value="">Transport</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementBonus" type="checkbox" value="">Bonus</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementPublicHoliday" type="checkbox" value="">Public Holiday</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementAccidentInsurance" type="checkbox" value="">Accident Insurance</label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementAccomodation" type="checkbox" value="">Accomodation</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementOvertime" type="checkbox" value="">Overtime</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementThirteenSalary" type="checkbox" value="">13th Salary</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="checkbox">
+                            <label><input id="placementAnnualLeave" type="checkbox" value="">Annual Leave</label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" onclick="PlacementAction();" id="btnPlacementsAction" class="btn btn-primary btn-sm">Add New</button>
+            </div>
+        </div>
+
+    </div>
+
+</div> <!-- modal -->

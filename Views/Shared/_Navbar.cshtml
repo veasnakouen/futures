@@ -1,0 +1,134 @@
+﻿<div class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            @Html.ActionLink("M'Lop Tapang", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                @if (Request.IsAuthenticated)
+                {
+                    if (User.IsInRole("HR System"))
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                HR System
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                @if (User.IsInRole("Manage Employee"))
+                                {
+                                    <li>@Html.ActionLink("Manage Employee", "Index", "Employees")</li>
+                                }
+                                <li>@Html.ActionLink("Manage Position", "Index", "Positions")</li>
+                                <li>@Html.ActionLink("Manage Department", "Index", "Departments")</li>
+                            </ul>
+                        </li>
+                    }
+                    if (User.IsInRole("Stock System"))
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Stock System
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Manage Category", "Index", "Categories")</li>
+                            </ul>
+                        </li>
+                    }
+                    if (User.IsInRole("Ticket System"))
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Ticket System
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Manage Ticket Type", "Index", "TicketTypes")</li>
+                                <li>@Html.ActionLink("Manage Agent", "Index", "Agents")</li>
+                            </ul>
+                        </li>
+                    }
+                    if (User.IsInRole("Futures System"))
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Futures System
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Chart Overview", "index", "Dashboard")</li>
+                                <li>@Html.ActionLink("Manage Client", "Index", "Clients")</li>
+                                <li>@Html.ActionLink("Vacancies Overview", "overview", "employers")</li>
+                                <li>@Html.ActionLink("Manage Employers", "Index", "employers")</li>
+                                <li>@Html.ActionLink("Manage Vacancies", "Index", "vacancies")</li>
+                                <hr />
+                                <li> @Html.ActionLink("1. Clients Summary Report", "client-summary-report/clientCodeSearch=all/startdate=null/enddate=null", "clients")</li>
+                                <li> @Html.ActionLink("2. Employment Seeker List Report", "employee-seekerlist-report/postion=all/startdate=null/enddate=null", "clients")</li>
+                                <li> @Html.ActionLink("3. Placement Summary Report", "placement-summary-report/gender=all/startdate=null/enddate=null", "clients")</li>
+                                <li> @Html.ActionLink("4. Clients Remaining in Placement Report", "clients-remaining-in-placement-report/gender=all/startdate=null/enddate=null", "clients")</li>
+                                <li> @Html.ActionLink("5. Business Setup Report", "business-setup-report/gender=all/startdate=null/enddate=null", "clients")</li>
+                                <li> @Html.ActionLink("6. Business Setup Monitoring Report", "businesssetupmonitoiring-Report/gender=all/startdate=null/enddate=null", "clients")</li>
+                                
+                                <li> @Html.ActionLink("7. Dependents Report", "beneficiaries-report/gender={gender}/startdate={startdate}/enddate={enddate}", "clients")</li>
+                                <li> @Html.ActionLink("8. Placement Monitoring and Dropout Report", "placement-monitoring-and-dropout-report/placement={placement}/startdate={startdate}/enddate={enddate}", "clients")</li>
+                               
+                                <li> @Html.ActionLink("9. Job Readiness Report", "job-readiness-report/ontraining=all/startdate=null/enddate=null", "clients")</li>
+                               
+                                <li> @Html.ActionLink("10. Employer Report", "employers-report/status={status}/startdate={startdate}/enddate={enddate}", "clients")</li>
+                                <li> @Html.ActionLink("11. Job Vancancy Available Report", "job-vancancy-available-report/status={status}/startdate={startdate}/enddate={enddate}", "clients")</li>
+                                
+                                <li> @Html.ActionLink("12. Further Euducation seeker List Report", "further-euducation-seekerList-report/status={status}/startdate={startdate}/enddate={enddate}", "clients")</li>
+                                <li> @Html.ActionLink("13. Client referral from MT program report", "client-Referral-From-MT-Program-report/startdate=null/enddate=null", "clients")</li>
+                                <li> @Html.ActionLink("14. Case Manager Report", "CaseManager-report/Report={Report}/startdate={startdate}/enddate={enddate}", "clients")</li>
+                                <li> @Html.ActionLink("15. VTC student Report", "vtc-student-report/startdate={startdate}/enddate={enddate}", "clients")</li>
+                                <li> @Html.ActionLink("16. Log Books", "logbooks-report/startdate={startdate}/enddate={enddate}", "clients")</li>
+                                <li> @Html.ActionLink("17. Client lookfor bussinesss setup report", "Client-Lookfor-bussinesss-Setup-Report/FindbusinessSetup=0/startdate={startdate}/enddate={enddate}", "clients")</li>
+
+                            </ul>
+                        </li>
+                    }
+
+                    if (User.IsInRole("Medical System"))
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Medical System
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            </ul>
+                        </li>
+                    }
+
+                    if (User.IsInRole("Security"))
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Security
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Change Password", "Manage", "Account")</li>
+                                <li>@Html.ActionLink("Manage User", "Index", "Users")</li>
+                            </ul>
+                        </li>
+                    }
+
+                }
+            </ul>
+
+
+
+            @Html.Partial("_LoginPartial")
+
+        </div>
+    </div>
+</div>
+

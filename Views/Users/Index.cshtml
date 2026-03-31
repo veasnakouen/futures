@@ -1,0 +1,46 @@
+﻿@model IEnumerable<MtpApp.Models.ApplicationUser>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="panel panel-primary" style="margin-top: 10px;">
+        <div class="panel panel-heading clearfix">
+            @Html.ActionLink("Add Users", "Register", "Account", null, new { @class = "btn btn-success btn-xs pull-right" })
+            <h5 class="modal-title">
+                Manage Users
+            </h5>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>Fullname</th>
+                        <th>Email</th>
+                        <th>Branch</th>
+                        <th>Phone Number</th>
+                        <th style="width: 220px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.FirstName @user.LastName</td>
+                            <td>@user.Email</td>
+                            <td>@user.Branch</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>
+                                @Html.ActionLink("Permission", "GetUser/" + user.Id, "Users") |
+                                @Html.ActionLink("Edit", "EditUser/" + user.Id, "Account") |
+                                @Html.ActionLink("Delete", "DeleteUser/" + user.Id, "Account", null, new { onclick = "return confirm('Are you sure you wish to delete this user?');" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>

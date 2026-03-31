@@ -1,0 +1,54 @@
+﻿
+
+
+
+
+
+
+<div class="main-cover-photo">
+    <div class="main-cover-photo1">
+       
+        <div class="text-box">
+            <div class="row">
+                <h1 class="heading-primary">
+                    <span class="heading-primary-main">M'Lop Tapang</span>
+                    <span class="heading-primary-sub">We are a big family</span>
+                </h1>
+                @if (Request.IsAuthenticated)
+                {
+                    if (User.IsInRole("HR System"))
+                    {
+                        @Html.ActionLink("H.R System", "Index", "Employees", null, new { @class = "btns btns-white btns-animated" })
+                    }
+                    if (User.IsInRole("Stock System"))
+                    {
+                        @Html.ActionLink("Stock System", "Index", "Home", null, new { @class = "btns btns-white btns-animated" })
+                    }
+                    if (User.IsInRole("Futures System"))
+                    {
+                        @Html.ActionLink("Manage Clients", "Index", "Clients", null, new { @class = "btns btns-white btns-animated" })
+                        @Html.ActionLink("Vacancies Overview", "Dashboard", "Employers", null, new { @class = "btns btns-white btns-animated" })
+                        @Html.ActionLink("Log book", "Index", "Logbooks", null, new { @class = "btns btns-white btns-animated" })
+                    }
+                    if (User.IsInRole("Medical System"))
+                    {
+                        @Html.ActionLink("Medical System", "Index", "Home", null, new { @class = "btns btns-white btns-animated" })
+                    }
+                    if (User.IsInRole("Ticket System"))
+                    {
+                        @Html.ActionLink("Ticket System", "Index", "Home", null, new { @class = "btns btns-white btns-animated" })
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_NotificationModal")
+
+
+
+
+
+
+

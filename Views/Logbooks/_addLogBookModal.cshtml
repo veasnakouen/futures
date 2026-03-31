@@ -1,0 +1,89 @@
+﻿
+
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="LookbookModal" tabindex="-1" role="dialog" aria-labelledby="LookbookModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Add Log Book</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input id="LogbookId" name="LogbookId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select class="form-control input-sm" id="gender">
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="LogbookPhone">Phone</label>
+                            <input id="LogbookPhone" name="LogbookPhone" placeholder="Enter phone number" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="LogbookNote">Note</label>
+                                <input id="LogbookNote" name="LogbookNote" placeholder="Enter logbook" class="form-control input-sm " style="min-width: 100%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="checkbox">
+                            <label><input class="form-group-lg" id="JobInformationLog" type="checkbox" value="">Information</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="checkbox">
+                            <label><input class="form-group-lg" id="LibraryLog" type="checkbox" value="">Library</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="checkbox">
+                            <label><input class="form-group-lg" id="ComputerLog" type="checkbox" value="">Computer</label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="checkbox">
+                            <label><input class="form-group-lg" id="FutureServicesLog" type="checkbox" value="">Copy/Print</label>
+                        </div>
+                    </div>
+                   
+                    <input class="form-group-lg" id="InterviewTechic" type="checkbox" value="false" style="display: none;" disabled="disabled">
+
+                    <div class="col-md-4">
+                        <div class="checkbox">
+                            <label><input class="form-group-lg" id="ShortTraining" type="checkbox" value="">Training For interveiwer</label>
+                        </div>
+                    </div>
+                </div>
+       
+            </div>
+
+            <div class="modal-footer" style="overflow:auto;">
+                <div style="float:right;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="LogBookAction();" id="btnLogBookAction" class="btn btn-primary btn-sm">Add New</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> <!-- modal -->

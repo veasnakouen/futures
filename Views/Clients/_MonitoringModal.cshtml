@@ -1,0 +1,232 @@
+﻿
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="monitoiringModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Add Monitoring</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!--Monitoring-->
+                    <input id="monitoringId" name="monitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <input id="enrollby" name="enrollby" type="text" style="display: none;" disabled="disabled" value="Admin Manager" class="form-control" />
+                    <div class="col-md-6">
+                        <label for="type">Type</label>
+                        <select class="form-control input-sm" id="type" name="type" style="min-width: 100%">
+                            <option value="Placement">Placement</option>
+                            <option value="Businesssetup">Business setup</option>
+                            <option value="Furthereducation">Further Education</option>
+                            <option value="Futuretraining">Future Training</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="monitoringTime">Counted Time</label>
+                        <select class="form-control input-sm" id="monitoringTime" name="monitoringTime" style="min-width: 100%">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="monitoringDate">Monitoiring date</label>
+                        <input id="monitoringDate" name="monitoringDate" placeholder="Enter monitoring date" class="form-control input-sm js-date " style="min-width: 100%">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nextmonitoringdate">Next monitoring Date</label>
+                        <input id="nextmonitoringdate" name="nextmonitoringdate" placeholder="Enter next monitoring date" class="form-control input-sm js-date " style="min-width: 100%">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="monitoringtype">Monitoring type</label>
+                        <select class="form-control input-sm" id="monitoringtype" name="monitoringtype" style="min-width: 100%">
+                            <option value="">Select monitor type</option>
+                            <option value="1">1st : 1 month</option>
+                            <option value="2">2nd : 2 months</option>
+                            <option value="3">3rd : 3 months</option>
+                            <option value="4">4th : 4 months</option>
+                            <option value="5">5th : 5 months</option>
+                            <option value="6">6th : 6 months</option>
+                            <option value="8">8th : 8 months</option>
+                            <option value="10">10th : 10 months</option>
+                            <option value="12">Final</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!--Placementcontrol-->
+                <div class="Placementcontrol">
+                    <input id="placementprocessId" name="placementprocessId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <hr />
+                    <label for="stillinPlacement">Still in Placement</label>
+                    <div class="row">
+                        <!-- Still in business  -->
+                        <div class="col-md-12">
+                            <label class="radio-inline col-md-2">
+                                <input type="radio" name="placementstatus" id="stillinPlacementYes" value="Yes" checked>Yes
+                            </label>
+                            <label class="radio-inline col-md-2">
+                                <input type="radio" name="placementstatus" id="stillinPlacementNo" value="No">No
+                            </label>
+                            <label class="radio-inline col-md-4">
+                                <input type="radio" name="placementstatus" id="stillinPlacementChangeJob" value="ChangedJob">Changed Job
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input id="placementpmonitoringId" name="placementpmonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                        <div class="col-md-6">
+                            <label for="completed">Completed</label>
+                            <select class="form-control input-sm" id="completed" name="completed" style="min-width: 100%">
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        @*<div class="col-md-6">
+                                <label for="placementstatus">Placement status</label>
+                                <input id="placementstatus" name="placementstatus" placeholder="Enter placement status" class="form-control input-sm " style="min-width: 100%">
+                            </div>*@
+                        <div class="col-md-6">
+                            <label for="salary">Salary</label>
+                            <input id="salary" name="salary" placeholder="Enter salary" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="placementprogressnote">Placement progress note</label>
+                            <input id="placementprogressnote" name="placementprogressnote" placeholder="Enter placement progress note" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+                    </div>
+                </div>
+
+                <!--businesssetupcontrol-->
+                <div class="businesssetupcontrol">
+                    <input id="businesssetupId" name="businesssetupId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <hr />
+                    <label for="stillinbusiness">Still in business</label>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="radio-inline col-md-2">
+                                <input type="radio" name="stillinbusiness" id="stillinbusinessYes" value="Yes" checked>Yes
+                            </label>
+                            <label class="radio-inline col-md-2">
+                                <input type="radio" name="stillinbusiness" id="stillinbusinessNo" value="No">No
+                            </label>
+                            <label class="radio-inline col-md-4">
+                                <input type="radio" name="stillinbusiness" id="stillinbusinessChange" value="ChangedBusiness">Changed Business
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <input id="businessmonitoringId" name="businessmonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                        <div class="col-md-6">
+                            <label for="completed">Completed</label>
+                            <select class="form-control input-sm" id="completedB" name="completedB" style="min-width: 100%">
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="incomeB">Income</label>
+                            <input id="incomeB" name="incomeB" placeholder="Enter income" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="expenseB">Expense</label>
+                            <input id="expenseB" name="expenseB" placeholder="Enter expense" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="note">Note</label>
+                            <input id="note" name="note" placeholder="Enter note" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+                    </div>
+                </div>
+
+                <!--furthereducationcontrol-->
+                <div class="furthereducationcontrol">
+                    <input id="furthereducationId" name="furthereducationId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <input id="furtherEducationmonitoringId" name="furtherEducationmonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="ontraining">On training</label>
+                            <select class="form-control input-sm" id="ontraining" name="ontraining" style="min-width: 100%">
+                                <option value="StillIntraining">Still In training</option>
+                                <option value="dropout">Drop out</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="graduatedateFuther">Graduate date</label>
+                            <input id="graduatedateFuther" name="graduatedateFuther" placeholder="Enter graduate date" class="form-control input-sm js-date  " style="min-width: 100%">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="dropoutdateFuther">Drop out date</label>
+                            <input id="dropoutdateFuther" name="dropoutdateFuther" placeholder="Enter drop out date" class="form-control input-sm js-date   " style="min-width: 100%">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="reasondateFuther">Reason</label>
+                            <input id="reasondateFuther" name="reasondateFuther" placeholder="Enter reason" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+                    </div>
+                </div>
+
+                <!--FuturetrainingControl-->
+                <div class="futuretrainingcontrol">
+                    <input id="futuretrainingprocessId" name="futuretrainingprocessId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="futuretrainingLessonId">Lesson</label>
+                            <select class="form-control input-sm" id="futuretrainingLessonId" name="futuretrainingLessonId" style="min-width: 100%">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="futuretrainingType">On training</label>
+                            <select class="form-control input-sm" id="futuretrainingType" name="futuretrainingType" style="min-width: 100%">
+                                <option value="Pending">Pending</option>
+                                <option value="Ongoing">Ongoing</option>
+                                <option value="dropout">Drop out</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="futuretraininggraduatedate">Graduate date</label>
+                            <input id="futuretraininggraduatedate" name="futuretraininggraduatedate" placeholder="Enter graduate date" class="form-control input-sm js-date  " style="min-width: 100%">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="futuretrainingdropoutdate">Drop out date</label>
+                            <input id="futuretrainingdropoutdate" name="futuretrainingdropoutdate" placeholder="Enter drop out date" class="form-control input-sm js-date   " style="min-width: 100%">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="futuretrainingreason">Reason</label>
+                            <input id="futuretrainingreason" name="futuretrainingreason" placeholder="Enter reason" class="form-control input-sm " style="min-width: 100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="overflow:auto;">
+                <div style="float:right;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="MonitoringAction();" id="btnMonitoringAction" class="btn btn-primary btn-sm">Add New</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> <!-- modal -->

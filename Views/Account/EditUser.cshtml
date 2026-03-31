@@ -1,0 +1,73 @@
+﻿@model MtpApp.Models.RegisterViewModel
+@{
+    ViewBag.Title = "EditUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-primary" style="margin-top: 10px;">
+                <div class="panel-heading">
+                    @Html.ActionLink("Back", "Index", "Users", null, new { @class = "btn btn-success btn-xs pull-right" })
+                    <h5 class="modal-title">Edit User</h5>
+                </div>
+                <div class="panel-body">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control input-sm", @placeholder = "Enter First Name" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control input-sm", @placeholder = "Enter Last Name" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control input-sm", @placeholder = "Enter Phone Number" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.DropDownListFor(m => m.Branch, new List<SelectListItem>
+                        {
+                            new SelectListItem{ Text="M'Lop Tapang" },
+                            new SelectListItem{ Text="Futures Sihanouk Ville" },
+                            new SelectListItem{ Text="Futures Phnom Penh" },
+                        }, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control input-sm", @placeholder = "Enter Email" })
+                        </div>
+                    </div>
+
+                    @Html.HiddenFor(m => m.Password, new { Value = "M'Lop@!@##$$&@*#@#23782" })
+                    @Html.HiddenFor(m => m.ConfirmPassword, new { Value = "M'Lop@!@##$$&@*#@#23782" })
+                    @Html.HiddenFor(m => m.Id)
+
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @if (Model.Id == null)
+                            {
+                                <input type="submit" class="btn btn-primary pull-right btn-sm" value="Register" />
+                            }
+                            else
+                            {
+                                <input type="submit" class="btn btn-primary pull-right btn-sm" value="Update" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

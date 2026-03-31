@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="panel panel-primary" style="margin-top: 10px;">
+        <div class="panel-heading clearfix">
+            <button  data-toggle="modal" data-target="#LookbookModal" class="btn btn-success btn-xs pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add Log Book</button>
+
+            <h5 class="modal-title">Manage Log Books</h5>
+        </div>
+        <div class="panel-body">
+            <div id="overflowTable" style="overflow-x: auto;">
+                <table id="LogbookTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 35px">ID</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Note</th>
+                            <th>Information</th>
+                            <th>Library</th>
+                            <th>Using computer</th>
+                            <th>Copy/Print</th>
+                            <th>Training for interview</th>
+                            <th>Access by</th>
+                            <th>Access date</th>
+                            <th style="width: 90px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Html.Partial("_addLogBookModal")
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/Functions/logbook.js")
+}
+
+
+
+
+
+
+
+

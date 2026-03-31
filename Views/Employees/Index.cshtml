@@ -1,0 +1,870 @@
+﻿@model MtpApp.ViewModels.EmployeeViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="panel panel-primary" style="margin-top: 10px;">
+    <div class="panel-heading clearfix">
+        <button onclick="clearForm();" data-toggle="modal" data-target="#employeeModal" class="btn btn-success btn-xs pull-right" style="color:white;"><span class="glyphicon glyphicon-plus-sign"></span> Add Employee</button>
+        <h5 class="modal-title">Manage Employee</h5>
+    </div>
+    <div class="panel-body">
+        <table id="employees" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Fullname (English)</th>
+                    <th>Gender</th>
+                    <th>Date of birth</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th style="width:100px;">Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<form id="formEmployees" method="post" enctype="multipart/form-data">
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="employeeModal" tabindex="-1" role="dialog" aria-labelledby="employeeModal" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="width: 100%; height: 100px; margin: 0; padding: 0;">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="btn btn-danger btn-xs pull-right" data-dismiss="modal" style="color:white;">X</button>
+                    <h4 class="modal-title">Employee Information:</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <img class="center img-responsive img-thumbnail" id="photo" src="~/Images/blank_profile.png" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Upload Photo</label>
+                                <input onchange="readURL(this);" type="file" name="file" id="file" style="width: 100%;" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Employee ID</label>
+                                <input disabled id="idNoDisplay" name="idNo" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Fullname (English)</label>
+                                <input disabled id="fullnameEnglishDisplay" name="fullnameEnglish" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Fullname (Khmer)</label>
+                                <input disabled id="fullnameKhmerDisplay" name="fullnameKhmer" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Contact Phone</label>
+                                <input disabled id="contactPhoneDisplay" name="contactPhone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Status</label>
+                                <input disabled id="statusDisplay" name="status" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-10">
+
+                            <ul class="nav nav-pills">
+                                <li class="active"><a href="#home">Personal Information Detail</a></li>
+                                <li><a href="#menu1">Time Off</a></li>
+                                <li><a href="#menu2">Previous Position</a></li>
+                                <li><a href="#menu3">Education</a></li>
+                                <li><a href="#menu3">Work Experience</a></li>
+                                <li><a href="#menu3">Short Course Training</a></li>
+                            </ul>
+                            <hr style="margin-top:10px; margin-bottom:10px;"/>
+                            <div class="tab-content">
+                                <div id="home" class="tab-pane fade in active">
+
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                                                    <div class="form-group">
+                                                        <label>Employee ID</label>
+                                                        <input id="idNo" name="idNo" placeholder="Enter Employee ID" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="title">Title</label>
+                                                        <select class="form-control input-sm" id="title">
+                                                            <option>Mr.</option>
+                                                            <option>Mrs.</option>
+                                                            <option>Miss.</option>
+                                                            <option>Dr.</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>First Name (English)</label>
+                                                        <input id="firstNameEnglish" name="firstNameEnglish" placeholder="Enter First Name (English)" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Last Name (English)</label>
+                                                        <input id="lastNameEnglish" name="lastNameEnglish" placeholder="Enter Last Name (English)" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>First Name (Khmer)</label>
+                                                        <input id="firstNameKhmer" name="firstNameKhmer" placeholder="Enter First Name (Khmer)" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>First Name (Khmer)</label>
+                                                        <input id="lastNameKhmer" name="lastNameKhmer" placeholder="Enter Last Name (Khmer)" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="gender">Gender</label>
+                                                        <select class="form-control input-sm" id="gender">
+                                                            <option>Female</option>
+                                                            <option>Male</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Date of birth</label>
+                                                        <input id="dateOfBirth" name="dateOfBirth" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Place of birth</label>
+                                                        <input id="placeOfBirth" name="placeOfBirth" placeholder="Enter place of birth" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Address</label>
+                                                        <input id="address" name="address" placeholder="Enter address" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Country</label>
+                                                        <input id="country" name="country" placeholder="Enter country" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Nationality</label>
+                                                        <input id="nationality" name="nationality" placeholder="Enter nationality" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Email</label>
+                                                        <input id="email" name="email" placeholder="Enter email" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Contact Phone</label>
+                                                        <input id="phoneNumber" name="phoneNumber" placeholder="Enter contact phone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Blood Group</label>
+                                                        <input id="bloodGroup" name="bloodGroup" placeholder="Enter blood group" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="status">Status</label>
+                                                        <select class="form-control input-sm" id="status">
+                                                            <option>Active</option>
+                                                            <option>New Hire</option>
+                                                            <option>Terminated</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Bank Account</label>
+                                                        <input id="bankAccount" name="bankAccount" placeholder="Enter bank account" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Bank Account Number</label>
+                                                        <input id="bankAccountNumber" name="bankAccountNumber" placeholder="Enter bank account number" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Contract Date</label>
+                                                        <input id="contractDate" name="contractDate" placeholder="Enter contract date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Contract Type</label>
+                                                        <input id="contractType" name="contractType" placeholder="Enter contract type" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Contract Start Date</label>
+                                                        <input id="contractStartDate" name="contractStartDate" placeholder="Enter contract start date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Contract End Date</label>
+                                                        <input id="contractEndDate" name="contractEndDate" placeholder="Enter contract end date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Position</label>
+                                                        <select class="form-control input-sm" id="positionId" name="name" style="min-width: 100%">
+                                                            @foreach (var position in Model.Positions)
+                                                            {
+                                                                <option value=@position.Id>@position.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Department</label>
+                                                        <select class="form-control input-sm" id="departmentId" name="name" style="min-width: 100%">
+                                                            @foreach (var department in Model.Departments)
+                                                            {
+                                                                <option value=@department.Id>@department.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Manager</label>
+                                                        <input id="manager" name="manager" placeholder="Enter manager" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="maritalStatus">Marital Status</label>
+                                                        <select class="form-control input-sm" id="maritalStatus">
+                                                            <option>Single</option>
+                                                            <option>Married</option>
+                                                            <option>Divorced</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Children</label>
+                                                        <input id="children" name="children" placeholder="Enter children" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Emergency Relationship</label>
+                                                        <input id="emergencyContact" name="emergencyContact" placeholder="Enter Emergency Relationship" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Emergency Name</label>
+                                                        <input id="emergencyContactName" name="emergencyContactName" placeholder="Enter Emergency Name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Emergency Phone</label>
+                                                        <input id="emergencyContactPhone" name="emergencyContactPhone" placeholder="Enter Emergency Phone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Identity Card Number</label>
+                                                        <input id="identityCardNumber" name="identityCardNumber" placeholder="Enter Identity Card Number" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Identity Card Type</label>
+                                                        <input id="identityCardType" name="identityCardType" placeholder="Enter Identity Card Type" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Note</label>
+                                                        <input id="note" name="note" placeholder="Note here." type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="clearfix">
+                                                        <button type="button" class="btn btn-danger pull-right" data-dismiss="modal">Close</button>
+                                                        <button type="button" id="btnSave" class="btn btn-primary pull-right" onclick="Save();">Save</button>
+                                                        <button type="button" id="btnUpdate" class="btn btn-primary pull-right js-update" onclick="Update();">Update</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div id="loaderDiv" style="text-align:center; display:none;">
+                                            <img src="~/Content/InternetSlowdown_Day.gif" width="100" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="menu1" class="tab-pane fade">
+                                    <h3>Menu 1</h3>
+                                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                </div>
+                                <div id="menu2" class="tab-pane fade">
+                                    <h3>Menu 2</h3>
+                                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                                </div>
+                                <div id="menu3" class="tab-pane fade">
+                                    <h3>Menu 3</h3>
+                                    <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+@section scripts
+{
+
+
+    <script>
+        $(document).ready(function () {
+            GetEmployees();
+
+            $(".nav-pills a").click(function () {
+                $(this).tab('show');
+            });
+        });
+
+        var table = [];
+
+        function GetEmployees()
+        {
+            table = $('#employees').DataTable({
+                ajax: {
+                    url: "/api/employees",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "idNo"
+                    },
+                    {
+                        data: function (data) {
+                        return data.title + " " + data.firstNameEnglish + " " + data.lastNameEnglish;
+                    }
+                    },
+                    {
+                        data: "gender"
+                    },
+                    {
+                        data: "dateOfBirth",
+                        render: function (data) {
+                            var date = new Date(data);
+                            var month = date.getMonth() + 1;
+                            return date.getDate() + "-" + (month.length > 1 ? month : "0" + month) + "-" + date.getFullYear();
+                        }
+                    },
+                    {
+                        data: "email"
+                    },
+                    {
+                        data: "phoneNumber"
+                    },
+                    {
+                        data: "position.name"
+                    },
+                    {
+                        data: "department.name"
+                    },
+                    {
+                        data: "status"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a href='#' onclick='Edit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ");'><span class='glyphicon glyphicon-trash'></span> Delete</a>"
+                        }
+                    }
+                ]
+            });
+        }
+
+        //Update
+        function Update() {
+            var res = validate();
+            if (res === false) {
+                return false;
+            }
+
+            $("#loaderDiv").show();
+
+            var data = new FormData();
+            var files = $("#file").get(0).files;
+
+            if (files.length > 0) {
+                data.append("UploadedFile", files[0]);
+            }
+
+            data.append("Id", $("#id").val());
+            data.append("IdNo", $("#idNo").val());
+            data.append("Title", $("#title").val());
+            data.append("FirstNameEnglish", $("#firstNameEnglish").val());
+            data.append("LastNameEnglish", $("#lastNameEnglish").val());
+            data.append("FirstNameKhmer", $("#firstNameKhmer").val());
+            data.append("LastNameKhmer", $("#lastNameKhmer").val());
+            data.append("Gender", $("#gender").val());
+            data.append("DateOfBirth", $("#dateOfBirth").val());
+            data.append("PlaceOfBirth", $("#placeOfBirth").val());
+            data.append("Address", $("#address").val());
+            data.append("Country", $("#country").val());
+            data.append("Nationality", $("#nationality").val());
+            data.append("Email", $("#email").val());
+            data.append("PhoneNumber", $("#phoneNumber").val());
+            data.append("BloodGroup", $("#bloodGroup").val());
+            data.append("BankAccountNumber", $("#bankAccountNumber").val());
+            data.append("BankAccount", $("#bankAccount").val());
+            data.append("ContractDate", $("#contractDate").val());
+            data.append("ContractType", $("#contractType").val());
+            data.append("ContractStartDate", $("#contractStartDate").val());
+            data.append("ContractEndDate", $("#contractEndDate").val());
+            data.append("Manager", $("#manager").val());
+            data.append("MaritalStatus", $("#maritalStatus").val());
+            data.append("Children", $("#children").val());
+            data.append("EmergencyContact", $("#emergencyContact").val());
+            data.append("EmergencyContactName", $("#emergencyContactName").val());
+            data.append("EmergencyContactPhone", $("#emergencyContactPhone").val());
+            data.append("IdentityCardNumber", $("#identityCardNumber").val());
+            data.append("IdentityCardType", $("#identityCardType").val());
+            data.append("Note", $("#note").val());
+            data.append("Status", $("#status").val());
+            data.append("PositionId", $("#positionId").val());
+            data.append("DepartmentId", $("#departmentId").val());
+
+            var ajaxRequest = $.ajax({
+                type: "PUT",
+                url: "/api/employees/" + $("#id").val(),
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (result) {
+                    toastr.success("Employee has been updated.");
+                    clearForm();
+                    table.ajax.reload();
+                    $("#loaderDiv").hide();
+                    $('#employeeModal').modal('hide');
+                },
+                error: function (errormessage) {
+                    toastr.error("Something unexpected happen.");
+                }
+            });
+        }
+
+        //Edit
+        function Edit(id) {
+            clearForm();
+
+            $.ajax({
+                url: "/api/employees/" + id,
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (result) {
+                    $('#id').val(result.employeeDto.id);
+                    $('#idNoDisplay').val(result.employeeDto.idNo);
+                    $('#idNo').val(result.employeeDto.idNo);
+                    $('#fullnameEnglishDisplay').val(result.employeeDto.firstNameEnglish + ' ' + result.employeeDto.lastNameEnglish);
+                    $('#fullnameKhmerDisplay').val(result.employeeDto.firstNameKhmer + ' ' + result.employeeDto.lastNameKhmer);
+                    $('#contactPhoneDisplay').val(result.employeeDto.phoneNumber);
+                    $('#statusDisplay').val(result.employeeDto.status);
+                    $('#firstNameEnglish').val(result.employeeDto.firstNameEnglish);
+                    $('#lastNameEnglish').val(result.employeeDto.lastNameEnglish);
+                    $('#firstNameKhmer').val(result.employeeDto.firstNameKhmer);
+                    $('#lastNameKhmer').val(result.employeeDto.lastNameKhmer);
+                    var dateOfBirth = new Date(result.employeeDto.dateOfBirth);
+                    var dd = dateOfBirth.getDate();
+                    var mm = dateOfBirth.getMonth() + 1; //January is 0!
+                    var yyyy = dateOfBirth.getFullYear();
+                    if(dd<10){
+                        dd='0'+dd;
+                    } 
+                    if(mm<10){
+                        mm='0'+mm;
+                    } 
+                    dateOfBirth = dd + '/' + mm + '/' + yyyy;
+                    $('#dateOfBirth').val(dateOfBirth);
+                    $('#placeOfBirth').val(result.employeeDto.placeOfBirth);
+                    $('#address').val(result.employeeDto.address);
+                    $('#country').val(result.employeeDto.country);
+                    $('#email').val(result.employeeDto.email);
+                    $('#nationality').val(result.employeeDto.nationality);
+                    $('#phoneNumber').val(result.employeeDto.phoneNumber);
+                    $('#bloodGroup').val(result.employeeDto.bloodGroup);
+                    $('#status').val(result.employeeDto.status);
+                    $('#bankAccount').val(result.employeeDto.bankAccount);
+                    $('#bankAccountNumber').val(result.employeeDto.bankAccountNumber);
+                    var contractDate = new Date(result.employeeDto.contractDate);
+                    var dd = contractDate.getDate();
+                    var mm = contractDate.getMonth() + 1; //January is 0!
+                    var yyyy = contractDate.getFullYear();
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    contractDate = dd + '/' + mm + '/' + yyyy;
+                    $('#contractDate').val(contractDate);
+                    $('#contractType').val(result.employeeDto.contractType);
+                    var contractStartDate = new Date(result.employeeDto.contractStartDate);
+                    var dd = contractStartDate.getDate();
+                    var mm = contractStartDate.getMonth() + 1; //January is 0!
+                    var yyyy = contractStartDate.getFullYear();
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    contractStartDate = dd + '/' + mm + '/' + yyyy;
+                    $('#contractStartDate').val(contractStartDate);
+                    var contractEndDate = new Date(result.employeeDto.contractEndDate);
+                    var dd = contractEndDate.getDate();
+                    var mm = contractEndDate.getMonth() + 1; //January is 0!
+                    var yyyy = contractEndDate.getFullYear();
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    contractEndDate = dd + '/' + mm + '/' + yyyy;
+                    $('#contractEndDate').val(contractEndDate);
+                    $('#positionId').val(result.employeeDto.position.id);
+                    $('#departmentId').val(result.employeeDto.department.id);
+                    $('#manager').val(result.employeeDto.manager);
+                    $('#maritalStatus').val(result.employeeDto.maritalStatus);
+                    $('#children').val(result.employeeDto.children);
+                    $('#emergencyContact').val(result.employeeDto.emergencyContact);
+                    $('#emergencyContactName').val(result.employeeDto.emergencyContactName);
+                    $('#emergencyContactPhone').val(result.employeeDto.emergencyContactPhone);
+                    $('#identityCardNumber').val(result.employeeDto.identityCardNumber);
+                    $('#identityCardType').val(result.employeeDto.identityCardType);
+                    $('#note').val(result.employeeDto.note);
+                    $('#photo').attr('src', '/Images/' + result.employeeDto.photo)
+
+                    $('#employeeModal').modal('show');
+                    $('#btnUpdate').show();
+                    $('#btnSave').hide();
+                },
+                error: function (errormessage) {
+                    toastr.error("Something unexpected happen.");
+                }
+            });
+            return false;
+        }
+
+        //Delete
+        function Delete(id) {
+            bootbox.confirm("Are you sure you want to delete this employee?", function (result) {
+                if (result) {
+                    $.ajax({
+                        url: "/api/employees/" + id,
+                        method: "DELETE",
+                        success: function () {
+                            table.ajax.reload();
+                            toastr.success("Employees has been deleted successfully.");
+                        },
+                        error: function () {
+                            toastr.error("Cannot delete this employee.");
+                        }
+                    })
+                }
+            });
+        }
+
+        //Save
+        function Save() {
+            var res = validate();
+            if (res == false) {
+                return false;
+            }
+
+            $("#loaderDiv").show();
+
+            var data = new FormData();
+            var files = $("#file").get(0).files;
+
+            if (files.length > 0) {
+                data.append("UploadedFile", files[0]);
+            }
+
+            data.append("IdNo", $("#idNo").val());
+            data.append("Title", $("#title").val());
+            data.append("FirstNameEnglish", $("#firstNameEnglish").val());
+            data.append("LastNameEnglish", $("#lastNameEnglish").val());
+            data.append("FirstNameKhmer", $("#firstNameKhmer").val());
+            data.append("LastNameKhmer", $("#lastNameKhmer").val());
+            data.append("Gender", $("#gender").val());
+            data.append("DateOfBirth", $("#dateOfBirth").val());
+            data.append("PlaceOfBirth", $("#placeOfBirth").val());
+            data.append("Address", $("#address").val());
+            data.append("Country", $("#country").val());
+            data.append("Nationality", $("#nationality").val());
+            data.append("Email", $("#email").val());
+            data.append("PhoneNumber", $("#phoneNumber").val());
+            data.append("BloodGroup", $("#bloodGroup").val());
+            data.append("BankAccountNumber", $("#bankAccountNumber").val());
+            data.append("BankAccount", $("#bankAccount").val());
+            data.append("ContractDate", $("#contractDate").val());
+            data.append("ContractType", $("#contractType").val());
+            data.append("ContractStartDate", $("#contractStartDate").val());
+            data.append("ContractEndDate", $("#contractEndDate").val());
+            data.append("Manager", $("#manager").val());
+            data.append("MaritalStatus", $("#maritalStatus").val());
+            data.append("Children", $("#children").val());
+            data.append("EmergencyContact", $("#emergencyContact").val());
+            data.append("EmergencyContactName", $("#emergencyContactName").val());
+            data.append("EmergencyContactPhone", $("#emergencyContactPhone").val());
+            data.append("IdentityCardNumber", $("#identityCardNumber").val());
+            data.append("IdentityCardType", $("#identityCardType").val());
+            data.append("Note", $("#note").val());
+            data.append("Status", $("#status").val());
+            data.append("PositionId", $("#positionId").val());
+            data.append("DepartmentId", $("#departmentId").val());
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: "/api/employees",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (result) {
+                    toastr.success("Employee has been added to database.");
+                    clearForm();
+                    table.ajax.reload();
+                    $("#loaderDiv").hide();
+                    $('#employeeModal').modal('hide');
+                },
+                error: function (errormessage) {
+                    toastr.error("Something unexpected happen.");
+                }
+            });
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#photo').attr('src', e.target.result);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        var d = new Date();
+
+        function clearForm() {
+            $('#id').val('');
+            $('#idNoDisplay').val('');
+            $('#fullnameEnglishDisplay').val('');
+            $('#fullnameKhmerDisplay').val('');
+            $('#ContactPhoneDisplay').val('');
+            $('#StatusDisplay').val('');
+            $('#firstNameEnglish').val('');
+            $('#lastNameEnglish').val('');
+            $('#firstNameKhmer').val('');
+            $('#lastNameKhmer').val('');
+            $('#dateOfBirth').val('');
+            $('#placeOfBirth').val('');
+            $('#address').val('');
+            $('#country').val('');
+            $('#email').val('');
+            $('#nationality').val('');
+            $('#phoneNumber').val('');
+            $('#bloodGroup').val('');
+            $('#status').val('');
+            $('#bankAccount').val('');
+            $('#bankAccountNumber').val('');
+            $('#contractDate').val('');
+            $('#contractType').val('');
+            $('#contractStartDate').val('');
+            $('#contractEndDate').val('');
+            $('#positionId').val('');
+            $('#departmentId').val('');
+            $('#manager').val('');
+            $('#maritalStatus').val('');
+            $('#children').val('');
+            $('#emergencyContact').val('');
+            $('#emergencyContactName').val('');
+            $('#emergencyContactPhone').val('');
+            $('#identityCardNumber').val('');
+            $('#identityCardType').val('');
+            $('#note').val('');
+            $('#file').val('');
+            $('#photo').attr('src', 'Images/blank_profile.png');
+            $('#btnUpdate').hide();
+            $('#btnSave').show();
+            $('#idNo').css('border-color', '#cccccc');
+            $('#title').css('border-color', '#cccccc');
+            $('#firstNameEnglish').css('border-color', '#cccccc');
+            $('#lastNameEnglish').css('border-color', '#cccccc');
+            $('#positionId').css('border-color', '#cccccc');
+            $('#departmentId').css('border-color', '#cccccc');
+        }
+
+        function validate() {
+            var isValid = true;
+            if ($('#idNo').val().trim() == "") {
+                $('#idNo').css('border-color', 'red');
+                $('#idNo').focus();
+                isValid = false;
+            } else {
+                $('#idNo').css('border-color', '#cccccc');
+                if ($('#title').val().trim() == "") {
+                    $('#title').css('border-color', 'red');
+                    $('#title').focus();
+                    isValid = false;
+                } else {
+                    $('#title').css('border-color', '#cccccc');
+                    if ($('#firstNameEnglish').val().trim() == "") {
+                        $('#firstNameEnglish').css('border-color', 'red');
+                        $('#firstNameEnglish').focus();
+                        isValid = false;
+                    } else {
+                        $('#firstNameEnglish').css('border-color', '#cccccc');
+                        if ($('#lastNameEnglish').val().trim() == "") {
+                            $('#lastNameEnglish').css('border-color', 'red');
+                            $('#lastNameEnglish').focus();
+                            isValid = false;
+                        } else {
+                            $('#lastNameEnglish').css('border-color', '#cccccc');
+                            if ($('#positionId').val().trim() == "") {
+                                $('#positionId').css('border-color', 'red');
+                                $('#positionId').focus();
+                                isValid = false;
+                            } else {
+                                $('#positionId').css('border-color', '#cccccc');
+                                if ($('#departmentId').val().trim() == "") {
+                                    $('#departmentId').css('border-color', 'red');
+                                    $('#departmentId').focus();
+                                    isValid = false;
+                                } else {
+                                    $('#departmentId').css('border-color', '#cccccc');
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return isValid;
+        }
+    </script>
+
+    <script>
+        $(function () {
+            $(".js-date").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '1950:2100'
+            });
+        });
+    </script>
+}
+

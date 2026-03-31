@@ -1,0 +1,17 @@
+﻿@model IEnumerable<MtpApp.Models.ApplicationUser>
+@{
+    ViewBag.Title = "UserRole";
+}
+
+<h2>UserRole</h2>
+
+
+<div class="form-group">
+    <label>Category</label>
+    <select class="form-control" id="category" name="name" style="min-width: 100%">
+        @foreach (var user in Model)
+        {
+            <option value=@user.Id>@user.Email</option>
+        }
+    </select>
+</div>

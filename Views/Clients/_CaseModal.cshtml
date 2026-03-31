@@ -1,0 +1,137 @@
+﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="caseModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Case Information</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+
+                    <input id="caseId" name="caseId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="clientId">Client</label>
+                            <select class="form-control input-group-lg selectpicker  " data-livesearchstyle="contains" id="clientId" name="clientId" style="min-width: 100%" data-live-search="true" data>
+                                @foreach (var client in Model.Clients)
+                                {
+                                    <option value=@client.Id>@client.FirstName @client.LastName (Gender: @client.Gender | Phone: @client.ContactPhone)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="caseWorkerIds">Case Worker</label>
+                            <select class="form-control input-sm selectpicker " id="caseWorkerIds" name="caseWorkerIds" style="min-width: 100%" data-live-search="true">
+                                @foreach (var caseWorker in Model.CaseWorkers)
+                                {
+                                    <option value=@caseWorker.Id>@caseWorker.Program | Name: @caseWorker.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+           
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="priority">Priority</label>
+                            <select class="form-control input-sm selectpicker " id="priority">
+                                <option>High</option>
+                                <option>Medium</option>
+                                <option>Low</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="serviceType">Case Type</label>
+                            <select class="form-control input-sm selectpicker " id="serviceType" >
+                                <option>Further Education</option>
+                                @*<option>Placement</option>
+                                <option>Futures Training</option>*@
+                                <option>Social Support</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="openDate">Open Date</label>
+                            <input id="openDate" name="openDate" placeholder="Enter open date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="closeDate">Close Date</label>
+                            <input id="closeDate" name="closeDate" placeholder="Enter close date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="caseSubject">Subject</label>
+                            <input id="caseSubject" name="caseSubject" placeholder="Enter subject" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="caseDescription">Description</label>
+                            <textarea class="form-control input-sm" id="caseDescription" placeholder="Enter description" rows="6" style="min-width: 100%; max-width: 100%"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="caseStatus">Case Status</label>
+                            <select class="form-control input-sm" id="caseStatus">
+                                <option>New Case</option>
+                                <option>Opened Case</option>
+                                <option>In Progress Case</option>
+                                <option>Hold Case</option>
+                                <option>Closed Case</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" onclick="CaseAction();" id="btnCasesAction" class="btn btn-primary btn-sm">Add New</button>
+            </div>
+        </div>
+
+    </div>
+
+</div> <!-- modal -->

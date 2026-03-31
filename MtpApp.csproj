@@ -1,0 +1,808 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Exclude legacy OWIN/System.Web startup files now that the app targets ASP.NET Core -->
+    <Compile Remove="App_Start\Startup.Auth.cs" />
+    <Compile Remove="App_Start\IdentityConfig.cs" />
+    <Compile Remove="App_Start\WebApiConfig.cs" />
+    <Compile Remove="Startup.cs" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <PackageReference Include="Antlr" Version="3.5.0.2" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="bootbox" Version="4.3.0" />
+    <PackageReference Include="bootstrap" Version="5.3.8" />
+    <PackageReference Include="bootstrap-select" Version="1.13.10" />
+    <PackageReference Include="Chart.js" Version="2.7.2" />
+    <!-- EF Core and Identity for ASP.NET Core -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <!-- Client libraries updated -->
+    <PackageReference Include="jQuery" Version="3.7.1" />
+    <PackageReference Include="jquery.datatables" Version="1.10.11" />
+    <PackageReference Include="jQuery.Validation" Version="1.21.0" />
+    <!-- SignalR packages removed temporarily; will add correct versions after dependency sync -->
+    <!-- Use WebOptimizer replacement for System.Web.Optimization -->
+    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.477" />
+    <PackageReference Include="Microsoft.jQuery.Unobtrusive.Validation" Version="3.1.2" />
+    <PackageReference Include="Microsoft.SqlServer.Types" Version="170.1000.7" />
+    <PackageReference Include="Modernizr" Version="2.6.2" />
+    <PackageReference Include="Moment.js" Version="2.30.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Respond" Version="1.2.0" />
+    <PackageReference Include="toastr" Version="2.1.1" />
+  </ItemGroup>
+  <!-- Exclude old EF6 migrations from compilation after migration to EF Core -->
+  <ItemGroup>
+    <Compile Remove="Migrations\**\*.cs" />
+    <EmbeddedResource Remove="Migrations\**\*.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201806300823541_AddInitialModel.Designer.cs">
+      <DependentUpon>201806300823541_AddInitialModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201806301107575_AddTicketTypesModel.Designer.cs">
+      <DependentUpon>201806301107575_AddTicketTypesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201806301428572_AddAgentsModel.Designer.cs">
+      <DependentUpon>201806301428572_AddAgentsModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201806301430442_AddAnnotationToAgentModel.Designer.cs">
+      <DependentUpon>201806301430442_AddAnnotationToAgentModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201806301519335_AddPositionsModel.Designer.cs">
+      <DependentUpon>201806301519335_AddPositionsModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201806301550330_AddDepartmentsModel.Designer.cs">
+      <DependentUpon>201806301550330_AddDepartmentsModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201806301616373_AddCategoriesModel.Designer.cs">
+      <DependentUpon>201806301616373_AddCategoriesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807010138170_AddEmployeesModel.Designer.cs">
+      <DependentUpon>201807010138170_AddEmployeesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807040351476_AddCascade.Designer.cs">
+      <DependentUpon>201807040351476_AddCascade.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807050429428_AddEmployerModel.Designer.cs">
+      <DependentUpon>201807050429428_AddEmployerModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807060759126_AddFieldToApplicationUser.Designer.cs">
+      <DependentUpon>201807060759126_AddFieldToApplicationUser.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807061218137_AddIsDeletedToUsers.Designer.cs">
+      <DependentUpon>201807061218137_AddIsDeletedToUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807100157398_AddBranchToEmployerModel.Designer.cs">
+      <DependentUpon>201807100157398_AddBranchToEmployerModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807111115335_AddJobCategoryModel.Designer.cs">
+      <DependentUpon>201807111115335_AddJobCategoryModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807230055448_RemoveLocationFromEmployerModel.Designer.cs">
+      <DependentUpon>201807230055448_RemoveLocationFromEmployerModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807230058199_AddJobCategoryIdToEmployerModel.Designer.cs">
+      <DependentUpon>201807230058199_AddJobCategoryIdToEmployerModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807230228527_AddEnrollDateToEmployerModel.Designer.cs">
+      <DependentUpon>201807230228527_AddEnrollDateToEmployerModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807230322340_AddStatusToEmployerModel.Designer.cs">
+      <DependentUpon>201807230322340_AddStatusToEmployerModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807230324160_UpdateCorporateDateEmployerModel.Designer.cs">
+      <DependentUpon>201807230324160_UpdateCorporateDateEmployerModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807230742314_AddJobPositionModel.Designer.cs">
+      <DependentUpon>201807230742314_AddJobPositionModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807230743240_AddIsDeletedToJobPositionModel.Designer.cs">
+      <DependentUpon>201807230743240_AddIsDeletedToJobPositionModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807240132540_AddVacancyModel.Designer.cs">
+      <DependentUpon>201807240132540_AddVacancyModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807240140161_AddBranchToVacanciesModel.Designer.cs">
+      <DependentUpon>201807240140161_AddBranchToVacanciesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807240419125_AddJobCategoryIdToVacancyModel.Designer.cs">
+      <DependentUpon>201807240419125_AddJobCategoryIdToVacancyModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807250435343_ChangeSalaryToIntegerInVacancyModel.Designer.cs">
+      <DependentUpon>201807250435343_ChangeSalaryToIntegerInVacancyModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201807250436266_ChangeSalaryToDoubleInVacancyModel.Designer.cs">
+      <DependentUpon>201807250436266_ChangeSalaryToDoubleInVacancyModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201808160127521_AddClientsModel.Designer.cs">
+      <DependentUpon>201808160127521_AddClientsModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201808170317529_AddBeneficiariesModel.Designer.cs">
+      <DependentUpon>201808170317529_AddBeneficiariesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201808200336569_AddFurtherEducationModel.Designer.cs">
+      <DependentUpon>201808200336569_AddFurtherEducationModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201808200623552_AddEducationReferralSourceModel.Designer.cs">
+      <DependentUpon>201808200623552_AddEducationReferralSourceModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201808200812309_AddFurtherEducationReferralsModel.Designer.cs">
+      <DependentUpon>201808200812309_AddFurtherEducationReferralsModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201808201115585_AddClientIdToFurtherEducationReferralModel.Designer.cs">
+      <DependentUpon>201808201115585_AddClientIdToFurtherEducationReferralModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201808290406490_AddJobExpectationsModel.Designer.cs">
+      <DependentUpon>201808290406490_AddJobExpectationsModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201808300741296_AddJobExperiencesModel.Designer.cs">
+      <DependentUpon>201808300741296_AddJobExperiencesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809030244127_EditJobExperienceModel.Designer.cs">
+      <DependentUpon>201809030244127_EditJobExperienceModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809030248254_EditJobExperiencesModel.Designer.cs">
+      <DependentUpon>201809030248254_EditJobExperiencesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809210202428_AddEducationsModel.Designer.cs">
+      <DependentUpon>201809210202428_AddEducationsModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809210204117_AddClientIdToEducationsModel.Designer.cs">
+      <DependentUpon>201809210204117_AddClientIdToEducationsModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809210223450_AddLanguagesModel.Designer.cs">
+      <DependentUpon>201809210223450_AddLanguagesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809210239255_AddComputerSkillModel.Designer.cs">
+      <DependentUpon>201809210239255_AddComputerSkillModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809230640330_AddPersonalitiesModel.Designer.cs">
+      <DependentUpon>201809230640330_AddPersonalitiesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809231302164_AddCaseWorkersModel.Designer.cs">
+      <DependentUpon>201809231302164_AddCaseWorkersModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201809270144279_AddCasesModel.Designer.cs">
+      <DependentUpon>201809270144279_AddCasesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201810170142006_UpdateAgentToCaseWorkerInCasesModel.Designer.cs">
+      <DependentUpon>201810170142006_UpdateAgentToCaseWorkerInCasesModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201810290155330_AddPlacementModel.Designer.cs">
+      <DependentUpon>201810290155330_AddPlacementModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201810300111418_AddCaseIdToPlacementModel.Designer.cs">
+      <DependentUpon>201810300111418_AddCaseIdToPlacementModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201811010149339_AddClientIdToPlacementModel.Designer.cs">
+      <DependentUpon>201811010149339_AddClientIdToPlacementModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201902010124563_createtableSubjects.Designer.cs">
+      <DependentUpon>201902010124563_createtableSubjects.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201902010700548_CreateTableFuturesTraining.Designer.cs">
+      <DependentUpon>201902010700548_CreateTableFuturesTraining.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201907170323209_CreateTableSocialSupport.Designer.cs">
+      <DependentUpon>201907170323209_CreateTableSocialSupport.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201907261631134_altertableSocialsupport.Designer.cs">
+      <DependentUpon>201907261631134_altertableSocialsupport.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201908161537416_AlterTableCaseWorker.Designer.cs">
+      <DependentUpon>201908161537416_AlterTableCaseWorker.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201908301056029_alterTableSocialSupports2.Designer.cs">
+      <DependentUpon>201908301056029_alterTableSocialSupports2.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909031228269_CreateTableSocialCare.Designer.cs">
+      <DependentUpon>201909031228269_CreateTableSocialCare.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909031251104_AlterTableSocialCare.Designer.cs">
+      <DependentUpon>201909031251104_AlterTableSocialCare.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909031429199_AterTableSocialSupport.Designer.cs">
+      <DependentUpon>201909031429199_AterTableSocialSupport.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909040200480_CreateBusinessSetupCategory.Designer.cs">
+      <DependentUpon>201909040200480_CreateBusinessSetupCategory.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909051544050_CreateTableBusinessSetUp.Designer.cs">
+      <DependentUpon>201909051544050_CreateTableBusinessSetUp.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909181114381_CreateTableMonitoring.Designer.cs">
+      <DependentUpon>201909181114381_CreateTableMonitoring.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909190923592_CreateTablePlacementProcess.Designer.cs">
+      <DependentUpon>201909190923592_CreateTablePlacementProcess.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909241348168_AlterPlacementaddtime.Designer.cs">
+      <DependentUpon>201909241348168_AlterPlacementaddtime.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909250437522_AlertTablePlacementProgress.Designer.cs">
+      <DependentUpon>201909250437522_AlertTablePlacementProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909291734024_AlterBuninessSetupTable.Designer.cs">
+      <DependentUpon>201909291734024_AlterBuninessSetupTable.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201909300405174_CreateTableBusinessInProgress.Designer.cs">
+      <DependentUpon>201909300405174_CreateTableBusinessInProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201910011441420_AlterTableBusinessInProcess.Designer.cs">
+      <DependentUpon>201910011441420_AlterTableBusinessInProcess.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201910100757136_AlterMonitoring.Designer.cs">
+      <DependentUpon>201910100757136_AlterMonitoring.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201910110258333_CreateTableLession.Designer.cs">
+      <DependentUpon>201910110258333_CreateTableLession.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201910171648123_CreateFutureTrainingProgress.Designer.cs">
+      <DependentUpon>201910171648123_CreateFutureTrainingProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201910240236329_AlterTableFutureTrainingProgress.Designer.cs">
+      <DependentUpon>201910240236329_AlterTableFutureTrainingProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201910240334255_CreateTableFurthereducationInProgress.Designer.cs">
+      <DependentUpon>201910240334255_CreateTableFurthereducationInProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201912130132434_AtlerTableClientAdd.Designer.cs">
+      <DependentUpon>201912130132434_AtlerTableClientAdd.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\201912130440260_AddColumnEmploymentTypetoEmploymentTable.Designer.cs">
+      <DependentUpon>201912130440260_AddColumnEmploymentTypetoEmploymentTable.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202003200819572_CreateModalLogbook.Designer.cs">
+      <DependentUpon>202003200819572_CreateModalLogbook.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202003240726502_CreateModalSocialsupportCase.Designer.cs">
+      <DependentUpon>202003240726502_CreateModalSocialsupportCase.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202003240837497_AlterModalSocialsupportCase.Designer.cs">
+      <DependentUpon>202003240837497_AlterModalSocialsupportCase.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202003260159110_CreateTableSocialSupportProblem.Designer.cs">
+      <DependentUpon>202003260159110_CreateTableSocialSupportProblem.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202003260701497_AlterTableSocialSupportProblem.Designer.cs">
+      <DependentUpon>202003260701497_AlterTableSocialSupportProblem.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004100640402_AlterModalBusinessSetup.Designer.cs">
+      <DependentUpon>202004100640402_AlterModalBusinessSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004150406441_CreateModalFurtherEducationSubject.Designer.cs">
+      <DependentUpon>202004150406441_CreateModalFurtherEducationSubject.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004150411401_AlterModalFurtherEducationReferralChangeSubjecttofurtherEducationReferralSubject.Designer.cs">
+      <DependentUpon>202004150411401_AlterModalFurtherEducationReferralChangeSubjecttofurtherEducationReferralSubject.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004150528282_AlterModalClientAddClientCodeandRegisterDate.Designer.cs">
+      <DependentUpon>202004150528282_AlterModalClientAddClientCodeandRegisterDate.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004151232052_alterModalVacancyaddsalarymax.Designer.cs">
+      <DependentUpon>202004151232052_alterModalVacancyaddsalarymax.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004170736433_AlterModalFutureTrainingProgress.Designer.cs">
+      <DependentUpon>202004170736433_AlterModalFutureTrainingProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004230421577_AlterModalBusinessInProgressBusinessSetUpCategoryId.Designer.cs">
+      <DependentUpon>202004230421577_AlterModalBusinessInProgressBusinessSetUpCategoryId.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004240502407_AlterModalLessionAddmorelength.Designer.cs">
+      <DependentUpon>202004240502407_AlterModalLessionAddmorelength.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004240507226_AlterModalfurtherEducationReferralSubjectAddmorelength.Designer.cs">
+      <DependentUpon>202004240507226_AlterModalfurtherEducationReferralSubjectAddmorelength.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004270417018_AlterModalClientAlterclumnnAspnetuser.Designer.cs">
+      <DependentUpon>202004270417018_AlterModalClientAlterclumnnAspnetuser.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004270418331_AlterModalClientAlterclumnnAspnetusersecond.Designer.cs">
+      <DependentUpon>202004270418331_AlterModalClientAlterclumnnAspnetusersecond.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004270427029_AlterModalClientAlterclumnnAspnetuserthird.Designer.cs">
+      <DependentUpon>202004270427029_AlterModalClientAlterclumnnAspnetuserthird.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004280936157_AlterModalClientAspnetuseridNull.Designer.cs">
+      <DependentUpon>202004280936157_AlterModalClientAspnetuseridNull.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004281047497_AlterModalClientAspnetuseridFixError.Designer.cs">
+      <DependentUpon>202004281047497_AlterModalClientAspnetuseridFixError.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004281109248_AlterModalClientAspnetuseridFixError2.Designer.cs">
+      <DependentUpon>202004281109248_AlterModalClientAspnetuseridFixError2.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004281209069_AlterModelClientAddUpdateandUpdateDate.Designer.cs">
+      <DependentUpon>202004281209069_AlterModelClientAddUpdateandUpdateDate.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004290835153_AlterClientAddPlaceofBirth.Designer.cs">
+      <DependentUpon>202004290835153_AlterClientAddPlaceofBirth.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004290908344_AlterClientAddHeight.Designer.cs">
+      <DependentUpon>202004290908344_AlterClientAddHeight.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004291111502_AlterModalJobExpectationCandidate.Designer.cs">
+      <DependentUpon>202004291111502_AlterModalJobExpectationCandidate.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004291116040_AlterModalJobExpectationHobby.Designer.cs">
+      <DependentUpon>202004291116040_AlterModalJobExpectationHobby.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004291249375_AlterModalEducationAddDescription.Designer.cs">
+      <DependentUpon>202004291249375_AlterModalEducationAddDescription.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004291334064_AlterModalJobExperieceAddDecription.Designer.cs">
+      <DependentUpon>202004291334064_AlterModalJobExperieceAddDecription.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004300653005_CreateModalCvReference.Designer.cs">
+      <DependentUpon>202004300653005_CreateModalCvReference.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202004300713134_AlterModalCvReferenceAddPhone.Designer.cs">
+      <DependentUpon>202004300713134_AlterModalCvReferenceAddPhone.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202005011159201_AlterModalClientAddWeight.Designer.cs">
+      <DependentUpon>202005011159201_AlterModalClientAddWeight.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202005011242322_AlterModalComputerSkill.Designer.cs">
+      <DependentUpon>202005011242322_AlterModalComputerSkill.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202005011314173_AlterModalCvreferenceAddEmail.Designer.cs">
+      <DependentUpon>202005011314173_AlterModalCvreferenceAddEmail.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202005050650299_AlterModalFurtherEducationReferral.Designer.cs">
+      <DependentUpon>202005050650299_AlterModalFurtherEducationReferral.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202005060617005_AlterModalFurtherEducationReferral1.Designer.cs">
+      <DependentUpon>202005060617005_AlterModalFurtherEducationReferral1.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202005070354588_AlterModalfurtherEducationReferralAddmoreclientType.Designer.cs">
+      <DependentUpon>202005070354588_AlterModalfurtherEducationReferralAddmoreclientType.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202007240220571_CreateModalLoginHistory2020July24.Designer.cs">
+      <DependentUpon>202007240220571_CreateModalLoginHistory2020July24.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202008140358311_AddmorefieldtoClientModal2020Aug14.Designer.cs">
+      <DependentUpon>202008140358311_AddmorefieldtoClientModal2020Aug14.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202008240657239_AlterModalBusinessSetUpCategory.Designer.cs">
+      <DependentUpon>202008240657239_AlterModalBusinessSetUpCategory.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202008240725465_AlterModalBusinessSetUpCategory20200804two.Designer.cs">
+      <DependentUpon>202008240725465_AlterModalBusinessSetUpCategory20200804two.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202008250525080_AlterJobExpectation2020Aug05.Designer.cs">
+      <DependentUpon>202008250525080_AlterJobExpectation2020Aug05.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202010050730284_alterModalJobExpectation.Designer.cs">
+      <DependentUpon>202010050730284_alterModalJobExpectation.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202011240400095_AlterModalPlacement.Designer.cs">
+      <DependentUpon>202011240400095_AlterModalPlacement.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202011240439440_AlterModalPlacementadddropfromjobdate.Designer.cs">
+      <DependentUpon>202011240439440_AlterModalPlacementadddropfromjobdate.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202012070806186_AlterModalMonitoring2020Nov07.Designer.cs">
+      <DependentUpon>202012070806186_AlterModalMonitoring2020Nov07.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202101280338103_AlterModalClientAddColumnIdCard.Designer.cs">
+      <DependentUpon>202101280338103_AlterModalClientAddColumnIdCard.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202301301536543_ExtendedClientRegisterModel.designer.cs">
+      <DependentUpon>202301301536543_ExtendedClientRegisterModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Migrations\202301301541370_ExtendedClientRegisterModelV1.designer.cs">
+      <DependentUpon>202301301541370_ExtendedClientRegisterModelV1.cs</DependentUpon>
+    </Compile>
+    <Compile Update="MtpAppDb2018DataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MtpAppDb2018DataSet.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="MtpAppDb2018DataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MtpAppDb2018DataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\PublishProfiles\Mlopdata.pubxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Migrations\201806300823541_AddInitialModel.resx">
+      <DependentUpon>201806300823541_AddInitialModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201806301107575_AddTicketTypesModel.resx">
+      <DependentUpon>201806301107575_AddTicketTypesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201806301428572_AddAgentsModel.resx">
+      <DependentUpon>201806301428572_AddAgentsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201806301430442_AddAnnotationToAgentModel.resx">
+      <DependentUpon>201806301430442_AddAnnotationToAgentModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201806301519335_AddPositionsModel.resx">
+      <DependentUpon>201806301519335_AddPositionsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201806301550330_AddDepartmentsModel.resx">
+      <DependentUpon>201806301550330_AddDepartmentsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201806301616373_AddCategoriesModel.resx">
+      <DependentUpon>201806301616373_AddCategoriesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807010138170_AddEmployeesModel.resx">
+      <DependentUpon>201807010138170_AddEmployeesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807040351476_AddCascade.resx">
+      <DependentUpon>201807040351476_AddCascade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807050429428_AddEmployerModel.resx">
+      <DependentUpon>201807050429428_AddEmployerModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807060759126_AddFieldToApplicationUser.resx">
+      <DependentUpon>201807060759126_AddFieldToApplicationUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807061218137_AddIsDeletedToUsers.resx">
+      <DependentUpon>201807061218137_AddIsDeletedToUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807100157398_AddBranchToEmployerModel.resx">
+      <DependentUpon>201807100157398_AddBranchToEmployerModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807111115335_AddJobCategoryModel.resx">
+      <DependentUpon>201807111115335_AddJobCategoryModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807230055448_RemoveLocationFromEmployerModel.resx">
+      <DependentUpon>201807230055448_RemoveLocationFromEmployerModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807230058199_AddJobCategoryIdToEmployerModel.resx">
+      <DependentUpon>201807230058199_AddJobCategoryIdToEmployerModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807230228527_AddEnrollDateToEmployerModel.resx">
+      <DependentUpon>201807230228527_AddEnrollDateToEmployerModel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807230322340_AddStatusToEmployerModel.resx">
+      <DependentUpon>201807230322340_AddStatusToEmployerModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807230324160_UpdateCorporateDateEmployerModel.resx">
+      <DependentUpon>201807230324160_UpdateCorporateDateEmployerModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807230742314_AddJobPositionModel.resx">
+      <DependentUpon>201807230742314_AddJobPositionModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807230743240_AddIsDeletedToJobPositionModel.resx">
+      <DependentUpon>201807230743240_AddIsDeletedToJobPositionModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807240132540_AddVacancyModel.resx">
+      <DependentUpon>201807240132540_AddVacancyModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807240140161_AddBranchToVacanciesModel.resx">
+      <DependentUpon>201807240140161_AddBranchToVacanciesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807240419125_AddJobCategoryIdToVacancyModel.resx">
+      <DependentUpon>201807240419125_AddJobCategoryIdToVacancyModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807250435343_ChangeSalaryToIntegerInVacancyModel.resx">
+      <DependentUpon>201807250435343_ChangeSalaryToIntegerInVacancyModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201807250436266_ChangeSalaryToDoubleInVacancyModel.resx">
+      <DependentUpon>201807250436266_ChangeSalaryToDoubleInVacancyModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201808160127521_AddClientsModel.resx">
+      <DependentUpon>201808160127521_AddClientsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201808170317529_AddBeneficiariesModel.resx">
+      <DependentUpon>201808170317529_AddBeneficiariesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201808200336569_AddFurtherEducationModel.resx">
+      <DependentUpon>201808200336569_AddFurtherEducationModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201808200623552_AddEducationReferralSourceModel.resx">
+      <DependentUpon>201808200623552_AddEducationReferralSourceModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201808200812309_AddFurtherEducationReferralsModel.resx">
+      <DependentUpon>201808200812309_AddFurtherEducationReferralsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201808201115585_AddClientIdToFurtherEducationReferralModel.resx">
+      <DependentUpon>201808201115585_AddClientIdToFurtherEducationReferralModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201808290406490_AddJobExpectationsModel.resx">
+      <DependentUpon>201808290406490_AddJobExpectationsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201808300741296_AddJobExperiencesModel.resx">
+      <DependentUpon>201808300741296_AddJobExperiencesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809030244127_EditJobExperienceModel.resx">
+      <DependentUpon>201809030244127_EditJobExperienceModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809030248254_EditJobExperiencesModel.resx">
+      <DependentUpon>201809030248254_EditJobExperiencesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809210202428_AddEducationsModel.resx">
+      <DependentUpon>201809210202428_AddEducationsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809210204117_AddClientIdToEducationsModel.resx">
+      <DependentUpon>201809210204117_AddClientIdToEducationsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809210223450_AddLanguagesModel.resx">
+      <DependentUpon>201809210223450_AddLanguagesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809210239255_AddComputerSkillModel.resx">
+      <DependentUpon>201809210239255_AddComputerSkillModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809230640330_AddPersonalitiesModel.resx">
+      <DependentUpon>201809230640330_AddPersonalitiesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809231302164_AddCaseWorkersModel.resx">
+      <DependentUpon>201809231302164_AddCaseWorkersModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201809270144279_AddCasesModel.resx">
+      <DependentUpon>201809270144279_AddCasesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201810170142006_UpdateAgentToCaseWorkerInCasesModel.resx">
+      <DependentUpon>201810170142006_UpdateAgentToCaseWorkerInCasesModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201810290155330_AddPlacementModel.resx">
+      <DependentUpon>201810290155330_AddPlacementModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201810300111418_AddCaseIdToPlacementModel.resx">
+      <DependentUpon>201810300111418_AddCaseIdToPlacementModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201811010149339_AddClientIdToPlacementModel.resx">
+      <DependentUpon>201811010149339_AddClientIdToPlacementModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201902010124563_createtableSubjects.resx">
+      <DependentUpon>201902010124563_createtableSubjects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201902010700548_CreateTableFuturesTraining.resx">
+      <DependentUpon>201902010700548_CreateTableFuturesTraining.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201907170323209_CreateTableSocialSupport.resx">
+      <DependentUpon>201907170323209_CreateTableSocialSupport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201907261631134_altertableSocialsupport.resx">
+      <DependentUpon>201907261631134_altertableSocialsupport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201908161537416_AlterTableCaseWorker.resx">
+      <DependentUpon>201908161537416_AlterTableCaseWorker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201908301056029_alterTableSocialSupports2.resx">
+      <DependentUpon>201908301056029_alterTableSocialSupports2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909031228269_CreateTableSocialCare.resx">
+      <DependentUpon>201909031228269_CreateTableSocialCare.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909031251104_AlterTableSocialCare.resx">
+      <DependentUpon>201909031251104_AlterTableSocialCare.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909031429199_AterTableSocialSupport.resx">
+      <DependentUpon>201909031429199_AterTableSocialSupport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909040200480_CreateBusinessSetupCategory.resx">
+      <DependentUpon>201909040200480_CreateBusinessSetupCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909051544050_CreateTableBusinessSetUp.resx">
+      <DependentUpon>201909051544050_CreateTableBusinessSetUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909181114381_CreateTableMonitoring.resx">
+      <DependentUpon>201909181114381_CreateTableMonitoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909190923592_CreateTablePlacementProcess.resx">
+      <DependentUpon>201909190923592_CreateTablePlacementProcess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909241348168_AlterPlacementaddtime.resx">
+      <DependentUpon>201909241348168_AlterPlacementaddtime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909250437522_AlertTablePlacementProgress.resx">
+      <DependentUpon>201909250437522_AlertTablePlacementProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909291734024_AlterBuninessSetupTable.resx">
+      <DependentUpon>201909291734024_AlterBuninessSetupTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201909300405174_CreateTableBusinessInProgress.resx">
+      <DependentUpon>201909300405174_CreateTableBusinessInProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201910011441420_AlterTableBusinessInProcess.resx">
+      <DependentUpon>201910011441420_AlterTableBusinessInProcess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201910100757136_AlterMonitoring.resx">
+      <DependentUpon>201910100757136_AlterMonitoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201910110258333_CreateTableLession.resx">
+      <DependentUpon>201910110258333_CreateTableLession.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201910171648123_CreateFutureTrainingProgress.resx">
+      <DependentUpon>201910171648123_CreateFutureTrainingProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201910240236329_AlterTableFutureTrainingProgress.resx">
+      <DependentUpon>201910240236329_AlterTableFutureTrainingProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201910240334255_CreateTableFurthereducationInProgress.resx">
+      <DependentUpon>201910240334255_CreateTableFurthereducationInProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201912130132434_AtlerTableClientAdd.resx">
+      <DependentUpon>201912130132434_AtlerTableClientAdd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201912130440260_AddColumnEmploymentTypetoEmploymentTable.resx">
+      <DependentUpon>201912130440260_AddColumnEmploymentTypetoEmploymentTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202003200819572_CreateModalLogbook.resx">
+      <DependentUpon>202003200819572_CreateModalLogbook.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202003240726502_CreateModalSocialsupportCase.resx">
+      <DependentUpon>202003240726502_CreateModalSocialsupportCase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202003240837497_AlterModalSocialsupportCase.resx">
+      <DependentUpon>202003240837497_AlterModalSocialsupportCase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202003260159110_CreateTableSocialSupportProblem.resx">
+      <DependentUpon>202003260159110_CreateTableSocialSupportProblem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202003260701497_AlterTableSocialSupportProblem.resx">
+      <DependentUpon>202003260701497_AlterTableSocialSupportProblem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004100640402_AlterModalBusinessSetup.resx">
+      <DependentUpon>202004100640402_AlterModalBusinessSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004150406441_CreateModalFurtherEducationSubject.resx">
+      <DependentUpon>202004150406441_CreateModalFurtherEducationSubject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004150411401_AlterModalFurtherEducationReferralChangeSubjecttofurtherEducationReferralSubject.resx">
+      <DependentUpon>202004150411401_AlterModalFurtherEducationReferralChangeSubjecttofurtherEducationReferralSubject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004150528282_AlterModalClientAddClientCodeandRegisterDate.resx">
+      <DependentUpon>202004150528282_AlterModalClientAddClientCodeandRegisterDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004151232052_alterModalVacancyaddsalarymax.resx">
+      <DependentUpon>202004151232052_alterModalVacancyaddsalarymax.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004170736433_AlterModalFutureTrainingProgress.resx">
+      <DependentUpon>202004170736433_AlterModalFutureTrainingProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004230421577_AlterModalBusinessInProgressBusinessSetUpCategoryId.resx">
+      <DependentUpon>202004230421577_AlterModalBusinessInProgressBusinessSetUpCategoryId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004240502407_AlterModalLessionAddmorelength.resx">
+      <DependentUpon>202004240502407_AlterModalLessionAddmorelength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004240507226_AlterModalfurtherEducationReferralSubjectAddmorelength.resx">
+      <DependentUpon>202004240507226_AlterModalfurtherEducationReferralSubjectAddmorelength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004270417018_AlterModalClientAlterclumnnAspnetuser.resx">
+      <DependentUpon>202004270417018_AlterModalClientAlterclumnnAspnetuser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004270418331_AlterModalClientAlterclumnnAspnetusersecond.resx">
+      <DependentUpon>202004270418331_AlterModalClientAlterclumnnAspnetusersecond.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004270427029_AlterModalClientAlterclumnnAspnetuserthird.resx">
+      <DependentUpon>202004270427029_AlterModalClientAlterclumnnAspnetuserthird.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004280936157_AlterModalClientAspnetuseridNull.resx">
+      <DependentUpon>202004280936157_AlterModalClientAspnetuseridNull.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004281047497_AlterModalClientAspnetuseridFixError.resx">
+      <DependentUpon>202004281047497_AlterModalClientAspnetuseridFixError.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004281109248_AlterModalClientAspnetuseridFixError2.resx">
+      <DependentUpon>202004281109248_AlterModalClientAspnetuseridFixError2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004281209069_AlterModelClientAddUpdateandUpdateDate.resx">
+      <DependentUpon>202004281209069_AlterModelClientAddUpdateandUpdateDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004290835153_AlterClientAddPlaceofBirth.resx">
+      <DependentUpon>202004290835153_AlterClientAddPlaceofBirth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004290908344_AlterClientAddHeight.resx">
+      <DependentUpon>202004290908344_AlterClientAddHeight.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004291111502_AlterModalJobExpectationCandidate.resx">
+      <DependentUpon>202004291111502_AlterModalJobExpectationCandidate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004291116040_AlterModalJobExpectationHobby.resx">
+      <DependentUpon>202004291116040_AlterModalJobExpectationHobby.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004291249375_AlterModalEducationAddDescription.resx">
+      <DependentUpon>202004291249375_AlterModalEducationAddDescription.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004291334064_AlterModalJobExperieceAddDecription.resx">
+      <DependentUpon>202004291334064_AlterModalJobExperieceAddDecription.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004300653005_CreateModalCvReference.resx">
+      <DependentUpon>202004300653005_CreateModalCvReference.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202004300713134_AlterModalCvReferenceAddPhone.resx">
+      <DependentUpon>202004300713134_AlterModalCvReferenceAddPhone.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202005011159201_AlterModalClientAddWeight.resx">
+      <DependentUpon>202005011159201_AlterModalClientAddWeight.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202005011242322_AlterModalComputerSkill.resx">
+      <DependentUpon>202005011242322_AlterModalComputerSkill.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202005011314173_AlterModalCvreferenceAddEmail.resx">
+      <DependentUpon>202005011314173_AlterModalCvreferenceAddEmail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202005050650299_AlterModalFurtherEducationReferral.resx">
+      <DependentUpon>202005050650299_AlterModalFurtherEducationReferral.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202005060617005_AlterModalFurtherEducationReferral1.resx">
+      <DependentUpon>202005060617005_AlterModalFurtherEducationReferral1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202005070354588_AlterModalfurtherEducationReferralAddmoreclientType.resx">
+      <DependentUpon>202005070354588_AlterModalfurtherEducationReferralAddmoreclientType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202007240220571_CreateModalLoginHistory2020July24.resx">
+      <DependentUpon>202007240220571_CreateModalLoginHistory2020July24.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202008140358311_AddmorefieldtoClientModal2020Aug14.resx">
+      <DependentUpon>202008140358311_AddmorefieldtoClientModal2020Aug14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202008240657239_AlterModalBusinessSetUpCategory.resx">
+      <DependentUpon>202008240657239_AlterModalBusinessSetUpCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202008240725465_AlterModalBusinessSetUpCategory20200804two.resx">
+      <DependentUpon>202008240725465_AlterModalBusinessSetUpCategory20200804two.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202008250525080_AlterJobExpectation2020Aug05.resx">
+      <DependentUpon>202008250525080_AlterJobExpectation2020Aug05.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202010050730284_alterModalJobExpectation.resx">
+      <DependentUpon>202010050730284_alterModalJobExpectation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202011240400095_AlterModalPlacement.resx">
+      <DependentUpon>202011240400095_AlterModalPlacement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202011240439440_AlterModalPlacementadddropfromjobdate.resx">
+      <DependentUpon>202011240439440_AlterModalPlacementadddropfromjobdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202012070806186_AlterModalMonitoring2020Nov07.resx">
+      <DependentUpon>202012070806186_AlterModalMonitoring2020Nov07.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202101280338103_AlterModalClientAddColumnIdCard.resx">
+      <DependentUpon>202101280338103_AlterModalClientAddColumnIdCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202301301536543_ExtendedClientRegisterModel.resx">
+      <DependentUpon>202301301536543_ExtendedClientRegisterModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\202301301541370_ExtendedClientRegisterModelV1.resx">
+      <DependentUpon>202301301541370_ExtendedClientRegisterModelV1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\BeneficiariesReport.rdlc" />
+    <EmbeddedResource Include="Reports\Businesssetupmonitoiring.rdlc" />
+    <EmbeddedResource Include="Reports\BusinessSetUpReport.rdlc" />
+    <EmbeddedResource Include="Reports\ClientLookforbussinesssSetupReport.rdlc" />
+    <EmbeddedResource Include="Reports\VtcStudentlReport.rdlc" />
+    <EmbeddedResource Include="Reports\CurriculumVitaeByClientReportApplyfor.rdlc" />
+    <EmbeddedResource Include="Reports\CurriculumVitaeByClientReport.rdlc" />
+    <EmbeddedResource Include="Reports\SocialSupportCaseReport.rdlc" />
+    <EmbeddedResource Include="Reports\ClientReferralFromMTProgramReport.rdlc" />
+    <EmbeddedResource Include="Reports\ClientsRemainingInPlacementReport.rdlc" />
+    <EmbeddedResource Include="Reports\ClientSummaryReport.rdlc" />
+    <EmbeddedResource Include="Reports\EmployeeSeekerListreport.rdlc" />
+    <EmbeddedResource Include="Reports\EmployersReport.rdlc" />
+    <EmbeddedResource Include="Reports\FurtherEuducationseekerListReport.rdlc" />
+    <EmbeddedResource Include="Reports\JobReadinessReport.rdlc" />
+    <EmbeddedResource Include="Reports\JobVancancyAvailable.rdlc" />
+    <EmbeddedResource Include="Reports\LogBookReport.rdlc" />
+    <EmbeddedResource Include="Reports\PlacementMonitoringAndDropoutReport.rdlc" />
+    <EmbeddedResource Include="Reports\PlacementSummaryReport.rdlc" />
+  </ItemGroup>
+</Project>

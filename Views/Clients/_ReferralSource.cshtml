@@ -1,0 +1,55 @@
+﻿
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="referralSource" tabindex="-1" role="dialog" aria-labelledby="referralSource" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Referral Source</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input id="referralSourceId" name="referralSourceId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="referralSourceName">Referral Source</label>
+                            <input id="referralSourceName" name="referralSourceName" placeholder="Enter referral source" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="origin">Origin</label>
+                            <select class="form-control input-sm" id="origin">
+                                <option>Internal</option>
+                                <option>External</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="overflowTable" style="overflow-x: auto;">
+                            <table id="referralSourceTable" class="table table-hover table-bordered" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 35px">ID</th>
+                                        <th>Referral Source</th>
+                                        <th>Origin</th>
+                                        <th style="width: 90px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" id="btnReferralAction" onclick="ReferralSourceAction()" class="btn btn-primary btn-sm">Save changes</button>
+            </div>
+        </div>
+
+    </div>
+</div> <!-- modal -->
+

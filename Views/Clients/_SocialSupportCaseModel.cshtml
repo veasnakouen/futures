@@ -1,0 +1,137 @@
+﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="socialSupportCaseModel" tabindex="-1" role="dialog" aria-labelledby="socialSupportCaseModel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Social Support Case</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div>
+                            <div id="SocialSopportCase" class="tab-pane fade in active">
+                                <div class="row">
+                                    <input id="socialSupportCaseId" name="socialSupportCaseId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                                </div>
+                                <hr />
+
+                                <h5>Does client have case manager?</h5>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="radio-inline col-md-4">
+                                            <input type="radio" name="HavecaseWorkerCase" id="noHaveCaseWorkerCase" value="noHaveCaseWorker">No Have
+                                        </label>
+                                        <label class="radio-inline col-md-4">
+                                            <input type="radio" name="HavecaseWorkerCase" id="HavecaseWorkerCase" value="HavecaseWorker" checked>Already Have
+                                        </label>
+                                    </div>
+                                </div>
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="SocialSupportcaseId">Case worker<span id="caseworkerprogramCase"></span></label>
+                                            <select class="form-control input-sm" id="SocialSupportcaseId" name="SocialSupportcaseId" style="min-width: 100%">
+                                                <option value="">Please select Case worker</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <h5>Client Problem</h5>
+                                <div class="row">
+                                    <input id="socialSupportProblemId" name="socialSupportProblemId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="checkbox">
+                                            <label><input class="form-group-lg" id="SocialsupportdhealthProblemCheckbox" type="checkbox" value="">Health Problem</label>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="checkbox">
+                                            <label><input id="SocialsupportdrugProblemCheckbox" type="checkbox" value="">Drug Problem</label>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="checkbox">
+                                            <label><input id="SocialsupportdbabycareProblemCheckbox" type="checkbox" value="">Baby care problem</label>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="checkbox">
+                                            <label><input id="SocialsupportdpersonalProblemCheckbox" type="checkbox" value="">Personal problem</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="checkbox">
+                                            <label><input id="SocialsupportdlegalProblemCheckbox" type="checkbox" value="">Legal problem</label>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="checkbox">
+                                            <label><input id="SocialsupportdotherProblemCheckbox" type="checkbox" value="">Other problem</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="SocialsupportNoteProblem">Note</label>
+                                        <input id="SocialsupportNoteProblem" name="SocialsupportNoteProblem" placeholder="Enter note" type="text" value="" class="form-control input-sm" style="min-width: 100%; max-width: 100%" />
+                                    </div>
+                                </div>
+
+                                <hr />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="OpendatesocialSupportCase">Open date</label>
+                                        <input id="OpendatesocialSupportCase" name="OpendatesocialSupportCase" placeholder="Enter open date" class="form-control input-sm js-date   " style="min-width: 100%">
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label for="ClosedateSocialsupportCase">Close date</label>
+                                        <input id="ClosedateSocialsupportCase" name="ClosedateSocialsupportCase" placeholder="Enter Close date" class="form-control input-sm js-date   " style="min-width: 100%">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="StatusSocialsupportCase">Status</label>
+                                            <select class="form-control input-sm" id="StatusSocialsupportCase" name="StatusSocialsupportCase" style="min-width: 100%">
+                                                <option value="">Please select Status</option>
+                                                <option value="OpenCase">Open Case</option>
+                                                <option value="CloseCase">Close Case</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                <hr />
+                            </div>
+                    </div>
+                </div>
+
+                <hr />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" onclick="SocialSupportCaseAction();" id="btnSocialSupportCasesAction" class="btn btn-primary btn-sm">Add New</button>
+            </div>
+        </div>
+    </div>
+</div> <!-- modal -->

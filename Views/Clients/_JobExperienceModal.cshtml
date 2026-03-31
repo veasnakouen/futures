@@ -1,0 +1,87 @@
+﻿
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="jobExperienceModal" tabindex="-1" role="dialog" aria-labelledby="jobExperienceModal" aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Job Experience</h5>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <input id="jobExperienceId" name="jobExperienceId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="jobExperiencePositionId">Job Position</label>
+                            <select class="form-control input-sm" id="jobExperiencePositionId" name="jobExperiencePositionId" style="min-width: 100%">
+                                @foreach (var jobPosition in Model.JobPositions)
+                                {
+                                    <option value=@jobPosition.Id>@jobPosition.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="jobExperienceEmployer">Employer</label>
+                            <input id="jobExperienceEmployer" name="jobExperienceEmployer" placeholder="Enter employer" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="jobExperienceCategoryId">Job Category</label>
+                            <select class="form-control input-sm" id="jobExperienceCategoryId" name="jobExperienceCategoryId" style="min-width: 100%">
+                                @foreach (var jobCategory in Model.JobCategories)
+                                {
+                                    <option value=@jobCategory.Id>@jobCategory.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="jobExperienceDuration">Duration</label>
+                            <input id="jobExperienceDuration" name="jobExperienceDuration" placeholder="Enter duration" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="jobExperienceDescription">Description</label>
+                            <input id="jobExperienceDescription" name="jobExperienceDescription" placeholder="Enter Description" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="jobExperienceSalary">Salary</label>
+                            <input id="jobExperienceSalary" name="jobExperienceSalary" placeholder="Enter salary" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" onclick="JobExperienceAction();" id="btnJobExperienceAction" class="btn btn-primary btn-sm">Add New</button>
+            </div>
+        </div>
+
+    </div>
+</div>

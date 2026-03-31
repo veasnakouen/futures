@@ -1,0 +1,38 @@
+﻿
+<div class="modal fade" id="jobDetail" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-body">
+            <div class="panel panel-primary">
+                <div class="panel-heading clearfix">
+                    <button type="button" class="btn btn-danger btn-xs pull-right" data-dismiss="modal">&times;</button>
+                    <h5 class="modal-title">Job detail</h5>
+                </div>
+                <div class="panel-body">
+                    <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <h4 style="color: #004973"><span id="positionDisplay"></span></h4>
+                    <hr />
+                    <p><b id="dateDisplay"></b></p>
+                    <hr />
+                    <p><span class="glyphicon glyphicon-map-marker"></span> <b>Location: </b><span id="locationDisplay"></span></p>
+                    <p><span class="glyphicon glyphicon-calendar"></span> <b>Schedule: </b><span id="scheduleDisplay"></span></p>
+                    <p><span class="glyphicon glyphicon-usd"></span> <b>Salary: </b><span id="salaryDisplay"></span></p>
+                    <p><span class="glyphicon glyphicon-list-alt"></span> <b>Contract: </b><span id="contractDisplay"></span></p>
+                    <hr />
+
+                    <p><h5 style="color: #004973">Responsibilities:</h5></p>
+                    <p id="responsibilitiesDisplay" style="white-space: pre-line;"></p>
+
+                    <hr />
+
+                    <p><h5 style="color: #004973">Requirement:</h5></p>
+                    <p id="requirementDisplay" style="white-space: pre-line;"></p>
+
+                    <hr />
+
+                    <p><h5 style="color: #004973">Application Information:</h5></p>
+                    <p id="applicationInformationDisplay" style="white-space: pre-line;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

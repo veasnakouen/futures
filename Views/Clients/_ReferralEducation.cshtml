@@ -1,0 +1,69 @@
+﻿
+<form id="referralEducations" method="post" enctype="multipart/form-data">
+
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="referralEducation" tabindex="-1" role="dialog" aria-labelledby="referralEducation" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header clearfix">
+                    <h5 class="modal-title" id="exampleModalLabel">Further Education </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <input id="referralEducationId" name="referralEducationId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" /> 
+                        <input id="referralClientType" name="referralClientType" type="text" style="display: none;" disabled="disabled" value="" class="form-control" /> 
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="referralDate">Date</label>
+                                <input id="referralDate" name="referralDate" placeholder="Enter date" type="text" value="" class="form-control input-sm js-date" style="min-width: 100%" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="referralSourceId">To</label>
+                                <select class="form-control input-sm" id="referralSourceId" name="name" style="min-width: 100%">
+                                    @foreach (var referralSource in Model.EducationReferralSources)
+                                    {
+                                        <option value=@referralSource.Id>@referralSource.ReferralSource (@referralSource.Status)</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="subjectfurtherEducationreferral">Subject/Skill</label>
+                                <select class="form-control input-sm" id="subjectfurtherEducationreferral" name="subjectfurtherEducationreferral" style="min-width: 100%">
+                                    <option value="">Please select Subject </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="provider">Provider</label>
+                                <input id="provider" name="provider" placeholder="Enter provider" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="duration">Duration</label>
+                                <input id="duration" name="duration" placeholder="Enter duration" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="ReferralEducationAction();" id="btnReferralEducationAction" class="btn btn-primary btn-sm">Add New</button>
+                </div>
+            </div>
+
+        </div>
+    </div> <!-- modal -->
+
+</form>

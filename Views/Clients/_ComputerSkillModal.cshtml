@@ -1,0 +1,67 @@
+﻿
+<div class="modal fade" data-backdrop="static" data-keyboard="false" id="ComputerSkillModal" tabindex="-1" role="dialog" aria-labelledby="ComputerSkillModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header clearfix">
+                <h5 class="modal-title" id="exampleModalLabel">Computer Skill</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <input id="computerSkillId" name="computerSkillId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="computerSkillSubject">Skill/Subject</label>
+                            <input id="computerSkillSubject" name="computerSkillSubject" placeholder="Enter skill/subject" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="computerSkillLevel">Level</label>
+                            <input id="computerSkillLevel" name="computerSkillLevel" placeholder="Enter level" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="computerSkillDuring">During</label>
+                                    <input id="computerSkillDuring" name="computerSkillDuring" placeholder="Enter during" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="computerSkillCertified">Certified</label>
+                                    <input id="computerSkillCertified" name="computerSkillCertified" placeholder="Enter certified" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="computerSkillDescription">Description</label>
+                            <input id="computerSkillDescription" name="computerSkillDescription" placeholder="Enter description" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" onclick="ComputerSkillAction();" id="btnComputerSkillAction" class="btn btn-primary btn-sm">Add New</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>

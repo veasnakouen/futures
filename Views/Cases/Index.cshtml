@@ -1,0 +1,115 @@
+﻿@model MtpApp.ViewModels.CaseViewModel
+
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <div class="panel panel-primary" style="margin-top: 10px">
+
+        <div class="panel-heading">
+            <a href="@Url.Action("Index", "Clients")" class="btn btn-danger btn-xs pull-right">
+                <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                Go To Manage Client
+            </a>
+            <button data-toggle="modal" data-target="#caseModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px"><span class="glyphicon glyphicon-plus-sign"></span> Add New Case</button>
+            <h5 class="modal-title">Case Management</h5>
+        </div>
+
+        <div class="panel-body">
+
+            <div class="row">
+
+                <div class="col-md-12">
+
+                    <div class="form-inline">
+
+                        <div class="form-group">
+                            <label for="displayCaseWorker">Show By Case Worker: </label>
+                            <select class="form-control input-sm" id="displayCaseWorker">
+                                <option>--Show All Cases--</option>
+                                @foreach (var caseWorker in Model.CaseWorkers)
+                                {
+                                    <option value="@caseWorker.Id">@caseWorker.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <button onclick="ShowNewCase();" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-filter"></span> New Cases
+                        </button>
+
+                        <button onclick="ShowOpenedCase();" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-filter"></span> Opened Cases
+                        </button>
+
+                        <button onclick="ShowInProgressCase();" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-filter"></span> In Progress Cases
+                        </button>
+
+                        <button onclick="ShowHoldCase();" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-filter"></span> Hold Cases
+                        </button>
+
+                        <button onclick="ShowClosedCase();" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-filter"></span> Closed Cases
+                        </button>
+
+                    </div>
+
+                    <hr />
+
+                    <div class="panel panel-primary">
+
+                        <div class="panel-heading clearfix">
+                            <p class="modal-title">Case List: << Status: <b><span id="displayCaseStatus" style="color: red"></span></b> >></p>
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div id="overflowTable" style="overflow-x: auto;">
+                                <table id="caseListTable" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 35px">ID</th>
+                                            <th>Client</th>
+                                            <th>Phone</th>
+                                            <th>Program | Case Worker</th>
+                                            <th>Case Priority</th>
+                                            <th>Case Type</th>
+                                            <th>Subject</th>
+                                            <th>Open Date</th>
+                                            <th>Close Date</th>
+                                            <th>Status</th>
+                                            <th style="width: 150px">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@Html.Partial("~/Views/Clients/_CaseModal.cshtml")
+
+@*@Html.Partial("~/Views/Clients/_FuturesTrainingModal.cshtml")*@
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/Functions/casemanagement.js")
+}

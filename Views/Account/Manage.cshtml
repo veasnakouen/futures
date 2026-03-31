@@ -1,0 +1,45 @@
+﻿@using MtpApp.Models;
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Manage Account";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        @if (ViewBag.HasLocalPassword)
+        {
+            <p class="text-success">@ViewBag.StatusMessage</p>
+            @Html.Partial("_ChangePasswordPartial")
+        }
+        else
+        {
+            @Html.Partial("_SetPasswordPartial")
+        }
+
+        <section id="externalLogins">
+            @Html.Action("RemoveAccountList")
+        </section>
+    </div>
+</div>
+@section Scripts {
+<script>
+    $(document).ready(function () {
+        $(function () {
+            $('.focus').focus();
+        });
+    });
+    $(function () {
+        var a = '@TempData["msg"]';
+        if (a != '') {
+            if (a != 'Your password has been changed successfully.') {
+                toastr.error(a,"Server Response");
+            }
+            else 
+            {
+                toastr.success(a,"Server Response");
+            }
+        }
+    })
+</script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,105 @@
+﻿@model MtpApp.ViewModels.VacancyViewModel
+
+<div class="container-fluid">
+    <div class="panel panel-primary" style="margin-top: 10px;">
+        <div class="panel-heading clearfix">
+            <h5 class="modal-title">Manage Vacancies</h5>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label for="displayEmployer">Vacancies by Employer: </label>
+                            <select class="form-control input-sm" id="displayEmployer">
+                                <option>--Select Employer--</option>
+                                @foreach (var employer in Model.Employers)
+                                {
+                                    <option value="@employer.Id">@employer.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <button onclick="ShowAllVacancies();" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-asterisk"></span> Show All
+                        </button>
+                        <button id="btnPostNewVacancy" data-toggle="modal" data-target="#vacancyModal" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-asterisk"></span> Post New Vacancy
+                        </button>
+                        <button id="btnPostNewVacancy" data-toggle="modal" data-target="#overDeadlineVacancy" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-asterisk"></span> Reactivate Job Vacancy
+                        </button>
+                        @Html.ActionLink("Back", "Index", "Employers", null, new { @class = "btn btn-danger btn-sm pull-right", @style = "margin-right: 5px" })
+                    </div>
+
+                    <hr />
+
+                    <div class="panel panel-primary">
+                        <div class="panel-heading clearfix">
+                            <p class="modal-title">Vacancy List</p>
+                        </div>
+                        <div class="panel-body">
+                            <div id="overflowTable" style="overflow-x: auto;">
+                                <table id="vacancies" class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 35px">V.ID</th>
+                                            <th>Employer</th>
+                                            <th>Position</th>
+                                            <th>Available</th>
+                                            <th>Contract Type</th>
+                                            <th>Job Category</th>
+                                            <th>Schedule</th>
+                                            <th>Salary</th>
+                                            <th style="width: 90px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="row">
+                    <div class="col-md-12">
+                        <button onclick="AddNewMonitoring();" class="btn btn-primary btn-sm">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Add New Monitoring Schedule
+                        </button>
+                        <hr />
+                        <div class="panel panel-primary">
+                            <div class="panel-heading clearfix">
+                                <p class="modal-title">Monitoring List</p>
+                            </div>
+                            <div class="panel-body">
+                                <div id="overflowTable" style="overflow-x: auto;">
+                                    <table id="monitoring" class="table table-hover table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 30px">M.ID</th>
+                                                <th>Last Monitor</th>
+                                                <th>Next Monitor</th>
+                                                <th style="width: 90px;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            <div id="divLoadingModal"></div>
+        </div>
+    </div>
+
+</div>
+
+@Html.Partial("_OverDeadlineVacancyModal")
+
+@Html.Partial("_VacancyModal")
+
+
+@section scripts
+{
+    @Scripts.Render("~/Scripts/Functions/vacancy.js")
+}

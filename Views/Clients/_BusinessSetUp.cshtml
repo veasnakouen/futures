@@ -1,0 +1,83 @@
+﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="businessSetUpModal" tabindex="-1" role="dialog" aria-labelledby="businessSetUpModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h5 class="modal-title">Add Business SetUp</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input id="bussuinessSetUpId" name="bussuinessSetUpId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <input id="#" name="#" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="">Count time</label>
+                            <select class="form-control input-sm" id="CountTime" name="CountTime" style="min-width: 100%">
+                                <option value="1st">1st</option>
+                                <option value="2nd">2nd</option>
+                                <option value="3rd">3rd</option>
+                                <option value="4th">4th</option>
+                                <option value="5th">5th</option>
+                                <option value="6th">6th</option>
+                                <option value="7th">7th</option>
+                                <option value="8th">8th</option>
+                                <option value="9th">9th</option>
+                                <option value="10th">10th</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="startbusinessdate">Start Business date</label>
+                        <input id="startbusinessdate" name="startbusinessdate" placeholder="Enter start businessdate date" class="form-control input-sm js-date  " style="min-width: 100%">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="business-setupcateogryId">Business setup cateogry</label>
+                            <select class="form-control input-sm" id="business-setupcateogryId" name="business-setupcateogryId" style="min-width: 100%">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="businessType">Business type</label>
+                            <input id="businessType" name="businessType" placeholder="Enter Business Type" type="text" value="" class="form-control input-sm " style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="income">Income $</label>
+                            <input id="income" name="income" placeholder="Enter income" type="number" value="" class="form-control input-sm " style="min-width: 100%" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="expense">Expense $</label>
+                            <input id="expense" name="expense" placeholder="Enter expense" type="number" value="" class="form-control input-sm " style="min-width: 100%" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="placeby">Place by</label>
+                        <select class="form-control input-sm" id="placeby" name="placeby" style="min-width: 100%">
+                            <option selected value="">Select Place by</option>
+                            <option value="Future">Future</option>
+                            <option value="Himself/Herself">Himself/Herself</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" id="btnBusinessSetup" onclick="BusinessSetupAction();" class="btn btn-primary btn-sm">Save changes</button>
+            </div>
+        </div>
+
+    </div>
+</div> <!-- modal -->
