@@ -298,7 +298,7 @@ namespace MtpApp.Controllers.Api
             }
             else
             {
-                var id = int.Parse(HttpContext.Current.Request.Form["id"]);
+                var id = int.Parse(System.Web.HttpContext.Current.Request.Form["id"]);
 
                 var clientInDb = _context.Clients.SingleOrDefault(c => c.Id == id);
 
