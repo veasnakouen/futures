@@ -103,7 +103,7 @@ namespace MtpApp.Controllers.Api
                 httpPostedFile.SaveAs(fileSavePath);
             }
 
-            var httpPostedFileCardId = HttpContext.Current.Request.Files["UploadedFileIdCard"];
+            var httpPostedFileCardId = System.Web.HttpContext.Current.Request.Files["UploadedFileIdCard"];
 
             if (httpPostedFileCardId != null)
             {
