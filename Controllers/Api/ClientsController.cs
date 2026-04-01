@@ -99,7 +99,7 @@ namespace MtpApp.Controllers.Api
                                        , Path.GetExtension(httpPostedFile.FileName)
                                        ));
 
-                var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/Images"), ImageName);
+                var fileSavePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Images"), ImageName);
                 httpPostedFile.SaveAs(fileSavePath);
             }
 
