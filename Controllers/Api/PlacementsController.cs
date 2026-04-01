@@ -60,7 +60,7 @@ namespace MtpApp.Controllers.Api
                 PlacementDate = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["PlacementDate"], "MM/dd/yyyy", null),
                 PlacementType = System.Web.HttpContext.Current.Request.Form["PlacementType"],
                 JobPositionId = int.Parse(System.Web.HttpContext.Current.Request.Form["JobPositionId"]),
-                CompanyName = HttpContext.Current.Request.Form["CompanyName"],
+                CompanyName = System.Web.HttpContext.Current.Request.Form["CompanyName"],
                 CompanyContactName = HttpContext.Current.Request.Form["CompanyContactName"],
                 CompanyContactPhone = HttpContext.Current.Request.Form["CompanyContactPhone"],
                 CompanyContactEmail = HttpContext.Current.Request.Form["CompanyContactEmail"],
