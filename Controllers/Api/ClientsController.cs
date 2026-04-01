@@ -127,7 +127,7 @@ namespace MtpApp.Controllers.Api
                 ClientCode = System.Web.HttpContext.Current.Request.Form["ClientCode"],
                 FirstName = System.Web.HttpContext.Current.Request.Form["FirstName"],
                 LastName = System.Web.HttpContext.Current.Request.Form["LastName"],
-                Gender = HttpContext.Current.Request.Form["Gender"],
+                Gender = System.Web.HttpContext.Current.Request.Form["Gender"],
                 DateOfBirth = DateTime.ParseExact(HttpContext.Current.Request.Form["DateOfBirth"], "MM/dd/yyyy", null),
                 ContactPhone = HttpContext.Current.Request.Form["ContactPhone"],
                 RelativePhone = HttpContext.Current.Request.Form["RelativePhone"],
