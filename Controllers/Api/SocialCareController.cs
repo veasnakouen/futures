@@ -52,7 +52,7 @@ namespace MtpApp.Controllers.Api
 
               var socialCareDto = new SocialCareDto()
               {
-                  ClientId = int.Parse(HttpContext.Current.Request.Form["ClientId"]),
+                  ClientId = int.Parse(HttpContext.CurrentAccessor.HttpContext.Request.Form["ClientId"]),
                   SocialSupportNeeded = Boolean.Parse(HttpContext.Current.Request.Form["socialsupportNeeded"]),
                   MeetingFuture = Boolean.Parse(HttpContext.Current.Request.Form["Meetingfuture"]),
                   Problem = Boolean.Parse(HttpContext.Current.Request.Form["problems"])
