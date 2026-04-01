@@ -89,7 +89,7 @@ namespace MtpApp.Controllers.Api
             string ImageName = "";
             string ImageNameIdCard = "";
 
-            var httpPostedFile = HttpContext.Current.Request.Files["UploadedFile"];
+            var httpPostedFile = System.Web.HttpContext.Current.Request.Files["UploadedFile"];
 
             if (httpPostedFile != null)
             {
