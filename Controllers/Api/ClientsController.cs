@@ -138,7 +138,7 @@ namespace MtpApp.Controllers.Api
                 Photo = ImageName,
                 IdCard = ImageNameIdCard,
                 CurrentSituation = System.Web.HttpContext.Current.Request.Form["CurrentSituation"],
-                FurtherEducation = Boolean.Parse(HttpContext.Current.Request.Form["FurtherEducation"]),
+                FurtherEducation = Boolean.Parse(System.Web.HttpContext.Current.Request.Form["FurtherEducation"]),
                 Placement = Boolean.Parse(HttpContext.Current.Request.Form["Placement"]),
                 TrainingFromFutures = Boolean.Parse(HttpContext.Current.Request.Form["TrainingFromFutures"]),
                 SocialSupportRequired = Boolean.Parse(HttpContext.Current.Request.Form["SocialSupportRequired"]),
