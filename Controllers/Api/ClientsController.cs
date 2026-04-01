@@ -309,7 +309,7 @@ namespace MtpApp.Controllers.Api
 
                 var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
-                var httpPostedFileCardId = HttpContext.Current.Request.Files["UploadedFileIdCard"];
+                var httpPostedFileCardId = System.Web.HttpContext.Current.Request.Files["UploadedFileIdCard"];
 
                 if (httpPostedFileCardId != null)
                 {
@@ -319,7 +319,7 @@ namespace MtpApp.Controllers.Api
                                            , Path.GetExtension(httpPostedFileCardId.FileName)
                                            ));
 
-                    var fileSavePathIdCard = Path.Combine(HttpContext.Current.Server.MapPath("~/Images"), ImageNameIdCard);
+                    var fileSavePathIdCard = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Images"), ImageNameIdCard);
                     httpPostedFileCardId.SaveAs(fileSavePathIdCard);
                 }
 
@@ -337,45 +337,45 @@ namespace MtpApp.Controllers.Api
                 {
                     Id = id,
                     Branch = user.Branch,
-                    ClientCode = HttpContext.Current.Request.Form["ClientCode"],
-                    FirstName = HttpContext.Current.Request.Form["FirstName"],
-                    LastName = HttpContext.Current.Request.Form["LastName"],
-                    Gender = HttpContext.Current.Request.Form["Gender"],
-                    DateOfBirth = DateTime.ParseExact(HttpContext.Current.Request.Form["DateOfBirth"], "MM/dd/yyyy", null),
-                    ContactPhone = HttpContext.Current.Request.Form["ContactPhone"],
-                    RelativePhone = HttpContext.Current.Request.Form["RelativePhone"],
-                    MaritalStatus = HttpContext.Current.Request.Form["MaritalStatus"],
-                    Email = HttpContext.Current.Request.Form["Email"],
-                    Address = HttpContext.Current.Request.Form["Address"],
-                    Province = HttpContext.Current.Request.Form["Province"],
+                    ClientCode = System.Web.HttpContext.Current.Request.Form["ClientCode"],
+                    FirstName = System.Web.HttpContext.Current.Request.Form["FirstName"],
+                    LastName = System.Web.HttpContext.Current.Request.Form["LastName"],
+                    Gender = System.Web.HttpContext.Current.Request.Form["Gender"],
+                    DateOfBirth = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["DateOfBirth"], "MM/dd/yyyy", null),
+                    ContactPhone = System.Web.HttpContext.Current.Request.Form["ContactPhone"],
+                    RelativePhone = System.Web.HttpContext.Current.Request.Form["RelativePhone"],
+                    MaritalStatus = System.Web.HttpContext.Current.Request.Form["MaritalStatus"],
+                    Email = System.Web.HttpContext.Current.Request.Form["Email"],
+                    Address = System.Web.HttpContext.Current.Request.Form["Address"],
+                    Province = System.Web.HttpContext.Current.Request.Form["Province"],
                     Photo = clientInDb.Photo,
                     IdCard = imageCIdCard,
-                    CurrentSituation = HttpContext.Current.Request.Form["CurrentSituation"],
-                    FurtherEducation = Boolean.Parse(HttpContext.Current.Request.Form["FurtherEducation"]),
-                    Placement = Boolean.Parse(HttpContext.Current.Request.Form["Placement"]),
-                    TrainingFromFutures = Boolean.Parse(HttpContext.Current.Request.Form["TrainingFromFutures"]),
-                    SocialSupportRequired = Boolean.Parse(HttpContext.Current.Request.Form["SocialSupportRequired"]),
-                    HearBy = HttpContext.Current.Request.Form["HearBy"],
-                    ExpectedSupport = HttpContext.Current.Request.Form["ExpectedSupport"],
+                    CurrentSituation = System.Web.HttpContext.Current.Request.Form["CurrentSituation"],
+                    FurtherEducation = Boolean.Parse(System.Web.HttpContext.Current.Request.Form["FurtherEducation"]),
+                    Placement = Boolean.Parse(System.Web.HttpContext.Current.Request.Form["Placement"]),
+                    TrainingFromFutures = Boolean.Parse(System.Web.HttpContext.Current.Request.Form["TrainingFromFutures"]),
+                    SocialSupportRequired = Boolean.Parse(System.Web.HttpContext.Current.Request.Form["SocialSupportRequired"]),
+                    HearBy = System.Web.HttpContext.Current.Request.Form["HearBy"],
+                    ExpectedSupport = System.Web.HttpContext.Current.Request.Form["ExpectedSupport"],
                     AspUserId = clientInDb.AspUserId,
                     EnrollDate = clientInDb.EnrollDate,
-                    RegisterDate = DateTime.ParseExact(HttpContext.Current.Request.Form["RegisterDate"], "MM/dd/yyyy", null),
+                    RegisterDate = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["RegisterDate"], "MM/dd/yyyy", null),
 
-                    RegisterDateNd = DateTime.ParseExact(HttpContext.Current.Request.Form["RegisterDateNd"], "MM/dd/yyyy", null),
-                    RegisterDateRd = DateTime.ParseExact(HttpContext.Current.Request.Form["RegisterDateRd"], "MM/dd/yyyy", null),
+                    RegisterDateNd = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["RegisterDateNd"], "MM/dd/yyyy", null),
+                    RegisterDateRd = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["RegisterDateRd"], "MM/dd/yyyy", null),
 
                     UpdateDate = DateTime.Today,
                     UpdateBy = userId,
-                    PlaceOfBirth = HttpContext.Current.Request.Form["PlaceOfBirth"],
-                    Nationality = HttpContext.Current.Request.Form["Nationality"],
-                    Citizenship = HttpContext.Current.Request.Form["Citizenship"],
-                    Height = HttpContext.Current.Request.Form["Height"],
-                    Weight = HttpContext.Current.Request.Form["Weight"],
-                    SocialSupportProblem = HttpContext.Current.Request.Form["SocialSupportProblem"],
-                    IdpoorStatus = HttpContext.Current.Request.Form["IdpoorStatus"],
-                    IdpoorValiddate = DateTime.ParseExact(HttpContext.Current.Request.Form["IdpoorValiddate"], "MM/dd/yyyy", null),
-                    IdpoorLevel = HttpContext.Current.Request.Form["IdpoorLevel"],
-                    IdpoorAccountNumber = HttpContext.Current.Request.Form["IdpoorAccountNumber"],
+                    PlaceOfBirth = System.Web.HttpContext.Current.Request.Form["PlaceOfBirth"],
+                    Nationality = System.Web.HttpContext.Current.Request.Form["Nationality"],
+                    Citizenship = System.Web.HttpContext.Current.Request.Form["Citizenship"],
+                    Height = System.Web.HttpContext.Current.Request.Form["Height"],
+                    Weight = System.Web.HttpContext.Current.Request.Form["Weight"],
+                    SocialSupportProblem = System.Web.HttpContext.Current.Request.Form["SocialSupportProblem"],
+                    IdpoorStatus = System.Web.HttpContext.Current.Request.Form["IdpoorStatus"],
+                    IdpoorValiddate = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["IdpoorValiddate"], "MM/dd/yyyy", null),
+                    IdpoorLevel = System.Web.HttpContext.Current.Request.Form["IdpoorLevel"],
+                    IdpoorAccountNumber = System.Web.HttpContext.Current.Request.Form["IdpoorAccountNumber"],
                     Status = "Active"
                 };
 
