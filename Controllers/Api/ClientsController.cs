@@ -113,7 +113,7 @@ namespace MtpApp.Controllers.Api
                                        , Path.GetExtension(httpPostedFileCardId.FileName)
                                        ));
 
-                var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/Images"), ImageNameIdCard);
+                var fileSavePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Images"), ImageNameIdCard);
                 httpPostedFileCardId.SaveAs(fileSavePath);
             }
 
