@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using MtpApp.Models;
 using AutoMapper;
-using App_Start;
-using MtpApp.App_Start;
 
 namespace MtpApp
 {
@@ -37,7 +35,8 @@ namespace MtpApp
             services.AddRazorPages();
 
             // AutoMapper: register the mapping profile
-            services.AddAutoMapper(typeof(MappingProfile));
+            //services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
         }
 
         public static void Configure(WebApplication app)

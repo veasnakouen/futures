@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -27,6 +28,8 @@ namespace MtpApp.Models
 
         public bool IsDeleted { get; set; }
 
+        public ICollection<ApplicationUserRole> Roles { get; set; } = new List<ApplicationUserRole>();
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // In ASP.NET Core Identity the ClaimsPrincipal is created by SignInManager.
@@ -34,6 +37,11 @@ namespace MtpApp.Models
             await Task.CompletedTask;
             return new ClaimsIdentity();
         }
+
+    public class ApplicationUserRole
+    {
+        public string RoleId { get; set; }
+    }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
