@@ -76,7 +76,7 @@ namespace MtpApp.Controllers.Api
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var firstName = HttpContext.Current.Request.Form["FirstName"];
+            var firstName = System.Web.HttpContext.Current.Request.Form["FirstName"];
             var lastName = HttpContext.Current.Request.Form["LastName"];
 
             //check if client exists in database
