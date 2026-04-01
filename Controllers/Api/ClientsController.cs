@@ -124,7 +124,7 @@ namespace MtpApp.Controllers.Api
             var clientDto = new ClientDto()
             {
                 Branch = user.Branch,
-                ClientCode = HttpContext.Current.Request.Form["ClientCode"],
+                ClientCode = System.Web.HttpContext.Current.Request.Form["ClientCode"],
                 FirstName = HttpContext.Current.Request.Form["FirstName"],
                 LastName = HttpContext.Current.Request.Form["LastName"],
                 Gender = HttpContext.Current.Request.Form["Gender"],
