@@ -57,7 +57,7 @@ namespace MtpApp.Controllers.Api
 
             var placementDto = new PlacementDto()
             {
-                PlacementDate = DateTime.ParseExact(HttpContext.Current.Request.Form["PlacementDate"], "MM/dd/yyyy", null),
+                PlacementDate = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["PlacementDate"], "MM/dd/yyyy", null),
                 PlacementType = HttpContext.Current.Request.Form["PlacementType"],
                 JobPositionId = int.Parse(HttpContext.Current.Request.Form["JobPositionId"]),
                 CompanyName = HttpContext.Current.Request.Form["CompanyName"],
