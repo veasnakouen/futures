@@ -61,7 +61,7 @@ namespace MtpApp.Controllers.Api
                 PlacementType = System.Web.HttpContext.Current.Request.Form["PlacementType"],
                 JobPositionId = int.Parse(System.Web.HttpContext.Current.Request.Form["JobPositionId"]),
                 CompanyName = System.Web.HttpContext.Current.Request.Form["CompanyName"],
-                CompanyContactName = HttpContext.Current.Request.Form["CompanyContactName"],
+                CompanyContactName = System.Web.HttpContext.Current.Request.Form["CompanyContactName"],
                 CompanyContactPhone = HttpContext.Current.Request.Form["CompanyContactPhone"],
                 CompanyContactEmail = HttpContext.Current.Request.Form["CompanyContactEmail"],
                 CompanyAddress = HttpContext.Current.Request.Form["CompanyAddress"],
