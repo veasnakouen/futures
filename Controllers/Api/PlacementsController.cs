@@ -107,7 +107,7 @@ namespace MtpApp.Controllers.Api
         [HttpPut]
         public IHttpActionResult UpdatePlacement()
         {
-            var id = int.Parse(HttpContext.Current.Request.Form["PlacementId"]);
+            var id = int.Parse(System.Web.HttpContext.Current.Request.Form["PlacementId"]);
 
             var placementInDb = _context.Placements.SingleOrDefault(c => c.Id == id);
 
@@ -115,34 +115,34 @@ namespace MtpApp.Controllers.Api
                 return NotFound();
             var placementDto = new PlacementDto()
             {
-                Id = int.Parse(HttpContext.Current.Request.Form["PlacementId"]),
-                PlacementDate = DateTime.ParseExact(HttpContext.Current.Request.Form["PlacementDate"], "MM/dd/yyyy", null),
-                PlacementType = HttpContext.Current.Request.Form["PlacementType"],
-                JobPositionId = int.Parse(HttpContext.Current.Request.Form["JobPositionId"]),
-                CompanyName = HttpContext.Current.Request.Form["CompanyName"],
-                CompanyContactName = HttpContext.Current.Request.Form["CompanyContactName"],
-                CompanyContactPhone = HttpContext.Current.Request.Form["CompanyContactPhone"],
-                CompanyContactEmail = HttpContext.Current.Request.Form["CompanyContactEmail"],
-                CompanyAddress = HttpContext.Current.Request.Form["CompanyAddress"],
-                JobPlacedBy = HttpContext.Current.Request.Form["JobPlacedBy"],
-                Salary = HttpContext.Current.Request.Form["Salary"],
-                Tips = HttpContext.Current.Request.Form["Tips"],
-                TotalIncome = HttpContext.Current.Request.Form["TotalIncome"],
-                WorkTime = HttpContext.Current.Request.Form["WorkTime"],
-                DayOff = HttpContext.Current.Request.Form["DayOff"],
-                NumberOfAnnualLeave = HttpContext.Current.Request.Form["NumberOfAnnualLeave"],
-                CountedTime = HttpContext.Current.Request.Form["CaseId"],
-                ClientId = int.Parse(HttpContext.Current.Request.Form["ClientId"]),
-                Health = bool.Parse(HttpContext.Current.Request.Form["Health"]),
-                Meal = bool.Parse(HttpContext.Current.Request.Form["Meal"]),
-                Transport = bool.Parse(HttpContext.Current.Request.Form["Transport"]),
-                Bonus = bool.Parse(HttpContext.Current.Request.Form["Bonus"]),
-                PublicHoliday = bool.Parse(HttpContext.Current.Request.Form["PublicHoliday"]),
-                AccidentInsurance = bool.Parse(HttpContext.Current.Request.Form["AccidentInsurance"]),
-                Accommodation = bool.Parse(HttpContext.Current.Request.Form["Accommodation"]),
-                Overtime = bool.Parse(HttpContext.Current.Request.Form["Overtime"]),
-                ThirteenMonthsSalary = bool.Parse(HttpContext.Current.Request.Form["ThirteenMonthsSalary"]),
-                AnnualLeave = bool.Parse(HttpContext.Current.Request.Form["AnnualLeave"]),
+                Id = int.Parse(System.Web.HttpContext.Current.Request.Form["PlacementId"]),
+                PlacementDate = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["PlacementDate"], "MM/dd/yyyy", null),
+                PlacementType = System.Web.HttpContext.Current.Request.Form["PlacementType"],
+                JobPositionId = int.Parse(System.Web.HttpContext.Current.Request.Form["JobPositionId"]),
+                CompanyName = System.Web.HttpContext.Current.Request.Form["CompanyName"],
+                CompanyContactName = System.Web.HttpContext.Current.Request.Form["CompanyContactName"],
+                CompanyContactPhone = System.Web.HttpContext.Current.Request.Form["CompanyContactPhone"],
+                CompanyContactEmail = System.Web.HttpContext.Current.Request.Form["CompanyContactEmail"],
+                CompanyAddress = System.Web.HttpContext.Current.Request.Form["CompanyAddress"],
+                JobPlacedBy = System.Web.HttpContext.Current.Request.Form["JobPlacedBy"],
+                Salary = System.Web.HttpContext.Current.Request.Form["Salary"],
+                Tips = System.Web.HttpContext.Current.Request.Form["Tips"],
+                TotalIncome = System.Web.HttpContext.Current.Request.Form["TotalIncome"],
+                WorkTime = System.Web.HttpContext.Current.Request.Form["WorkTime"],
+                DayOff = System.Web.HttpContext.Current.Request.Form["DayOff"],
+                NumberOfAnnualLeave = System.Web.HttpContext.Current.Request.Form["NumberOfAnnualLeave"],
+                CountedTime = System.Web.HttpContext.Current.Request.Form["CaseId"],
+                ClientId = int.Parse(System.Web.HttpContext.Current.Request.Form["ClientId"]),
+                Health = bool.Parse(System.Web.HttpContext.Current.Request.Form["Health"]),
+                Meal = bool.Parse(System.Web.HttpContext.Current.Request.Form["Meal"]),
+                Transport = bool.Parse(System.Web.HttpContext.Current.Request.Form["Transport"]),
+                Bonus = bool.Parse(System.Web.HttpContext.Current.Request.Form["Bonus"]),
+                PublicHoliday = bool.Parse(System.Web.HttpContext.Current.Request.Form["PublicHoliday"]),
+                AccidentInsurance = bool.Parse(System.Web.HttpContext.Current.Request.Form["AccidentInsurance"]),
+                Accommodation = bool.Parse(System.Web.HttpContext.Current.Request.Form["Accommodation"]),
+                Overtime = bool.Parse(System.Web.HttpContext.Current.Request.Form["Overtime"]),
+                ThirteenMonthsSalary = bool.Parse(System.Web.HttpContext.Current.Request.Form["ThirteenMonthsSalary"]),
+                AnnualLeave = bool.Parse(System.Web.HttpContext.Current.Request.Form["AnnualLeave"]),
                 Status = placementInDb.Status,
                 DropfromDate = placementInDb.DropfromDate
             };
