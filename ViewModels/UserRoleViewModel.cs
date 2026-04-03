@@ -14,5 +14,9 @@ namespace MtpApp.ViewModels
         public string RoleId { get; set; }
 
         public string RoleName { get; set; }
+
+        public string Id => RoleId;
+
+        public string Name => RoleName;
     }
 }

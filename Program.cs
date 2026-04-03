@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MtpApp.App_Start;
+using MtpApp.Infrastructure;
 using MtpApp.Models;
 using System;
 using System.Text.Json.Serialization;
@@ -39,6 +40,9 @@ builder.Services.AddControllersWithViews()
 
 // AutoMapper — register profiles from the application assembly
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
+
+// Legacy view helper compatibility services
+builder.Services.AddSingleton<ILegacyAssetRenderer, LegacyAssetRenderer>();
 
 // Session
 builder.Services.AddSession(options =>
