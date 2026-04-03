@@ -1,134 +1,104 @@
-﻿<div class="navbar navbar-default navbar-fixed-top">
+﻿<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color:#2c3e50;">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color:#2c3e50;">
     <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            @Html.ActionLink("M'Lop Tapang", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
+        <a class="navbar-brand" asp-controller="Home" asp-action="Index">M'Lop Tapang</a>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav me-auto">
                 @if (User?.Identity?.IsAuthenticated == true)
                 {
                     if (User.IsInRole("HR System"))
                     {
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                HR System
-                                <span class="caret"></span>
-                            </a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">HR System</a>
                             <ul class="dropdown-menu">
                                 @if (User.IsInRole("Manage Employee"))
                                 {
-                                    <li>@Html.ActionLink("Manage Employee", "Index", "Employees")</li>
+                                    <li><a class="dropdown-item" asp-controller="Employees" asp-action="Index">Manage Employee</a></li>
                                 }
-                                <li>@Html.ActionLink("Manage Position", "Index", "Positions")</li>
-                                <li>@Html.ActionLink("Manage Department", "Index", "Departments")</li>
+                                <li><a class="dropdown-item" asp-controller="Positions" asp-action="Index">Manage Position</a></li>
+                                <li><a class="dropdown-item" asp-controller="Departments" asp-action="Index">Manage Department</a></li>
                             </ul>
                         </li>
                     }
                     if (User.IsInRole("Stock System"))
                     {
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                Stock System
-                                <span class="caret"></span>
-                            </a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">Stock System</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Manage Category", "Index", "Categories")</li>
+                                <li><a class="dropdown-item" asp-controller="Categories" asp-action="Index">Manage Category</a></li>
                             </ul>
                         </li>
                     }
                     if (User.IsInRole("Ticket System"))
                     {
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                Ticket System
-                                <span class="caret"></span>
-                            </a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">Ticket System</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Manage Ticket Type", "Index", "TicketTypes")</li>
-                                <li>@Html.ActionLink("Manage Agent", "Index", "Agents")</li>
+                                <li><a class="dropdown-item" asp-controller="TicketTypes" asp-action="Index">Manage Ticket Type</a></li>
+                                <li><a class="dropdown-item" asp-controller="Agents" asp-action="Index">Manage Agent</a></li>
                             </ul>
                         </li>
                     }
                     if (User.IsInRole("Futures System"))
                     {
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                Futures System
-                                <span class="caret"></span>
-                            </a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">Futures System</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Chart Overview", "index", "Dashboard")</li>
-                                <li>@Html.ActionLink("Manage Client", "Index", "Clients")</li>
-                                <li>@Html.ActionLink("Vacancies Overview", "overview", "employers")</li>
-                                <li>@Html.ActionLink("Manage Employers", "Index", "employers")</li>
-                                <li>@Html.ActionLink("Manage Vacancies", "Index", "vacancies")</li>
-                                <hr />
-                                <li> @Html.ActionLink("1. Clients Summary Report", "client-summary-report/clientCodeSearch=all/startdate=null/enddate=null", "clients")</li>
-                                <li> @Html.ActionLink("2. Employment Seeker List Report", "employee-seekerlist-report/postion=all/startdate=null/enddate=null", "clients")</li>
-                                <li> @Html.ActionLink("3. Placement Summary Report", "placement-summary-report/gender=all/startdate=null/enddate=null", "clients")</li>
-                                <li> @Html.ActionLink("4. Clients Remaining in Placement Report", "clients-remaining-in-placement-report/gender=all/startdate=null/enddate=null", "clients")</li>
-                                <li> @Html.ActionLink("5. Business Setup Report", "business-setup-report/gender=all/startdate=null/enddate=null", "clients")</li>
-                                <li> @Html.ActionLink("6. Business Setup Monitoring Report", "businesssetupmonitoiring-Report/gender=all/startdate=null/enddate=null", "clients")</li>
-                                
-                                <li> @Html.ActionLink("7. Dependents Report", "beneficiaries-report/gender={gender}/startdate={startdate}/enddate={enddate}", "clients")</li>
-                                <li> @Html.ActionLink("8. Placement Monitoring and Dropout Report", "placement-monitoring-and-dropout-report/placement={placement}/startdate={startdate}/enddate={enddate}", "clients")</li>
-                               
-                                <li> @Html.ActionLink("9. Job Readiness Report", "job-readiness-report/ontraining=all/startdate=null/enddate=null", "clients")</li>
-                               
-                                <li> @Html.ActionLink("10. Employer Report", "employers-report/status={status}/startdate={startdate}/enddate={enddate}", "clients")</li>
-                                <li> @Html.ActionLink("11. Job Vancancy Available Report", "job-vancancy-available-report/status={status}/startdate={startdate}/enddate={enddate}", "clients")</li>
-                                
-                                <li> @Html.ActionLink("12. Further Euducation seeker List Report", "further-euducation-seekerList-report/status={status}/startdate={startdate}/enddate={enddate}", "clients")</li>
-                                <li> @Html.ActionLink("13. Client referral from MT program report", "client-Referral-From-MT-Program-report/startdate=null/enddate=null", "clients")</li>
-                                <li> @Html.ActionLink("14. Case Manager Report", "CaseManager-report/Report={Report}/startdate={startdate}/enddate={enddate}", "clients")</li>
-                                <li> @Html.ActionLink("15. VTC student Report", "vtc-student-report/startdate={startdate}/enddate={enddate}", "clients")</li>
-                                <li> @Html.ActionLink("16. Log Books", "logbooks-report/startdate={startdate}/enddate={enddate}", "clients")</li>
-                                <li> @Html.ActionLink("17. Client lookfor bussinesss setup report", "Client-Lookfor-bussinesss-Setup-Report/FindbusinessSetup=0/startdate={startdate}/enddate={enddate}", "clients")</li>
-
+                                <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">Chart Overview</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="Index">Manage Client</a></li>
+                                <li><a class="dropdown-item" asp-controller="Employers" asp-action="Overview">Vacancies Overview</a></li>
+                                <li><a class="dropdown-item" asp-controller="Employers" asp-action="Index">Manage Employers</a></li>
+                                <li><a class="dropdown-item" asp-controller="Vacancies" asp-action="Index">Manage Vacancies</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="client-summary-report/clientCodeSearch=all/startdate=null/enddate=null">1. Clients Summary Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="employee-seekerlist-report/postion=all/startdate=null/enddate=null">2. Employment Seeker List Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="placement-summary-report/gender=all/startdate=null/enddate=null">3. Placement Summary Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="clients-remaining-in-placement-report/gender=all/startdate=null/enddate=null">4. Clients Remaining in Placement Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="business-setup-report/gender=all/startdate=null/enddate=null">5. Business Setup Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="businesssetupmonitoiring-Report/gender=all/startdate=null/enddate=null">6. Business Setup Monitoring Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="beneficiaries-report/gender={gender}/startdate={startdate}/enddate={enddate}">7. Dependents Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="placement-monitoring-and-dropout-report/placement={placement}/startdate={startdate}/enddate={enddate}">8. Placement Monitoring and Dropout Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="job-readiness-report/ontraining=all/startdate=null/enddate=null">9. Job Readiness Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="employers-report/status={status}/startdate={startdate}/enddate={enddate}">10. Employer Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="job-vancancy-available-report/status={status}/startdate={startdate}/enddate={enddate}">11. Job Vacancy Available Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="further-euducation-seekerList-report/status={status}/startdate={startdate}/enddate={enddate}">12. Further Education Seeker List Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="client-Referral-From-MT-Program-report/startdate=null/enddate=null">13. Client Referral From MT Program</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="CaseManager-report/Report={Report}/startdate={startdate}/enddate={enddate}">14. Case Manager Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="vtc-student-report/startdate={startdate}/enddate={enddate}">15. VTC Student Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="logbooks-report/startdate={startdate}/enddate={enddate}">16. Log Books</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="Client-Lookfor-bussinesss-Setup-Report/FindbusinessSetup=0/startdate={startdate}/enddate={enddate}">17. Client Lookfor Business Setup Report</a></li>
                             </ul>
                         </li>
                     }
-
                     if (User.IsInRole("Medical System"))
                     {
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                Medical System
-                                <span class="caret"></span>
-                            </a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">Medical System</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Home</a></li>
                             </ul>
                         </li>
                     }
-
                     if (User.IsInRole("Security"))
                     {
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                Security
-                                <span class="caret"></span>
-                            </a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">Security</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Change Password", "Manage", "Account")</li>
-                                <li>@Html.ActionLink("Manage User", "Index", "Users")</li>
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="Manage">Change Password</a></li>
+                                <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Manage User</a></li>
                             </ul>
                         </li>
                     }
-
                 }
             </ul>
-
-
 
             @Html.Partial("_LoginPartial")
 
         </div>
     </div>
-</div>
+</nav>
+
 

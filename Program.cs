@@ -67,6 +67,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 // Configure cookie-based auth redirect for API calls to return 401 instead of login page
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.LoginPath = "/Account/Login";
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;

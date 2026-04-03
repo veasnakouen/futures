@@ -1,9 +1,11 @@
 ﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M'Lop Tapang Organization</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Content/css/site.css" />
     <script src="~/Scripts/modernizr-*.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -19,7 +21,7 @@
         @RenderBody()
     </div>
 
-    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="placementMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="placementMonitoringActionModal" aria-hidden="true">
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="placementMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="placementMonitoringActionModal" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header clearfix">
@@ -132,7 +134,7 @@
                 </div>
                 <div class="modal-footer" style="overflow:auto;">
                     <div style="float:right;">
-                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                         <button type="button" onclick="PlacementMonitoringActionNotification();" id="btnPlacementProcessMonitoringAction" class="btn btn-primary btn-sm">Add New</button>
                     </div>
                 </div>
@@ -143,14 +145,13 @@
     <footer>
         <div class="container-fluid">
             <span>&copy; @DateTime.Now.Year - M'Lop Tapang</span>
-            <span class="pull-right">Developed by: IT Team</span>
+            <span class="float-end">Developed by: IT Team</span>
         </div>
     </footer>
 
     <div id="divLoading"></div>
-    @Html.Partial("_placementMonitoringActionModal")
     <script src="~/Scripts/jquery.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     @RenderSection("scripts", required: false)
     <script>
         function GetCurrentDate() {

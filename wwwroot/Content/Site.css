@@ -87,11 +87,10 @@ top : 0;
 
 
 .main-cover-photo {
-    height: 90vh;
+    height: calc(100vh - 110px);
     background-image: linear-gradient(to right bottom,#6f93d5bf,#28b4b4bf), url(/Images/cover-main.jpg);
     background-size: cover;
     background-position: top;
-    /*clip-path: polygon(0 0, 100% 0, 100% 75vh, 0 100%);*/
     position: relative;
 }
 

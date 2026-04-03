@@ -1,45 +1,39 @@
-﻿@using Microsoft.AspNet.Identity
+﻿@if (User?.Identity?.IsAuthenticated == true)
 @if (User?.Identity?.IsAuthenticated == true)
 {
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "d-flex align-items-center" }))
     {
     @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right" style="margin-right: 0px;">
-        <li>
-
-            <!--Test Notification-->
-
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Notification (<b class="NumberNotification"></b>)</a>
-                    <ul class="dropdown-menu notify-drop">
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button">Notification (<b class="NumberNotification"></b>)</a>
+                    <ul class="dropdown-menu dropdown-menu-end notify-drop">
                         <div class="notify-drop-title">
                             <div class="row">
-                                <input id="countskipNumber" name="countskipNumber" type="number" style="display: none;" disabled="disabled" value="0" class="form-control" />  
-                                <div class="col-md-6 col-sm-6 col-xs-6">Notification (<b class="NumberNotification"></b>)</div>
-                                <div class="col-md-6 col-sm-6 col-xs-6 text-right"><a href="" class="rIcon allRead" data-tooltip="tooltip" data-placement="bottom" title="" data-original-title="tümü okundu."><i class="fa fa-dot-circle-o"></i></a></div>
+                                <input id="countskipNumber" name="countskipNumber" type="number" style="display: none;" disabled="disabled" value="0" class="form-control" />
+                                <div class="col-6">Notification (<b class="NumberNotification"></b>)</div>
+                                <div class="col-6 text-end"><a href="" class="rIcon allRead"><i class="fa fa-dot-circle-o"></i></a></div>
                             </div>
                         </div>
-                        <!-- end notify title -->
-                        <!-- notify content -->
-                        <div class="drop-content">
-
-                           
-                        </div>
+                        <div class="drop-content"></div>
                         <div class="notify-drop-footer text-center">
                             <a href=""><i class="fa fa-eye"></i> Monitoring</a>
                         </div>
                     </ul>
                 </li>
             </ul>
-
         </li>
-        <li>
-            @Html.ActionLink("Hello " + (User.Identity?.Name ?? "") + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Account" asp-action="Manage" title="Manage">Hello @(User.Identity?.Name ?? "")!</a>
         </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        <li class="nav-item">
+            <a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+        </li>
     </ul>
     }
 }
+
 

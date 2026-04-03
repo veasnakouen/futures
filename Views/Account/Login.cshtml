@@ -5,33 +5,26 @@
     ViewBag.Title = "Log in";
 }
 
-<div class="row" style="padding-top: 20px;">
-    <div class="col-md-4 col-md-offset-4">
+<div class="row justify-content-center" style="padding-top: 20px;">
+    <div class="col-md-4">
         <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, antiforgery: null, htmlAttributes: new { @class = "form-horizontal", role = "form" }))
+            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, antiforgery: null, htmlAttributes: new { @class = "", role = "form" }))
             {
                 @Html.AntiForgeryToken()
 
-                <div class="panel panel-default">
-                    <div class="panel-heading" style="text-align: center;"><h4>Login To System</h4></div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control focus", @placeholder = "Enter your email" })
-                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                            </div>
+                <div class="card">
+                    <div class="card-header text-center"><h4>Login To System</h4></div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control focus", @placeholder = "Enter your email" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                         </div>
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Enter your password" })
-                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                            </div>
+                        <div class="mb-3">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Enter your password" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                         </div>
-
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                <input type="submit" value="Log in" class="btn btn-default btn-block" />
-                            </div>
+                        <div class="d-grid">
+                            <input type="submit" value="Log in" class="btn btn-secondary" />
                         </div>
                     </div>
                 </div>
@@ -63,5 +56,6 @@
         })
     </script>
 
-    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
 }
