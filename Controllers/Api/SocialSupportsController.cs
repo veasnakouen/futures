@@ -1,111 +1,95 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
 
 namespace MtpApp.Controllers.Api
 {
-    //use this to login before access this api
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class SocialSupportsController : ApiController
+    public class SocialSupportsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public SocialSupportsController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public SocialSupportsController(ApplicationDbContext context, IMapper mapper)
         {
-            // make constructor to create connection for  api
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-
-
-        // GET: /api/socialsupports?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetSocialSupports(int clientId)
+        public IActionResult GetSocialSupports([FromQuery] int? clientId)
         {
-            var Socialsupports = _context.SocialSupports
-                                .Include(c => c.Client)
-                                .Select(Mapper.Map<SocialSupport, SocialSupportDto>)
-                                .Where(c => c.ClientId == clientId);
-            if (Socialsupports == null)
+            if (clientId.HasValue)
+            {
+                var socialSupports = _context.SocialSupports
+                    .Where(c => c.ClientId == clientId.Value)
+                    .ToList()
+                    .Select(c => _mapper.Map<SocialSupport, SocialSupportDto>(c));
+                return Ok(socialSupports);
+            }
+            else
+            {
+                var socialSupports = _context.SocialSupports
+                    .ToList()
+                    .Select(c => _mapper.Map<SocialSupport, SocialSupportDto>(c));
+                return Ok(socialSupports);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetSocialSupport(int id)
+        {
+            var socialSupportInDb = _context.SocialSupports.SingleOrDefault(c => c.Id == id);
+            if (socialSupportInDb == null)
                 return NotFound();
-
-            return Ok(Socialsupports);
+            return Ok(_mapper.Map<SocialSupport, SocialSupportDto>(socialSupportInDb));
         }
 
-        // GET: /api/socialsupports
-        [HttpGet]
-        public IHttpActionResult GetSocialSupport()
-        {
-            var SocialSupport = _context.SocialSupports.Include(c => c.Client).Select(Mapper.Map<SocialSupport,SocialSupportDto>);
-            return Ok(SocialSupport);
-        }
-
-        // GET: /api/socialsupports/{id}
-        [HttpGet]
-        public IHttpActionResult GetSocialSupport(int id)
-        {
-            var SocialSupportInDb = _context.SocialSupports.Include(c => c.Client).SingleOrDefault(c => c.Id == id);
-
-            if (SocialSupportInDb == null)
-                return NotFound();
-
-            return Ok(Mapper.Map<SocialSupport, SocialSupportDto>(SocialSupportInDb));
-        }
-
-        // POST: /api/socialsupports
         [HttpPost]
-        public IHttpActionResult CreateSocialSupport(SocialSupportDto socialSupportDto)
+        public IActionResult CreateSocialSupport([FromBody] SocialSupportDto socialSupportDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var newSocialSupport = Mapper.Map<SocialSupportDto, SocialSupport>(socialSupportDto);
 
+            var newSocialSupport = _mapper.Map<SocialSupportDto, SocialSupport>(socialSupportDto);
             _context.SocialSupports.Add(newSocialSupport);
             _context.SaveChanges();
             socialSupportDto.Id = newSocialSupport.Id;
-            return Created(new Uri(Request.RequestUri + "/" + socialSupportDto.Id), socialSupportDto);
+            return CreatedAtAction(nameof(GetSocialSupport), new { id = socialSupportDto.Id }, socialSupportDto);
         }
 
-        // PUT: /api/socialsupports/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateSocialSupport(int id, SocialSupportDto SocialSupportDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateSocialSupport(int id, [FromBody] SocialSupportDto socialSupportDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var socialSupportIndb = _context.SocialSupports.SingleOrDefault(c => c.Id == id);
-
-            if (socialSupportIndb == null)
+            var socialSupportInDb = _context.SocialSupports.SingleOrDefault(c => c.Id == id);
+            if (socialSupportInDb == null)
                 return NotFound();
 
-            Mapper.Map(SocialSupportDto, socialSupportIndb);
+            _mapper.Map(socialSupportDto, socialSupportInDb);
             _context.SaveChanges();
             return Ok(new { });
         }
 
-        //// DELETE: /api/SocialSupports/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteSocialSupport(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteSocialSupport(int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
-            var socialSupportIndb = _context.SocialSupports.SingleOrDefault(c => c.Id == id);
-
-            if (socialSupportIndb == null)
+            var socialSupportInDb = _context.SocialSupports.SingleOrDefault(c => c.Id == id);
+            if (socialSupportInDb == null)
                 return NotFound();
 
-            _context.SocialSupports.Remove(socialSupportIndb);
+            _context.SocialSupports.Remove(socialSupportInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
-
     }
 }
+

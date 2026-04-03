@@ -1,96 +1,84 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class TicketTypesController : ApiController
+    public class TicketTypesController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public TicketTypesController()
+        public TicketTypesController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        //GET /api/tickettypes
         [HttpGet]
-        public IHttpActionResult GetTicketTypes()
+        public IActionResult GetTicketTypes()
         {
             var ticketTypeDtos = _context.TicketTypes
                 .ToList()
-                .Select(Mapper.Map<TicketType, TicketTypeDto>);
-
+                .Select(c => _mapper.Map<TicketType, TicketTypeDto>(c));
             return Ok(ticketTypeDtos);
         }
 
-        //GET /api/tickettypes/{id}
-        [HttpGet]
-        public IHttpActionResult GetTicketType(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetTicketType(int id)
         {
             var ticketTypeInDb = _context.TicketTypes.SingleOrDefault(c => c.Id == id);
-
             if (ticketTypeInDb == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<TicketType, TicketTypeDto>(ticketTypeInDb));
+            return Ok(_mapper.Map<TicketType, TicketTypeDto>(ticketTypeInDb));
         }
 
-        //POST /api/tickettypes
         [HttpPost]
-        public IHttpActionResult CreateTicketType(TicketTypeDto ticketTypeDto)
+        public IActionResult CreateTicketType([FromBody] TicketTypeDto ticketTypeDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var ticketType = Mapper.Map<TicketTypeDto, TicketType>(ticketTypeDto);
-
+            var ticketType = _mapper.Map<TicketTypeDto, TicketType>(ticketTypeDto);
             _context.TicketTypes.Add(ticketType);
             _context.SaveChanges();
-
             ticketTypeDto.Id = ticketType.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + ticketTypeDto.Id), ticketTypeDto);
+            return CreatedAtAction(nameof(GetTicketType), new { id = ticketTypeDto.Id }, ticketTypeDto);
         }
 
-        //PUT /api/tickettypes/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateTicketType(int id, TicketTypeDto ticketTypeDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateTicketType(int id, [FromBody] TicketTypeDto ticketTypeDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var ticketTypeInDb = _context.TicketTypes.SingleOrDefault(c => c.Id == id);
-
             if (ticketTypeInDb == null)
                 return NotFound();
 
-            Mapper.Map(ticketTypeDto, ticketTypeInDb);
+            _mapper.Map(ticketTypeDto, ticketTypeInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        //DELETE /api/tickettypes/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteTicketType(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteTicketType(int id)
         {
             var ticketTypeInDb = _context.TicketTypes.SingleOrDefault(c => c.Id == id);
-
             if (ticketTypeInDb == null)
                 return NotFound();
 
             _context.TicketTypes.Remove(ticketTypeInDb);
             _context.SaveChanges();
-
             return Ok();
         }
     }
 }
+

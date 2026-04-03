@@ -1,287 +1,222 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
+using MtpApp.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web;
-using System.Web.Http;
-using System.Data.Entity;
-using MtpApp.ViewModels;
+using System.Threading.Tasks;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class EmployeesController : ApiController
+    public class EmployeesController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _env;
 
-        public EmployeesController()
+        public EmployeesController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment env)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
+            _env = env;
         }
 
-        //GET /api/employees
-        [HttpGet]
-        public IHttpActionResult GetEmployees()
-        {
-            var employees = _context.Employees.Include(c => c.Position).Include(c => c.Department).ToList().Select(Mapper.Map<Employee, EmployeeDto>);
+        private string GetImagesPath() => Path.Combine(_env.WebRootPath, "Images");
 
+        [HttpGet]
+        public IActionResult GetEmployees()
+        {
+            var employees = _context.Employees
+                .Include(c => c.Position).Include(c => c.Department)
+                .ToList()
+                .Select(c => _mapper.Map<Employee, EmployeeDto>(c));
             return Ok(employees);
         }
 
-        //GET /api/employees/{id}
-        [HttpGet]
-        public IHttpActionResult GetEmployee(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetEmployee(int id)
         {
-            var employeeInDb = _context.Employees.Include(c => c.Position).Include(c => c.Department).SingleOrDefault(c => c.Id == id);
-
+            var employeeInDb = _context.Employees
+                .Include(c => c.Position).Include(c => c.Department)
+                .SingleOrDefault(c => c.Id == id);
             if (employeeInDb == null)
                 return NotFound();
 
             var viewModel = new EmployeeViewModel()
             {
-                EmployeeDto = Mapper.Map<Employee, EmployeeDto>(employeeInDb),
+                EmployeeDto = _mapper.Map<Employee, EmployeeDto>(employeeInDb),
                 Departments = _context.Departments.ToList(),
                 Positions = _context.Positions.ToList()
             };
-
             return Ok(viewModel);
         }
 
-        //POST /api/employees
         [HttpPost]
-        public IHttpActionResult CreateEmployee()
+        public async Task<IActionResult> CreateEmployee()
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             string ImageName = "";
-
-            var httpPostedFile = HttpContext.Current.Request.Files["UploadedFile"];
-
+            var httpPostedFile = Request.Form.Files.GetFile("UploadedFile");
             if (httpPostedFile != null)
             {
-                ImageName = Path.Combine(Path.GetDirectoryName(httpPostedFile.FileName)
-                                       , string.Concat(Path.GetFileNameWithoutExtension(httpPostedFile.FileName)
-                                       , DateTime.Now.ToString("_yyyy_MM_dd_HH_mm_ss")
-                                       , Path.GetExtension(httpPostedFile.FileName)
-                                       ));
-
-                var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/Images"), ImageName);
-
-                httpPostedFile.SaveAs(fileSavePath);
+                ImageName = string.Concat(
+                    Path.GetFileNameWithoutExtension(httpPostedFile.FileName),
+                    DateTime.Now.ToString("_yyyy_MM_dd_HH_mm_ss"),
+                    Path.GetExtension(httpPostedFile.FileName));
+                var fileSavePath = Path.Combine(GetImagesPath(), ImageName);
+                using var stream = new FileStream(fileSavePath, FileMode.Create);
+                await httpPostedFile.CopyToAsync(stream);
             }
 
             var employeeDto = new EmployeeDto()
             {
-                IdNo = HttpContext.Current.Request.Form["IdNo"],
-                Title = HttpContext.Current.Request.Form["Title"],
-                FirstNameEnglish = HttpContext.Current.Request.Form["FirstNameEnglish"],
-                LastNameEnglish = HttpContext.Current.Request.Form["LastNameEnglish"],
-                FirstNameKhmer = HttpContext.Current.Request.Form["FirstNameKhmer"],
-                LastNameKhmer = HttpContext.Current.Request.Form["LastNameKhmer"],
-                Gender = HttpContext.Current.Request.Form["Gender"],
-                DateOfBirth = DateTime.ParseExact(HttpContext.Current.Request.Form["DateOfBirth"], "dd/MM/yyyy", null),
-                PlaceOfBirth = HttpContext.Current.Request.Form["PlaceOfBirth"],
-                Address = HttpContext.Current.Request.Form["Address"],
-                Country = HttpContext.Current.Request.Form["Country"],
-                Nationality = HttpContext.Current.Request.Form["Nationality"],
-                Email = HttpContext.Current.Request.Form["Email"],
-                PhoneNumber = HttpContext.Current.Request.Form["PhoneNumber"],
-                BloodGroup = HttpContext.Current.Request.Form["BloodGroup"],
-                BankAccountNumber = HttpContext.Current.Request.Form["BankAccountNumber"],
-                BankAccount = HttpContext.Current.Request.Form["BankAccount"],
-                ContractDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractDate"], "dd/MM/yyyy", null),
-                ContractType = HttpContext.Current.Request.Form["ContractType"],
-                ContractStartDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractStartDate"], "dd/MM/yyyy", null),
-                ContractEndDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractEndDate"], "dd/MM/yyyy", null),
-                Manager = HttpContext.Current.Request.Form["Manager"],
-                MaritalStatus = HttpContext.Current.Request.Form["MaritalStatus"],
-                Children = HttpContext.Current.Request.Form["Children"],
-                EmergencyContact = HttpContext.Current.Request.Form["EmergencyContact"],
-                EmergencyContactName = HttpContext.Current.Request.Form["EmergencyContactName"],
-                EmergencyContactPhone = HttpContext.Current.Request.Form["EmergencyContactPhone"],
-                IdentityCardNumber = HttpContext.Current.Request.Form["IdentityCardNumber"],
-                IdentityCardType = HttpContext.Current.Request.Form["IdentityCardType"],
-                Note = HttpContext.Current.Request.Form["Note"],
+                IdNo = Request.Form["IdNo"],
+                Title = Request.Form["Title"],
+                FirstNameEnglish = Request.Form["FirstNameEnglish"],
+                LastNameEnglish = Request.Form["LastNameEnglish"],
+                FirstNameKhmer = Request.Form["FirstNameKhmer"],
+                LastNameKhmer = Request.Form["LastNameKhmer"],
+                Gender = Request.Form["Gender"],
+                DateOfBirth = DateTime.ParseExact(Request.Form["DateOfBirth"], "dd/MM/yyyy", null),
+                PlaceOfBirth = Request.Form["PlaceOfBirth"],
+                Address = Request.Form["Address"],
+                Country = Request.Form["Country"],
+                Nationality = Request.Form["Nationality"],
+                Email = Request.Form["Email"],
+                PhoneNumber = Request.Form["PhoneNumber"],
+                BloodGroup = Request.Form["BloodGroup"],
+                BankAccountNumber = Request.Form["BankAccountNumber"],
+                BankAccount = Request.Form["BankAccount"],
+                ContractDate = DateTime.ParseExact(Request.Form["ContractDate"], "dd/MM/yyyy", null),
+                ContractType = Request.Form["ContractType"],
+                ContractStartDate = DateTime.ParseExact(Request.Form["ContractStartDate"], "dd/MM/yyyy", null),
+                ContractEndDate = DateTime.ParseExact(Request.Form["ContractEndDate"], "dd/MM/yyyy", null),
+                Manager = Request.Form["Manager"],
+                MaritalStatus = Request.Form["MaritalStatus"],
+                Children = Request.Form["Children"],
+                EmergencyContact = Request.Form["EmergencyContact"],
+                EmergencyContactName = Request.Form["EmergencyContactName"],
+                EmergencyContactPhone = Request.Form["EmergencyContactPhone"],
+                IdentityCardNumber = Request.Form["IdentityCardNumber"],
+                IdentityCardType = Request.Form["IdentityCardType"],
+                Note = Request.Form["Note"],
                 Photo = ImageName,
-                Status = HttpContext.Current.Request.Form["Status"],
-                PositionId = int.Parse(HttpContext.Current.Request.Form["PositionId"]),
-                DepartmentId = int.Parse(HttpContext.Current.Request.Form["DepartmentId"])              
+                Status = Request.Form["Status"],
+                PositionId = int.Parse(Request.Form["PositionId"]),
+                DepartmentId = int.Parse(Request.Form["DepartmentId"])
             };
 
-            var employee = Mapper.Map<EmployeeDto, Employee>(employeeDto);
-
+            var employee = _mapper.Map<EmployeeDto, Employee>(employeeDto);
             _context.Employees.Add(employee);
-            _context.SaveChanges();
-
+            await _context.SaveChangesAsync();
             employeeDto.Id = employee.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + employeeDto.Id), employeeDto);
+            return CreatedAtAction(nameof(GetEmployee), new { id = employeeDto.Id }, employeeDto);
         }
 
-        //PUT /api/employees/{id}
         [HttpPut]
-        public IHttpActionResult UpdateEmployee()
+        public async Task<IActionResult> UpdateEmployee()
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            string ImageName = "";
+            var id = int.Parse(Request.Form["id"]);
+            var employeeInDb = _context.Employees.SingleOrDefault(c => c.Id == id);
+            if (employeeInDb == null)
+                return NotFound();
 
-            var httpPostedFile = HttpContext.Current.Request.Files["UploadedFile"];
-
+            string ImageName = employeeInDb.Photo;
+            var httpPostedFile = Request.Form.Files.GetFile("UploadedFile");
             if (httpPostedFile != null)
             {
-                ImageName = Path.Combine(Path.GetDirectoryName(httpPostedFile.FileName)
-                                       , string.Concat(Path.GetFileNameWithoutExtension(httpPostedFile.FileName)
-                                       , DateTime.Now.ToString("_yyyy_MM_dd_HH_mm_ss")
-                                       , Path.GetExtension(httpPostedFile.FileName)
-                                       ));
-
-                var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/Images"), ImageName);
-
-                httpPostedFile.SaveAs(fileSavePath);
-
-                var id = int.Parse(HttpContext.Current.Request.Form["id"]);
-
-                var employeeInDb = _context.Employees.SingleOrDefault(c => c.Id == id);
-
-                //Delete Old Image
-                var oldImagePath = Path.Combine(HttpContext.Current.Server.MapPath("~/Images"), employeeInDb.Photo);
-
-                if (File.Exists(oldImagePath))
+                // Delete old image
+                if (!string.IsNullOrEmpty(employeeInDb.Photo))
                 {
-                    File.Delete(oldImagePath);
+                    var oldImagePath = Path.Combine(GetImagesPath(), employeeInDb.Photo);
+                    if (System.IO.File.Exists(oldImagePath))
+                        System.IO.File.Delete(oldImagePath);
                 }
 
-                var employeeDto = new EmployeeDto()
-                {
-                    Id = int.Parse(HttpContext.Current.Request.Form["id"]),
-                    IdNo = HttpContext.Current.Request.Form["IdNo"],
-                    Title = HttpContext.Current.Request.Form["Title"],
-                    FirstNameEnglish = HttpContext.Current.Request.Form["FirstNameEnglish"],
-                    LastNameEnglish = HttpContext.Current.Request.Form["LastNameEnglish"],
-                    FirstNameKhmer = HttpContext.Current.Request.Form["FirstNameKhmer"],
-                    LastNameKhmer = HttpContext.Current.Request.Form["LastNameKhmer"],
-                    Gender = HttpContext.Current.Request.Form["Gender"],
-                    DateOfBirth = DateTime.ParseExact(HttpContext.Current.Request.Form["DateOfBirth"], "dd/MM/yyyy", null),
-                    PlaceOfBirth = HttpContext.Current.Request.Form["PlaceOfBirth"],
-                    Address = HttpContext.Current.Request.Form["Address"],
-                    Country = HttpContext.Current.Request.Form["Country"],
-                    Nationality = HttpContext.Current.Request.Form["Nationality"],
-                    Email = HttpContext.Current.Request.Form["Email"],
-                    PhoneNumber = HttpContext.Current.Request.Form["PhoneNumber"],
-                    BloodGroup = HttpContext.Current.Request.Form["BloodGroup"],
-                    BankAccountNumber = HttpContext.Current.Request.Form["BankAccountNumber"],
-                    BankAccount = HttpContext.Current.Request.Form["BankAccount"],
-                    ContractDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractDate"], "dd/MM/yyyy", null),
-                    ContractType = HttpContext.Current.Request.Form["ContractType"],
-                    ContractStartDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractStartDate"], "dd/MM/yyyy", null),
-                    ContractEndDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractEndDate"], "dd/MM/yyyy", null),
-                    Manager = HttpContext.Current.Request.Form["Manager"],
-                    MaritalStatus = HttpContext.Current.Request.Form["MaritalStatus"],
-                    Children = HttpContext.Current.Request.Form["Children"],
-                    EmergencyContact = HttpContext.Current.Request.Form["EmergencyContact"],
-                    EmergencyContactName = HttpContext.Current.Request.Form["EmergencyContactName"],
-                    EmergencyContactPhone = HttpContext.Current.Request.Form["EmergencyContactPhone"],
-                    IdentityCardNumber = HttpContext.Current.Request.Form["IdentityCardNumber"],
-                    IdentityCardType = HttpContext.Current.Request.Form["IdentityCardType"],
-                    Note = HttpContext.Current.Request.Form["Note"],
-                    Photo = ImageName,
-                    Status = HttpContext.Current.Request.Form["Status"],
-                    PositionId = int.Parse(HttpContext.Current.Request.Form["PositionId"]),
-                    DepartmentId = int.Parse(HttpContext.Current.Request.Form["DepartmentId"])   
-                };
-
-                if (employeeInDb == null)
-                    return NotFound();
-
-                Mapper.Map(employeeDto, employeeInDb);
-
-                _context.SaveChanges();
-
+                ImageName = string.Concat(
+                    Path.GetFileNameWithoutExtension(httpPostedFile.FileName),
+                    DateTime.Now.ToString("_yyyy_MM_dd_HH_mm_ss"),
+                    Path.GetExtension(httpPostedFile.FileName));
+                var fileSavePath = Path.Combine(GetImagesPath(), ImageName);
+                using var stream = new FileStream(fileSavePath, FileMode.Create);
+                await httpPostedFile.CopyToAsync(stream);
             }
-            else
+
+            var employeeDto = new EmployeeDto()
             {
-                var id = int.Parse(HttpContext.Current.Request.Form["id"]);
+                Id = id,
+                IdNo = Request.Form["IdNo"],
+                Title = Request.Form["Title"],
+                FirstNameEnglish = Request.Form["FirstNameEnglish"],
+                LastNameEnglish = Request.Form["LastNameEnglish"],
+                FirstNameKhmer = Request.Form["FirstNameKhmer"],
+                LastNameKhmer = Request.Form["LastNameKhmer"],
+                Gender = Request.Form["Gender"],
+                DateOfBirth = DateTime.ParseExact(Request.Form["DateOfBirth"], "dd/MM/yyyy", null),
+                PlaceOfBirth = Request.Form["PlaceOfBirth"],
+                Address = Request.Form["Address"],
+                Country = Request.Form["Country"],
+                Nationality = Request.Form["Nationality"],
+                Email = Request.Form["Email"],
+                PhoneNumber = Request.Form["PhoneNumber"],
+                BloodGroup = Request.Form["BloodGroup"],
+                BankAccountNumber = Request.Form["BankAccountNumber"],
+                BankAccount = Request.Form["BankAccount"],
+                ContractDate = DateTime.ParseExact(Request.Form["ContractDate"], "dd/MM/yyyy", null),
+                ContractType = Request.Form["ContractType"],
+                ContractStartDate = DateTime.ParseExact(Request.Form["ContractStartDate"], "dd/MM/yyyy", null),
+                ContractEndDate = DateTime.ParseExact(Request.Form["ContractEndDate"], "dd/MM/yyyy", null),
+                Manager = Request.Form["Manager"],
+                MaritalStatus = Request.Form["MaritalStatus"],
+                Children = Request.Form["Children"],
+                EmergencyContact = Request.Form["EmergencyContact"],
+                EmergencyContactName = Request.Form["EmergencyContactName"],
+                EmergencyContactPhone = Request.Form["EmergencyContactPhone"],
+                IdentityCardNumber = Request.Form["IdentityCardNumber"],
+                IdentityCardType = Request.Form["IdentityCardType"],
+                Note = Request.Form["Note"],
+                Photo = ImageName,
+                Status = Request.Form["Status"],
+                PositionId = int.Parse(Request.Form["PositionId"]),
+                DepartmentId = int.Parse(Request.Form["DepartmentId"])
+            };
 
-                var employeeInDb = _context.Employees.SingleOrDefault(c => c.Id == id);
-
-                var employeeDto = new EmployeeDto()
-                {
-                    Id = Int32.Parse(HttpContext.Current.Request.Form["id"]),
-                    IdNo = HttpContext.Current.Request.Form["IdNo"],
-                    Title = HttpContext.Current.Request.Form["Title"],
-                    FirstNameEnglish = HttpContext.Current.Request.Form["FirstNameEnglish"],
-                    LastNameEnglish = HttpContext.Current.Request.Form["LastNameEnglish"],
-                    FirstNameKhmer = HttpContext.Current.Request.Form["FirstNameKhmer"],
-                    LastNameKhmer = HttpContext.Current.Request.Form["LastNameKhmer"],
-                    Gender = HttpContext.Current.Request.Form["Gender"],
-                    DateOfBirth = DateTime.ParseExact(HttpContext.Current.Request.Form["DateOfBirth"], "dd/MM/yyyy", null),
-                    PlaceOfBirth = HttpContext.Current.Request.Form["PlaceOfBirth"],
-                    Address = HttpContext.Current.Request.Form["Address"],
-                    Country = HttpContext.Current.Request.Form["Country"],
-                    Nationality = HttpContext.Current.Request.Form["Nationality"],
-                    Email = HttpContext.Current.Request.Form["Email"],
-                    PhoneNumber = HttpContext.Current.Request.Form["PhoneNumber"],
-                    BloodGroup = HttpContext.Current.Request.Form["BloodGroup"],
-                    BankAccountNumber = HttpContext.Current.Request.Form["BankAccountNumber"],
-                    BankAccount = HttpContext.Current.Request.Form["BankAccount"],
-                    ContractDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractDate"], "dd/MM/yyyy", null),
-                    ContractType = HttpContext.Current.Request.Form["ContractType"],
-                    ContractStartDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractStartDate"], "dd/MM/yyyy", null),
-                    ContractEndDate = DateTime.ParseExact(HttpContext.Current.Request.Form["ContractEndDate"], "dd/MM/yyyy", null),
-                    Manager = HttpContext.Current.Request.Form["Manager"],
-                    MaritalStatus = HttpContext.Current.Request.Form["MaritalStatus"],
-                    Children = HttpContext.Current.Request.Form["Children"],
-                    EmergencyContact = HttpContext.Current.Request.Form["EmergencyContact"],
-                    EmergencyContactName = HttpContext.Current.Request.Form["EmergencyContactName"],
-                    EmergencyContactPhone = HttpContext.Current.Request.Form["EmergencyContactPhone"],
-                    IdentityCardNumber = HttpContext.Current.Request.Form["IdentityCardNumber"],
-                    IdentityCardType = HttpContext.Current.Request.Form["IdentityCardType"],
-                    Note = HttpContext.Current.Request.Form["Note"],
-                    Photo = employeeInDb.Photo,
-                    Status = HttpContext.Current.Request.Form["Status"],
-                    PositionId = Int32.Parse(HttpContext.Current.Request.Form["PositionId"]),
-                    DepartmentId = Int32.Parse(HttpContext.Current.Request.Form["DepartmentId"])  
-                };
-
-                if (employeeInDb == null)
-                    return NotFound();
-
-                Mapper.Map(employeeDto, employeeInDb);
-
-                _context.SaveChanges();
-            }
-
+            _mapper.Map(employeeDto, employeeInDb);
+            await _context.SaveChangesAsync();
             return Ok(new { });
         }
 
-        //DELETE /api/employees/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteEmployee(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteEmployee(int id)
         {
             var employeeInDb = _context.Employees.SingleOrDefault(c => c.Id == id);
-
             if (employeeInDb == null)
                 return NotFound();
 
             _context.Employees.Remove(employeeInDb);
             _context.SaveChanges();
 
-            var imagePath = Path.Combine(HttpContext.Current.Server.MapPath("~/Images"), employeeInDb.Photo);
-
-            if (File.Exists(imagePath))
+            if (!string.IsNullOrEmpty(employeeInDb.Photo))
             {
-                File.Delete(imagePath);
+                var imagePath = Path.Combine(GetImagesPath(), employeeInDb.Photo);
+                if (System.IO.File.Exists(imagePath))
+                    System.IO.File.Delete(imagePath);
             }
-
             return Ok(new { });
         }
     }
 }
+

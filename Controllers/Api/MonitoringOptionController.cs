@@ -1,42 +1,42 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
+using MtpApp.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using MtpApp.ViewModels;
-using System.Web;
-using Microsoft.AspNet.Identity;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
     [Authorize]
-    public class MonitoringOptionController : ApiController
+    public class MonitoringOptionController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public MonitoringOptionController()
+        public MonitoringOptionController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         //Get   /api/monitoringoption?Id=&conditionType=
         [HttpGet]
-        public IHttpActionResult GetMonitoring(int id, string conditionType)
+        public IActionResult GetMonitoring(int id, string conditionType)
         {
             var TypeconditionIndb = _context.Monitorings
-                                .Select(Mapper.Map<Monitoring, MonitoringDto>)
+                                .Select(_mapper.Map<Monitoring, MonitoringDto>)
                                 .Where(c => c.Id == id && c.Type == conditionType);
             if (TypeconditionIndb == null)
                 return NotFound();
             object[] Arrayobj = new object[1]; 
             //var monitoringPlacementInDB = _context.Monitorings
-            //                                .Select(Mapper.Map<Monitoring, MonitoringDto>)
+            //                                .Select(_mapper.Map<Monitoring, MonitoringDto>)
             //                                .Where(c => c.Id == id);
             //Arrayobj[0] = monitoringPlacementInDB;
 
@@ -47,7 +47,7 @@ namespace MtpApp.Controllers.Api
                 case "Placement":
                     var PlacementInDB = _context.PlacementProgresses
                     .Include(c => c.Monitoring)
-                    .Select(Mapper.Map<PlacementProgress, PLacementProcessDto>)
+                    .Select(_mapper.Map<PlacementProgress, PLacementProcessDto>)
                     .Where(c => c.MonitoringId == id);
                     if (PlacementInDB == null)
                     {
@@ -58,7 +58,7 @@ namespace MtpApp.Controllers.Api
                 case "Businesssetup":
                     var BusinesssetupInDb = _context.BusinessInProgresses
                      .Include(c => c.Monitoring)
-                    .Select(Mapper.Map<BusinessInProgress, BusinessInProgressDto>)
+                    .Select(_mapper.Map<BusinessInProgress, BusinessInProgressDto>)
                     .Where(c => c.MonitoringId == id);
                     if (BusinesssetupInDb == null)
                     {
@@ -69,7 +69,7 @@ namespace MtpApp.Controllers.Api
                 case "Furthereducation":
                     var FurthereducationInDb = _context.FurthereducationInProgresses
                      .Include(c => c.Monitoring)
-                    .Select(Mapper.Map<FurthereducationInProgress, FurthereducationInProgressDto>)
+                    .Select(_mapper.Map<FurthereducationInProgress, FurthereducationInProgressDto>)
                     .Where(c => c.MonitoringId == id);
                     if (FurthereducationInDb == null)
                     {
@@ -80,7 +80,7 @@ namespace MtpApp.Controllers.Api
                 case "Futuretraining":
                     var FuturetrainingInDb = _context.FutureTrainingProgresses
                      .Include(c => c.Monitoring)
-                    .Select(Mapper.Map<FutureTrainingProgress, FutureTrainingProgressDto>)
+                    .Select(_mapper.Map<FutureTrainingProgress, FutureTrainingProgressDto>)
                     .Where(c => c.MonitoringId == id);
                     if (FuturetrainingInDb == null)
                     {
@@ -95,7 +95,7 @@ namespace MtpApp.Controllers.Api
         }
 
         [HttpPost]
-        public IHttpActionResult Post(JObject objData, string TypeCondition)
+        public IActionResult Post(JObject objData, string TypeCondition)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -228,7 +228,7 @@ namespace MtpApp.Controllers.Api
         //Update 
         //Put  /api/monitoringoption/
         [HttpPut]
-        public IHttpActionResult UpdateMonitoring()
+        public IActionResult UpdateMonitoring()
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -237,111 +237,111 @@ namespace MtpApp.Controllers.Api
                     if (!ModelState.IsValid)
                         return BadRequest();
                     //Get value from parameter form control
-                    var id = int.Parse(HttpContext.Current.Request.Form["MonitoringId"]);
-                    var TypeCondition = (HttpContext.Current.Request.Form["Type"]);
+                    var id = int.TryParse(Request.Form["MonitoringId"], out var monitoringId) ? monitoringId : 0;
+                    var TypeCondition = (string)Request.Form["Type"];
                     //relationship  (Update Child table first, and then update parent table to prevent error )
                     switch (TypeCondition)
                     {
                         case "Placement":
                             var placementProgressDto = new PLacementProcessDto()
                             {
-                                Id = int.Parse(HttpContext.Current.Request.Form["PlacementprocessId"]),
-                                Completed = (HttpContext.Current.Request.Form["Completed"]),
-                                MonitoringId = int.Parse(HttpContext.Current.Request.Form["PlacementpmonitoringId"]),
-                                PlacementStatus = (HttpContext.Current.Request.Form["Placementstatus"]),
-                                Salary = (HttpContext.Current.Request.Form["Salary"]),
-                                Note = (HttpContext.Current.Request.Form["Placementprogressnote"])
+                                Id = int.TryParse(Request.Form["PlacementprocessId"], out var ppId) ? ppId : 0,
+                                Completed = Request.Form["Completed"],
+                                MonitoringId = int.TryParse(Request.Form["PlacementpmonitoringId"], out var pmId) ? pmId : 0,
+                                PlacementStatus = Request.Form["Placementstatus"],
+                                Salary = Request.Form["Salary"],
+                                Note = Request.Form["Placementprogressnote"]
                             };
                             var placementprogressInDb = _context.PlacementProgresses.SingleOrDefault(c => c.MonitoringId == id);
                             if (placementprogressInDb == null)
                             {
                                 return NotFound();
                             }
-                            Mapper.Map(placementProgressDto, placementprogressInDb);
+                            _mapper.Map(placementProgressDto, placementprogressInDb);
                             _context.SaveChanges();
                             break;
                         case "Businesssetup":
                             var businessInProgressDto = new BusinessInProgressDto()
                             {
-                                Id = int.Parse(HttpContext.Current.Request.Form["BusinesssetupId"]),
-                                StillInbusiness = (HttpContext.Current.Request.Form["Sillinbusiness"]),
-                                MonitoringId = int.Parse(HttpContext.Current.Request.Form["BusinessmonitoringId"]),
-                                BusinessType = (HttpContext.Current.Request.Form["BusinessnameType"]),
-                                Expense = (HttpContext.Current.Request.Form["Expense"]),
-                                Income = (HttpContext.Current.Request.Form["Income"]),
-                                Note = (HttpContext.Current.Request.Form["Businessprogressnote"])
+                                Id = int.TryParse(Request.Form["BusinesssetupId"], out var bsId) ? bsId : 0,
+                                StillInbusiness = Request.Form["Sillinbusiness"],
+                                MonitoringId = int.TryParse(Request.Form["BusinessmonitoringId"], out var bmId) ? bmId : 0,
+                                BusinessType = Request.Form["BusinessnameType"],
+                                Expense = Request.Form["Expense"],
+                                Income = Request.Form["Income"],
+                                Note = Request.Form["Businessprogressnote"]
                             };
                             var businessInProgressInDb = _context.BusinessInProgresses.SingleOrDefault(c => c.MonitoringId == id);
                             if (businessInProgressInDb == null)
                             {
                                 return NotFound();
                             }
-                            Mapper.Map(businessInProgressDto, businessInProgressInDb);
+                            _mapper.Map(businessInProgressDto, businessInProgressInDb);
                             _context.SaveChanges();
                             break;
 
                         case "Furthereducation":
                             var furtherInProgressDto = new FurthereducationInProgressDto()
                             {
-                                Id = int.Parse(HttpContext.Current.Request.Form["FurthereducationId"]),
-                                MonitoringId = int.Parse(HttpContext.Current.Request.Form["FurtherEducationmonitoringId"]),
-                                Ontraining = (HttpContext.Current.Request.Form["Ontraining"]),
-                                GraduateDate = DateTime.ParseExact(HttpContext.Current.Request.Form["GraduatedateFuther"], "MM/dd/yyyy", null),
-                                DropoutDate = DateTime.ParseExact(HttpContext.Current.Request.Form["DropoutdateFuther"], "MM/dd/yyyy", null),
-                                Reason = (HttpContext.Current.Request.Form["ReasondateFuther"])
+                                Id = int.TryParse(Request.Form["FurthereducationId"], out var feId) ? feId : 0,
+                                MonitoringId = int.TryParse(Request.Form["FurtherEducationmonitoringId"], out var femId) ? femId : 0,
+                                Ontraining = Request.Form["Ontraining"],
+                                GraduateDate = DateTime.TryParseExact(Request.Form["GraduatedateFuther"], "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out var feGrad) ? feGrad : DateTime.MinValue,
+                                DropoutDate = DateTime.TryParseExact(Request.Form["DropoutdateFuther"], "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out var feDrop) ? feDrop : DateTime.MinValue,
+                                Reason = Request.Form["ReasondateFuther"]
                             };
                             var furtherInProgressInDb = _context.FurthereducationInProgresses.SingleOrDefault(c => c.MonitoringId == id);
                             if (furtherInProgressInDb == null)
                             {
                                 return NotFound();
                             }
-                            Mapper.Map(furtherInProgressDto, furtherInProgressInDb);
+                            _mapper.Map(furtherInProgressDto, furtherInProgressInDb);
                             _context.SaveChanges();
                             break;
                         case "Futuretraining":
 
                             var futureTrainingProgressDto = new FutureTrainingProgressDto()
                             {
-                                Id = int.Parse(HttpContext.Current.Request.Form["FurtureTrainingId"]),
-                                MonitoringId = int.Parse(HttpContext.Current.Request.Form["FurtureTrainingmonitoringId"]),
-                                LessionId = int.Parse(HttpContext.Current.Request.Form["LessionId"]),
-                                Ontraining = (HttpContext.Current.Request.Form["OntrainingFurtureTraining"]),
-                                GraduateDate = DateTime.ParseExact(HttpContext.Current.Request.Form["GraduatedateFurtureTraining"], "MM/dd/yyyy", null),
-                                DropoutDate = DateTime.ParseExact(HttpContext.Current.Request.Form["DropoutdateFurtureTraining"], "MM/dd/yyyy", null),
-                                Reason = (HttpContext.Current.Request.Form["ReasondateFurtureTraining"])
+                                Id = int.TryParse(Request.Form["FurtureTrainingId"], out var ftId) ? ftId : 0,
+                                MonitoringId = int.TryParse(Request.Form["FurtureTrainingmonitoringId"], out var ftmId) ? ftmId : 0,
+                                LessionId = int.TryParse(Request.Form["LessionId"], out var lId) ? lId : 0,
+                                Ontraining = Request.Form["OntrainingFurtureTraining"],
+                                GraduateDate = DateTime.TryParseExact(Request.Form["GraduatedateFurtureTraining"], "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out var ftGrad) ? ftGrad : DateTime.MinValue,
+                                DropoutDate = DateTime.TryParseExact(Request.Form["DropoutdateFurtureTraining"], "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out var ftDrop) ? ftDrop : DateTime.MinValue,
+                                Reason = Request.Form["ReasondateFurtureTraining"]
                             };
                             var futureTrainingInDb = _context.FutureTrainingProgresses.SingleOrDefault(c => c.MonitoringId == id);
                             if (futureTrainingInDb == null)
                             {
                                 return NotFound();
                             }
-                            Mapper.Map(futureTrainingProgressDto, futureTrainingInDb);
+                            _mapper.Map(futureTrainingProgressDto, futureTrainingInDb);
                             _context.SaveChanges();
                             break;
                         default:
                             transaction.Rollback();
                             return BadRequest();
                     }
-                    var userId = User.Identity.GetUserId();
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
                     var monitoringDto = new MonitoringDto()
                     {
-                        Id = int.Parse(HttpContext.Current.Request.Form["MonitoringId"]),
-                        MonitoringTime = (HttpContext.Current.Request.Form["MonitoringTime"]),
+                        Id = int.TryParse(Request.Form["MonitoringId"], out var mId) ? mId : 0,
+                        MonitoringTime = Request.Form["MonitoringTime"],
                         Enroll = user.FirstName + " " + user.LastName,
-                        Type = (HttpContext.Current.Request.Form["Type"]),
-                        ClientId = int.Parse(HttpContext.Current.Request.Form["ClientId"]),
-                        MonitoringDate = DateTime.ParseExact(HttpContext.Current.Request.Form["MonitoringDate"], "MM/dd/yyyy", null),
-                        NextMonitoringDate = DateTime.ParseExact(HttpContext.Current.Request.Form["Nextmonitoringdate"], "MM/dd/yyyy", null),
-                        Monitoringtype = HttpContext.Current.Request.Form["Monitoringtype"]
+                        Type = Request.Form["Type"],
+                        ClientId = int.TryParse(Request.Form["ClientId"], out var mcId) ? mcId : 0,
+                        MonitoringDate = DateTime.TryParseExact(Request.Form["MonitoringDate"], "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out var mDate) ? mDate : DateTime.MinValue,
+                        NextMonitoringDate = DateTime.TryParseExact(Request.Form["Nextmonitoringdate"], "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out var nmDate) ? nmDate : DateTime.MinValue,
+                        Monitoringtype = Request.Form["Monitoringtype"]
                     };
                     var monitoringInDb = _context.Monitorings.SingleOrDefault(c => c.Id == id);
                     if (monitoringInDb == null)
                     {
                         return NotFound();
                     }
-                    Mapper.Map(monitoringDto, monitoringInDb);
+                    _mapper.Map(monitoringDto, monitoringInDb);
                     _context.SaveChanges();
                     transaction.Commit();
                 }
@@ -361,7 +361,7 @@ namespace MtpApp.Controllers.Api
 
 
         [HttpDelete]
-        public IHttpActionResult DeleteMonitoring(int id, string conditionType)
+        public IActionResult DeleteMonitoring(int id, string conditionType)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -425,3 +425,4 @@ namespace MtpApp.Controllers.Api
         
     }
 }
+

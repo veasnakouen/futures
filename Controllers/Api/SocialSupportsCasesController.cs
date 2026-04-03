@@ -1,34 +1,36 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using Microsoft.AspNet.Identity;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
     [Authorize]
-    public class SocialSupportCasesController : ApiController
+    public class SocialSupportCasesController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public SocialSupportCasesController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public SocialSupportCasesController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         // GET: /api/SocialSupportCases?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetSocialSupportCases(int clientId)
+        public IActionResult GetSocialSupportCases(int clientId)
         {
             var Socialsupportcases = _context.SocialsupportCases
                                 .Include(c => c.Client)
                                 .Include(c => c.CaseWorker)
-                                .Select(Mapper.Map<SocialsupportCase, SocialsupportCaseDto>)
+                                .Select(_mapper.Map<SocialsupportCase, SocialsupportCaseDto>)
                                 .Where(c => c.ClientId == clientId);
             if (Socialsupportcases == null)
                 return NotFound();
@@ -38,7 +40,7 @@ namespace MtpApp.Controllers.Api
 
         // GET: /api/SocialSupportCases?SocialSupportCaseId={id}
         [HttpGet]
-        public IHttpActionResult GetSocialSupportCaseBySocialSupportCaseId(int SocialSupportCaseId)
+        public IActionResult GetSocialSupportCaseBySocialSupportCaseId(int SocialSupportCaseId)
         {
             var SocialsupportProblem = (from
                                         SC in _context.SocialsupportCases
@@ -78,12 +80,12 @@ namespace MtpApp.Controllers.Api
 
         // GET: /api/SocialSupportCases
         [HttpGet]
-        public IHttpActionResult GetSocialSupportCase(int Id)
+        public IActionResult GetSocialSupportCase(int Id)
         {
             var Socialsupportcases = _context.SocialsupportCases
                                 .Include(c => c.Client)
                                 .Include(c => c.CaseWorker)
-                                .Select(Mapper.Map<SocialsupportCase, SocialsupportCaseDto>)
+                                .Select(_mapper.Map<SocialsupportCase, SocialsupportCaseDto>)
                                 .Where(c => c.Id == Id);
             if (Socialsupportcases == null)
                 return NotFound();
@@ -93,9 +95,9 @@ namespace MtpApp.Controllers.Api
 
         // POST: /api/SocialSupportCases
         [HttpPost]
-        public IHttpActionResult CreateSocialSupportCases(SocialsupportCaseDto socialsupportCaseDto)
+        public IActionResult CreateSocialSupportCases(SocialsupportCaseDto socialsupportCaseDto)
         {
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             socialsupportCaseDto.AccessBy = user.FirstName + " " + user.LastName;
@@ -111,21 +113,21 @@ namespace MtpApp.Controllers.Api
                 return BadRequest();
             }
             
-            var newSocialSupportCase = Mapper.Map<SocialsupportCaseDto, SocialsupportCase>(socialsupportCaseDto);
+            var newSocialSupportCase = _mapper.Map<SocialsupportCaseDto, SocialsupportCase>(socialsupportCaseDto);
 
             _context.SocialsupportCases.Add(newSocialSupportCase);
             _context.SaveChanges();
             socialsupportCaseDto.Id = newSocialSupportCase.Id;
-            return Created(new Uri(Request.RequestUri + "/" + socialsupportCaseDto.Id), socialsupportCaseDto);
+            return CreatedAtAction(nameof(GetSocialSupportCases), new { clientId = socialsupportCaseDto.ClientId }, socialsupportCaseDto);
         }
 
 
         //Save with problem
          //POST: /api/SocialSupportCases
         [HttpPost]
-        public IHttpActionResult CreateSocialSupportWithProblem(SocialsupportCaseMulObj SocialsupportCaseMulObj, string SaveMultipleTAble)
+        public IActionResult CreateSocialSupportWithProblem(SocialsupportCaseMulObj SocialsupportCaseMulObj, string SaveMultipleTAble)
         {
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             SocialsupportCaseMulObj.SocialsupportCaseDto.AccessBy = user.FirstName + " " + user.LastName;
@@ -142,14 +144,14 @@ namespace MtpApp.Controllers.Api
                 return BadRequest();
             }
 
-            var newSocialSupportCase = Mapper.Map<SocialsupportCaseDto, SocialsupportCase>(SocialsupportCaseMulObj.SocialsupportCaseDto);
+            var newSocialSupportCase = _mapper.Map<SocialsupportCaseDto, SocialsupportCase>(SocialsupportCaseMulObj.SocialsupportCaseDto);
 
             _context.SocialsupportCases.Add(newSocialSupportCase);
 
             SocialsupportCaseMulObj.SocialSupportProblemDto.SocialSupportCaseId = newSocialSupportCase.Id;
             SocialsupportCaseMulObj.SocialSupportProblemDto.Status = "Active";
 
-            var newSocialSupportProblem = Mapper.Map<SocialSupportProblemDto, SocialSupportProblem>(SocialsupportCaseMulObj.SocialSupportProblemDto);
+            var newSocialSupportProblem = _mapper.Map<SocialSupportProblemDto, SocialSupportProblem>(SocialsupportCaseMulObj.SocialSupportProblemDto);
 
             _context.SocialSupportProblems.Add(newSocialSupportProblem);
 
@@ -157,14 +159,14 @@ namespace MtpApp.Controllers.Api
 
             SocialsupportCaseMulObj.SocialsupportCaseDto.Id = newSocialSupportCase.Id;
 
-            return Created(new Uri(Request.RequestUri + "/" + SocialsupportCaseMulObj.SocialsupportCaseDto.Id), SocialsupportCaseMulObj.SocialsupportCaseDto);
+            return CreatedAtAction(nameof(GetSocialSupportCases), new { clientId = SocialsupportCaseMulObj.SocialsupportCaseDto.ClientId }, SocialsupportCaseMulObj.SocialsupportCaseDto);
         }
 
         // PUT: /api/SocialSupportCases/{id}
         [HttpPut]
-        public IHttpActionResult UpdateSocialSupportCases(SocialsupportCaseDto socialsupportCaseDto)
+        public IActionResult UpdateSocialSupportCases(SocialsupportCaseDto socialsupportCaseDto)
         {
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             socialsupportCaseDto.AccessBy = user.FirstName + " " + user.LastName;
@@ -187,7 +189,7 @@ namespace MtpApp.Controllers.Api
                 }
             }
           
-            Mapper.Map(socialsupportCaseDto, SocialSupportCasesInDb);
+            _mapper.Map(socialsupportCaseDto, SocialSupportCasesInDb);
 
             _context.SaveChanges();
 
@@ -196,9 +198,9 @@ namespace MtpApp.Controllers.Api
 
         // PUT: /api/SocialSupportCases?UpdateMultipleTAble=
         [HttpPut]
-        public IHttpActionResult UpdateSocialSupportCasesWithProblem(SocialsupportCaseMulObj SocialsupportCaseMulObj, string UpdateMultipleTAble)
+        public IActionResult UpdateSocialSupportCasesWithProblem(SocialsupportCaseMulObj SocialsupportCaseMulObj, string UpdateMultipleTAble)
         {
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             SocialsupportCaseMulObj.SocialsupportCaseDto.AccessBy = user.FirstName + " " + user.LastName;
@@ -213,14 +215,14 @@ namespace MtpApp.Controllers.Api
             {
                 SocialsupportCaseMulObj.SocialSupportProblemDto.Status = "Active";
                 SocialsupportCaseMulObj.SocialSupportProblemDto.SocialSupportCaseId = SocialsupportCaseMulObj.SocialsupportCaseDto.Id;
-                var socialSupportProblemDto = Mapper.Map<SocialSupportProblemDto, SocialSupportProblem>(SocialsupportCaseMulObj.SocialSupportProblemDto);
+                var socialSupportProblemDto = _mapper.Map<SocialSupportProblemDto, SocialSupportProblem>(SocialsupportCaseMulObj.SocialSupportProblemDto);
                 _context.SocialSupportProblems.Add(socialSupportProblemDto);
             }
             else
             {
                 SocialsupportCaseMulObj.SocialSupportProblemDto.Status = "Active";
                 SocialsupportCaseMulObj.SocialSupportProblemDto.SocialSupportCaseId = SocialsupportCaseMulObj.SocialsupportCaseDto.Id;
-                Mapper.Map(SocialsupportCaseMulObj.SocialSupportProblemDto, socialSupportProblemIndb);
+                _mapper.Map(SocialsupportCaseMulObj.SocialSupportProblemDto, socialSupportProblemIndb);
             }
 
 
@@ -229,7 +231,7 @@ namespace MtpApp.Controllers.Api
             if (socialSupportCaseIndb == null)
                 return NotFound();
 
-            Mapper.Map(SocialsupportCaseMulObj.SocialsupportCaseDto, socialSupportCaseIndb);
+            _mapper.Map(SocialsupportCaseMulObj.SocialsupportCaseDto, socialSupportCaseIndb);
 
             _context.SaveChanges();
             return Ok(new { });
@@ -237,7 +239,7 @@ namespace MtpApp.Controllers.Api
 
         //// DELETE: /api/SocialSupportCases/{id}
         [HttpDelete]
-        public IHttpActionResult DeleteSocialSupportCase(int id)
+        public IActionResult DeleteSocialSupportCase(int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -263,3 +265,4 @@ namespace MtpApp.Controllers.Api
 
     }
 }
+

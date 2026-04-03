@@ -1,79 +1,80 @@
-﻿using AutoMapper;
+using AutoMapper;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class BusinessCategoriesController : ApiController
+    public class BusinessCategoriesController : ControllerBase
     {
-         private ApplicationDbContext _context;
-         public BusinessCategoriesController()
+         private readonly ApplicationDbContext _context;
+         private readonly IMapper _mapper;
+
+         public BusinessCategoriesController(ApplicationDbContext context, IMapper mapper)
          {
-             _context = new ApplicationDbContext();
+             _context = context;
+             _mapper = mapper;
          }
 
          // GET /api/businesscategories
          [HttpGet]
-         public IHttpActionResult GetBusinessCategories()
+         public IActionResult GetBusinessCategories()
          {
+             var businessCategories = _context.BusinessSetUpCategories
+                 .Where(c => c.IsDeleted != "Active")
+                 .Select(c => _mapper.Map<BusinessSetUpCateogryDto>(c));
 
-            //Api get  Create Variable = connnection . Model in dbset  .select  (  mapper  .  model to modeldto    )   . where condtion
-
-             var BusinessCategories = _context.BusinessSetUpCategories.Select(Mapper.Map<BusinessSetUpCategory, BusinessSetUpCateogryDto>).Where(c => c.IsDeleted != "Active");
-
-             return Ok(BusinessCategories);
+             return Ok(businessCategories);
          }
 
          // GET /api/businesscategories/{id}
-         [HttpGet]
-         public IHttpActionResult GetBusinessCategory(int id)
+         [HttpGet("{id}")]
+         public IActionResult GetBusinessCategory(int id)
          {
              var businessCategoryInDb = _context.BusinessSetUpCategories.SingleOrDefault(c => c.IsDeleted != "Active" && c.Id == id);
 
              if (businessCategoryInDb == null)
                  return NotFound();
 
-             return Ok(Mapper.Map<BusinessSetUpCategory, BusinessSetUpCateogryDto>(businessCategoryInDb));
+             return Ok(_mapper.Map<BusinessSetUpCateogryDto>(businessCategoryInDb));
          }
 
          // POST /api/businesscategories
          [HttpPost]
-         public IHttpActionResult CreateBusinesscategory(BusinessSetUpCateogryDto businessSetUpCateogryDto)
+         public IActionResult CreateBusinesscategory([FromBody] BusinessSetUpCateogryDto businessSetUpCateogryDto)
          {
              if (!ModelState.IsValid)
                  return BadRequest();
 
-             //Check if exist
              var businessCategoryInDb = _context.BusinessSetUpCategories.FirstOrDefault(c => c.BusCategoryName == businessSetUpCateogryDto.BusCategoryName);
 
              if (businessCategoryInDb != null)
                  return BadRequest();
 
-             var BusinessSetUpCategory = Mapper.Map<BusinessSetUpCateogryDto, BusinessSetUpCategory>(businessSetUpCateogryDto);
+             var businessSetUpCategory = _mapper.Map<BusinessSetUpCategory>(businessSetUpCateogryDto);
 
-             _context.BusinessSetUpCategories.Add(BusinessSetUpCategory);
+             _context.BusinessSetUpCategories.Add(businessSetUpCategory);
              _context.SaveChanges();
 
-             businessSetUpCateogryDto.Id = BusinessSetUpCategory.Id;
+             businessSetUpCateogryDto.Id = businessSetUpCategory.Id;
 
-             return Created(new Uri(Request.RequestUri + "/" + businessSetUpCateogryDto.Id), businessSetUpCateogryDto);
+             return CreatedAtAction(nameof(GetBusinessCategory), new { id = businessSetUpCateogryDto.Id }, businessSetUpCateogryDto);
          }
 
          // PUT /api/businesscategories/{id}
-         [HttpPut]
-         public IHttpActionResult UpdateBusinesscategory(int id, BusinessSetUpCateogryDto businessSetUpCateogryDto)
+         [HttpPut("{id}")]
+         public IActionResult UpdateBusinesscategory(int id, [FromBody] BusinessSetUpCateogryDto businessSetUpCateogryDto)
          {
              if (!ModelState.IsValid)
                  return BadRequest();
 
-             //Check if exist
              var businessCategory = _context.BusinessSetUpCategories.FirstOrDefault(c => c.Id != id && c.BusCategoryName == businessSetUpCateogryDto.BusCategoryName);
 
              if (businessCategory != null)
@@ -84,14 +85,14 @@ namespace MtpApp.Controllers.Api
              if (businessCategoryInDb == null)
                  return NotFound();
 
-             Mapper.Map(businessSetUpCateogryDto, businessCategoryInDb);
+             _mapper.Map(businessSetUpCateogryDto, businessCategoryInDb);
              _context.SaveChanges();
              return Ok(new { });
          }
 
          // DELETE /api/businesscategories/{id}
-         [HttpDelete]
-         public IHttpActionResult DeleteBusinesscategory(int id)
+         [HttpDelete("{id}")]
+         public IActionResult DeleteBusinesscategory(int id)
          {
              var businessCategory = _context.BusinessSetUpCategories.SingleOrDefault(c => c.Id == id);
 
@@ -105,3 +106,4 @@ namespace MtpApp.Controllers.Api
          }
     }
 }
+

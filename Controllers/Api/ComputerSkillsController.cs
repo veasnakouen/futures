@@ -1,94 +1,85 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class ComputerSkillsController : ApiController
+    public class ComputerSkillsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public ComputerSkillsController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public ComputerSkillsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET: /api/computerSkills?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetComputerSkills(int clientId)
+        public IActionResult GetComputerSkills([FromQuery] int clientId)
         {
-            var computerSkills = _context.ComputerSkills.Select(Mapper.Map<ComputerSkill, ComputerSkillDto>).Where(c => c.ClientId == clientId);
-
+            var computerSkills = _context.ComputerSkills
+                .Where(c => c.ClientId == clientId)
+                .ToList()
+                .Select(c => _mapper.Map<ComputerSkill, ComputerSkillDto>(c));
             return Ok(computerSkills);
         }
 
-        // GET: /api/computerSkills/{id}
-        [HttpGet]
-        public IHttpActionResult GetComputerSkill(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetComputerSkill(int id)
         {
             var computerSkill = _context.ComputerSkills.SingleOrDefault(c => c.Id == id);
-
             if (computerSkill == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<ComputerSkill, ComputerSkillDto>(computerSkill));
+            return Ok(_mapper.Map<ComputerSkill, ComputerSkillDto>(computerSkill));
         }
 
-        // POST: /api/computerSkills
         [HttpPost]
-        public IHttpActionResult CreateComputerSkill(ComputerSkillDto computerSkillDto)
+        public IActionResult CreateComputerSkill([FromBody] ComputerSkillDto computerSkillDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var computerSkill = Mapper.Map<ComputerSkillDto, ComputerSkill>(computerSkillDto);
-
+            var computerSkill = _mapper.Map<ComputerSkillDto, ComputerSkill>(computerSkillDto);
             _context.ComputerSkills.Add(computerSkill);
             _context.SaveChanges();
-
             computerSkillDto.Id = computerSkill.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + computerSkillDto.Id), computerSkillDto);
+            return CreatedAtAction(nameof(GetComputerSkill), new { id = computerSkillDto.Id }, computerSkillDto);
         }
 
-        // PUT: /api/computerSkills/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateComputerSkill(int id, ComputerSkillDto computerSkillDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateComputerSkill(int id, [FromBody] ComputerSkillDto computerSkillDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var computerSkillInDb = _context.ComputerSkills.SingleOrDefault(c => c.Id == id);
-
             if (computerSkillInDb == null)
                 return NotFound();
 
-            Mapper.Map(computerSkillDto, computerSkillInDb);
-
+            _mapper.Map(computerSkillDto, computerSkillInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        // DELETE: /api/computerSkills/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteComputerSkill(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteComputerSkill(int id)
         {
             var computerSkillInDb = _context.ComputerSkills.SingleOrDefault(c => c.Id == id);
-
             if (computerSkillInDb == null)
                 return NotFound();
-                
+
             _context.ComputerSkills.Remove(computerSkillInDb);
             _context.SaveChanges();
-
             return Ok();
         }
     }
 }
+

@@ -1,36 +1,38 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
+using MtpApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using MtpApp.ViewModels;
-using Microsoft.AspNet.Identity;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class FurtherEducationReferralsController : ApiController
+    [Authorize]
+    public class FurtherEducationReferralsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public FurtherEducationReferralsController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public FurtherEducationReferralsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         // GET: /api/furthereducationreferrals?clientId={}
         [HttpGet]
-        public IHttpActionResult GetFurtherEducationReferrals( int clientId)
+        public IActionResult GetFurtherEducationReferrals( int clientId)
         {
                 var furtherEducationReferrals = _context.FurtherEducationReferrals
                                                                               .Include(c => c.EducationReferralSource)
                                                                               .Include(c => c.furtherEducationReferralSubject)
                                                                               .Include(c => c.Clients)
-                                                                              .Select(Mapper.Map<FurtherEducationReferral, FurtherEducationReferralDto>)
+                                                                              .Select(_mapper.Map<FurtherEducationReferral, FurtherEducationReferralDto>)
                                                                               .Where(c => c.ClientId == clientId );
                 return Ok(furtherEducationReferrals);  
         }
@@ -38,7 +40,7 @@ namespace MtpApp.Controllers.Api
 
         // GET: /api/furthereducationreferrals/{id}
         [HttpGet]
-        public IHttpActionResult GetFurtherEducationReferral(int id)
+        public IActionResult GetFurtherEducationReferral(int id)
         {
             var furtherEducationReferralInDb = _context.FurtherEducationReferrals
                                                 .Include(c => c.EducationReferralSource)
@@ -50,7 +52,7 @@ namespace MtpApp.Controllers.Api
 
             var viewModel = new FurtherEducationReferralViewModel()
             {
-                FurtherEducationReferralDto = Mapper.Map<FurtherEducationReferral, FurtherEducationReferralDto>(furtherEducationReferralInDb),
+                FurtherEducationReferralDto = _mapper.Map<FurtherEducationReferral, FurtherEducationReferralDto>(furtherEducationReferralInDb),
                 EducationReferralSource = _context.EducationReferralSources.ToList()
             };
 
@@ -59,30 +61,30 @@ namespace MtpApp.Controllers.Api
 
         // POST: /api/furthereducationreferrals
         [HttpPost]
-        public IHttpActionResult CreateFurtherEducationReferral(FurtherEducationReferralDto furtherEducationReferralDto)
+        public IActionResult CreateFurtherEducationReferral(FurtherEducationReferralDto furtherEducationReferralDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             furtherEducationReferralDto.ReferralBy = user.FirstName + " " + user.LastName;
 
-            var furtherEducationReferral = Mapper.Map<FurtherEducationReferralDto, FurtherEducationReferral>(furtherEducationReferralDto);
+            var furtherEducationReferral = _mapper.Map<FurtherEducationReferralDto, FurtherEducationReferral>(furtherEducationReferralDto);
 
             _context.FurtherEducationReferrals.Add(furtherEducationReferral);
             _context.SaveChanges();
 
             furtherEducationReferralDto.Id = furtherEducationReferral.Id;
 
-            return Created(new Uri(Request.RequestUri + "/" + furtherEducationReferralDto.Id), furtherEducationReferralDto);
+            return CreatedAtAction(nameof(GetFurtherEducationReferral), new { id = furtherEducationReferralDto.Id }, furtherEducationReferralDto);
         }
 
         // PUT: /api/furthereducationreferrals/{id}
         [HttpPut]
-        public IHttpActionResult UpdateFurtherEducationReferral(int id, FurtherEducationReferralDto furtherEducationReferralDto)
+        public IActionResult UpdateFurtherEducationReferral(int id, FurtherEducationReferralDto furtherEducationReferralDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -94,7 +96,7 @@ namespace MtpApp.Controllers.Api
 
             furtherEducationReferralDto.ReferralBy = furtherEducationReferralInDb.ReferralBy;
 
-            Mapper.Map(furtherEducationReferralDto, furtherEducationReferralInDb);
+            _mapper.Map(furtherEducationReferralDto, furtherEducationReferralInDb);
             _context.SaveChanges();
 
             return Ok(new { });
@@ -102,7 +104,7 @@ namespace MtpApp.Controllers.Api
 
         // DELETE: /api/furthereducationreferrals/{id}
         [HttpDelete]
-        public IHttpActionResult DeleteFurtherEducationReferral(int id)
+        public IActionResult DeleteFurtherEducationReferral(int id)
         {
             var furtherEducationReferralInDb = _context.FurtherEducationReferrals.SingleOrDefault(c => c.Id == id);
 
@@ -116,3 +118,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

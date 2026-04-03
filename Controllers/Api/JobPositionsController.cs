@@ -1,105 +1,93 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class JobPositionsController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class JobPositionsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public JobPositionsController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public JobPositionsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET /api/jobpositions
         [HttpGet]
-        public IHttpActionResult GetJobPositions()
+        public IActionResult GetJobPositions()
         {
-            var jobPositions = _context.JobPosition.Select(Mapper.Map<JobPosition, JobPositionDto>).Where(c => c.IsDeleted == false);
-
+            var jobPositions = _context.JobPosition
+                .Where(c => c.IsDeleted == false)
+                .ToList()
+                .Select(c => _mapper.Map<JobPosition, JobPositionDto>(c));
             return Ok(jobPositions);
         }
 
-        // GET /api/jobposition/{id}
-        [HttpGet]
-        public IHttpActionResult GetJobPosition(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetJobPosition(int id)
         {
             var jobPositionInDb = _context.JobPosition.SingleOrDefault(c => c.IsDeleted == false && c.Id == id);
-
             if (jobPositionInDb == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<JobPosition, JobPositionDto>(jobPositionInDb));
+            return Ok(_mapper.Map<JobPosition, JobPositionDto>(jobPositionInDb));
         }
 
-        // POST /api/jobposition
         [HttpPost]
-        public IHttpActionResult CreateJobPosition(JobPositionDto jobPositionDto)
+        public IActionResult CreateJobPosition([FromBody] JobPositionDto jobPositionDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            //Check if exist
             var jobPositionInDb = _context.JobPosition.FirstOrDefault(c => c.Name == jobPositionDto.Name);
-
             if (jobPositionInDb != null)
                 return BadRequest();
 
-            var jobPosition = Mapper.Map<JobPositionDto, JobPosition>(jobPositionDto);
-
+            var jobPosition = _mapper.Map<JobPositionDto, JobPosition>(jobPositionDto);
             _context.JobPosition.Add(jobPosition);
             _context.SaveChanges();
-
             jobPositionDto.Id = jobPosition.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + jobPositionDto.Id), jobPositionDto);
+            return CreatedAtAction(nameof(GetJobPosition), new { id = jobPositionDto.Id }, jobPositionDto);
         }
 
-        // PUT /api/jobposition/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateJobPosition(int id, JobPositionDto jobPositionDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateJobPosition(int id, [FromBody] JobPositionDto jobPositionDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            //Check if exist
             var jobPosition = _context.JobPosition.FirstOrDefault(c => c.Id != id && c.Name == jobPositionDto.Name);
-
             if (jobPosition != null)
                 return BadRequest();
 
             var jobPositionInDb = _context.JobPosition.SingleOrDefault(c => c.Id == id);
-
             if (jobPositionInDb == null)
                 return NotFound();
 
-            Mapper.Map(jobPositionDto, jobPositionInDb);
+            _mapper.Map(jobPositionDto, jobPositionInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        // DELETE /api/jobposition/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteJobPosition(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteJobPosition(int id)
         {
             var jobPosition = _context.JobPosition.SingleOrDefault(c => c.Id == id);
-
             if (jobPosition == null)
                 return NotFound();
 
             jobPosition.IsDeleted = true;
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

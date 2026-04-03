@@ -1,57 +1,59 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using Microsoft.AspNet.Identity;
-using System.Data.Entity;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
     [Authorize]
-    public class EmployersController : ApiController
+    public class EmployersController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public EmployersController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public EmployersController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         //GET /api/employers
         [HttpGet]
-        public IHttpActionResult GetEmployers(string status)
+        public IActionResult GetEmployers(string status)
         {
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             if (status == "Active")
             {
-                var employers = _context.Employers.Include(m => m.JobCategory).Select(Mapper.Map<Employer, EmployerDto>).Where(c => c.Branch == user.Branch && c.Status == "Active");
+                var employers = _context.Employers.Include(m => m.JobCategory).Select(_mapper.Map<Employer, EmployerDto>).Where(c => c.Branch == user.Branch && c.Status == "Active");
                 return Ok(employers);
             }
             else
             {
-                var employers = _context.Employers.Include(m => m.JobCategory).Select(Mapper.Map<Employer, EmployerDto>).Where(c => c.Branch == user.Branch && c.Status == "Inactive");
+                var employers = _context.Employers.Include(m => m.JobCategory).Select(_mapper.Map<Employer, EmployerDto>).Where(c => c.Branch == user.Branch && c.Status == "Inactive");
                 return Ok(employers);
             }
         }
 
         //GET /api/employers?start=&end=
         [HttpGet]
-        public IHttpActionResult GetEmployers(DateTime start, DateTime end)
+        public IActionResult GetEmployers(DateTime start, DateTime end)
         {
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             var employers = _context.Employers
                                 .Include(m => m.JobCategory)
-                                .Select(Mapper.Map<Employer, EmployerDto>)
+                                .Select(_mapper.Map<Employer, EmployerDto>)
                                 .Where(c => c.Branch == user.Branch && c.Status == "Active" && c.CorporateDate >= start && c.CorporateDate <= end);
             
             return Ok(employers);
@@ -59,19 +61,19 @@ namespace MtpApp.Controllers.Api
 
         //GET /api/employers/{id}
         [HttpGet]
-        public IHttpActionResult GetEmployer(int id)
+        public IActionResult GetEmployer(int id)
         {
             var employer = _context.Employers.Include(m => m.JobCategory).SingleOrDefault(c => c.Id == id);
 
             if (employer == null)
                 return NotFound();
 
-            return Ok(Mapper.Map<Employer,EmployerDto>(employer));
+            return Ok(_mapper.Map<Employer,EmployerDto>(employer));
         }
 
         //POST /api/employers
         [HttpPost]
-        public IHttpActionResult CreateEmployer(EmployerDto employerDto)
+        public IActionResult CreateEmployer(EmployerDto employerDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -82,25 +84,25 @@ namespace MtpApp.Controllers.Api
             if (employerInDb != null)
                 return BadRequest();
 
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             employerDto.Branch = user.Branch;
 
-            var employer = Mapper.Map<EmployerDto, Employer>(employerDto);
+            var employer = _mapper.Map<EmployerDto, Employer>(employerDto);
 
             _context.Employers.Add(employer);
             _context.SaveChanges();
 
             employerDto.Id = employer.Id;
 
-            return Created(new Uri(Request.RequestUri + "/" + employerDto.Id), employerDto);
+            return CreatedAtAction(nameof(GetEmployer), new { id = employerDto.Id }, employerDto);
         }
 
         //PUT /api/employers/{id}
         [HttpPut]
-        public IHttpActionResult UpdateEmployer(int id, EmployerDto employerDto)
+        public IActionResult UpdateEmployer(int id, EmployerDto employerDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -116,13 +118,13 @@ namespace MtpApp.Controllers.Api
             if (employerDto == null)
                 return NotFound();
 
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             employerDto.Branch = user.Branch;
 
-            Mapper.Map(employerDto, employerInDb);
+            _mapper.Map(employerDto, employerInDb);
             _context.SaveChanges();
 
             return Ok(new { });
@@ -130,7 +132,7 @@ namespace MtpApp.Controllers.Api
 
         //DELETE /api/employers/{id}
         [HttpDelete]
-        public IHttpActionResult DeleteEmployer(int id)
+        public IActionResult DeleteEmployer(int id)
         {
             var employer = _context.Employers.SingleOrDefault(c => c.Id == id);
 
@@ -144,3 +146,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

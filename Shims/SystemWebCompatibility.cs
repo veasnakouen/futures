@@ -1,30 +1,13 @@
 // Compatibility shims to reduce compile errors during migration to ASP.NET Core.
 // These are lightweight placeholders to allow the project to compile for iterative fixes.
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Security.Claims;
 
 // NOTE: These shims are temporary and only exist to allow iterative compilation while migrating
 // the application from ASP.NET MVC / OWIN to ASP.NET Core. They do not provide runtime behavior.
-
-// Global Request shim for legacy Razor views that still use `Request.IsAuthenticated`.
-public static class Request
-{
-    public static bool IsAuthenticated => false;
-    public static Uri Url => new Uri("http://localhost/");
-    public static string RawUrl => "/";
-    public static NameValueCollection Form { get; } = new NameValueCollection();
-    public static NameValueCollection ServerVariables { get; } = new NameValueCollection();
-}
 
 namespace System.Web
 {
@@ -47,7 +30,6 @@ namespace System.Web
 
         public HttpRequest Request { get; set; }
         public HttpResponse Response { get; set; }
-        public HttpServerUtility Server { get; set; } = new HttpServerUtility();
     }
 
     public abstract class HttpContextBase { }
@@ -55,32 +37,12 @@ namespace System.Web
     public class HttpRequest
     {
         public string UserAgent { get; set; }
-        public NameValueCollection ServerVariables { get; } = new NameValueCollection();
-        public NameValueCollection Form { get; } = new NameValueCollection();
-        public HttpFileCollection Files { get; } = new HttpFileCollection();
-        public Uri RequestUri { get; set; }
-        public bool IsAuthenticated { get; set; }
+        public System.Collections.Specialized.NameValueCollection ServerVariables { get; } = new System.Collections.Specialized.NameValueCollection();
     }
 
     public class HttpResponse
     {
         public int StatusCode { get; set; }
-    }
-
-    public class HttpServerUtility
-    {
-        public string MapPath(string path) => path;
-    }
-
-    public class HttpFileCollection : List<HttpPostedFile>
-    {
-        public HttpPostedFile this[string name] => this.FirstOrDefault(f => string.Equals(f?.FileName, name, StringComparison.OrdinalIgnoreCase)) ?? new HttpPostedFile();
-    }
-
-    public class HttpPostedFile
-    {
-        public string FileName { get; set; }
-        public void SaveAs(string path) { }
     }
 }
 
@@ -93,11 +55,6 @@ namespace Microsoft.Owin
         public OwinStartupAttribute(System.Type startupType) { }
         public OwinStartupAttribute(string typeName) { }
     }
-
-public static class HttpContextWrapper
-{
-    public static System.Web.HttpContext Current => System.Web.HttpContext.Current;
-}
 }
 
 // System.Web.Routing shims
@@ -134,68 +91,18 @@ namespace System.Web.Http
 namespace Microsoft.Reporting.WebForms
 {
     // Minimal ReportViewer placeholder to satisfy view references
-    public enum ProcessingMode { Local, Remote }
-
-    public class ReportParameter
-    {
-        public ReportParameter(string name, string value) { }
-    }
-
-    public class ReportDataSource
-    {
-        public ReportDataSource(string name, object value) { }
-    }
-
-    public class LocalReport
-    {
-        public string ReportPath { get; set; }
-        public IList<ReportDataSource> DataSources { get; } = new List<ReportDataSource>();
-        public void SetParameters(IEnumerable<ReportParameter> parameters) { }
-        public void Refresh() { }
-    }
-
-    public class ServerReport
-    {
-        public string ReportPath { get; set; }
-        public void SetParameters(IEnumerable<ReportParameter> parameters) { }
-    }
-
-    public class ReportViewer
-    {
-        public ProcessingMode ProcessingMode { get; set; }
-        public bool SizeToReportContent { get; set; }
-        public string Width { get; set; }
-        public string Height { get; set; }
-        public LocalReport LocalReport { get; } = new LocalReport();
-        public ServerReport ServerReport { get; } = new ServerReport();
-    }
+    public class ReportViewer { }
 }
 
 namespace ReportViewerForMvc
 {
-    public static class ReportViewerHtmlHelperExtensions
-    {
-        public static IHtmlContent ReportViewer(this IHtmlHelper htmlHelper, Microsoft.Reporting.WebForms.ReportViewer reportViewer)
-            => HtmlString.Empty;
-    }
+    public class ReportViewer { }
 }
 
 // SignalR shims for old Microsoft.AspNet.SignalR
 namespace Microsoft.AspNet.SignalR
 {
     public abstract class Hub { }
-
-    public interface IHubContext { }
-
-    public sealed class HubConnectionManager
-    {
-        public IHubContext GetHubContext<T>() => null;
-    }
-
-    public static class GlobalHost
-    {
-        public static HubConnectionManager ConnectionManager { get; } = new HubConnectionManager();
-    }
 }
 
 namespace Microsoft.AspNet.SignalR.Hubs
@@ -220,9 +127,6 @@ namespace System.Web.Mvc
     public abstract class Controller
     {
         public HttpContextBase HttpContext { get; set; } = new System.Web.HttpContextBaseShim();
-        public dynamic ViewBag { get; } = new ExpandoObject();
-        public ClaimsPrincipal User { get; } = new ClaimsPrincipal(new ClaimsIdentity());
-        public System.Web.HttpRequest Request => System.Web.HttpContext.Current?.Request;
 
         protected ActionResult View()
         {
@@ -270,7 +174,7 @@ namespace System.Web.Mvc
     {
         public RouteAttribute(string template) { }
     }
-
+    
     // HttpUnauthorizedResult shim with expected virtual ExecuteResult for legacy overrides
     public class HttpUnauthorizedResult : ActionResult
     {
@@ -317,16 +221,6 @@ namespace System.Web.Optimization
         public static object Bundles => null;
     }
 
-    public static class Styles
-    {
-        public static IHtmlContent Render(string path) => HtmlString.Empty;
-    }
-
-    public static class Scripts
-    {
-        public static IHtmlContent Render(string path) => HtmlString.Empty;
-    }
-
     public abstract class BundleBase
     {
         public BundleBase Include(params string[] paths) { return this; }
@@ -344,29 +238,6 @@ namespace System.Web.Optimization
 
     public class BundleCollection {
         public void Add(BundleBase bundle) { }
-    }
-}
-
-namespace Microsoft.AspNetCore.Mvc.Rendering
-{
-    public static class LegacyHtmlHelperExtensions
-    {
-        private sealed class DisposableHtmlContent : IDisposable
-        {
-            public void Dispose() { }
-        }
-
-        public static IDisposable BeginForm(this IHtmlHelper htmlHelper, string actionName, string controllerName, object routeValues, FormMethod method)
-            => new DisposableHtmlContent();
-
-        public static IDisposable BeginForm(this IHtmlHelper htmlHelper, string actionName, string controllerName, object routeValues, FormMethod method, object htmlAttributes)
-            => new DisposableHtmlContent();
-
-        public static IHtmlContent Action(this IHtmlHelper htmlHelper, string actionName, string controllerName, object routeValues = null)
-            => HtmlString.Empty;
-
-        public static IHtmlContent ReportViewer(this IHtmlHelper htmlHelper, object reportViewer)
-            => HtmlString.Empty;
     }
 }
 
@@ -394,6 +265,7 @@ namespace Microsoft.AspNet
     {
         // Minimal placeholders for legacy Identity namespaces to avoid missing using errors.
         public class IdentityMessage { }
+        public class UserLoginInfo { }
     }
 }
 
@@ -501,36 +373,10 @@ namespace Microsoft.AspNet.Identity
         }
     }
 
-    public class RoleManager<TRole>
-    {
-        public IQueryable<TRole> Roles { get; } = new List<TRole>().AsQueryable();
-    }
+    public class RoleManager<TRole> { }
     public class IdentityRole { }
     public interface IUserStore<T> { }
     public interface IIdentityMessageService { }
-
-    public class RoleStore<TRole> : IUserStore<TRole>
-    {
-        public RoleStore() { }
-        public RoleStore(object context) { }
-    }
-
-    public class UserLoginInfo
-    {
-        public UserLoginInfo(string loginProvider, string providerKey) { LoginProvider = loginProvider; ProviderKey = providerKey; }
-        public string LoginProvider { get; set; }
-        public string ProviderKey { get; set; }
-    }
-
-    public static class IdentityExtensions
-    {
-        public static string GetUserId(this ClaimsIdentity identity) => string.Empty;
-        public static string GetUserName(this ClaimsIdentity identity) => string.Empty;
-        public static string GetUserId(this ClaimsPrincipal principal) => string.Empty;
-        public static string GetUserName(this ClaimsPrincipal principal) => string.Empty;
-        public static string GetUserId(this System.Security.Principal.IIdentity identity) => string.Empty;
-        public static string GetUserName(this System.Security.Principal.IIdentity identity) => string.Empty;
-    }
 }
 
 namespace Microsoft.AspNet.Identity.EntityFramework
@@ -543,27 +389,11 @@ namespace Microsoft.AspNet.Identity.EntityFramework
         public UserStore() { }
         public UserStore(object context) { }
     }
-
-    public class RoleStore<TRole> : Microsoft.AspNet.Identity.IUserStore<TRole>
-    {
-        public RoleStore() { }
-        public RoleStore(object context) { }
-    }
 }
 
 // AutoMapper shim
 namespace AutoMapper
 {
-    public interface IMapperConfigurationExpression
-    {
-        void AddProfile<TProfile>() where TProfile : class, new();
-    }
-
-    public class Profile
-    {
-        protected MappingExpression<TSource, TDest> CreateMap<TSource, TDest>() => Mapper.CreateMap<TSource, TDest>();
-    }
-
     public class MappingExpression<TSource, TDest>
     {
         public MappingExpression<TSource, TDest> ForMember(System.Linq.Expressions.Expression<Func<TDest, object>> member, Action<dynamic> opts)
@@ -572,31 +402,12 @@ namespace AutoMapper
         }
     }
 
-    internal sealed class MapperConfigurationExpression : IMapperConfigurationExpression
-    {
-        public void AddProfile<TProfile>() where TProfile : class, new() { }
-    }
-
     public static class Mapper
     {
-        public static void Initialize(Action<IMapperConfigurationExpression> configAction) { }
-
         public static MappingExpression<TSource, TDest> CreateMap<TSource, TDest>()
         {
             return new MappingExpression<TSource, TDest>();
         }
-
-        public static TDest Map<TDest>(object source) where TDest : new()
-        {
-            return new TDest();
-        }
-
-        public static TDest Map<TSource, TDest>(TSource source) where TDest : new()
-        {
-            return new TDest();
-        }
-
-        public static void Map<TSource, TDest>(TSource source, TDest destination) { }
     }
 }
 
@@ -659,26 +470,14 @@ namespace System.Web.Http
     // Minimal ApiController shim mapping to ControllerBase and supporting Dispose override
     public abstract class ApiController : ControllerBase, IDisposable
     {
-        public new System.Web.HttpRequest Request { get; } = new System.Web.HttpRequest();
-
         // allow legacy controllers to override Dispose(bool)
         protected virtual void Dispose(bool disposing) { }
 
         public void Dispose() { Dispose(true); }
-
-        protected new IHttpActionResult Ok() => new HttpActionResult();
-        protected new IHttpActionResult Ok(object value) => new HttpActionResult();
-        protected new IHttpActionResult BadRequest() => new HttpActionResult();
-        protected new IHttpActionResult BadRequest(string message) => new HttpActionResult();
-        protected new IHttpActionResult NotFound() => new HttpActionResult();
-        protected IHttpActionResult Created(Uri uri, object value) => new HttpActionResult();
-        protected IHttpActionResult CreatedAtRoute(string routeName, object routeValues, object value) => new HttpActionResult();
     }
 
     // Marker interface used in many controllers
     public interface IHttpActionResult { }
-
-    public class HttpActionResult : IHttpActionResult { }
 
     // Attributes used by Web API controllers
     public class HttpGetAttribute : System.Attribute { }
@@ -742,6 +541,17 @@ namespace System.Web
     }
 }
 
+namespace Microsoft.AspNetCore.Http
+{
+    public static class OwinContextExtensions
+    {
+        public static Microsoft.Owin.IOwinContext GetOwinContext(this HttpContext context)
+        {
+            return null;
+        }
+    }
+}
+
 namespace Microsoft.Owin.Security
 {
     // IAuthenticationManager used by legacy code
@@ -771,71 +581,4 @@ namespace Microsoft.AspNet.Identity.Owin
     }
 
     public interface IDataProtectionProvider { object Create(string purpose); }
-}
-
-namespace Microsoft.Extensions.DependencyInjection
-{
-    using AutoMapper;
-
-    public static class AutoMapperServiceCollectionExtensions
-    {
-        public static IServiceCollection AddAutoMapper(this IServiceCollection services, params Type[] profileAssemblyMarkerTypes) => services;
-        public static IServiceCollection AddAutoMapper(this IServiceCollection services, Action<IMapperConfigurationExpression> configAction) => services;
-    }
-}
-
-namespace Microsoft.AspNetCore.Builder
-{
-    public sealed class SystemWebAdaptersBuilder
-    {
-        public SystemWebAdaptersBuilder AddWrappedAspNetCoreSession() => this;
-        public SystemWebAdaptersBuilder AddJsonSessionSerializer(Action<dynamic> configure = null) => this;
-    }
-
-    public static class SystemWebAdaptersExtensions
-    {
-        public static SystemWebAdaptersBuilder AddSystemWebAdapters(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) => new SystemWebAdaptersBuilder();
-        public static IApplicationBuilder UseSystemWebAdapters(this IApplicationBuilder app) => app;
-        public static ControllerActionEndpointConventionBuilder RequireSystemWebAdapterSession(this ControllerActionEndpointConventionBuilder builder) => builder;
-    }
-}
-
-namespace System.Configuration
-{
-    public class ConnectionStringSettings
-    {
-        public string Name { get; set; }
-        public string ConnectionString { get; set; }
-        public string ProviderName { get; set; }
-
-        public ConnectionStringSettings() { }
-        public ConnectionStringSettings(string name, string connectionString)
-        {
-            Name = name;
-            ConnectionString = connectionString;
-        }
-    }
-
-    public class ConnectionStringSettingsCollection : IEnumerable<ConnectionStringSettings>
-    {
-        private readonly Dictionary<string, ConnectionStringSettings> _items = new Dictionary<string, ConnectionStringSettings>(StringComparer.OrdinalIgnoreCase);
-        public ConnectionStringSettings this[string name] => _items.TryGetValue(name, out var value) ? value : null;
-        public void Add(ConnectionStringSettings item) => _items[item.Name] = item;
-        public IEnumerator<ConnectionStringSettings> GetEnumerator() => _items.Values.GetEnumerator();
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
-    }
-
-    public static class ConfigurationManager
-    {
-        public static ConnectionStringSettingsCollection ConnectionStrings { get; } = new ConnectionStringSettingsCollection();
-        public static NameValueCollection AppSettings { get; } = new NameValueCollection();
-    }
-}
-
-namespace System.Data.Entity
-{
-    public static class QueryableExtensions
-    {
-        public static IQueryable<T> Include<T, TProperty>(this IQueryable<T> source, Expression<Func<T, TProperty>> path) => source;
-    }
 }

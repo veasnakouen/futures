@@ -1,94 +1,82 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class PositionsController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class PositionsController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PositionsController()
+        public PositionsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        //GET /api/positions
         [HttpGet]
-        public IHttpActionResult GetPositions()
+        public IActionResult GetPositions()
         {
-            var positions = _context.Positions.ToList().Select(Mapper.Map<Position, PositionDto>);
+            var positions = _context.Positions.ToList().Select(c => _mapper.Map<Position, PositionDto>(c));
             return Ok(positions);
         }
 
-        //GET /api/positions/{id}
-        [HttpGet]
-        public IHttpActionResult GetPosition(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetPosition(int id)
         {
             var positionInDb = _context.Positions.SingleOrDefault(c => c.Id == id);
-
             if (positionInDb == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<Position, PositionDto>(positionInDb));
+            return Ok(_mapper.Map<Position, PositionDto>(positionInDb));
         }
 
-        //POST /api/positions
         [HttpPost]
-        public IHttpActionResult CreatePosition(PositionDto positionDto)
+        public IActionResult CreatePosition([FromBody] PositionDto positionDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var position = Mapper.Map<PositionDto, Position>(positionDto);
-
+            var position = _mapper.Map<PositionDto, Position>(positionDto);
             _context.Positions.Add(position);
             _context.SaveChanges();
-
             positionDto.Id = position.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + positionDto.Id), positionDto);
+            return CreatedAtAction(nameof(GetPosition), new { id = positionDto.Id }, positionDto);
         }
 
-        //PUT /api/positions/{id}
-        [HttpPut]
-        public IHttpActionResult UpdatePosition(int id, PositionDto positionDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdatePosition(int id, [FromBody] PositionDto positionDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var positionInDb = _context.Positions.SingleOrDefault(c => c.Id == id);
-
             if (positionInDb == null)
                 return NotFound();
 
-            Mapper.Map(positionDto, positionInDb);
+            _mapper.Map(positionDto, positionInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        //DELETE /api/positions/{id}
-        [HttpDelete]
-        public IHttpActionResult DeletePosition(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeletePosition(int id)
         {
             try
             {
                 var position = _context.Positions.SingleOrDefault(c => c.Id == id);
-
                 if (position == null)
                     return NotFound();
 
                 _context.Positions.Remove(position);
                 _context.SaveChanges();
-
                 return Ok(new { });
             }
             catch (Exception)
@@ -98,3 +86,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

@@ -1,121 +1,102 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class LessionsController : ApiController
-   {
-        private ApplicationDbContext _context;
-        public LessionsController()
+    public class LessionsController : ControllerBase
     {
-        _context = new ApplicationDbContext();
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-    }
-
-        ////GET /api/Lessions
-        [HttpGet]
-        public IHttpActionResult GetLessions()
+        public LessionsController(ApplicationDbContext context, IMapper mapper)
         {
-            var lessions = _context.Lessions.Include(c => c.Subject).ToList().Select(Mapper.Map<Lession, LessionDto>);
+            _context = context;
+            _mapper = mapper;
+        }
+
+        [HttpGet]
+        public IActionResult GetLessions()
+        {
+            var lessions = _context.Lessions.Include(c => c.Subject).ToList().Select(c => _mapper.Map<Lession, LessionDto>(c));
             return Ok(lessions);
         }
 
-        //GET /api/lessions/{id}
-
-        [HttpGet]
-        public IHttpActionResult GetLessions(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetLession(int id)
         {
             var lession = _context.Lessions.SingleOrDefault(c => c.Id == id);
-
             if (lession == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<Lession, LessionDto>(lession));
+            return Ok(_mapper.Map<Lession, LessionDto>(lession));
         }
 
-        //GET /api/lessions/subjectId=
-
-        [HttpGet]
-        public IHttpActionResult GetLessionBySubject(int subjectId)
+        [HttpGet("bysubject")]
+        public IActionResult GetLessionBySubject([FromQuery] int subjectId)
         {
-            var lession = _context.Lessions.Include(c => c.Subject).Select(Mapper.Map<Lession, LessionDto>).Where(c => c.SubjectId == subjectId);
-            if (lession == null)
-                return NotFound();
-            return Ok(lession);
+            var lessions = _context.Lessions
+                .Include(c => c.Subject)
+                .Where(c => c.SubjectId == subjectId)
+                .ToList()
+                .Select(c => _mapper.Map<Lession, LessionDto>(c));
+            return Ok(lessions);
         }
 
-
-        //POST /api/lessions
         [HttpPost]
-        public IHttpActionResult CreateLessions(LessionDto lessionDto)
+        public IActionResult CreateLession([FromBody] LessionDto lessionDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var isExists = _context.Lessions.FirstOrDefault(c => c.LessionSub == lessionDto.LessionSub && c.SubjectId == lessionDto.SubjectId);
-
             if (isExists != null)
                 return BadRequest();
 
-            var newlession = Mapper.Map<LessionDto, Lession>(lessionDto);
-
+            var newlession = _mapper.Map<LessionDto, Lession>(lessionDto);
             _context.Lessions.Add(newlession);
             _context.SaveChanges();
-
             lessionDto.Id = newlession.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + lessionDto.Id), lessionDto);
+            return CreatedAtAction(nameof(GetLession), new { id = lessionDto.Id }, lessionDto);
         }
 
-
-
-        //PUT /api/lessions/{id}
-
-        [HttpPut]
-        public IHttpActionResult UpdateLessions(int id, LessionDto lessionDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateLession(int id, [FromBody] LessionDto lessionDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var isExists = _context.Lessions.SingleOrDefault(c => c.LessionSub == lessionDto.LessionSub && c.SubjectId == lessionDto.SubjectId && c.Id != lessionDto.Id);
 
+            var isExists = _context.Lessions.SingleOrDefault(c => c.LessionSub == lessionDto.LessionSub && c.SubjectId == lessionDto.SubjectId && c.Id != lessionDto.Id);
             if (isExists != null)
                 return BadRequest();
 
-            var lessionIndb = _context.Lessions.SingleOrDefault(c => c.Id == id);
-
-            if (lessionIndb == null)
+            var lessionInDb = _context.Lessions.SingleOrDefault(c => c.Id == id);
+            if (lessionInDb == null)
                 return NotFound();
 
-            Mapper.Map(lessionDto, lessionIndb);
-
+            _mapper.Map(lessionDto, lessionInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-
-        //DELETE /api/lessions/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteLessions(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteLession(int id)
         {
             var lession = _context.Lessions.SingleOrDefault(c => c.Id == id);
-
             if (lession == null)
                 return NotFound();
 
             _context.Lessions.Remove(lession);
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

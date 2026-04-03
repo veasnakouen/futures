@@ -1,103 +1,93 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class JobExpectationsController : ApiController
+    public class JobExpectationsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public JobExpectationsController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public JobExpectationsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET: /api/jobexpectations?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetJobExpectations(int clientId)
+        public IActionResult GetJobExpectations([FromQuery] int clientId)
         {
-            var jobExpectations = _context.JobExpectations.Select(Mapper.Map<JobExpectation, JobExpectationDto>).Where(c => c.ClientId == clientId);
+            var jobExpectations = _context.JobExpectations
+                .Where(c => c.ClientId == clientId)
+                .ToList()
+                .Select(c => _mapper.Map<JobExpectation, JobExpectationDto>(c));
             return Ok(jobExpectations);
         }
 
-        // GET: /api/jobexpectations/{id}
-        [HttpGet]
-        public IHttpActionResult GetJobExpectation(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetJobExpectation(int id)
         {
             var jobExpectation = _context.JobExpectations.SingleOrDefault(c => c.Id == id);
-
             if (jobExpectation == null)
                 return NotFound();
-
-            return Ok(jobExpectation);
+            return Ok(_mapper.Map<JobExpectation, JobExpectationDto>(jobExpectation));
         }
 
-        // PUT: /api/jobexpectations/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateJobExpectation(int id)
+        [HttpPut("{id}")]
+        public IActionResult UpdateJobExpectation(int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var jobExpectationInDb = _context.JobExpectations.SingleOrDefault(c => c.ClientId == id);
 
-            var JobCategoryIdOne = HttpContext.Current.Request.Form["JobCategoryIdOne"];
-
-            if (JobCategoryIdOne == null)
-            {
-                JobCategoryIdOne = null;
-            }
-
             var jobExpectationDto = new JobExpectationDto()
             {
-                ClientId = int.Parse(HttpContext.Current.Request.Form["ClientId"]),
-                JobCategoryIdOne = int.Parse(HttpContext.Current.Request.Form["JobCategoryIdOne"]),
-                JobCategoryIdTwo = int.Parse(HttpContext.Current.Request.Form["JobCategoryIdTwo"]),
-                JobCategoryIdThree = int.Parse(HttpContext.Current.Request.Form["JobCategoryIdThree"]),
-                JobPositionIdOne = int.Parse(HttpContext.Current.Request.Form["JobPositionIdOne"]),
-                JobPositionIdTwo = int.Parse(HttpContext.Current.Request.Form["JobPositionIdTwo"]),
-                JobPositionIdThree = int.Parse(HttpContext.Current.Request.Form["JobPositionIdThree"]),
-                EmploymentType = (HttpContext.Current.Request.Form["EmploymentType"]),
-                Permanent =  true,  // Boolean.Parse(HttpContext.Current.Request.Form["Permanent"]),
-                Temporary =   true, // Boolean.Parse(HttpContext.Current.Request.Form["Temporary"]),
-                Seasonal =   true, //Boolean.Parse(HttpContext.Current.Request.Form["Seasonal"]),
-                AvailableTime = HttpContext.Current.Request.Form["AvailableTime"],
-                SalaryExpectation = HttpContext.Current.Request.Form["SalaryExpectation"],
-                Note = HttpContext.Current.Request.Form["Note"],
-                Candidate = HttpContext.Current.Request.Form["Candidate"],
-                Hobby = HttpContext.Current.Request.Form["Hobby"],
-                SelfEmployment = HttpContext.Current.Request.Form["SelfEmployment"],
-                BusinessSetUpCategoryId = int.Parse(HttpContext.Current.Request.Form["BusinessSetUpCategoryId"]),
-                BusinessType = HttpContext.Current.Request.Form["BusinessType"],
-                ExpectationStatus = HttpContext.Current.Request.Form["ExpectationStatus"]
+                ClientId = int.Parse(Request.Form["ClientId"]),
+                JobCategoryIdOne = int.Parse(Request.Form["JobCategoryIdOne"]),
+                JobCategoryIdTwo = int.Parse(Request.Form["JobCategoryIdTwo"]),
+                JobCategoryIdThree = int.Parse(Request.Form["JobCategoryIdThree"]),
+                JobPositionIdOne = int.Parse(Request.Form["JobPositionIdOne"]),
+                JobPositionIdTwo = int.Parse(Request.Form["JobPositionIdTwo"]),
+                JobPositionIdThree = int.Parse(Request.Form["JobPositionIdThree"]),
+                EmploymentType = Request.Form["EmploymentType"],
+                Permanent = true,
+                Temporary = true,
+                Seasonal = true,
+                AvailableTime = Request.Form["AvailableTime"],
+                SalaryExpectation = Request.Form["SalaryExpectation"],
+                Note = Request.Form["Note"],
+                Candidate = Request.Form["Candidate"],
+                Hobby = Request.Form["Hobby"],
+                SelfEmployment = Request.Form["SelfEmployment"],
+                BusinessSetUpCategoryId = int.Parse(Request.Form["BusinessSetUpCategoryId"]),
+                BusinessType = Request.Form["BusinessType"],
+                ExpectationStatus = Request.Form["ExpectationStatus"]
             };
 
             if (jobExpectationInDb == null)
             {
-                var jobExpectation = Mapper.Map<JobExpectationDto, JobExpectation>(jobExpectationDto);
-
+                var jobExpectation = _mapper.Map<JobExpectationDto, JobExpectation>(jobExpectationDto);
                 _context.JobExpectations.Add(jobExpectation);
                 _context.SaveChanges();
-
                 jobExpectationDto.Id = jobExpectation.Id;
-
-                return Created(new Uri(Request.RequestUri + "/" + jobExpectationDto.Id), jobExpectationDto);
+                return CreatedAtAction(nameof(GetJobExpectation), new { id = jobExpectationDto.Id }, jobExpectationDto);
             }
             else
             {
-                Mapper.Map(jobExpectationDto, jobExpectationInDb);
+                _mapper.Map(jobExpectationDto, jobExpectationInDb);
                 _context.SaveChanges();
-
                 return Ok(new { });
             }
         }
     }
 }
+

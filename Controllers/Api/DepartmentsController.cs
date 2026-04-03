@@ -1,94 +1,82 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class DepartmentsController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class DepartmentsController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public DepartmentsController()
+        public DepartmentsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        //GET /api/departments
         [HttpGet]
-        public IHttpActionResult GetDepartments()
+        public IActionResult GetDepartments()
         {
-            var departments = _context.Departments.ToList().Select(Mapper.Map<Department, DepartmentDto>);
+            var departments = _context.Departments.ToList().Select(c => _mapper.Map<Department, DepartmentDto>(c));
             return Ok(departments);
         }
 
-        //GET /api/departments
-        [HttpGet]
-        public IHttpActionResult GetDepartment(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetDepartment(int id)
         {
             var departmentInDb = _context.Departments.SingleOrDefault(c => c.Id == id);
-
             if (departmentInDb == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<Department, DepartmentDto>(departmentInDb));
+            return Ok(_mapper.Map<Department, DepartmentDto>(departmentInDb));
         }
 
-        //POST /api/departments
         [HttpPost]
-        public IHttpActionResult CreateDepartment(DepartmentDto departmentDto)
+        public IActionResult CreateDepartment([FromBody] DepartmentDto departmentDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var department = Mapper.Map<DepartmentDto, Department>(departmentDto);
-
+            var department = _mapper.Map<DepartmentDto, Department>(departmentDto);
             _context.Departments.Add(department);
             _context.SaveChanges();
-
             departmentDto.Id = department.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + departmentDto.Id), departmentDto);
+            return CreatedAtAction(nameof(GetDepartment), new { id = departmentDto.Id }, departmentDto);
         }
 
-        //PUT /api/departments/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateDepartment(int id, DepartmentDto departmentDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateDepartment(int id, [FromBody] DepartmentDto departmentDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var departmentInDb = _context.Departments.SingleOrDefault(c => c.Id == id);
-
             if (departmentInDb == null)
                 return NotFound();
 
-            Mapper.Map(departmentDto, departmentInDb);
-
+            _mapper.Map(departmentDto, departmentInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        //DELETE /api/departments/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteDepartment(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteDepartment(int id)
         {
             var department = _context.Departments.SingleOrDefault(c => c.Id == id);
-
             if (department == null)
                 return NotFound();
 
             _context.Departments.Remove(department);
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

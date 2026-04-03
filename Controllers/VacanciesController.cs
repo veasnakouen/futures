@@ -1,23 +1,21 @@
-﻿using MtpApp.Dtos;
+﻿using Microsoft.AspNetCore.Mvc;
+using MtpApp.Dtos;
 using MtpApp.Models;
 using MtpApp.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace MtpApp.Controllers
 {
     public class VacanciesController : Controller
     {
-        private ApplicationDbContext _context;
-        public VacanciesController()
+        private readonly ApplicationDbContext _context;
+
+        public VacanciesController(ApplicationDbContext context)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
         }
-        // GET: Vacancies
-        public ActionResult Index()
+
+        public IActionResult Index()
         {
             var viewModel = new VacancyViewModel()
             {

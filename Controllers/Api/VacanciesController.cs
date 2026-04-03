@@ -1,170 +1,169 @@
-﻿using MtpApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using Microsoft.AspNet.Identity;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
-using MtpApp.ViewModels;
+using MtpApp.Models;
+using System;
+using System.Linq;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class VacanciesController : ApiController
+    public class VacanciesController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public VacanciesController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public VacanciesController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET /api/vacancies
-        [HttpGet]
-        public IHttpActionResult GetVacancies(string employerId)
-        {
-            var userId = User.Identity.GetUserId();
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+        [HttpGet]
+        public IActionResult GetVacancies([FromQuery] string employerId)
+        {
+            var userId = GetUserId();
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             if (employerId == "all")
             {
                 var vacancies = _context.Vacancies
-                                    .Include(c => c.JobPositions)
-                                    .Include(c => c.JobCategories)
-                                    .Include(c => c.Employers)
-                                    .Select(Mapper.Map<Vacancy, VacancyDto>)
-                                    .Where(c => c.Branch == user.Branch && c.Deadline >= DateTime.Today.Date);
+                    .Include(c => c.JobPositions)
+                    .Include(c => c.JobCategories)
+                    .Include(c => c.Employers)
+                    .Where(c => c.Branch == user.Branch && c.Deadline >= DateTime.Today.Date)
+                    .ToList()
+                    .Select(v => _mapper.Map<Vacancy, VacancyDto>(v));
                 return Ok(vacancies);
             }
             else if (employerId == "over")
             {
                 var vacancies = _context.Vacancies
-                                    .Include(c => c.JobPositions)
-                                    .Include(c => c.JobCategories)
-                                    .Include(c => c.Employers)
-                                    .Select(Mapper.Map<Vacancy, VacancyDto>)
-                                    .Where(c => c.Branch == user.Branch && c.Deadline < DateTime.Today.Date);
+                    .Include(c => c.JobPositions)
+                    .Include(c => c.JobCategories)
+                    .Include(c => c.Employers)
+                    .Where(c => c.Branch == user.Branch && c.Deadline < DateTime.Today.Date)
+                    .ToList()
+                    .Select(v => _mapper.Map<Vacancy, VacancyDto>(v));
                 return Ok(vacancies);
             }
             else
             {
                 var vacancies = _context.Vacancies
-                                    .Include(c => c.JobPositions)
-                                    .Include(c => c.JobCategories)
-                                    .Include(c => c.Employers)
-                                    .Select(Mapper.Map<Vacancy, VacancyDto>)
-                                    .Where(c => c.Branch == user.Branch && c.EmployerId == int.Parse(employerId) && c.Deadline >= DateTime.Today.Date);
+                    .Include(c => c.JobPositions)
+                    .Include(c => c.JobCategories)
+                    .Include(c => c.Employers)
+                    .Where(c => c.Branch == user.Branch && c.EmployerId == int.Parse(employerId) && c.Deadline >= DateTime.Today.Date)
+                    .ToList()
+                    .Select(v => _mapper.Map<Vacancy, VacancyDto>(v));
                 return Ok(vacancies);
             }
         }
 
-        // GET: /api/vacancies?employerName=
-        [HttpGet]
-        public IHttpActionResult GetVacanciesByEmployer(string employerName)
+        [HttpGet("byemployer")]
+        public IActionResult GetVacanciesByEmployer([FromQuery] string employerName)
         {
-            var userId = User.Identity.GetUserId();
-
+            var userId = GetUserId();
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             var vacancies = _context.Vacancies
-                                    .Include(c => c.JobPositions)
-                                    .Include(c => c.JobCategories)
-                                    .Include(c => c.Employers)
-                                    .Select(Mapper.Map<Vacancy, VacancyDto>)
-                                    .Where(c => c.Branch == user.Branch && c.Deadline >= DateTime.Today.Date && c.Employers.Name == employerName);
-            return Ok(vacancies);   
+                .Include(c => c.JobPositions)
+                .Include(c => c.JobCategories)
+                .Include(c => c.Employers)
+                .Where(c => c.Branch == user.Branch && c.Deadline >= DateTime.Today.Date && c.Employers.Name == employerName)
+                .ToList()
+                .Select(v => _mapper.Map<Vacancy, VacancyDto>(v));
+            return Ok(vacancies);
         }
 
-        // GET /api/vacancies
-        [HttpGet]
-        public IHttpActionResult GetVacancy(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetVacancy(int id)
         {
             var vacancy = _context.Vacancies
-                            .Include(c => c.JobPositions)
-                            .Include(c => c.JobCategories)
-                            .Include(c => c.Employers)
-                            .SingleOrDefault(c => c.Id == id && c.Deadline >= DateTime.Today.Date);
+                .Include(c => c.JobPositions)
+                .Include(c => c.JobCategories)
+                .Include(c => c.Employers)
+                .SingleOrDefault(c => c.Id == id && c.Deadline >= DateTime.Today.Date);
 
             if (vacancy == null)
                 return NotFound();
 
-            return Ok(Mapper.Map<Vacancy, VacancyDto>(vacancy));
+            return Ok(_mapper.Map<Vacancy, VacancyDto>(vacancy));
         }
 
-        // GET: /api/vacancies
-        [HttpGet]
-        public IHttpActionResult GetVacancyOverDeadline(int jobId)
+        [HttpGet("overdeadline/{jobId}")]
+        public IActionResult GetVacancyOverDeadline(int jobId)
         {
             var vacancy = _context.Vacancies
-                            .Include(c => c.JobPositions)
-                            .Include(c => c.JobCategories)
-                            .Include(c => c.Employers)
-                            .SingleOrDefault(c => c.Id == jobId && c.Deadline < DateTime.Today.Date);
+                .Include(c => c.JobPositions)
+                .Include(c => c.JobCategories)
+                .Include(c => c.Employers)
+                .SingleOrDefault(c => c.Id == jobId && c.Deadline < DateTime.Today.Date);
 
             if (vacancy == null)
                 return NotFound();
 
-            return Ok(Mapper.Map<Vacancy, VacancyDto>(vacancy));
+            return Ok(_mapper.Map<Vacancy, VacancyDto>(vacancy));
         }
 
-        // GET: /api/vacancies?job={job}
-        [HttpGet]
-        public IHttpActionResult GetVacancyByJobCategory(string job)
+        [HttpGet("bycategory")]
+        public IActionResult GetVacancyByJobCategory([FromQuery] string job)
         {
             var vacancy = _context.Vacancies
-                            .Include(c => c.JobPositions)
-                            .Include(c => c.JobCategories)
-                            .Include(c => c.Employers)
-                            .Select(Mapper.Map<Vacancy, VacancyDto>)
-                            .Where(c => c.JobCategories.Name == job && c.Deadline >= DateTime.Today.Date);
+                .Include(c => c.JobPositions)
+                .Include(c => c.JobCategories)
+                .Include(c => c.Employers)
+                .Where(c => c.JobCategories.Name == job && c.Deadline >= DateTime.Today.Date)
+                .ToList()
+                .Select(v => _mapper.Map<Vacancy, VacancyDto>(v));
 
             return Ok(vacancy);
         }
 
-        //GET: /api/vacancies?start={start}&end={end}
-        [HttpGet]
-        public IHttpActionResult GetVacanciesBySalary(int start, int end)
+        [HttpGet("bysalary")]
+        public IActionResult GetVacanciesBySalary([FromQuery] int start, [FromQuery] int end)
         {
             var vacancy = _context.Vacancies
-                            .Include(c => c.JobPositions)
-                            .Include(c => c.JobCategories)
-                            .Include(c => c.Employers)
-                            .Select(Mapper.Map<Vacancy, VacancyDto>)
-                            .Where(c => c.Salary >= start && c.Salary <= end);
+                .Include(c => c.JobPositions)
+                .Include(c => c.JobCategories)
+                .Include(c => c.Employers)
+                .Where(c => c.Salary >= start && c.Salary <= end)
+                .ToList()
+                .Select(v => _mapper.Map<Vacancy, VacancyDto>(v));
 
             return Ok(vacancy);
         }
 
-        // POST /api/vacancies
         [HttpPost]
-        public IHttpActionResult CreateVacancy(VacancyDto vacancyDto)
+        public IActionResult CreateVacancy([FromBody] VacancyDto vacancyDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var userId = User.Identity.GetUserId();
-
+            var userId = GetUserId();
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             vacancyDto.Branch = user.Branch;
 
-            var vacancy = Mapper.Map<VacancyDto, Vacancy>(vacancyDto);
+            var vacancy = _mapper.Map<VacancyDto, Vacancy>(vacancyDto);
 
             _context.Vacancies.Add(vacancy);
             _context.SaveChanges();
 
             vacancyDto.Id = vacancy.Id;
 
-            return Created(new Uri(Request.RequestUri + "/" + vacancyDto.Id), vacancyDto);
+            return CreatedAtAction(nameof(GetVacancy), new { id = vacancyDto.Id }, vacancyDto);
         }
 
-        // PUT /api/vacancies/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateVacancy(int id, VacancyDto vacancyDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateVacancy(int id, [FromBody] VacancyDto vacancyDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -174,21 +173,19 @@ namespace MtpApp.Controllers.Api
             if (vacancyInDb == null)
                 return NotFound();
 
-            var userId = User.Identity.GetUserId();
-
+            var userId = GetUserId();
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             vacancyDto.Branch = user.Branch;
 
-            Mapper.Map(vacancyDto, vacancyInDb);
+            _mapper.Map(vacancyDto, vacancyInDb);
             _context.SaveChanges();
 
             return Ok(new { });
         }
 
-        // DELETE /api/vacancies/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteVacancy(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteVacancy(int id)
         {
             var vacancyInDb = _context.Vacancies.SingleOrDefault(c => c.Id == id);
 
@@ -202,3 +199,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

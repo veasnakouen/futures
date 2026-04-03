@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M'Lop Tapang Organization</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="~/Content/css/site.css" />
+    <script src="~/Scripts/modernizr-*.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 </head>
@@ -149,7 +149,8 @@
 
     <div id="divLoading"></div>
     @Html.Partial("_placementMonitoringActionModal")
-    @Scripts.Render("~/bundles/lib")
+    <script src="~/Scripts/jquery.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
     @RenderSection("scripts", required: false)
     <script>
         function GetCurrentDate() {

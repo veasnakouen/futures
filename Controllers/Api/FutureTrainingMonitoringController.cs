@@ -1,39 +1,40 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using Newtonsoft.Json.Linq;
 using System.Reflection;
-using Microsoft.AspNet.Identity;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
     [Authorize]
-    public class FutureTrainingMonitoringController : ApiController
+    public class FutureTrainingMonitoringController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public FutureTrainingMonitoringController()
+        public FutureTrainingMonitoringController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         //GET /api/FutureTrainingMonitoring?ClientId=
         [HttpGet]
-        public IHttpActionResult GetMonitoringFutureTraining(int ClientId )
+        public IActionResult GetMonitoringFutureTraining(int ClientId )
         {
             var MonitoringFutureTrainingInDb = _context.FutureTrainingProgresses
                 .Include(c => c.Monitoring)
                 .Include(c => c.Lession)
                 .Include(c => c.Monitoring.Client)
                 .Include(c => c.Lession.Subject).ToList()
-                .Select(Mapper.Map<FutureTrainingProgress, FutureTrainingProgressDto>)
+                .Select(_mapper.Map<FutureTrainingProgress, FutureTrainingProgressDto>)
                 .Where(c => c.Monitoring.ClientId == ClientId  && c.Monitoring.Type == "Futuretraining");
 
             if (MonitoringFutureTrainingInDb == null)
@@ -43,14 +44,14 @@ namespace MtpApp.Controllers.Api
         }
 
         [HttpGet]
-        public IHttpActionResult GetMonitoringFutureTraining(int ClientId , int SubjectId)
+        public IActionResult GetMonitoringFutureTraining(int ClientId , int SubjectId)
         {
             var MonitoringFutureTrainingInDb = _context.FutureTrainingProgresses
                 .Include(c => c.Monitoring)
                 .Include(c => c.Lession)
                 .Include(c => c.Monitoring.Client)
                 .Include(c => c.Lession.Subject).ToList()
-                .Select(Mapper.Map<FutureTrainingProgress, FutureTrainingProgressDto>)
+                .Select(_mapper.Map<FutureTrainingProgress, FutureTrainingProgressDto>)
                 .Where(c => c.Monitoring.ClientId == ClientId && c.Lession.SubjectId == SubjectId && c.Monitoring.Type == "Futuretraining");
 
             if (MonitoringFutureTrainingInDb == null)
@@ -61,14 +62,14 @@ namespace MtpApp.Controllers.Api
 
         //GET /api/FutureTrainingMonitoring?Id
         [HttpGet]
-        public IHttpActionResult GetMonitoringFutureTrainingById(int Id)
+        public IActionResult GetMonitoringFutureTrainingById(int Id)
         {
             var MonitoringFutureTrainingInDb = _context.FutureTrainingProgresses
                 .Include(c => c.Monitoring)
                 .Include(c => c.Lession)
                 .Include(c => c.Monitoring.Client)
                 .Include(c => c.Lession.Subject).ToList()
-                .Select(Mapper.Map<FutureTrainingProgress, FutureTrainingProgressDto>)
+                .Select(_mapper.Map<FutureTrainingProgress, FutureTrainingProgressDto>)
                 .Where(c => c.Id == Id && c.Monitoring.Type == "Futuretraining");
 
             if (MonitoringFutureTrainingInDb == null)
@@ -78,7 +79,7 @@ namespace MtpApp.Controllers.Api
 
         //POST /api/futureTrainingMonitoring
         [HttpPost]
-        public IHttpActionResult CreateFutureTrainingMonitoring(FutureTrainingMonitorIngMulObj futureTrainingMonitorIngMulObj)
+        public IActionResult CreateFutureTrainingMonitoring(FutureTrainingMonitorIngMulObj futureTrainingMonitorIngMulObj)
         {
             //using (var transaction = _context.Database.BeginTransaction())
             //{
@@ -120,12 +121,12 @@ namespace MtpApp.Controllers.Api
                 if (!ModelState.IsValid)
                     return BadRequest();
 
-                var userId = User.Identity.GetUserId();
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
                 futureTrainingMonitorIngMulObj.monitoringDto.Enroll = user.FirstName + " " + user.LastName;
 
-                var Monitoring = Mapper.Map<MonitoringDto, Monitoring>(futureTrainingMonitorIngMulObj.monitoringDto);
+                var Monitoring = _mapper.Map<MonitoringDto, Monitoring>(futureTrainingMonitorIngMulObj.monitoringDto);
 
                 _context.Monitorings.Add(Monitoring);
 
@@ -165,19 +166,19 @@ namespace MtpApp.Controllers.Api
                 }
 
 
-                var futureTrainingMonitorIng = Mapper.Map<FutureTrainingProgressDto, FutureTrainingProgress>(futureTrainingMonitorIngMulObj.futureTrainingProgressDto);
+                var futureTrainingMonitorIng = _mapper.Map<FutureTrainingProgressDto, FutureTrainingProgress>(futureTrainingMonitorIngMulObj.futureTrainingProgressDto);
 
                 _context.FutureTrainingProgresses.Add(futureTrainingMonitorIng);
 
                 _context.SaveChanges();
-                return Created(new Uri(Request.RequestUri + "/" + futureTrainingMonitorIngMulObj.monitoringDto.Id), futureTrainingMonitorIngMulObj.monitoringDto);
+                return Ok(futureTrainingMonitorIngMulObj.monitoringDto);
 
             }
         }
 
         //PUT /api/futureTrainingMonitoring
         [HttpPut]
-        public IHttpActionResult UpdateFutureTrainingMonitoring(FutureTrainingMonitorIngMulObj futureTrainingMonitorIngMulObj)
+        public IActionResult UpdateFutureTrainingMonitoring(FutureTrainingMonitorIngMulObj futureTrainingMonitorIngMulObj)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -187,7 +188,7 @@ namespace MtpApp.Controllers.Api
             if (futureTrainingMonitoringInDb == null)
                 return NotFound();
 
-            Mapper.Map(futureTrainingMonitorIngMulObj.futureTrainingProgressDto, futureTrainingMonitoringInDb);
+            _mapper.Map(futureTrainingMonitorIngMulObj.futureTrainingProgressDto, futureTrainingMonitoringInDb);
 
             var monitoringInDb = _context.Monitorings.SingleOrDefault(c => c.Id == futureTrainingMonitorIngMulObj.monitoringDto.Id);
             if (monitoringInDb == null)
@@ -232,12 +233,12 @@ namespace MtpApp.Controllers.Api
 
 
 
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             futureTrainingMonitorIngMulObj.monitoringDto.Enroll = user.FirstName + " " + user.LastName;
 
-            Mapper.Map(futureTrainingMonitorIngMulObj.monitoringDto, monitoringInDb);
+            _mapper.Map(futureTrainingMonitorIngMulObj.monitoringDto, monitoringInDb);
              
             _context.SaveChanges();
 
@@ -246,7 +247,7 @@ namespace MtpApp.Controllers.Api
 
         // DELETE: /api/futureTrainingMonitoring/{id}
         [HttpDelete]
-        public IHttpActionResult DeleteFutureTrainingMonitoring(int id)
+        public IActionResult DeleteFutureTrainingMonitoring(int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -272,3 +273,4 @@ namespace MtpApp.Controllers.Api
        
     }
 }
+

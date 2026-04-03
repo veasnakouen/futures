@@ -1,169 +1,151 @@
-﻿using MtpApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
-using System.Web;
+using MtpApp.Models;
+using System;
+using System.Linq;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class PlacementsController : ApiController
+    public class PlacementsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public PlacementsController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public PlacementsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET: /api/placements?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetPlacements(int clientId)
+        public IActionResult GetPlacements([FromQuery] int clientId)
         {
             var placements = _context.Placements
-                                .Include(c => c.Clients)
-                                .Include(c => c.JobPosition)
-                                .Select(Mapper.Map<Placement, PlacementDto>)
-                                .Where(c => c.ClientId == clientId);
+                .Where(c => c.ClientId == clientId)
+                .ToList()
+                .Select(c => _mapper.Map<Placement, PlacementDto>(c));
             return Ok(placements);
         }
 
-        // GET: /api/placements/{id}
-        [HttpGet]
-        public IHttpActionResult GetPlacement(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetPlacement(int id)
         {
-            var placement = _context.Placements
-                                .Include(c => c.Clients)
-                                .Include(c => c.JobPosition)
-                                .SingleOrDefault(c => c.Id == id);
-
+            var placement = _context.Placements.SingleOrDefault(c => c.Id == id);
             if (placement == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<Placement, PlacementDto>(placement));
+            return Ok(_mapper.Map<Placement, PlacementDto>(placement));
         }
 
-        // POST: /api/placements
         [HttpPost]
-        public IHttpActionResult CreatePlacement()
+        public IActionResult CreatePlacement()
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var placementDto = new PlacementDto()
             {
-                PlacementDate = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["PlacementDate"], "MM/dd/yyyy", null),
-                PlacementType = System.Web.HttpContext.Current.Request.Form["PlacementType"],
-                JobPositionId = int.Parse(System.Web.HttpContext.Current.Request.Form["JobPositionId"]),
-                CompanyName = System.Web.HttpContext.Current.Request.Form["CompanyName"],
-                CompanyContactName = System.Web.HttpContext.Current.Request.Form["CompanyContactName"],
-                CompanyContactPhone = System.Web.HttpContext.Current.Request.Form["CompanyContactPhone"],
-                CompanyContactEmail = System.Web.HttpContext.Current.Request.Form["CompanyContactEmail"],
-                CompanyAddress = System.Web.HttpContext.Current.Request.Form["CompanyAddress"],
-                JobPlacedBy = System.Web.HttpContext.Current.Request.Form["JobPlacedBy"],
-                Salary = System.Web.HttpContext.Current.Request.Form["Salary"],
-                Tips = System.Web.HttpContext.Current.Request.Form["Tips"],
-                TotalIncome = System.Web.HttpContext.Current.Request.Form["TotalIncome"],
-                WorkTime = System.Web.HttpContext.Current.Request.Form["WorkTime"],
-                DayOff = System.Web.HttpContext.Current.Request.Form["DayOff"],
-                NumberOfAnnualLeave = System.Web.HttpContext.Current.Request.Form["NumberOfAnnualLeave"],
-                CountedTime = System.Web.HttpContext.Current.Request.Form["CaseId"],
-                ClientId = int.Parse(System.Web.HttpContext.Current.Request.Form["ClientId"]),
-                Health = bool.Parse(System.Web.HttpContext.Current.Request.Form["Health"]),
-                Meal = bool.Parse(System.Web.HttpContext.Current.Request.Form["Meal"]),
-                Transport = bool.Parse(System.Web.HttpContext.Current.Request.Form["Transport"]),
-                Bonus = bool.Parse(System.Web.HttpContext.Current.Request.Form["Bonus"]),
-                PublicHoliday = bool.Parse(System.Web.HttpContext.Current.Request.Form["PublicHoliday"]),
-                AccidentInsurance = bool.Parse(System.Web.HttpContext.Current.Request.Form["AccidentInsurance"]),
-                Accommodation = bool.Parse(System.Web.HttpContext.Current.Request.Form["Accommodation"]),
-                Overtime = bool.Parse(System.Web.HttpContext.Current.Request.Form["Overtime"]),
-                ThirteenMonthsSalary = bool.Parse(System.Web.HttpContext.Current.Request.Form["ThirteenMonthsSalary"]),
-                AnnualLeave = bool.Parse(System.Web.HttpContext.Current.Request.Form["AnnualLeave"]),
+                PlacementDate = DateTime.ParseExact(Request.Form["PlacementDate"], "MM/dd/yyyy", null),
+                PlacementType = Request.Form["PlacementType"],
+                JobPositionId = int.Parse(Request.Form["JobPositionId"]),
+                CompanyName = Request.Form["CompanyName"],
+                CompanyContactName = Request.Form["CompanyContactName"],
+                CompanyContactPhone = Request.Form["CompanyContactPhone"],
+                CompanyContactEmail = Request.Form["CompanyContactEmail"],
+                CompanyAddress = Request.Form["CompanyAddress"],
+                JobPlacedBy = Request.Form["JobPlacedBy"],
+                Salary = Request.Form["Salary"],
+                Tips = Request.Form["Tips"],
+                TotalIncome = Request.Form["TotalIncome"],
+                WorkTime = Request.Form["WorkTime"],
+                DayOff = Request.Form["DayOff"],
+                NumberOfAnnualLeave = Request.Form["NumberOfAnnualLeave"],
+                CountedTime = Request.Form["CaseId"],
+                ClientId = int.Parse(Request.Form["ClientId"]),
+                Health = bool.Parse(Request.Form["Health"]),
+                Meal = bool.Parse(Request.Form["Meal"]),
+                Transport = bool.Parse(Request.Form["Transport"]),
+                Bonus = bool.Parse(Request.Form["Bonus"]),
+                PublicHoliday = bool.Parse(Request.Form["PublicHoliday"]),
+                AccidentInsurance = bool.Parse(Request.Form["AccidentInsurance"]),
+                Accommodation = bool.Parse(Request.Form["Accommodation"]),
+                Overtime = bool.Parse(Request.Form["Overtime"]),
+                ThirteenMonthsSalary = bool.Parse(Request.Form["ThirteenMonthsSalary"]),
+                AnnualLeave = bool.Parse(Request.Form["AnnualLeave"]),
                 Status = null,
                 DropfromDate = null
             };
 
             var isExistsCount = _context.Placements.SingleOrDefault(c => c.CountedTime == placementDto.CountedTime && c.ClientId == placementDto.ClientId);
-
             if (isExistsCount != null)
                 return BadRequest();
 
-            var newPlacement = Mapper.Map<PlacementDto, Placement>(placementDto);
-
+            var newPlacement = _mapper.Map<PlacementDto, Placement>(placementDto);
             _context.Placements.Add(newPlacement);
             _context.SaveChanges();
-
             placementDto.Id = newPlacement.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + placementDto.Id), placementDto);
+            return CreatedAtAction(nameof(GetPlacement), new { id = placementDto.Id }, placementDto);
         }
 
-        // PUT: /api/placements/{id}
         [HttpPut]
-        public IHttpActionResult UpdatePlacement()
+        public IActionResult UpdatePlacement()
         {
-            var id = int.Parse(System.Web.HttpContext.Current.Request.Form["PlacementId"]);
-
+            var id = int.Parse(Request.Form["PlacementId"]);
             var placementInDb = _context.Placements.SingleOrDefault(c => c.Id == id);
-
             if (placementInDb == null)
                 return NotFound();
+
             var placementDto = new PlacementDto()
             {
-                Id = int.Parse(System.Web.HttpContext.Current.Request.Form["PlacementId"]),
-                PlacementDate = DateTime.ParseExact(System.Web.HttpContext.Current.Request.Form["PlacementDate"], "MM/dd/yyyy", null),
-                PlacementType = System.Web.HttpContext.Current.Request.Form["PlacementType"],
-                JobPositionId = int.Parse(System.Web.HttpContext.Current.Request.Form["JobPositionId"]),
-                CompanyName = System.Web.HttpContext.Current.Request.Form["CompanyName"],
-                CompanyContactName = System.Web.HttpContext.Current.Request.Form["CompanyContactName"],
-                CompanyContactPhone = System.Web.HttpContext.Current.Request.Form["CompanyContactPhone"],
-                CompanyContactEmail = System.Web.HttpContext.Current.Request.Form["CompanyContactEmail"],
-                CompanyAddress = System.Web.HttpContext.Current.Request.Form["CompanyAddress"],
-                JobPlacedBy = System.Web.HttpContext.Current.Request.Form["JobPlacedBy"],
-                Salary = System.Web.HttpContext.Current.Request.Form["Salary"],
-                Tips = System.Web.HttpContext.Current.Request.Form["Tips"],
-                TotalIncome = System.Web.HttpContext.Current.Request.Form["TotalIncome"],
-                WorkTime = System.Web.HttpContext.Current.Request.Form["WorkTime"],
-                DayOff = System.Web.HttpContext.Current.Request.Form["DayOff"],
-                NumberOfAnnualLeave = System.Web.HttpContext.Current.Request.Form["NumberOfAnnualLeave"],
-                CountedTime = System.Web.HttpContext.Current.Request.Form["CaseId"],
-                ClientId = int.Parse(System.Web.HttpContext.Current.Request.Form["ClientId"]),
-                Health = bool.Parse(System.Web.HttpContext.Current.Request.Form["Health"]),
-                Meal = bool.Parse(System.Web.HttpContext.Current.Request.Form["Meal"]),
-                Transport = bool.Parse(System.Web.HttpContext.Current.Request.Form["Transport"]),
-                Bonus = bool.Parse(System.Web.HttpContext.Current.Request.Form["Bonus"]),
-                PublicHoliday = bool.Parse(System.Web.HttpContext.Current.Request.Form["PublicHoliday"]),
-                AccidentInsurance = bool.Parse(System.Web.HttpContext.Current.Request.Form["AccidentInsurance"]),
-                Accommodation = bool.Parse(System.Web.HttpContext.Current.Request.Form["Accommodation"]),
-                Overtime = bool.Parse(System.Web.HttpContext.Current.Request.Form["Overtime"]),
-                ThirteenMonthsSalary = bool.Parse(System.Web.HttpContext.Current.Request.Form["ThirteenMonthsSalary"]),
-                AnnualLeave = bool.Parse(System.Web.HttpContext.Current.Request.Form["AnnualLeave"]),
+                Id = id,
+                PlacementDate = DateTime.ParseExact(Request.Form["PlacementDate"], "MM/dd/yyyy", null),
+                PlacementType = Request.Form["PlacementType"],
+                JobPositionId = int.Parse(Request.Form["JobPositionId"]),
+                CompanyName = Request.Form["CompanyName"],
+                CompanyContactName = Request.Form["CompanyContactName"],
+                CompanyContactPhone = Request.Form["CompanyContactPhone"],
+                CompanyContactEmail = Request.Form["CompanyContactEmail"],
+                CompanyAddress = Request.Form["CompanyAddress"],
+                JobPlacedBy = Request.Form["JobPlacedBy"],
+                Salary = Request.Form["Salary"],
+                Tips = Request.Form["Tips"],
+                TotalIncome = Request.Form["TotalIncome"],
+                WorkTime = Request.Form["WorkTime"],
+                DayOff = Request.Form["DayOff"],
+                NumberOfAnnualLeave = Request.Form["NumberOfAnnualLeave"],
+                CountedTime = Request.Form["CaseId"],
+                ClientId = int.Parse(Request.Form["ClientId"]),
+                Health = bool.Parse(Request.Form["Health"]),
+                Meal = bool.Parse(Request.Form["Meal"]),
+                Transport = bool.Parse(Request.Form["Transport"]),
+                Bonus = bool.Parse(Request.Form["Bonus"]),
+                PublicHoliday = bool.Parse(Request.Form["PublicHoliday"]),
+                AccidentInsurance = bool.Parse(Request.Form["AccidentInsurance"]),
+                Accommodation = bool.Parse(Request.Form["Accommodation"]),
+                Overtime = bool.Parse(Request.Form["Overtime"]),
+                ThirteenMonthsSalary = bool.Parse(Request.Form["ThirteenMonthsSalary"]),
+                AnnualLeave = bool.Parse(Request.Form["AnnualLeave"]),
                 Status = placementInDb.Status,
                 DropfromDate = placementInDb.DropfromDate
             };
 
             var isExistsCount = _context.Placements.SingleOrDefault(c => c.Id != placementDto.Id && c.CountedTime == placementDto.CountedTime && c.ClientId == placementDto.ClientId);
-
             if (isExistsCount != null)
                 return BadRequest();
 
-            Mapper.Map(placementDto, placementInDb);
+            _mapper.Map(placementDto, placementInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-         //PUT: /api/placements/{id}
-        [HttpPut]
-        public IHttpActionResult UpdatePlacementDropfromjob(PlacementDto placementDto ,int PlacementId)
+        [HttpPut("dropfromjob/{placementId}")]
+        public IActionResult UpdatePlacementDropFromJob(int placementId, [FromBody] PlacementDto placementDto)
         {
-            var placementInDb = _context.Placements.SingleOrDefault(c => c.Id == PlacementId);
-
+            var placementInDb = _context.Placements.SingleOrDefault(c => c.Id == placementId);
             if (placementInDb == null)
                 return NotFound();
 
@@ -178,28 +160,21 @@ namespace MtpApp.Controllers.Api
                 placementInDb.Status = "Drop";
             }
 
-            Mapper.Map(placementInDb, placementInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        // DELETE: /api/placements/{id}
-        [HttpDelete]
-        public IHttpActionResult DeletePlacement(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeletePlacement(int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
             var placementInDb = _context.Placements.SingleOrDefault(c => c.Id == id);
-
             if (placementInDb == null)
                 return NotFound();
 
             _context.Placements.Remove(placementInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

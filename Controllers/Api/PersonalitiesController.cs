@@ -1,65 +1,61 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class PersonalitiesController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class PersonalitiesController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public PersonalitiesController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public PersonalitiesController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET: /api/personalities?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetPersonalities(int clientId)
+        public IActionResult GetPersonalities([FromQuery] int clientId)
         {
-            var personalities = _context.Personalities.Select(Mapper.Map<Personality, PersonalityDto>).Where(c => c.ClientId == clientId);
+            var personalities = _context.Personalities
+                .Where(c => c.ClientId == clientId)
+                .ToList()
+                .Select(c => _mapper.Map<Personality, PersonalityDto>(c));
             return Ok(personalities);
         }
 
-        // GET: /api/personalities/{id}
-        [HttpGet]
-        public IHttpActionResult GetPersonality(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetPersonality(int id)
         {
-            var personalitie = _context.Personalities.SingleOrDefault(c => c.Id == id);
-
-            if (personalitie == null)
+            var personality = _context.Personalities.SingleOrDefault(c => c.Id == id);
+            if (personality == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<Personality, PersonalityDto>(personalitie));
+            return Ok(_mapper.Map<Personality, PersonalityDto>(personality));
         }
 
-        // POST: /api/personalities
         [HttpPost]
-        public IHttpActionResult CreatePersonality(PersonalityDto personalitieDto)
+        public IActionResult CreatePersonality([FromBody] PersonalityDto personalityDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var personalitie = Mapper.Map<PersonalityDto, Personality>(personalitieDto);
-
-            _context.Personalities.Add(personalitie);
+            var personality = _mapper.Map<PersonalityDto, Personality>(personalityDto);
+            _context.Personalities.Add(personality);
             _context.SaveChanges();
-
-            personalitieDto.Id = personalitie.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + personalitieDto.Id), personalitieDto);
+            personalityDto.Id = personality.Id;
+            return CreatedAtAction(nameof(GetPersonality), new { id = personalityDto.Id }, personalityDto);
         }
 
-        // PUT: /api/personalities/{id}
-        [HttpPut]
-        public IHttpActionResult UpdatePersonality(int id, PersonalityDto personalitiesDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdatePersonality(int id, [FromBody] PersonalityDto personalityDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -68,37 +64,31 @@ namespace MtpApp.Controllers.Api
 
             if (personalityInDb == null)
             {
-                var furtherEducation = Mapper.Map<PersonalityDto, Personality>(personalitiesDto);
-
-                _context.Personalities.Add(furtherEducation);
+                var personality = _mapper.Map<PersonalityDto, Personality>(personalityDto);
+                _context.Personalities.Add(personality);
                 _context.SaveChanges();
-
-                personalitiesDto.Id = furtherEducation.Id;
-
-                return Created(new Uri(Request.RequestUri + "/" + personalitiesDto.Id), personalitiesDto);
+                personalityDto.Id = personality.Id;
+                return CreatedAtAction(nameof(GetPersonality), new { id = personalityDto.Id }, personalityDto);
             }
             else
             {
-                Mapper.Map(personalitiesDto, personalityInDb);
+                _mapper.Map(personalityDto, personalityInDb);
                 _context.SaveChanges();
-
                 return Ok(new { });
             }
         }
 
-        // DELETE: /api/personalities/{id}
-        [HttpDelete]
-        public IHttpActionResult DeletePersonality(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeletePersonality(int id)
         {
-            var personalitie = _context.Personalities.SingleOrDefault(c => c.Id == id);
-
-            if (personalitie == null)
+            var personality = _context.Personalities.SingleOrDefault(c => c.Id == id);
+            if (personality == null)
                 return NotFound();
 
-            _context.Personalities.Remove(personalitie);
+            _context.Personalities.Remove(personality);
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

@@ -1,96 +1,89 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class SocialCareController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class SocialCareController : ControllerBase
     {
-          private ApplicationDbContext _context;
-          public SocialCareController()
-          {
-              _context = new ApplicationDbContext();
-          }
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-          // GET: /api/socialcare/{id}
-          [HttpGet]
-          public IHttpActionResult GetSocialCare(int id)
-          {
-              var socialCare = _context.SocialCare.SingleOrDefault(c => c.Id == id);
+        public SocialCareController(ApplicationDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-              if (socialCare == null)
-                  return NotFound();
+        [HttpGet("{id}")]
+        public IActionResult GetSocialCare(int id)
+        {
+            var socialCare = _context.SocialCare.SingleOrDefault(c => c.Id == id);
+            if (socialCare == null)
+                return NotFound();
+            return Ok(_mapper.Map<SocialCare, SocialCareDto>(socialCare));
+        }
 
-              return Ok(Mapper.Map<SocialCare, SocialCareDto>(socialCare));
-          }
+        [HttpGet]
+        public IActionResult GetSocialCareByClientId([FromQuery] int clientId)
+        {
+            var socialCare = _context.SocialCare
+                .Where(c => c.ClientId == clientId)
+                .ToList()
+                .Select(c => _mapper.Map<SocialCare, SocialCareDto>(c));
+            return Ok(socialCare);
+        }
 
-          // GET: /api/socialcare?clientId={id}
-          [HttpGet]
-          public IHttpActionResult GetGetSocialCareByClientId(int clientId)
-          {
-              var socialCare = _context.SocialCare.Select(Mapper.Map<SocialCare, SocialCareDto>).Where(c => c.ClientId == clientId);
+        [HttpPut("{id}")]
+        public IActionResult UpdateSocialCare(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-              return Ok(socialCare);
-          }
+            var socialCareInDb = _context.SocialCare.SingleOrDefault(c => c.ClientId == id);
 
-          // PUT: /api/socialcare/{id}
-          [HttpPut]
-          public IHttpActionResult UpdateSocialCare(int id)
-          {
-              if (!ModelState.IsValid)
-                  return BadRequest();
+            var socialCareDto = new SocialCareDto()
+            {
+                ClientId = int.Parse(Request.Form["ClientId"]),
+                SocialSupportNeeded = Boolean.Parse(Request.Form["socialsupportNeeded"]),
+                MeetingFuture = Boolean.Parse(Request.Form["Meetingfuture"]),
+                Problem = Boolean.Parse(Request.Form["problems"])
+            };
 
-              var socialCareInDb = _context.SocialCare.SingleOrDefault(c => c.ClientId == id);
+            if (socialCareInDb == null)
+            {
+                var socialCare = _mapper.Map<SocialCareDto, SocialCare>(socialCareDto);
+                _context.SocialCare.Add(socialCare);
+                _context.SaveChanges();
+                socialCareDto.Id = socialCare.Id;
+                return CreatedAtAction(nameof(GetSocialCare), new { id = socialCareDto.Id }, socialCareDto);
+            }
+            else
+            {
+                _mapper.Map(socialCareDto, socialCareInDb);
+                _context.SaveChanges();
+                return Ok(new { });
+            }
+        }
 
-              var socialCareDto = new SocialCareDto()
-              {
-                  ClientId = int.Parse(HttpContextWrapper.Current.Request.Form["ClientId"]),
-                  SocialSupportNeeded = Boolean.Parse(HttpContext.Current.Request.Form["socialsupportNeeded"]),
-                  MeetingFuture = Boolean.Parse(HttpContext.Current.Request.Form["Meetingfuture"]),
-                  Problem = Boolean.Parse(HttpContext.Current.Request.Form["problems"])
-              };
+        [HttpDelete("{id}")]
+        public IActionResult DeleteSocialCare(int id)
+        {
+            var socialCare = _context.SocialCare.SingleOrDefault(c => c.Id == id);
+            if (socialCare == null)
+                return NotFound();
 
-              if (socialCareInDb == null)
-              {
-                  var socialCare = Mapper.Map<SocialCareDto, SocialCare>(socialCareDto);
-
-                  _context.SocialCare.Add(socialCare);
-                  _context.SaveChanges();
-
-                  socialCareDto.Id = socialCare.Id;
-
-                  return Created(new Uri(Request.RequestUri + "/" + socialCareDto.Id), socialCareDto);
-              }
-              else
-              {
-                  Mapper.Map(socialCareDto, socialCareInDb);
-                  _context.SaveChanges();
-
-                  return Ok(new { });
-              }
-          }
-
-          // DELETE: /api/socialcare/{id}
-          [HttpDelete]
-          public IHttpActionResult DeleteSocialCare(int id)
-          {
-              var socialCare = _context.SocialCare.SingleOrDefault(c => c.Id == id);
-
-              if (socialCare == null)
-                  return NotFound();
-
-              _context.SocialCare.Remove(socialCare);
-              _context.SaveChanges();
-
-              return Ok(new { });
-          }
+            _context.SocialCare.Remove(socialCare);
+            _context.SaveChanges();
+            return Ok(new { });
+        }
     }
 }
+

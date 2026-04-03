@@ -38,10 +38,10 @@ namespace MtpApp.Models
             return new ClaimsIdentity();
         }
 
-    public class ApplicationUserRole
-    {
-        public string RoleId { get; set; }
-    }
+        public class ApplicationUserRole
+        {
+            public string RoleId { get; set; }
+        }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

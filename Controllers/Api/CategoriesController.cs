@@ -1,94 +1,82 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class CategoriesController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class CategoriesController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CategoriesController()
+        public CategoriesController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        //GET /api/categories
         [HttpGet]
-        public IHttpActionResult GetCategories()
+        public IActionResult GetCategories()
         {
-            var categories = _context.Categories.ToList().Select(Mapper.Map<Category, CategoryDto>);
+            var categories = _context.Categories.ToList().Select(c => _mapper.Map<Category, CategoryDto>(c));
             return Ok(categories);
         }
 
-        //GET /api/categories
-        [HttpGet]
-        public IHttpActionResult GetCategory(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetCategory(int id)
         {
             var categoryInDb = _context.Categories.SingleOrDefault(c => c.Id == id);
-
             if (categoryInDb == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<Category, CategoryDto>(categoryInDb));
+            return Ok(_mapper.Map<Category, CategoryDto>(categoryInDb));
         }
 
-        //POST /api/categories
         [HttpPost]
-        public IHttpActionResult CreateCategory(CategoryDto categoryDto)
+        public IActionResult CreateCategory([FromBody] CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var category = Mapper.Map<CategoryDto, Category>(categoryDto);
-
+            var category = _mapper.Map<CategoryDto, Category>(categoryDto);
             _context.Categories.Add(category);
             _context.SaveChanges();
-
             categoryDto.Id = category.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + categoryDto.Id), categoryDto);
+            return CreatedAtAction(nameof(GetCategory), new { id = categoryDto.Id }, categoryDto);
         }
 
-        //PUT /api/categories/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateCategory(int id, CategoryDto categoryDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateCategory(int id, [FromBody] CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var categoryInDb = _context.Categories.SingleOrDefault(c => c.Id == id);
-
             if (categoryInDb == null)
                 return NotFound();
 
-            Mapper.Map(categoryDto, categoryInDb);
-
+            _mapper.Map(categoryDto, categoryInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        //DELETE /api/categories/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteCategory(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCategory(int id)
         {
             var category = _context.Categories.SingleOrDefault(c => c.Id == id);
-
             if (category == null)
                 return NotFound();
 
             _context.Categories.Remove(category);
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

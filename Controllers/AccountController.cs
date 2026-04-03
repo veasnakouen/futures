@@ -94,7 +94,7 @@ namespace MtpApp.Controllers
                 PhoneNumber = model.PhoneNumber
             };
 
-            var createResult = await _user_manager.CreateAsync(user, model.Password);
+            var createResult = await _userManager.CreateAsync(user, model.Password);
             if (createResult.Succeeded)
             {
                 if (_roleManager != null && !await _roleManager.RoleExistsAsync("Manage Employee"))
@@ -151,10 +151,13 @@ namespace MtpApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-           public IActionResult RemoveAccountList()
+        public async Task<IActionResult> RemoveAccountList()
         {
             var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var logins = _userManager.GetLoginsAsync(userId).GetAwaiter().GetResult();
+            var currentUser = await _userManager.FindByIdAsync(userId);
+            var logins = currentUser != null
+                ? await _userManager.GetLoginsAsync(currentUser)
+                : new System.Collections.Generic.List<Microsoft.AspNetCore.Identity.UserLoginInfo>();
             ViewData["ShowRemoveButton"] = HasPassword() || logins.Count > 1;
             return PartialView("_RemoveAccountPartial", logins);
         }

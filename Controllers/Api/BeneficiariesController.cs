@@ -1,94 +1,85 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class BeneficiariesController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class BeneficiariesController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public BeneficiariesController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public BeneficiariesController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET: /api/beneficiaries?clientId={id}    
         [HttpGet]
-        public IHttpActionResult GetBeneficiariesByClientId(int clientId)
+        public IActionResult GetBeneficiariesByClientId([FromQuery] int clientId)
         {
-            var beneficiaries = _context.Beneficiaries.Select(Mapper.Map<Beneficiary, BeneficiaryDto>).Where(c => c.ClientId == clientId);
-
+            var beneficiaries = _context.Beneficiaries
+                .Where(c => c.ClientId == clientId)
+                .ToList()
+                .Select(c => _mapper.Map<Beneficiary, BeneficiaryDto>(c));
             return Ok(beneficiaries);
         }
 
-        // GET: /api/beneficiaries/{id}
-        [HttpGet]
-        public IHttpActionResult GetBeneficiary(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetBeneficiary(int id)
         {
             var beneficiary = _context.Beneficiaries.SingleOrDefault(c => c.Id == id);
-
             if (beneficiary == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<Beneficiary, BeneficiaryDto>(beneficiary));
+            return Ok(_mapper.Map<Beneficiary, BeneficiaryDto>(beneficiary));
         }
 
-        // POST: /api/beneficiaries
         [HttpPost]
-        public IHttpActionResult CreateBeneficiary(BeneficiaryDto beneficiaryDto)
+        public IActionResult CreateBeneficiary([FromBody] BeneficiaryDto beneficiaryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var beneficiary = Mapper.Map<BeneficiaryDto, Beneficiary>(beneficiaryDto);
-
+            var beneficiary = _mapper.Map<BeneficiaryDto, Beneficiary>(beneficiaryDto);
             _context.Beneficiaries.Add(beneficiary);
             _context.SaveChanges();
-
             beneficiaryDto.Id = beneficiary.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + beneficiaryDto.Id), beneficiaryDto);
+            return CreatedAtAction(nameof(GetBeneficiary), new { id = beneficiaryDto.Id }, beneficiaryDto);
         }
 
-        // GET: /api/beneficiaries/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateBeneficiary(int id, BeneficiaryDto beneficiaryDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateBeneficiary(int id, [FromBody] BeneficiaryDto beneficiaryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var beneficiaryInDb = _context.Beneficiaries.SingleOrDefault(c => c.Id == id);
-
             if (beneficiaryInDb == null)
                 return NotFound();
 
-            Mapper.Map(beneficiaryDto, beneficiaryInDb);
+            _mapper.Map(beneficiaryDto, beneficiaryInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        //DELETE /api/beneficiaries/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteBeneficiary(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBeneficiary(int id)
         {
             try
             {
                 var beneficiary = _context.Beneficiaries.SingleOrDefault(c => c.Id == id);
-
                 if (beneficiary == null)
                     return NotFound();
 
                 _context.Beneficiaries.Remove(beneficiary);
                 _context.SaveChanges();
-
                 return Ok(new { });
             }
             catch (Exception)
@@ -98,3 +89,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

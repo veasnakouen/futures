@@ -1,55 +1,53 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using MtpApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
-    public class LoginController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class LoginController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public LoginController()
+        public LoginController(ApplicationDbContext context, IConfiguration configuration)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _configuration = configuration;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            _context.Dispose();
-        }
-
-        [Route("api/Login/Totaldata")]
+        [Route("Totaldata")]
         [HttpGet]
-        public IHttpActionResult GetTotaldata()
+        public IActionResult GetTotaldata()
         {
             DataTable dt = new DataTable();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
             SqlConnection conx = new SqlConnection(connectionString);
             SqlDataAdapter adp = new SqlDataAdapter(" SELECT  (SELECT COUNT(Id)from Clients)TotalClients  ,(SELECT COUNT(Id)from Employers)TotalEmployers ,(SELECT COUNT(Id)from LogBooks)TotalLogbooks ,(SELECT COUNT(Id)from Placements)TotalPlacements     ", conx);
             adp.Fill(dt);
             return Ok(dt);
         }
 
-
-        [Route("api/Login/loggedrecords")]
+        [Route("loggedrecords")]
         [HttpGet]
-        public IHttpActionResult GetLoggedInRecords()
+        public IActionResult GetLoggedInRecords()
         {
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
-            var records = _context.LoginHistorys.Where(c => c.LoggedBy == user.FirstName + " " + user.LastName).ToList().OrderByDescending(c => c.Id).Take(11);
+            var records = _context.LoginHistorys
+                .Where(c => c.LoggedBy == user.FirstName + " " + user.LastName)
+                .ToList()
+                .OrderByDescending(c => c.Id)
+                .Take(11);
 
             return Ok(records);
         }
     }
 }
+

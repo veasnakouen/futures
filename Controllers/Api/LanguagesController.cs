@@ -1,65 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
-using AutoMapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MtpApp.Controllers.Api
 {
     [Authorize]
-    public class LanguagesController : ApiController
+    public class LanguagesController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public LanguagesController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public LanguagesController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         // GET: /api/languages?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetLanguages(int clientId)
+        public IActionResult GetLanguages(int clientId)
         {
-            var languages = _context.Languages.Select(Mapper.Map<Language, LanguageDto>).Where(c => c.ClientId == clientId);
+            var languages = _context.Languages.Select(_mapper.Map<Language, LanguageDto>).Where(c => c.ClientId == clientId);
 
             return Ok(languages);
         }
 
         // GET: /api/languages/{id}
         [HttpGet]
-        public IHttpActionResult GetLanguage(int id)
+        public IActionResult GetLanguage(int id)
         {
             var language = _context.Languages.SingleOrDefault(c => c.Id == id);
 
             if (language == null)
                 return NotFound();
 
-            return Ok(Mapper.Map<Language, LanguageDto>(language));
+            return Ok(_mapper.Map<Language, LanguageDto>(language));
         }
 
         // POST: /api/languages
         [HttpPost]
-        public IHttpActionResult CreateLanguage(LanguageDto languageDto)
+        public IActionResult CreateLanguage(LanguageDto languageDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var language = Mapper.Map<LanguageDto, Language>(languageDto);
+            var language = _mapper.Map<LanguageDto, Language>(languageDto);
 
             _context.Languages.Add(language);
             _context.SaveChanges();
 
             languageDto.Id = language.Id;
 
-            return Created(new Uri(Request.RequestUri + "/" + languageDto.Id), languageDto);
+            return CreatedAtAction(nameof(GetLanguage), new { id = languageDto.Id }, languageDto);
         }
 
         // PUT: /api/languages/{id}
         [HttpPut]
-        public IHttpActionResult UpdateLanguage(int id, LanguageDto languageDto)
+        public IActionResult UpdateLanguage(int id, LanguageDto languageDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -69,7 +71,7 @@ namespace MtpApp.Controllers.Api
             if (languageInDb == null)
                 return NotFound();
 
-            Mapper.Map(languageDto, languageInDb);
+            _mapper.Map(languageDto, languageInDb);
 
             _context.SaveChanges();
 
@@ -78,7 +80,7 @@ namespace MtpApp.Controllers.Api
 
         // DELETE: /api/languages/{id}
         [HttpDelete]
-        public IHttpActionResult DeleteLanguage(int id)
+        public IActionResult DeleteLanguage(int id)
         {
             var languageInDb = _context.Languages.SingleOrDefault(c => c.Id == id);
 
@@ -92,3 +94,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

@@ -1,37 +1,41 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
+using MtpApp.Hubs;
 using MtpApp.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using Newtonsoft.Json.Linq;
 using System.Reflection;
-using Microsoft.AspNet.Identity;
-using MtpApp.Hubs;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
     [Authorize]
-    public class PlacementMonitoringController : ApiController
+    public class PlacementMonitoringController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly Microsoft.AspNetCore.SignalR.IHubContext<PlacementMonitorHub> _hubContext;
 
-        public PlacementMonitoringController()
+        public PlacementMonitoringController(ApplicationDbContext context, IMapper mapper, Microsoft.AspNetCore.SignalR.IHubContext<PlacementMonitorHub> hubContext)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         //GET /api/PlacementMonitoring?ClientId=
         [HttpGet]
-        public IHttpActionResult GetPlacementMonitoring(int ClientId)
+        public IActionResult GetPlacementMonitoring(int ClientId)
         {
             var PlacmentInDb = _context.Placements
                 .Include(c => c.Clients)
-                .Select(Mapper.Map<Placement, PlacementDto>)
+                .Select(_mapper.Map<Placement, PlacementDto>)
                 .Where(c => c.ClientId == ClientId );
 
             if (PlacmentInDb == null)
@@ -42,7 +46,7 @@ namespace MtpApp.Controllers.Api
 
         //GET /api/PlacementMonitoring?CountPlacmentPending=
         //[HttpGet]
-        //public IHttpActionResult GetPlacementMonitoringNotification(int countskip)
+        //public IActionResult GetPlacementMonitoringNotification(int countskip)
         //{
         //    DateTime startdate = DateTime.Today.AddDays(10);
         //    var PLacementProcessInDb =
@@ -50,7 +54,7 @@ namespace MtpApp.Controllers.Api
         //         join m in _context.Monitorings on pp.MonitoringId equals m.Id
         //         join c in _context.Clients on m.ClientId equals c.Id
         //         where m.NextMonitoringDate <= startdate && pp.Completed == "Pending"
-        //         orderby m.NextMonitoringDate ​
+        //         orderby m.NextMonitoringDate ?
         //         select new { PlacementProgress = pp, Monitorings = m, Client=c }
         //         ).ToList().Skip(countskip).Take(5);
 
@@ -73,7 +77,7 @@ namespace MtpApp.Controllers.Api
 
 
         [HttpGet]
-        public IHttpActionResult GetPlacementMonitoringNotification(int countskip)
+        public IActionResult GetPlacementMonitoringNotification(int countskip)
         {
             DateTime startdate = DateTime.Today.AddDays(10);
             var PLacementProcessInDb =
@@ -107,12 +111,12 @@ namespace MtpApp.Controllers.Api
         // for doing 
         //GET /api/PlacementMonitoring?PlacementId=
         [HttpGet]
-        public IHttpActionResult GetPlacementProcessMonitoring(int PlacementId)
+        public IActionResult GetPlacementProcessMonitoring(int PlacementId)
         {
             var MonitoringPlacementInDb = _context.PlacementProgresses
                 .Include(c => c.Monitoring)
                 .Include(c => c.Monitoring.Client)
-                .Select(Mapper.Map<PlacementProgress, PLacementProcessDto>)
+                .Select(_mapper.Map<PlacementProgress, PLacementProcessDto>)
                 .Where(c => c.Monitoring.PlacementId == PlacementId && c.Monitoring.Type == "Placement");
 
             if (MonitoringPlacementInDb == null)
@@ -125,7 +129,7 @@ namespace MtpApp.Controllers.Api
         // for doing 
         //GET /api/PlacementMonitoring?PlacementId=
         [HttpGet]
-        public IHttpActionResult GetAllPlacementProcessMonitoring(int ClientId2)
+        public IActionResult GetAllPlacementProcessMonitoring(int ClientId2)
         {
             var MonitoringInDb =
                 (from m in _context.Monitorings
@@ -142,12 +146,12 @@ namespace MtpApp.Controllers.Api
 
         //GET /api/PlacementMonitoring?Id
         [HttpGet]
-        public IHttpActionResult GetPlacementProcessById(int Id)
+        public IActionResult GetPlacementProcessById(int Id)
         {
             var MonitoringPlecementInDb = _context.PlacementProgresses
                 .Include(c => c.Monitoring)
                 .Include(c => c.Monitoring.Client).ToList()
-                .Select(Mapper.Map<PlacementProgress, PLacementProcessDto>)
+                .Select(_mapper.Map<PlacementProgress, PLacementProcessDto>)
                 .Where(c => c.Id == Id && c.Monitoring.Type == "Placement");
 
             if (MonitoringPlecementInDb == null)
@@ -157,7 +161,7 @@ namespace MtpApp.Controllers.Api
 
         ////POST /api/PlacementMonitoring
         [HttpPost]
-        public IHttpActionResult CreatePlacementMonitoring(PlacementMonitorIngMulObj placementMonitorIngMulObj)
+        public IActionResult CreatePlacementMonitoring(PlacementMonitorIngMulObj placementMonitorIngMulObj)
         {
             {
                
@@ -165,33 +169,33 @@ namespace MtpApp.Controllers.Api
                     return BadRequest();
 
                 placementMonitorIngMulObj.monitoringDto.MonitoringDate = DateTime.Today;
-                var userId = User.Identity.GetUserId();
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = _context.Users.SingleOrDefault(c => c.Id == userId);
                 placementMonitorIngMulObj.monitoringDto.MonitoringDate = DateTime.Today;// update to today date 
 
                 placementMonitorIngMulObj.monitoringDto.Enroll = user.FirstName + " " + user.LastName;
 
-                var Monitoring = Mapper.Map<MonitoringDto, Monitoring>(placementMonitorIngMulObj.monitoringDto);
+                var Monitoring = _mapper.Map<MonitoringDto, Monitoring>(placementMonitorIngMulObj.monitoringDto);
 
                 _context.Monitorings.Add(Monitoring);
          
                 placementMonitorIngMulObj.pLacementProcessDto.MonitoringId = Monitoring.Id;
 
-                var PlacementProcess = Mapper.Map<PLacementProcessDto, PlacementProgress>(placementMonitorIngMulObj.pLacementProcessDto);
+                var PlacementProcess = _mapper.Map<PLacementProcessDto, PlacementProgress>(placementMonitorIngMulObj.pLacementProcessDto);
 
                 _context.PlacementProgresses.Add(PlacementProcess);
 
                 _context.SaveChanges();
 
-                PlacementMonitorHub.BroadcastData();
+                _hubContext.Clients.All.SendAsync("refreshEmployeeData");
 
-                return Created(new Uri(Request.RequestUri + "/" + placementMonitorIngMulObj.monitoringDto.Id), placementMonitorIngMulObj.monitoringDto);
+                return Ok(placementMonitorIngMulObj.monitoringDto);
              }
         }
 
         ////PUT /api/PlacementMonitoring
         [HttpPut]
-        public IHttpActionResult UpdatePlacementMonitoring (PlacementMonitorIngMulObj placementMonitorIngMulObj)
+        public IActionResult UpdatePlacementMonitoring (PlacementMonitorIngMulObj placementMonitorIngMulObj)
         {
 
             if (!ModelState.IsValid)
@@ -204,7 +208,7 @@ namespace MtpApp.Controllers.Api
             if (futureTrainingMonitoringInDb == null)
                 return NotFound();
 
-            Mapper.Map(placementMonitorIngMulObj.pLacementProcessDto, futureTrainingMonitoringInDb);
+            _mapper.Map(placementMonitorIngMulObj.pLacementProcessDto, futureTrainingMonitoringInDb);
 
             var monitoringInDb = _context.Monitorings.SingleOrDefault(c => c.Id == placementMonitorIngMulObj.monitoringDto.Id);
             if (monitoringInDb == null)
@@ -212,23 +216,23 @@ namespace MtpApp.Controllers.Api
                 return NotFound();
             }
 
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             placementMonitorIngMulObj.monitoringDto.Enroll = user.FirstName + " " + user.LastName;
 
-            Mapper.Map(placementMonitorIngMulObj.monitoringDto, monitoringInDb);
+            _mapper.Map(placementMonitorIngMulObj.monitoringDto, monitoringInDb);
 
             _context.SaveChanges();
 
-            PlacementMonitorHub.BroadcastData();
+            _hubContext.Clients.All.SendAsync("refreshEmployeeData");
 
             return Ok(new { });
         }
 
         // DELETE: /api/PlacementMonitoring/{id}
         [HttpDelete]
-        public IHttpActionResult DeletePlacementMonitoring(int id)
+        public IActionResult DeletePlacementMonitoring(int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -253,3 +257,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

@@ -1,53 +1,44 @@
-﻿using MtpApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Data.Entity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MtpApp.Models;
 using MtpApp.ViewModels;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity;
+using System.Linq;
 
 namespace MtpApp.Controllers
 {
     public class UsersController : Controller
     {
-        private ApplicationDbContext _context;
-        public UsersController()
-        {
-            _context = new ApplicationDbContext();
-        }
-        // GET: Users
-        //Check Security login
+        private readonly ApplicationDbContext _context;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public ActionResult Index()
-        
-       {
-           var users = _context.Users.Where(c => c.IsDeleted == false).ToList();
-           if (User.IsInRole("Security"))
-           {
-               return View(users);          
-           }
-           return RedirectToAction("NotPermission", "NotFoundMT");       
+        public UsersController(ApplicationDbContext context, RoleManager<IdentityRole> roleManager)
+        {
+            _context = context;
+            _roleManager = roleManager;
         }
-        
-        // GET: /users/{id}
-        public ActionResult GetUser(string id)
+
+        public IActionResult Index()
+        {
+            var users = _context.Users.Where(c => c.IsDeleted == false).ToList();
+            if (User.IsInRole("Security"))
+            {
+                return View(users);
+            }
+            return RedirectToAction("NotPermission", "NotFoundMT");
+        }
+
+        public IActionResult GetUser(string id)
         {
             if (User.IsInRole("Security"))
             {
-                var roleStore = new RoleStore<IdentityRole>(new ApplicationDbContext());
-                var roleManager = new RoleManager<IdentityRole>(roleStore);
-
                 var user = _context.Users.Include(c => c.Roles).SingleOrDefault(c => c.Id == id);
-
-                var roles = roleManager;
 
                 var viewModel = new UserRoleViewModel()
                 {
                     User = user,
-                    Role = roles
+                    Roles = _roleManager.Roles.Select(r => new Roles { RoleId = r.Id, RoleName = r.Name }).ToList()
                 };
 
                 return View("AssignRoles", viewModel);

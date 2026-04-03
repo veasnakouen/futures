@@ -1,61 +1,75 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class BusinessSetupsController : ApiController
+    public class BusinessSetupsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public BusinessSetupsController()
-        {
-            _context = new ApplicationDbContext();
-        }
-        // GET: /api/BusinessSetups/id
-        [HttpGet]
-        public IHttpActionResult GetbusinessSetup(int id)
-        {
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-            var BusinessSetUp = _context.BusinessSetUps.Include(c => c.Client).Include(c => c.BusinessSetUpCategory).Select(Mapper.Map<BusinessSetUp, BusinessSetUpDto>).SingleOrDefault(c => c.Id == id);
-            return Ok(BusinessSetUp);
+        public BusinessSetupsController(ApplicationDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET: /api/BusinessSetups?clientId={id}
-        [HttpGet]
-        public IHttpActionResult GetbusinessSetupByClientid(int clientId)
+        [HttpGet("{id}")]
+        public IActionResult GetbusinessSetup(int id)
         {
-            
-            var BusinessSetUp = _context.BusinessSetUps.Include(c => c.Client).Include(c => c.BusinessSetUpCategory).Select(Mapper.Map<BusinessSetUp, BusinessSetUpDto>).Where(c => c.ClientId == clientId);
-            return Ok(BusinessSetUp);
+            var businessSetUp = _context.BusinessSetUps
+                .Include(c => c.Client)
+                .Include(c => c.BusinessSetUpCategory)
+                .Where(c => c.Id == id)
+                .Select(b => _mapper.Map<BusinessSetUp, BusinessSetUpDto>(b))
+                .SingleOrDefault();
+
+            if (businessSetUp == null)
+                return NotFound();
+
+            return Ok(businessSetUp);
         }
-        // POST: /api/BusinessSetups
-        public IHttpActionResult CreateBusinessSetup(BusinessSetUpDto businessSetUpDto)
+
+        [HttpGet]
+        public IActionResult GetbusinessSetupByClientid([FromQuery] int clientId)
+        {
+            var businessSetUp = _context.BusinessSetUps
+                .Include(c => c.Client)
+                .Include(c => c.BusinessSetUpCategory)
+                .ToList()
+                .Select(b => _mapper.Map<BusinessSetUp, BusinessSetUpDto>(b))
+                .Where(c => c.ClientId == clientId);
+
+            return Ok(businessSetUp);
+        }
+
+        [HttpPost]
+        public IActionResult CreateBusinessSetup([FromBody] BusinessSetUpDto businessSetUpDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var BusinessSetUp = Mapper.Map<BusinessSetUpDto, BusinessSetUp>(businessSetUpDto);
+            var businessSetUp = _mapper.Map<BusinessSetUpDto, BusinessSetUp>(businessSetUpDto);
 
-            _context.BusinessSetUps.Add(BusinessSetUp);
+            _context.BusinessSetUps.Add(businessSetUp);
             _context.SaveChanges();
 
-            businessSetUpDto.Id = BusinessSetUp.Id;
+            businessSetUpDto.Id = businessSetUp.Id;
 
-            return Created(new Uri(Request.RequestUri + "/" + businessSetUpDto.Id), businessSetUpDto);
+            return CreatedAtAction(nameof(GetbusinessSetup), new { id = businessSetUpDto.Id }, businessSetUpDto);
         }
 
-        // PUT: /api/BusinessSetups/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateBusinessSetup(int id, BusinessSetUpDto businessSetUpDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateBusinessSetup(int id, [FromBody] BusinessSetUpDto businessSetUpDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -65,16 +79,15 @@ namespace MtpApp.Controllers.Api
             if (businessSetUpInDb == null)
                 return NotFound();
 
-            Mapper.Map(businessSetUpDto, businessSetUpInDb);
+            _mapper.Map(businessSetUpDto, businessSetUpInDb);
 
             _context.SaveChanges();
 
             return Ok(new { });
         }
 
-        // DELETE: /api/BusinessSetups/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteBusinessSetup(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBusinessSetup(int id)
         {
             var businessSetupInDb = _context.BusinessSetUps.SingleOrDefault(c => c.Id == id);
 
@@ -88,3 +101,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

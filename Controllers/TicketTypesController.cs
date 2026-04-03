@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MtpApp.Controllers
 {
     public class TicketTypesController : Controller
     {
-        // GET: TicketTypes
         [Route("tickettypes")]
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View();
         }

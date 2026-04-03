@@ -1,163 +1,133 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using Newtonsoft.Json.Linq;
-using System.Reflection;
-using Microsoft.AspNet.Identity;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class BusinessSetupMonitoringController : ApiController
+    public class BusinessSetupMonitoringController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public BusinessSetupMonitoringController()
+        public BusinessSetupMonitoringController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        //GET /api/businessSetupMonitoring?ClientId=
         [HttpGet]
-        public IHttpActionResult GetbusinessSetup(int ClientId)
+        public IActionResult GetBusinessSetup([FromQuery] int clientId)
         {
-            var businessSetupMonitoringInDb = _context.BusinessSetUps
+            var businessSetups = _context.BusinessSetUps
                 .Include(c => c.Client)
-                .Select(Mapper.Map<BusinessSetUp, BusinessSetUpDto>)
+                .Where(c => c.ClientId == clientId)
                 .OrderByDescending(c => c.Id)
-                .Where(c => c.ClientId == ClientId );
-
-            if (businessSetupMonitoringInDb == null)
-                return NotFound();
-
-            return Ok(businessSetupMonitoringInDb);
+                .ToList()
+                .Select(c => _mapper.Map<BusinessSetUp, BusinessSetUpDto>(c));
+            return Ok(businessSetups);
         }
 
-        //GET /api/businessSetupMonitoring?PClientId=
-        [HttpGet]
-        public IHttpActionResult GetbusinessSetupMonitoring(int PClientId)
+        [HttpGet("monitoring")]
+        public IActionResult GetBusinessSetupMonitoring([FromQuery] int clientId)
         {
-            var MonitoringbusinessSetupInDb = _context.BusinessInProgresses
+            var monitoring = _context.BusinessInProgresses
                 .Include(c => c.Monitoring)
                 .Include(c => c.Monitoring.Client)
                 .Include(c => c.BusinessSetUpCategory)
-                .Select(Mapper.Map<BusinessInProgress, BusinessInProgressDto>)
-                .OrderByDescending(c=> c.Id)
-                .Where(c => c.Monitoring.ClientId == PClientId && c.Monitoring.Type == "Businesssetup");
-
-            if (MonitoringbusinessSetupInDb == null)
-                return NotFound();
-
-            return Ok(MonitoringbusinessSetupInDb);
-        }
-
-        //GET /api/businessSetupMonitoring?Id
-        [HttpGet]
-        public IHttpActionResult GetbusinessSetupById(int Id)
-        {
-            var MonitoringBusinessSetupInDb = _context.BusinessInProgresses
-                .Include(c => c.Monitoring)
-                .Include(c => c.Monitoring.Client).ToList()
-                .Select(Mapper.Map<BusinessInProgress, BusinessInProgressDto>)
+                .Where(c => c.Monitoring.ClientId == clientId && c.Monitoring.Type == "Businesssetup")
                 .OrderByDescending(c => c.Id)
-                .Where(c => c.Id == Id && c.Monitoring.Type == "Businesssetup");
-
-            if (MonitoringBusinessSetupInDb == null)
-                return NotFound();
-            return Ok(MonitoringBusinessSetupInDb);
+                .ToList()
+                .Select(c => _mapper.Map<BusinessInProgress, BusinessInProgressDto>(c));
+            return Ok(monitoring);
         }
 
-        ////POST /api/businessSetupMonitoring
-        [HttpPost]
-        public IHttpActionResult CreatePlacementMonitoring(businessInProgressMonitorIngMulObj businessInProgressMonitorIngMulObj)
+        [HttpGet("{id}")]
+        public IActionResult GetBusinessSetupById(int id)
         {
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest();
-
-                var userId = User.Identity.GetUserId();
-                var user = _context.Users.SingleOrDefault(c => c.Id == userId);
-
-                businessInProgressMonitorIngMulObj.monitoringDto.Enroll = user.FirstName + " " + user.LastName;
-
-                var Monitoring = Mapper.Map<MonitoringDto, Monitoring>(businessInProgressMonitorIngMulObj.monitoringDto);
-
-                _context.Monitorings.Add(Monitoring);
-
-                businessInProgressMonitorIngMulObj.businessInProgressDto.MonitoringId = Monitoring.Id;
-
-                var businessInProgress = Mapper.Map<BusinessInProgressDto, BusinessInProgress>(businessInProgressMonitorIngMulObj.businessInProgressDto);
-
-                _context.BusinessInProgresses.Add(businessInProgress);
-
-                _context.SaveChanges();
-                return Created(new Uri(Request.RequestUri + "/" + businessInProgressMonitorIngMulObj.monitoringDto.Id), businessInProgressMonitorIngMulObj.monitoringDto);
-             }
+            var monitoring = _context.BusinessInProgresses
+                .Include(c => c.Monitoring)
+                .Include(c => c.Monitoring.Client)
+                .Where(c => c.Id == id && c.Monitoring.Type == "Businesssetup")
+                .OrderByDescending(c => c.Id)
+                .ToList()
+                .Select(c => _mapper.Map<BusinessInProgress, BusinessInProgressDto>(c));
+            return Ok(monitoring);
         }
 
-        ////PUT /api/businessSetupMonitoring
-        [HttpPut]
-        public IHttpActionResult UpdatebusinessSetupMonitoring(businessInProgressMonitorIngMulObj businessInProgressMonitorIngMulObj)
+        [HttpPost]
+        public IActionResult CreateBusinessSetupMonitoring([FromBody] businessInProgressMonitorIngMulObj businessInProgressMonitorIngMulObj)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var BusinessSetupMonitoringInDb = _context.BusinessInProgresses.SingleOrDefault(c => c.MonitoringId == businessInProgressMonitorIngMulObj.businessInProgressDto.MonitoringId);
-
-            if (BusinessSetupMonitoringInDb == null)
-                return NotFound();
-
-            Mapper.Map(businessInProgressMonitorIngMulObj.businessInProgressDto, BusinessSetupMonitoringInDb);
-
-            var monitoringInDb = _context.Monitorings.SingleOrDefault(c => c.Id == businessInProgressMonitorIngMulObj.monitoringDto.Id);
-            if (monitoringInDb == null)
-            {
-                return NotFound();
-            }
-
-            var userId = User.Identity.GetUserId();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             businessInProgressMonitorIngMulObj.monitoringDto.Enroll = user.FirstName + " " + user.LastName;
 
-            Mapper.Map(businessInProgressMonitorIngMulObj.monitoringDto, monitoringInDb);
+            var monitoring = _mapper.Map<MonitoringDto, Monitoring>(businessInProgressMonitorIngMulObj.monitoringDto);
+            _context.Monitorings.Add(monitoring);
+
+            businessInProgressMonitorIngMulObj.businessInProgressDto.MonitoringId = monitoring.Id;
+
+            var businessInProgress = _mapper.Map<BusinessInProgressDto, BusinessInProgress>(businessInProgressMonitorIngMulObj.businessInProgressDto);
+            _context.BusinessInProgresses.Add(businessInProgress);
 
             _context.SaveChanges();
-
-            return Ok(new { });
+            return CreatedAtAction(nameof(GetBusinessSetupById), new { id = businessInProgress.Id }, businessInProgressMonitorIngMulObj.monitoringDto);
         }
 
-        // DELETE: /api/businessSetupMonitoring/{id}
-        [HttpDelete]
-        public IHttpActionResult DeletebusinessSetupMonitoring(int id)
+        [HttpPut]
+        public IActionResult UpdateBusinessSetupMonitoring([FromBody] businessInProgressMonitorIngMulObj businessInProgressMonitorIngMulObj)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var BusinessSetupIndb = _context.BusinessInProgresses.SingleOrDefault(c => c.MonitoringId == id);
-
-            if (BusinessSetupIndb == null)
+            var businessSetupMonitoringInDb = _context.BusinessInProgresses.SingleOrDefault(c => c.MonitoringId == businessInProgressMonitorIngMulObj.businessInProgressDto.MonitoringId);
+            if (businessSetupMonitoringInDb == null)
                 return NotFound();
 
-            _context.BusinessInProgresses.Remove(BusinessSetupIndb);
+            _mapper.Map(businessInProgressMonitorIngMulObj.businessInProgressDto, businessSetupMonitoringInDb);
+
+            var monitoringInDb = _context.Monitorings.SingleOrDefault(c => c.Id == businessInProgressMonitorIngMulObj.monitoringDto.Id);
+            if (monitoringInDb == null)
+                return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _context.Users.SingleOrDefault(c => c.Id == userId);
+            businessInProgressMonitorIngMulObj.monitoringDto.Enroll = user.FirstName + " " + user.LastName;
+
+            _mapper.Map(businessInProgressMonitorIngMulObj.monitoringDto, monitoringInDb);
+            _context.SaveChanges();
+            return Ok(new { });
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBusinessSetupMonitoring(int id)
+        {
+            var businessSetupInDb = _context.BusinessInProgresses.SingleOrDefault(c => c.MonitoringId == id);
+            if (businessSetupInDb == null)
+                return NotFound();
+
+            _context.BusinessInProgresses.Remove(businessSetupInDb);
 
             var monitoringInDb = _context.Monitorings.SingleOrDefault(c => c.Id == id);
-
             if (monitoringInDb == null)
                 return NotFound();
 
             _context.Monitorings.Remove(monitoringInDb);
-
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

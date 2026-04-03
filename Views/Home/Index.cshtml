@@ -14,7 +14,7 @@
                     <span class="heading-primary-main">M'Lop Tapang</span>
                     <span class="heading-primary-sub">We are a big family</span>
                 </h1>
-                @if (Request.IsAuthenticated)
+                @if (User?.Identity?.IsAuthenticated == true)
                 {
                     if (User.IsInRole("HR System"))
                     {

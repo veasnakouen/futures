@@ -10,7 +10,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                @if (Request.IsAuthenticated)
+                @if (User?.Identity?.IsAuthenticated == true)
                 {
                     if (User.IsInRole("HR System"))
                     {

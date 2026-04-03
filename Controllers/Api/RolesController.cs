@@ -1,64 +1,50 @@
-﻿using MtpApp.Models;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using MtpApp.Models;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using System.Web;
 using System.Threading.Tasks;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class RolesController : ApiController
+    [Route("api")]
+    [ApiController]
+    [Authorize]
+    public class RolesController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        private UserManager<ApplicationUser> _userManager;
-        public RolesController()
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public RolesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            _context = new ApplicationDbContext();
-            var store = new UserStore<ApplicationUser>(_context);
-            _userManager = new UserManager<ApplicationUser>(store);
+            _context = context;
+            _userManager = userManager;
         }
 
-        [HttpDelete]
-        [Route("api/users/{userId}/roles/{roleName}")]
-        public async Task<IHttpActionResult> RemoveFromRole(string userId, string roleName)
+        [HttpDelete("users/{userId}/roles/{roleName}")]
+        public async Task<IActionResult> RemoveFromRole(string userId, string roleName)
         {
-            try
-            {
-                //var roleStore = new RoleStore<IdentityRole>(new ApplicationDbContext());
-                //var roleManager = new RoleManager<IdentityRole>(roleStore);
-                //await _userManager.RemoveFromRoleAsync(userId, roleName);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
 
-                var role = _context.Roles.SingleOrDefault(c => c.Name == roleName);
-
-                await _context.Database.ExecuteSqlCommandAsync("DELETE FROM AspNetUserRoles WHERE UserId='" + userId + "' AND RoleId='" + role.Id + "'");
-                _context.SaveChanges();
-
+            var result = await _userManager.RemoveFromRoleAsync(user, roleName);
+            if (result.Succeeded)
                 return Ok(new { });
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-                throw;
-            }
+
+            return BadRequest();
         }
 
-        [HttpPost]
-        [Route("api/users/{userId}/roles/{roleName}")]
-        public async Task<IHttpActionResult> AddToRole(string userId, string roleName)
+        [HttpPost("users/{userId}/roles/{roleName}")]
+        public async Task<IActionResult> AddToRole(string userId, string roleName)
         {
-            //var roleStore = new RoleStore<IdentityRole>(new ApplicationDbContext());
-            //var roleManager = new RoleManager<IdentityRole>(roleStore);
-            await _userManager.AddToRoleAsync(userId, roleName);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            await _userManager.AddToRoleAsync(user, roleName);
             return Ok(new { });
         }
     }
 }
+

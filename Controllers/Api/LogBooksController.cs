@@ -1,112 +1,95 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using Microsoft.AspNet.Identity;
+using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class LogBooksController : ApiController
+    public class LogBooksController : ControllerBase
     {
-         private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-         public LogBooksController()
+        public LogBooksController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
+        [HttpGet]
+        public IActionResult GetLogBooks()
+        {
+            var logbooks = _context.LogBooks.ToList().Select(c => _mapper.Map<LogBook, LogBookDto>(c));
+            return Ok(logbooks);
+        }
 
-         ////GET /api/LogBook
-         [HttpGet]
-         public IHttpActionResult Getlogbooks()
-         {
-             var logbooks = _context.LogBooks.ToList().Select(Mapper.Map<LogBook, LogBookDto>);
-             return Ok(logbooks);
-         }
+        [HttpGet("{id}")]
+        public IActionResult GetLogBook(int id)
+        {
+            var logbook = _context.LogBooks.SingleOrDefault(c => c.Id == id);
+            if (logbook == null)
+                return NotFound();
+            return Ok(_mapper.Map<LogBook, LogBookDto>(logbook));
+        }
 
-         //GET /api/LogBook/{id}
-
-         [HttpGet]
-         public IHttpActionResult GetLogBook(int id)
-         {
-             var logbooks = _context.LogBooks.SingleOrDefault(c => c.Id == id);
-
-             if (logbooks == null)
-                 return NotFound();
-
-             return Ok(Mapper.Map<LogBook, LogBookDto>(logbooks));
-         }
-
-         //POST /api/LogBook
-         [HttpPost]
-         public IHttpActionResult CreateLogBooks(LogBookDto logBookDto)
-         {
-
-            var userId = User.Identity.GetUserId();
+        [HttpPost]
+        public IActionResult CreateLogBook([FromBody] LogBookDto logBookDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
             logBookDto.User = user.FirstName + " " + user.LastName;
             logBookDto.EnrollDate = DateTime.Now;
 
-             if (!ModelState.IsValid)
-                 return BadRequest();
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-             var newLogbook = Mapper.Map<LogBookDto, LogBook>(logBookDto);
+            var newLogbook = _mapper.Map<LogBookDto, LogBook>(logBookDto);
+            _context.LogBooks.Add(newLogbook);
+            _context.SaveChanges();
+            logBookDto.Id = newLogbook.Id;
+            return CreatedAtAction(nameof(GetLogBook), new { id = logBookDto.Id }, logBookDto);
+        }
 
-             _context.LogBooks.Add(newLogbook);
-             _context.SaveChanges();
+        [HttpPut("{id}")]
+        public IActionResult UpdateLogBook(int id, [FromBody] LogBookDto logBookDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _context.Users.SingleOrDefault(c => c.Id == userId);
 
-             logBookDto.Id = newLogbook.Id;
+            logBookDto.User = user.FirstName + " " + user.LastName;
+            logBookDto.EnrollDate = DateTime.Now;
 
-             return Created(new Uri(Request.RequestUri + "/" + logBookDto.Id), logBookDto);
-         }
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-         //PUT /api/LogBook/{id}
+            var logbookInDb = _context.LogBooks.SingleOrDefault(c => c.Id == id);
+            if (logbookInDb == null)
+                return NotFound();
 
-         [HttpPut]
-         public IHttpActionResult UpdateLogBooks(LogBookDto logBookDto)
-         {
-             var userId = User.Identity.GetUserId();
-             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
+            _mapper.Map(logBookDto, logbookInDb);
+            _context.SaveChanges();
+            return Ok(new { });
+        }
 
-             logBookDto.User = user.FirstName + " " + user.LastName;
-             logBookDto.EnrollDate = DateTime.Now;
+        [HttpDelete("{id}")]
+        public IActionResult DeleteLogBook(int id)
+        {
+            var logBook = _context.LogBooks.SingleOrDefault(c => c.Id == id);
+            if (logBook == null)
+                return NotFound();
 
-             if (!ModelState.IsValid)
-                 return BadRequest();
-
-             var logbookinDb = _context.LogBooks.SingleOrDefault(c => c.Id == logBookDto.Id);
-
-             if (logbookinDb == null)
-                 return NotFound();
-
-             Mapper.Map(logBookDto, logbookinDb);
-
-             _context.SaveChanges();
-
-             return Ok(new { });
-         }
-
-         //DELETE /api/LogBook/{id}
-         [HttpDelete]
-         public IHttpActionResult DeleteLogbook(int id)
-         {
-             var logBook = _context.LogBooks.SingleOrDefault(c => c.Id == id);
-
-             if (logBook == null)
-                 return NotFound();
-
-             _context.LogBooks.Remove(logBook);
-             _context.SaveChanges();
-
-             return Ok(new { });
-         }
+            _context.LogBooks.Remove(logBook);
+            _context.SaveChanges();
+            return Ok(new { });
+        }
     }
 }
+

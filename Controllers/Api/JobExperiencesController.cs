@@ -1,93 +1,88 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class JobExperiencesController : ApiController
+    public class JobExperiencesController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public JobExperiencesController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public JobExperiencesController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET: /api/jobexperiences?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetJobExperiences(int clientId)
+        public IActionResult GetJobExperiences([FromQuery] int clientId)
         {
-            var jobExperiences = _context.JobExperiences.Include(c => c.JobCategories).Include(c => c.JobPositions).Select(Mapper.Map<JobExperience, JobExperienceDto>).Where(c => c.ClientId == clientId);
+            var jobExperiences = _context.JobExperiences
+                .Include(c => c.JobCategories)
+                .Include(c => c.JobPositions)
+                .Where(c => c.ClientId == clientId)
+                .ToList()
+                .Select(c => _mapper.Map<JobExperience, JobExperienceDto>(c));
             return Ok(jobExperiences);
         }
 
-        // GET: /api/jobexperiences/{id}
-        [HttpGet]
-        public IHttpActionResult GetJobExperience(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetJobExperience(int id)
         {
             var jobExperience = _context.JobExperiences.SingleOrDefault(c => c.Id == id);
-
             if (jobExperience == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<JobExperience, JobExperienceDto>(jobExperience));
+            return Ok(_mapper.Map<JobExperience, JobExperienceDto>(jobExperience));
         }
 
-        // POST: /api/jobexperiences
         [HttpPost]
-        public IHttpActionResult CreateJobExperience(JobExperienceDto jobExperienceDto)
+        public IActionResult CreateJobExperience([FromBody] JobExperienceDto jobExperienceDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var jobExperience = Mapper.Map<JobExperienceDto, JobExperience>(jobExperienceDto);
-
+            var jobExperience = _mapper.Map<JobExperienceDto, JobExperience>(jobExperienceDto);
             _context.JobExperiences.Add(jobExperience);
             _context.SaveChanges();
-
             jobExperienceDto.Id = jobExperience.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + jobExperienceDto.Id), jobExperienceDto);
+            return CreatedAtAction(nameof(GetJobExperience), new { id = jobExperienceDto.Id }, jobExperienceDto);
         }
 
-        // PUT: /api/jobexperiences/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateJobExperience(int id, JobExperienceDto jobExperienceDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateJobExperience(int id, [FromBody] JobExperienceDto jobExperienceDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var jobExperienceInDb = _context.JobExperiences.SingleOrDefault(c => c.Id == id);
-
             if (jobExperienceInDb == null)
                 return NotFound();
 
-            Mapper.Map(jobExperienceDto, jobExperienceInDb);
+            _mapper.Map(jobExperienceDto, jobExperienceInDb);
             _context.SaveChanges();
-            
             return Ok(new { });
         }
 
-        // DELETE: /api/jobexperiences/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteJobExperience(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteJobExperience(int id)
         {
             var jobExperience = _context.JobExperiences.SingleOrDefault(c => c.Id == id);
-
             if (jobExperience == null)
                 return NotFound();
 
             _context.JobExperiences.Remove(jobExperience);
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

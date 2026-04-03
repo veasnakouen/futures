@@ -1,77 +1,79 @@
-﻿using MtpApp.Models;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MtpApp.Dtos;
+using MtpApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using AutoMapper;
-using MtpApp.Dtos;
 
 namespace MtpApp.Controllers.Api
 {
     [Authorize]
-    public class FuturesTrainingsController : ApiController
+    public class FuturesTrainingsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public FuturesTrainingsController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public FuturesTrainingsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         // GET: /api/futurestrainings?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetFuturesTrainings(int clientId)
+        public IActionResult GetFuturesTrainings(int clientId)
         {
-            var FuturesTrainings = _context.FuturesTrainings.Include(c => c.Client).Include(c => c.Subject).Select(Mapper.Map<FuturesTraining, FuturesTrainingDto>).Where(c => c.ClientId == clientId); 
+            var FuturesTrainings = _context.FuturesTrainings.Include(c => c.Client).Include(c => c.Subject).Select(_mapper.Map<FuturesTraining, FuturesTrainingDto>).Where(c => c.ClientId == clientId); 
             return Ok(FuturesTrainings);
         }
 
         // GET: /api/futurestrainings?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetFuturesTrainings(string futurestrainingsId, string status)
+        public IActionResult GetFuturesTrainings(string futurestrainingsId, string status)
         {
             if (futurestrainingsId == "all")
             {
-                var FuturesTrainings = _context.FuturesTrainings.Include(c => c.Client).Include(c => c.Subject).Select(Mapper.Map<FuturesTraining, FuturesTrainingDto>).Where(c => c.Status == status);
+                var FuturesTrainings = _context.FuturesTrainings.Include(c => c.Client).Include(c => c.Subject).Select(_mapper.Map<FuturesTraining, FuturesTrainingDto>).Where(c => c.Status == status);
                 return Ok(FuturesTrainings);
             }
             else
             {
-                var FuturesTrainings = _context.FuturesTrainings.Include(c => c.Client).Include(c => c.Subject).Select(Mapper.Map<FuturesTraining, FuturesTrainingDto>).Where(c => c.ClientId == int.Parse(futurestrainingsId) && c.Status == status);
+                var FuturesTrainings = _context.FuturesTrainings.Include(c => c.Client).Include(c => c.Subject).Select(_mapper.Map<FuturesTraining, FuturesTrainingDto>).Where(c => c.ClientId == int.Parse(futurestrainingsId) && c.Status == status);
                 return Ok(FuturesTrainings);
             }
         }
         // GET: /api/futurestrainings/{id}
         [HttpGet]
-        public IHttpActionResult GetFuturesTraining(int id)
+        public IActionResult GetFuturesTraining(int id)
         {
             var FuturesTrainings = _context.FuturesTrainings.Include(c => c.Client).Include(c => c.Subject).SingleOrDefault(c => c.id == id);
 
             if (FuturesTrainings == null)
                 return NotFound();
-            return Ok(Mapper.Map<FuturesTraining, FuturesTrainingDto>(FuturesTrainings));
+            return Ok(_mapper.Map<FuturesTraining, FuturesTrainingDto>(FuturesTrainings));
         }
 
         // POST: /api/futurestrainings
         [HttpPost]
-        public IHttpActionResult Createfuturestraining(FuturesTrainingDto FuturesTrainingDto)
+        public IActionResult Createfuturestraining(FuturesTrainingDto FuturesTrainingDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var newfuturestraining = Mapper.Map<FuturesTrainingDto, FuturesTraining>(FuturesTrainingDto);
+            var newfuturestraining = _mapper.Map<FuturesTrainingDto, FuturesTraining>(FuturesTrainingDto);
             _context.FuturesTrainings.Add(newfuturestraining);
             _context.SaveChanges();
 
             FuturesTrainingDto.id = newfuturestraining.id;
 
-            return Created(new Uri(Request.RequestUri + "/" + FuturesTrainingDto.id), FuturesTrainingDto);
+            return CreatedAtAction(nameof(GetFuturesTraining), new { id = FuturesTrainingDto.id }, FuturesTrainingDto);
         }
 
         // PUT: /api/futurestrainings/{id}
         [HttpPut]
-        public IHttpActionResult Updatefuturestraining(int id, FuturesTrainingDto FuturesTrainingDto)
+        public IActionResult Updatefuturestraining(int id, FuturesTrainingDto FuturesTrainingDto)
         {
             var futurestrainingsInDb = _context.FuturesTrainings.SingleOrDefault(c => c.id == id);
             if (futurestrainingsInDb == null)
@@ -82,7 +84,7 @@ namespace MtpApp.Controllers.Api
             }
             else
             {
-                Mapper.Map(FuturesTrainingDto, futurestrainingsInDb);
+                _mapper.Map(FuturesTrainingDto, futurestrainingsInDb);
             }
             _context.SaveChanges();
 
@@ -91,7 +93,7 @@ namespace MtpApp.Controllers.Api
 
         // DELETE: /api/futurestrainings/{id}
         [HttpDelete]
-        public IHttpActionResult Deletefuturestraining(int id)
+        public IActionResult Deletefuturestraining(int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -109,3 +111,4 @@ namespace MtpApp.Controllers.Api
 
     }
 }
+

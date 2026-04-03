@@ -1,53 +1,55 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
+using MtpApp.Hubs;
 using MtpApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Data.Entity;
-using System.Web;
-using MtpApp.Hubs;
+
 namespace MtpApp.Controllers.Api
 {
-    public class MonitoringsController : ApiController
+    public class MonitoringsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public MonitoringsController ()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public MonitoringsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         //GET /api/monitorings
         [HttpGet]
-        public IHttpActionResult GetMonitoring()
+        public IActionResult GetMonitoring()
         {
-            var monitoring = _context.Monitorings.Include(c => c.Client).Select(Mapper.Map<Monitoring, MonitoringDto>);
+            var monitoring = _context.Monitorings.Include(c => c.Client).Select(_mapper.Map<Monitoring, MonitoringDto>);
             return Ok(monitoring);
         }
 
         //GET /api/monitorings/{id}
         [HttpGet]
-        public IHttpActionResult GetMonitoring(int id)
+        public IActionResult GetMonitoring(int id)
         {
             var monitoring = _context.Monitorings.Include(c => c.Client).SingleOrDefault(c => c.Id == id);
 
             if (monitoring == null)
                 return NotFound();
 
-            return Ok(Mapper.Map<Monitoring, MonitoringDto>(monitoring));
+            return Ok(_mapper.Map<Monitoring, MonitoringDto>(monitoring));
         }
 
         
         // GET: /api/placementsLy?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetMonitoringByClient(int clientId)
+        public IActionResult GetMonitoringByClient(int clientId)
         {
             var monitoring = _context.Monitorings
                                 .Include(c => c.Client)
-                                .Select(Mapper.Map<Monitoring, MonitoringDto>)
+                                .Select(_mapper.Map<Monitoring, MonitoringDto>)
                                 .Where(c => c.ClientId == clientId && c.Type != "Placement");
 
             return Ok(monitoring);
@@ -57,11 +59,11 @@ namespace MtpApp.Controllers.Api
         
          //GET: /api/placements?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetMonitoringPlacementByClient(int clientId2)
+        public IActionResult GetMonitoringPlacementByClient(int clientId2)
         {
             var monitoring = _context.Monitorings
                                 .Include(c => c.Client)
-                                .Select(Mapper.Map<Monitoring, MonitoringDto>)
+                                .Select(_mapper.Map<Monitoring, MonitoringDto>)
                                 .Where(c => c.ClientId == clientId2 && c.Type == "Placement");
 
             return Ok(monitoring);
@@ -71,7 +73,7 @@ namespace MtpApp.Controllers.Api
 
         //POST /api/monitorings
         [HttpPost]
-        public IHttpActionResult CreateJobCategory(MonitoringDto monitoringDto)
+        public IActionResult CreateJobCategory(MonitoringDto monitoringDto)
         {
 
             if (!ModelState.IsValid)
@@ -82,18 +84,18 @@ namespace MtpApp.Controllers.Api
             if (isExists != null)
                 return BadRequest();
 
-            var newMonitoring = Mapper.Map<MonitoringDto, Monitoring>(monitoringDto);
+            var newMonitoring = _mapper.Map<MonitoringDto, Monitoring>(monitoringDto);
 
             _context.Monitorings.Add(newMonitoring);
             _context.SaveChanges();
 
             monitoringDto.Id = newMonitoring.Id;
-            return Created(new Uri(Request.RequestUri + "/" + newMonitoring.Id), newMonitoring);   
+            return CreatedAtAction(nameof(GetMonitoring), new { id = newMonitoring.Id }, newMonitoring);
         }
 
         //PUT /api/monitorings/{id}
         [HttpPut]
-        public IHttpActionResult UpdateMonitoring(int id, MonitoringDto monitoringDto)
+        public IActionResult UpdateMonitoring(int id, MonitoringDto monitoringDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -105,7 +107,7 @@ namespace MtpApp.Controllers.Api
 
             var monitoringInDb = _context.Monitorings.SingleOrDefault(c => c.Id == id);
 
-            Mapper.Map(monitoringDto, monitoringInDb);
+            _mapper.Map(monitoringDto, monitoringInDb);
             _context.SaveChanges();
           
             return Ok(new { });
@@ -113,7 +115,7 @@ namespace MtpApp.Controllers.Api
 
         //DELETE /api/monitorings/{id}
         [HttpDelete]
-        public IHttpActionResult DeleteMonitoring(int id)
+        public IActionResult DeleteMonitoring(int id)
         {
             var monitoringInDB = _context.Monitorings.SingleOrDefault(c => c.Id == id);
 
@@ -126,3 +128,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

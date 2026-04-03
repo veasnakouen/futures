@@ -1,109 +1,90 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class SubjectsController : ApiController
-   {
-        private ApplicationDbContext _context;
-        public SubjectsController()
+    public class SubjectsController : ControllerBase
     {
-        _context = new ApplicationDbContext();
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-    }
-
-        ////GET /api/subjects
-        [HttpGet]
-        public IHttpActionResult GetSubjects()
+        public SubjectsController(ApplicationDbContext context, IMapper mapper)
         {
-            var subjects = _context.Subjects.ToList().Select(Mapper.Map<Subject, SubjectDto>);
+            _context = context;
+            _mapper = mapper;
+        }
+
+        [HttpGet]
+        public IActionResult GetSubjects()
+        {
+            var subjects = _context.Subjects.ToList().Select(c => _mapper.Map<Subject, SubjectDto>(c));
             return Ok(subjects);
         }
 
-        //GET /api/subjects/{id}
-
-        [HttpGet]
-        public IHttpActionResult GetSubjects(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetSubject(int id)
         {
             var subject = _context.Subjects.SingleOrDefault(c => c.Id == id);
-
             if (subject == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<Subject, SubjectDto>(subject));
+            return Ok(_mapper.Map<Subject, SubjectDto>(subject));
         }
 
-
-        //POST /api/subjects
         [HttpPost]
-        public IHttpActionResult CreateSubject(SubjectDto subjectDto)
+        public IActionResult CreateSubject([FromBody] SubjectDto subjectDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var isExists = _context.Subjects.SingleOrDefault(c => c.SubjectName == subjectDto.SubjectName);
-
             if (isExists != null)
                 return BadRequest();
 
-            var newsubject = Mapper.Map<SubjectDto, Subject>(subjectDto);
-
+            var newsubject = _mapper.Map<SubjectDto, Subject>(subjectDto);
             _context.Subjects.Add(newsubject);
             _context.SaveChanges();
-
             subjectDto.Id = newsubject.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + subjectDto.Id), subjectDto);
+            return CreatedAtAction(nameof(GetSubject), new { id = subjectDto.Id }, subjectDto);
         }
 
-
-       
-        //PUT /api/subjects/{id}
-
-        [HttpPut]
-        public IHttpActionResult UpdateSubjects(int id, SubjectDto subjectDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateSubject(int id, [FromBody] SubjectDto subjectDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var isExists = _context.Subjects.SingleOrDefault(c => c.SubjectName == subjectDto.SubjectName && c.Id != subjectDto.Id);
 
+            var isExists = _context.Subjects.SingleOrDefault(c => c.SubjectName == subjectDto.SubjectName && c.Id != subjectDto.Id);
             if (isExists != null)
                 return BadRequest();
 
             var subjectInDb = _context.Subjects.SingleOrDefault(c => c.Id == id);
-
             if (subjectInDb == null)
                 return NotFound();
 
-            Mapper.Map(subjectDto, subjectInDb);
-
+            _mapper.Map(subjectDto, subjectInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-
-        //DELETE /api/subjects/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteSubjects(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteSubject(int id)
         {
             var subject = _context.Subjects.SingleOrDefault(c => c.Id == id);
-
             if (subject == null)
                 return NotFound();
 
             _context.Subjects.Remove(subject);
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

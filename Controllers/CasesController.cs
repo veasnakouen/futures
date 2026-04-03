@@ -1,28 +1,25 @@
-﻿using MtpApp.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MtpApp.Models;
 using MtpApp.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace MtpApp.Controllers
 {
     [Authorize]
     public class CasesController : Controller
     {
-        private ApplicationDbContext _context;
-        public CasesController()
+        private readonly ApplicationDbContext _context;
+
+        public CasesController(ApplicationDbContext context)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
         }
 
         [Route("case-management")]
-        // GET: Cases
-        public ActionResult Index()
+        public IActionResult Index()
         {
             var caseWorkers = _context.CaseWorkers.ToList();
-
             var clients = _context.Clients.ToList();
 
             var viewModel = new CaseViewModel()

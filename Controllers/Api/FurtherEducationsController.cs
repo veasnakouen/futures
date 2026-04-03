@@ -1,54 +1,55 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-     [Authorize]
-    public class FurtherEducationsController : ApiController
+    [Authorize]
+    public class FurtherEducationsController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public FurtherEducationsController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public FurtherEducationsController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
         // GET: /api/furthereducations/{id}
         [HttpGet]
-        public IHttpActionResult GetFurtherEducation(int id)
+        public IActionResult GetFurtherEducation(int id)
         {
             var furtherEducation = _context.FurtherEducations.SingleOrDefault(c => c.Id == id);
 
             if (furtherEducation == null)
                 return NotFound();
 
-            return Ok(Mapper.Map<FurtherEducation, FurtherEducationDto>(furtherEducation));
+            return Ok(_mapper.Map<FurtherEducation, FurtherEducationDto>(furtherEducation));
         }
 
         // GET: /api/furthereducations?clientId={id}
         [HttpGet]
-        public IHttpActionResult GetFurtherEducationByClientId(int clientId)
+        public IActionResult GetFurtherEducationByClientId(int clientId)
         {
-            var furtherEducations = _context.FurtherEducations.Select(Mapper.Map<FurtherEducation, FurtherEducationDto>).Where(c => c.ClientId == clientId);
+            var furtherEducations = _context.FurtherEducations.Select(_mapper.Map<FurtherEducation, FurtherEducationDto>).Where(c => c.ClientId == clientId);
 
             return Ok(furtherEducations);
         }
 
         //// POST: /api/furthereducations
         //[HttpPost]
-        //public IHttpActionResult CreateFurtherEducation(FurtherEducationDto furtherEducationDto)
+        //public IActionResult CreateFurtherEducation(FurtherEducationDto furtherEducationDto)
         //{
         //    if (!ModelState.IsValid)
         //        return BadRequest();
 
-        //    var furtherEducation = Mapper.Map<FurtherEducationDto, FurtherEducation>(furtherEducationDto);
+        //    var furtherEducation = _mapper.Map<FurtherEducationDto, FurtherEducation>(furtherEducationDto);
 
         //    _context.FurtherEducations.Add(furtherEducation);
         //    _context.SaveChanges();
@@ -60,7 +61,7 @@ namespace MtpApp.Controllers.Api
 
         // PUT: /api/furthereducations/{id}
         [HttpPut]
-        public IHttpActionResult UpdateFurtherEducation(int id)
+        public IActionResult UpdateFurtherEducation(int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -69,30 +70,30 @@ namespace MtpApp.Controllers.Api
 
             var furtherEducationDto = new FurtherEducationDto()
             {
-                ClientId = int.Parse(HttpContext.Current.Request.Form["ClientId"]),
-                University = Boolean.Parse(HttpContext.Current.Request.Form["University"]),
-                PublicSchool = Boolean.Parse(HttpContext.Current.Request.Form["PublicSchool"]),
-                VocationalTraining = Boolean.Parse(HttpContext.Current.Request.Form["VocationalTraining"]),
-                ComputerSchool = Boolean.Parse(HttpContext.Current.Request.Form["ComputerSchool"]),
-                EnglishSchool = Boolean.Parse(HttpContext.Current.Request.Form["EnglishSchool"]),
-                ChineseSchool = Boolean.Parse(HttpContext.Current.Request.Form["ChineseSchool"]),
-                AvailableTime = HttpContext.Current.Request.Form["AvailableTime"]
+                ClientId = int.TryParse(Request.Form["ClientId"], out var clientIdVal) ? clientIdVal : 0,
+                University = bool.TryParse(Request.Form["University"], out var uni) && uni,
+                PublicSchool = bool.TryParse(Request.Form["PublicSchool"], out var pub) && pub,
+                VocationalTraining = bool.TryParse(Request.Form["VocationalTraining"], out var voc) && voc,
+                ComputerSchool = bool.TryParse(Request.Form["ComputerSchool"], out var comp) && comp,
+                EnglishSchool = bool.TryParse(Request.Form["EnglishSchool"], out var eng) && eng,
+                ChineseSchool = bool.TryParse(Request.Form["ChineseSchool"], out var chi) && chi,
+                AvailableTime = Request.Form["AvailableTime"]
             };
 
             if (furtherEducationInDb == null)
             {
-                var furtherEducation = Mapper.Map<FurtherEducationDto, FurtherEducation>(furtherEducationDto);
+                var furtherEducation = _mapper.Map<FurtherEducationDto, FurtherEducation>(furtherEducationDto);
 
                 _context.FurtherEducations.Add(furtherEducation);
                 _context.SaveChanges();
 
                 furtherEducationDto.Id = furtherEducation.Id;
 
-                return Created(new Uri(Request.RequestUri + "/" + furtherEducationDto.Id), furtherEducationDto);
+                return CreatedAtAction(nameof(GetFurtherEducation), new { id = furtherEducationDto.Id }, furtherEducationDto);
             }
             else
             {
-                Mapper.Map(furtherEducationDto, furtherEducationInDb);
+                _mapper.Map(furtherEducationDto, furtherEducationInDb);
                 _context.SaveChanges();
 
                 return Ok(new { });
@@ -101,7 +102,7 @@ namespace MtpApp.Controllers.Api
 
         // DELETE: /api/furthereducation/{id}
         [HttpDelete]
-        public IHttpActionResult DeleteFurtherEducation(int id)
+        public IActionResult DeleteFurtherEducation(int id)
         {
             var furtherEducation = _context.FurtherEducations.SingleOrDefault(c => c.Id == id);
 
@@ -115,3 +116,4 @@ namespace MtpApp.Controllers.Api
         }
     }
 }
+

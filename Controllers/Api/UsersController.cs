@@ -1,27 +1,26 @@
-﻿using MtpApp.Models;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using MtpApp.Models;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
-    public class UsersController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UsersController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public UsersController()
+        private readonly ApplicationDbContext _context;
+
+        public UsersController(ApplicationDbContext context)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
         }
 
-        //GET /api/users
         [HttpGet]
-        public IHttpActionResult GetUsers()
+        public IActionResult GetUsers()
         {
             var users = _context.Users.ToList();
             return Ok(users);
         }
     }
 }
+

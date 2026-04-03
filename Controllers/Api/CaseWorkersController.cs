@@ -1,127 +1,99 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public class CaseWorkersController : ApiController
+    public class CaseWorkersController : ControllerBase
     {
-        private ApplicationDbContext _context;
-        public CaseWorkersController()
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public CaseWorkersController(ApplicationDbContext context, IMapper mapper)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
+            _mapper = mapper;
         }
 
-        // GET: /api/caseworkers
         [HttpGet]
-        public IHttpActionResult GetCaseWorkers()
+        public IActionResult GetCaseWorkers()
         {
-            var caseWorkers = _context.CaseWorkers.ToList().Select(Mapper.Map<CaseWorker, CaseWorkerDto>);
+            var caseWorkers = _context.CaseWorkers.ToList().Select(c => _mapper.Map<CaseWorker, CaseWorkerDto>(c));
             return Ok(caseWorkers);
         }
 
-
-        // GET: /api/caseworkers/{id}
-        [HttpGet]
-        public IHttpActionResult GetCaseWorker(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetCaseWorker(int id)
         {
             var caseWorker = _context.CaseWorkers.SingleOrDefault(c => c.Id == id);
-
             if (caseWorker == null)
                 return NotFound();
-
-            return Ok(Mapper.Map<CaseWorker, CaseWorkerDto>(caseWorker));
+            return Ok(_mapper.Map<CaseWorker, CaseWorkerDto>(caseWorker));
         }
 
-        // GET: /api/CaseWorkers?Program=
-        [HttpGet]
-        public IHttpActionResult GetCaseWorkerByProgram(string Program)
+        [HttpGet("byprogram")]
+        public IActionResult GetCaseWorkerByProgram([FromQuery] string program)
         {
-            if (Program != "Futures")
-            {
-                var caseWorker = _context.CaseWorkers
-                    .Select(Mapper.Map<CaseWorker, CaseWorkerDto>)
-                    .Where(c => c.Program != "Futures");
-                if (caseWorker == null)
-                    return NotFound();
-                return Ok(caseWorker);
-            }
-            else
-            {
-                var caseWorker = _context.CaseWorkers
-                    .Select(Mapper.Map<CaseWorker, CaseWorkerDto>)
-                    .Where(c => c.Program == "Futures");
-                if (caseWorker == null)
-                    return NotFound();
-                return Ok(caseWorker);
-            }
+            var caseWorkers = program != "Futures"
+                ? _context.CaseWorkers.Where(c => c.Program != "Futures").ToList().Select(c => _mapper.Map<CaseWorker, CaseWorkerDto>(c))
+                : _context.CaseWorkers.Where(c => c.Program == "Futures").ToList().Select(c => _mapper.Map<CaseWorker, CaseWorkerDto>(c));
+            return Ok(caseWorkers);
         }
 
-        // POST: /api/caseworkers
         [HttpPost]
-        public IHttpActionResult CreateCaseWorker(CaseWorkerDto caseWorkerDto)
+        public IActionResult CreateCaseWorker([FromBody] CaseWorkerDto caseWorkerDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var isExists = _context.CaseWorkers.SingleOrDefault(c => c.Name == caseWorkerDto.Name);
-
             if (isExists != null)
                 return BadRequest();
 
-            var newCaseWorker = Mapper.Map<CaseWorkerDto, CaseWorker>(caseWorkerDto);
-
+            var newCaseWorker = _mapper.Map<CaseWorkerDto, CaseWorker>(caseWorkerDto);
             _context.CaseWorkers.Add(newCaseWorker);
             _context.SaveChanges();
-
             caseWorkerDto.Id = newCaseWorker.Id;
-
-            return Created(new Uri(Request.RequestUri + "/" + caseWorkerDto.Id), caseWorkerDto);
+            return CreatedAtAction(nameof(GetCaseWorker), new { id = caseWorkerDto.Id }, caseWorkerDto);
         }
 
-        // PUT: /api/caseworkers/{id}
-        [HttpPut]
-        public IHttpActionResult UpdateCaseWorker(int id, CaseWorkerDto caseWorkerDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateCaseWorker(int id, [FromBody] CaseWorkerDto caseWorkerDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var isExists = _context.CaseWorkers.SingleOrDefault(c => c.Name == caseWorkerDto.Name && c.Id != caseWorkerDto.Id);
-
             if (isExists != null)
                 return BadRequest();
 
             var caseWorkerInDb = _context.CaseWorkers.SingleOrDefault(c => c.Id == id);
-
             if (caseWorkerInDb == null)
                 return NotFound();
 
-            Mapper.Map(caseWorkerDto, caseWorkerInDb);
+            _mapper.Map(caseWorkerDto, caseWorkerInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
 
-        // DELETE: /api/caseworkers/{id}
-        [HttpDelete]
-        public IHttpActionResult DeleteCaseWorker(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCaseWorker(int id)
         {
             var caseWorkerInDb = _context.CaseWorkers.SingleOrDefault(c => c.Id == id);
-
             if (caseWorkerInDb == null)
                 return NotFound();
 
             _context.CaseWorkers.Remove(caseWorkerInDb);
             _context.SaveChanges();
-
             return Ok(new { });
         }
     }
 }
+

@@ -1,25 +1,23 @@
-﻿using AutoMapper;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using MtpApp.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Data.Entity;
 
 namespace MtpApp.Controllers
 {
     public class EmployersController : Controller
     {
-        private ApplicationDbContext _context;
-        public EmployersController()
+        private readonly ApplicationDbContext _context;
+
+        public EmployersController(ApplicationDbContext context)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
         }
-        // GET: Employers
-        public ActionResult Index()
+
+        public IActionResult Index()
         {
             var viewModel = new EmployerViewModel()
             {
@@ -30,29 +28,29 @@ namespace MtpApp.Controllers
         }
 
         [Route("employers/overview")]
-        public ActionResult Dashboard()
+        public IActionResult Dashboard()
         {
             var jobsByCategory = (from c in _context.Vacancies
-                                    join o in _context.JobCategory on c.JobCategoryId equals o.Id
-                                    where c.Deadline >= DateTime.Today.Date
-                                    group c by c.JobCategories.Name into g
-                                    orderby g.Sum(c => c.PositionAvailable) descending
-                                    select new JobsByCategoryViewModel
-                                    {
-                                        Name = g.Key,
-                                        Total = g.Sum(c => c.PositionAvailable)
-                                    }).ToList();
+                                 join o in _context.JobCategory on c.JobCategoryId equals o.Id
+                                 where c.Deadline >= DateTime.Today.Date
+                                 group c by c.JobCategories.Name into g
+                                 orderby g.Sum(c => c.PositionAvailable) descending
+                                 select new JobsByCategoryViewModel
+                                 {
+                                     Name = g.Key,
+                                     Total = g.Sum(c => c.PositionAvailable)
+                                 }).ToList();
 
             var jobsByEmployer = (from c in _context.Vacancies
-                                  join o in _context.Employers on c.EmployerId equals o.Id
-                                  where c.Deadline >= DateTime.Today.Date
-                                  group c by c.Employers.Name into g
-                                  orderby g.Sum(c => c.PositionAvailable) descending
-                                  select new JobsByEmployerViewModel
-                                  {
-                                      EmployerName = g.Key,
-                                      Total = g.Sum(c => c.PositionAvailable)
-                                  }).ToList();
+                                 join o in _context.Employers on c.EmployerId equals o.Id
+                                 where c.Deadline >= DateTime.Today.Date
+                                 group c by c.Employers.Name into g
+                                 orderby g.Sum(c => c.PositionAvailable) descending
+                                 select new JobsByEmployerViewModel
+                                 {
+                                     EmployerName = g.Key,
+                                     Total = g.Sum(c => c.PositionAvailable)
+                                 }).ToList();
 
             var viewModel = new JobsViewModel()
             {

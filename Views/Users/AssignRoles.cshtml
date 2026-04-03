@@ -19,7 +19,7 @@
                     </thead>
                     <tbody>
                         @{ var check = false; }
-                        @foreach (var role in Model.Role.Roles)
+                        @foreach (var role in Model.Roles)
                         {
                             check = false;
                             foreach (var assignedRole in Model.User.Roles)

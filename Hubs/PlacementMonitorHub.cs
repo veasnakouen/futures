@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Hubs;
+﻿using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace MtpApp.Hubs
 {
-    [HubName("placementMonitorHub")]
     public class PlacementMonitorHub : Hub
     {
-        public static void BroadcastData()
+        public async Task BroadcastData()
         {
-            IHubContext context = GlobalHost.ConnectionManager.GetHubContext<PlacementMonitorHub>();
-            context.Clients.All.refreshEmployeeData();
+            await Clients.All.SendAsync("refreshEmployeeData");
         }
     }
 }

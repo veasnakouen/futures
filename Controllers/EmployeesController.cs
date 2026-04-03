@@ -1,26 +1,22 @@
-﻿using MtpApp.Dtos;
+﻿using Microsoft.AspNetCore.Mvc;
+using MtpApp.Dtos;
 using MtpApp.Models;
 using MtpApp.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace MtpApp.Controllers
 {
     public class EmployeesController : Controller
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EmployeesController()
+        public EmployeesController(ApplicationDbContext context)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
         }
 
-        // GET: Employees
         [Route("employees")]
-        public ActionResult Index()
+        public IActionResult Index()
         {
             var positions = _context.Positions.ToList();
             var departments = _context.Departments.ToList();
