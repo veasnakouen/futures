@@ -1,9 +1,10 @@
-﻿
-<div class="modal fade" data-backdrop="static" data-keyboard="false" id="businessSetuptMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="businessSetuptMonitoringActionModal" aria-hidden="true">
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="businessSetuptMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="businessSetuptMonitoringActionModal" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Add Business Setup Monitoring <span id="BusinessSetuptMonitoringCompany"> </span></h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-chart-line me-2"></i>Add Business Setup Monitoring <span id="BusinessSetuptMonitoringCompany"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -28,7 +29,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <label for="businessSetupmonitoringtype">Monitoring type</label>
-                        <select class="form-control input-sm" id="businessSetupmonitoringtype" name="businessSetupmonitoringtype" style="min-width: 100%">
+                        <select class="form-control form-control-sm" id="businessSetupmonitoringtype" name="businessSetupmonitoringtype" style="min-width: 100%">
                             <option value="">Select monitor type</option>
                             <option value="1">1st : 1 month</option>
                             <option value="2">2nd : 2 months</option>
@@ -69,14 +70,14 @@
 
                                 <div class="col-md-6">
                                     <label for="businessSetupTypeCatagory">Completed</label>
-                                    <select class="form-control input-sm" id="businessSetupTypeCatagory" name="businessSetupTypeCatagory" style="min-width: 100%">
+                                    <select class="form-control form-control-sm" id="businessSetupTypeCatagory" name="businessSetupTypeCatagory" style="min-width: 100%">
                                         <option value="">Please select this</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="businessSetupcompleted">Completed</label>
-                                    <select class="form-control input-sm" id="businessSetupcompleted" name="businessSetupcompleted" style="min-width: 100%">
+                                    <select class="form-control form-control-sm" id="businessSetupcompleted" name="businessSetupcompleted" style="min-width: 100%">
                                         <option value="">Please select this</option>
                                         <option value="Pending">Pending</option>
                                         <option value="Completed">Completed</option>
@@ -133,7 +134,7 @@
             </div>
             <div class="modal-footer" style="overflow:auto;">
                 <div style="float:right;">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="button" onclick="BusinessSetupMonitoringAction();" id="btnBusinessSetupProgressMonitoringAction" class="btn btn-primary btn-sm">Add New</button>
                 </div>
             </div>

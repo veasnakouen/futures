@@ -1,8 +1,9 @@
-﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="businessSetUpModal" tabindex="-1" role="dialog" aria-labelledby="businessSetUpModal" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="businessSetUpModal" tabindex="-1" role="dialog" aria-labelledby="businessSetUpModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Add Business SetUp</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-store me-2"></i>Add Business SetUp</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -12,7 +13,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="">Count time</label>
-                            <select class="form-control input-sm" id="CountTime" name="CountTime" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="CountTime" name="CountTime" style="min-width: 100%">
                                 <option value="1st">1st</option>
                                 <option value="2nd">2nd</option>
                                 <option value="3rd">3rd</option>
@@ -35,7 +36,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="business-setupcateogryId">Business setup cateogry</label>
-                            <select class="form-control input-sm" id="business-setupcateogryId" name="business-setupcateogryId" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="business-setupcateogryId" name="business-setupcateogryId" style="min-width: 100%">
                                 <option></option>
                             </select>
                         </div>
@@ -64,7 +65,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="placeby">Place by</label>
-                        <select class="form-control input-sm" id="placeby" name="placeby" style="min-width: 100%">
+                        <select class="form-control form-control-sm" id="placeby" name="placeby" style="min-width: 100%">
                             <option selected value="">Select Place by</option>
                             <option value="Future">Future</option>
                             <option value="Himself/Herself">Himself/Herself</option>
@@ -74,7 +75,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="btnBusinessSetup" onclick="BusinessSetupAction();" class="btn btn-primary btn-sm">Save changes</button>
             </div>
         </div>

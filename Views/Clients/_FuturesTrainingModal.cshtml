@@ -1,11 +1,12 @@
-﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="FuturestrainingModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="FuturestrainingModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
 
         <div class="modal-dialog modal-lg" role="document">
 
             <div class="modal-content">
 
-                <div class="modal-header clearfix">
-                    <h5 class="modal-title">Add New FuturesTraining</h5>
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa fa-chalkboard-user me-2"></i>Add New Futures Training</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
@@ -18,7 +19,7 @@
                             <div class="form-group">
                                 <label for="subjectId-Name">Subject-Name</label>
 
-                                <select class="form-control input-sm" id="subjectId-Name" name="subjectId-Name" style="min-width: 100%">
+                                <select class="form-control form-control-sm" id="subjectId-Name" name="subjectId-Name" style="min-width: 100%">
                                     <option></option>
                                 </select>
 
@@ -40,7 +41,7 @@
                          <div class="col-md-6">
                                  <div class="form-group">
                                      <label for="futurestrainingNote">Available time</label> <!-- Change note to Available time-->
-                                     <input id="futurestrainingNote" name="futurestrainingNote" placeholder="Enter Available time" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                     <input id="futurestrainingNote" name="futurestrainingNote" placeholder="Enter Available time" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                                  </div>
                         </div>
 
@@ -56,7 +57,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="button" onclick="FuturestrainingAction();" id="btnFuturestrainingAction" class="btn btn-primary btn-sm">Add New</button>
                 </div>
 

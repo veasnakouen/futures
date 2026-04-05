@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using MtpApp.Dtos;
 using MtpApp.Models;
+using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
 
@@ -26,12 +28,36 @@ namespace MtpApp.Controllers.Api
         [HttpGet]
         public IActionResult GetTotaldata()
         {
-            DataTable dt = new DataTable();
+            var results = new List<ChartDto>();
             var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            SqlConnection conx = new SqlConnection(connectionString);
-            SqlDataAdapter adp = new SqlDataAdapter(" SELECT  (SELECT COUNT(Id)from Clients)TotalClients  ,(SELECT COUNT(Id)from Employers)TotalEmployers ,(SELECT COUNT(Id)from LogBooks)TotalLogbooks ,(SELECT COUNT(Id)from Placements)TotalPlacements     ", conx);
-            adp.Fill(dt);
-            return Ok(dt);
+
+            using var conx = new SqlConnection(connectionString);
+            using var cmd = new SqlCommand(
+                "SELECT 'Clients' AS Label, COUNT(Id) AS Value FROM Clients " +
+                "UNION ALL SELECT 'Employers', COUNT(Id) FROM Employers " +
+                "UNION ALL SELECT 'LogBooks', COUNT(Id) FROM LogBooks " +
+                "UNION ALL SELECT 'Placements', COUNT(Id) FROM Placements",
+                conx);
+
+            try
+            {
+                conx.Open();
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    results.Add(new ChartDto
+                    {
+                        Label = reader.IsDBNull(0) ? string.Empty : reader.GetString(0),
+                        Value = reader.IsDBNull(1) ? 0 : reader.GetInt32(1)
+                    });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { error = "Failed to fetch totals.", detail = ex.Message });
+            }
+
+            return Ok(results);
         }
 
         [Route("loggedrecords")]

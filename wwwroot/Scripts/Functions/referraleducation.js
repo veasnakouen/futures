@@ -74,7 +74,7 @@ function GetReferralEducation() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='ReferralEducationEdit(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='ReferralEducationDelete(" + data + ")'><span class='glyphicon glyphicon-trash'></span> Delete</a>";
+                    return "<a href='#' onclick='ReferralEducationEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='ReferralEducationDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
                 },
                 "width": "130px"
             }

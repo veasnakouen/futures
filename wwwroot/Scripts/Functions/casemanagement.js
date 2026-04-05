@@ -88,20 +88,20 @@ function GetCaseManagementByCaseWorker(caseWorkerId, status) {
                     var status = document.getElementById('displayCaseStatus').innerHTML;
                     if (status == 'New Case')
                     {
-                        return "<a href='#' onclick='OpenCase(" + data + ");'><span class='glyphicon glyphicon-share'></span> Open</a>" + " | " + "<a href='#' onclick='CaseEdit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='CaseDelete(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                        return "<a href='#' onclick='OpenCase(" + data + ");'><i class='fa fa-share'></i> Open</a>" + " | " + "<a href='#' onclick='CaseEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='CaseDelete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                     }
                     else if (status == 'Opened Case')
                     {
-                        return "<a href='#' onclick='InProgressCase(" + data + ");'><span class='glyphicon glyphicon-refresh'></span> In Progress</a>" + " | " + "<a href='#' onclick='HoldCase(" + data + ");'><span class='glyphicon glyphicon-stop'></span> Hold</a>" + " | " + "<a href='#' onclick='CaseEdit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>";
+                        return "<a href='#' onclick='InProgressCase(" + data + ");'><i class='fa fa-rotate'></i> In Progress</a>" + " | " + "<a href='#' onclick='HoldCase(" + data + ");'><i class='fa fa-stop'></i> Hold</a>" + " | " + "<a href='#' onclick='CaseEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>";
                     }
                     else if (status == 'In Progress Case') {
-                        return "<a href='#' onclick='CloseCase(" + data + ");'><span class='glyphicon glyphicon-ok-sign'></span> Close</a>" + " | " + "<a href='#' onclick='HoldCase(" + data + ");'><span class='glyphicon glyphicon-stop'></span> Hold</a>" + " | " + "<a href='#' onclick='CaseEdit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>";
+                        return "<a href='#' onclick='CloseCase(" + data + ");'><i class='fa fa-circle-check'></i> Close</a>" + " | " + "<a href='#' onclick='HoldCase(" + data + ");'><i class='fa fa-stop'></i> Hold</a>" + " | " + "<a href='#' onclick='CaseEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>";
                     }
                     else if (status == 'Hold Case') {
-                        return "<a href='#' onclick='InProgressCase(" + data + ");'><span class='glyphicon glyphicon-share'></span> In Progress</a>" + " | " + "<a href='#' onclick='CaseEdit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>";
+                        return "<a href='#' onclick='InProgressCase(" + data + ");'><i class='fa fa-share'></i> In Progress</a>" + " | " + "<a href='#' onclick='CaseEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>";
                     }
                     else if (status == 'Closed Case') {
-                        return "<a href='#' onclick='ReopenCase(" + data + ");'><span class='glyphicon glyphicon-repeat'></span> Reopen</a>";
+                        return "<a href='#' onclick='ReopenCase(" + data + ");'><i class='fa fa-repeat'></i> Reopen</a>";
                     }
                 }
             }

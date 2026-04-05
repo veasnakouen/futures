@@ -1,44 +1,38 @@
-﻿@model MtpApp.ViewModels.VacancyViewModel
+@model MtpApp.ViewModels.VacancyViewModel
 
-<div class="container-fluid">
-    <div class="panel panel-primary" style="margin-top: 10px;">
-        <div class="panel-heading clearfix">
-            <h5 class="modal-title">Manage Vacancies</h5>
+<div class="card">
+        <div class="card-header bg-dark text-white d-flex align-items-center">
+            <i class="fa fa-clipboard-list me-2"></i>
+            <span class="fw-semibold">Manage Vacancies</span>
+            @Html.ActionLink("Back", "Index", "Employers", null, new { @class = "btn btn-danger btn-sm ms-auto" })
         </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-inline">
-                        <div class="form-group">
-                            <label for="displayEmployer">Vacancies by Employer: </label>
-                            <select class="form-control input-sm" id="displayEmployer">
-                                <option>--Select Employer--</option>
-                                @foreach (var employer in Model.Employers)
-                                {
-                                    <option value="@employer.Id">@employer.Name</option>
-                                }
-                            </select>
-                        </div>
-                        <button onclick="ShowAllVacancies();" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-asterisk"></span> Show All
-                        </button>
-                        <button id="btnPostNewVacancy" data-toggle="modal" data-target="#vacancyModal" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-asterisk"></span> Post New Vacancy
-                        </button>
-                        <button id="btnPostNewVacancy" data-toggle="modal" data-target="#overDeadlineVacancy" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-asterisk"></span> Reactivate Job Vacancy
-                        </button>
-                        @Html.ActionLink("Back", "Index", "Employers", null, new { @class = "btn btn-danger btn-sm pull-right", @style = "margin-right: 5px" })
-                    </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <label for="displayEmployer" class="mb-0 text-nowrap">Filter by Employer:</label>
+                    <select class="form-select form-select-sm" id="displayEmployer" style="width:auto;">
+                        <option>--Select Employer--</option>
+                        @foreach (var employer in Model.Employers)
+                        {
+                            <option value="@employer.Id">@employer.Name</option>
+                        }
+                    </select>
+                </div>
+                <button onclick="ShowAllVacancies();" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-list me-1"></i> Show All
+                </button>
+                <button id="btnPostNewVacancy" data-bs-toggle="modal" data-bs-target="#vacancyModal" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus me-1"></i> Post New Vacancy
+                </button>
+                <button data-bs-toggle="modal" data-bs-target="#overDeadlineVacancy" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-rotate me-1"></i> Reactivate Job Vacancy
+                </button>
+            </div>
 
-                    <hr />
-
-                    <div class="panel panel-primary">
-                        <div class="panel-heading clearfix">
-                            <p class="modal-title">Vacancy List</p>
-                        </div>
-                        <div class="panel-body">
-                            <div id="overflowTable" style="overflow-x: auto;">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white"><i class="fa fa-list me-2"></i>Vacancy List</div>
+                        <div class="card-body p-0">
+                            <div style="overflow-x: auto;">
                                 <table id="vacancies" class="table table-hover table-bordered">
                                     <thead>
                                         <tr>
@@ -58,12 +52,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
             @*<div class="row">
                     <div class="col-md-12">
                         <button onclick="AddNewMonitoring();" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-plus-sign"></span> Add New Monitoring Schedule
+                            <i class="fa fa-plus"></i> Add New Monitoring Schedule
                         </button>
                         <hr />
                         <div class="panel panel-primary">
@@ -91,8 +83,6 @@
             <div id="divLoadingModal"></div>
         </div>
     </div>
-
-</div>
 
 @Html.Partial("_OverDeadlineVacancyModal")
 

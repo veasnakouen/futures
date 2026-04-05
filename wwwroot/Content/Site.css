@@ -1,39 +1,321 @@
-﻿body {
-    padding-top: 50px;
-    /*padding-bottom: 0;*/
+﻿/* ================================================================
+   Design tokens
+   ================================================================ */
+:root {
+    --mt-navy:    #1a3a5c;
+    --mt-blue:    #2c6da4;
+    --mt-dark:    #2c3e50;
+    --mt-accent:  #3498db;
+    --mt-green:   #27ae60;
+    --mt-orange:  #e67e22;
+    --mt-purple:  #8e44ad;
+    --mt-red:     #e74c3c;
+    --mt-bg:      #f4f6f9;
+    --mt-card-shadow: 0 2px 12px rgba(0,0,0,.08);
+    --mt-card-radius: .6rem;
+    --mt-transition: .18s ease;
+}
+
+/* ================================================================
+   Base
+   ================================================================ */
+html { scroll-behavior: smooth; }
+
+body {
+    padding-top: 62px;
     overflow-x: hidden;
     font-family: 'Source Sans Pro', sans-serif !important;
+    background-color: var(--mt-bg);
+    color: #333;
+}
+
+.home-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 0;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
     padding-left: 0;
     padding-right: 0;
-    padding-bottom: 30px;
+    padding-bottom: 64px;
+}
+
+.home-page .body-content {
+    flex: 1 0 auto;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.home-shell {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100%;
 }
 
 .input-validation-error {
-    border-color: red;
+    border-color: var(--mt-red);
 }
 
 footer {
-    background: #2c3e50;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    color: #fff;    
+    background: var(--mt-dark);
+    padding: 14px 0;
+    color: rgba(255,255,255,.8);
     position: fixed;
     width: 100%;
     bottom: 0;
     z-index: 100;
+    font-size: .8rem;
+    text-align: center;
+}
+
+.home-page footer {
+    position: static;
+    margin-top: auto;
+}
+
+/* ================================================================
+   Bootstrap 3 → Bootstrap 5 compatibility shims
+   (Views still use .panel markup — keep look consistent)
+   ================================================================ */
+.panel {
+    background: #fff;
+    border-radius: var(--mt-card-radius);
+    box-shadow: var(--mt-card-shadow);
+    border: none;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+}
+.panel-heading {
+    padding: .75rem 1.25rem;
+    background: var(--mt-dark);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+.panel-heading h5,
+.panel-heading .modal-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: inherit;
+}
+.panel-body {
+    padding: 1rem 1.25rem;
+}
+.panel-primary > .panel-heading  { background: var(--mt-dark); color: #fff; }
+.panel-success > .panel-heading  { background: var(--mt-green); color: #fff; }
+.panel-info    > .panel-heading  { background: #0ea5e9;          color: #fff; }
+.panel-warning > .panel-heading  { background: var(--mt-orange); color: #fff; }
+.panel-danger  > .panel-heading  { background: var(--mt-red);    color: #fff; }
+
+/* panel "Add" button inside header */
+.panel-heading .btn,
+.panel-heading a.btn {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Bootstrap 3 misc */
+.btn-xs   { padding: .15rem .45rem; font-size: .75rem; border-radius: .25rem; }
+.pull-right { float: right !important; }
+.pull-left  { float: left  !important; }
+
+/* Replace glyphicons with near-equivalent Font Awesome icons via ::before */
+.glyphicon-plus-sign::before  { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f067"; }
+.glyphicon-briefcase::before  { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f0b1"; }
+.glyphicon-search::before     { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f002"; }
+.glyphicon-refresh::before    { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f021"; }
+.glyphicon-edit::before       { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f044"; }
+.glyphicon-trash::before      { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f1f8"; }
+.glyphicon-th-list::before    { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f0ca"; }
+.glyphicon-asterisk::before   { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f069"; }
+.glyphicon-eye-open::before   { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f06e"; }
+.glyphicon-remove::before     { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f00d"; }
+.glyphicon-ok::before         { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f00c"; }
+.glyphicon-user::before       { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f007"; }
+.glyphicon-book::before       { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f02d"; }
+.glyphicon { display: inline-block; margin-right: .25em; font-style: normal; }
+
+/* ================================================================
+   Navbar enhancements
+   ================================================================ */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,.25);
+}
+.navbar .dropdown-menu {
+    border: none;
+    box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    border-radius: .4rem;
+    min-width: 220px;
+}
+.navbar .dropdown-menu.show {
+    max-height: 75vh;
+    overflow-y: auto;
+}
+.navbar .dropdown-item {
+    font-size: .875rem;
+    padding: .45rem 1.1rem;
+    transition: background var(--mt-transition);
+}
+.navbar .dropdown-item:hover {
+    background: #eef4fb;
+    color: var(--mt-navy);
+}
+.navbar .dropdown-divider { margin: .3rem 0; }
+
+/* ================================================================
+   Cards (Bootstrap 5)
+   ================================================================ */
+.card {
+    border: none;
+    border-radius: var(--mt-card-radius);
+    box-shadow: var(--mt-card-shadow);
+}
+.card-header {
+    font-weight: 600;
+    font-size: .95rem;
+}
+
+/* ================================================================
+   Stat cards (dashboard)
+   ================================================================ */
+.stat-card {
+    border-radius: var(--mt-card-radius);
+    color: #fff;
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    box-shadow: var(--mt-card-shadow);
+    transition: transform var(--mt-transition), box-shadow var(--mt-transition);
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+.stat-card .stat-icon {
+    width: 56px; height: 56px;
+    background: rgba(255,255,255,.18);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+.stat-card .stat-value { font-size: 2rem; font-weight: 700; line-height: 1; }
+.stat-card .stat-label { font-size: .85rem; opacity: .9; margin-top: .2rem; }
+.stat-bg-blue   { background: linear-gradient(135deg, #2980b9, #3498db); }
+.stat-bg-green  { background: linear-gradient(135deg, #219a52, #27ae60); }
+.stat-bg-orange { background: linear-gradient(135deg, #ca6f1e, #e67e22); }
+.stat-bg-purple { background: linear-gradient(135deg, #7d3c98, #8e44ad); }
+
+/* ================================================================
+   Tables
+   ================================================================ */
+.table thead th {
+    background: var(--mt-dark);
+    color: #fff;
+    font-weight: 600;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    border: none;
+    white-space: nowrap;
+}
+.table tbody tr:hover { background: #f0f7ff; }
+.table td { vertical-align: middle; font-size: .88rem; }
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    border-radius: .35rem;
+    border: 1px solid #ced4da;
+    padding: .25rem .6rem;
+}
+
+/* ================================================================
+   Buttons
+   ================================================================ */
+.btn { border-radius: .35rem; font-weight: 500; transition: all var(--mt-transition); }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.15); }
+.btn:active { transform: translateY(0); }
+
+/* ================================================================
+   Form controls
+   ================================================================ */
+.form-control:focus, .form-select:focus {
+    border-color: var(--mt-accent);
+    box-shadow: 0 0 0 .2rem rgba(52,152,219,.2);
+}
+
+/* ================================================================
+   Modals
+   ================================================================ */
+.modal-header {
+    background: var(--mt-dark);
+    color: #fff;
+    border-bottom: none;
+}
+.modal-header .btn-close { filter: invert(1) grayscale(1); }
+.modal-title { font-weight: 600; }
+
+/* ================================================================
+   Badges
+   ================================================================ */
+.badge { font-size: .72rem; font-weight: 600; }
+
+/* ================================================================
+   Report filter bar
+   ================================================================ */
+.report-filter-bar {
+    background: #fff;
+    border-radius: var(--mt-card-radius);
+    box-shadow: var(--mt-card-shadow);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem;
+}
+.report-filter-bar .form-group,
+.report-filter-bar > div { margin-bottom: 0; }
+.report-filter-bar > .col-md-1,
+.report-filter-bar > .col-md-2,
+.report-filter-bar > .col-md-3,
+.report-filter-bar > .col-md-4,
+.report-filter-bar > .col-md-5,
+.report-filter-bar > .col-md-6 {
+    flex: 1 1 240px;
+    max-width: none;
+}
+.report-filter-bar > .col-md-1,
+.report-filter-bar > .col-md-2 {
+    flex-basis: 180px;
+}
+.report-filter-bar > .col-md-4 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    align-items: flex-end;
+}
+.report-filter-bar > .col-md-4 > .col-md-4 {
+    flex: 1 1 160px;
+    max-width: none;
+}
+.report-filter-bar .dropdown,
+.report-filter-bar .form-group,
+.report-filter-bar .btn {
+    width: 100%;
 }
 
 
-#assignedRole{
-  cursor: default;
-}
-#assignedRole:hover{
-  cursor: pointer;
-}
+/* ================================================================
+   Loading overlay
+   ================================================================ */
+#assignedRole{ cursor: default; }
+#assignedRole:hover{ cursor: pointer; }
 
 #divLoading
 {
@@ -92,6 +374,22 @@ top : 0;
     background-size: cover;
     background-position: top;
     position: relative;
+}
+
+.home-page .main-cover-photo {
+    min-height: 100vh;
+    height: 100vh;
+    width: 100%;
+}
+
+.main-cover-photo1 {
+    height: 100%;
+    position: relative;
+}
+
+.home-page .main-cover-photo1 {
+    min-height: 100vh;
+    width: 100%;
 }
 
 .logo-box {
@@ -242,4 +540,193 @@ top : 0;
 .btns-animated {
     animation: moveFromBottom .5s ease-out .75s;
     animation-fill-mode: backwards;
+}
+
+/* ================================================================
+   Bootstrap 5 compatibility shims
+   ================================================================ */
+
+/* form-group spacing (removed in Bootstrap 5) */
+.form-group { margin-bottom: 0.75rem; }
+.form-group:last-child { margin-bottom: 0; }
+.form-group label { margin-bottom: 0.25rem; font-weight: 500; font-size: .875rem; }
+
+/* radio-inline / checkbox-inline (Bootstrap 3 compat) */
+.radio-inline,
+.checkbox-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    font-size: .875rem;
+}
+
+/* img-responsive → img-fluid alias */
+.img-responsive { max-width: 100%; height: auto; display: block; }
+
+/* center image helper */
+.center { display: block; margin: 0 auto; }
+
+/* ================================================================
+   Layout / spacing helpers
+   ================================================================ */
+
+/* Inline form row (Bootstrap 5 removed form-inline) */
+.form-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+.form-inline .form-group { margin-bottom: 0; }
+
+/* ================================================================
+   DataTables styling
+   ================================================================ */
+.dataTables_wrapper {
+    padding: 0.6rem 0.75rem;
+}
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 0.5rem;
+}
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 0.5rem;
+    font-size: .82rem;
+}
+.dataTables_wrapper .dataTables_paginate {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .25rem;
+}
+.dataTables_wrapper .dataTables_paginate .pagination {
+    margin: 0;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button,
+.dataTables_wrapper .dataTables_paginate .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.2rem;
+    min-height: 2.2rem;
+    padding: .3rem .65rem;
+    margin: 0;
+    border: 1px solid #d6dde6 !important;
+    border-radius: .45rem !important;
+    background: #fff;
+    color: var(--mt-dark) !important;
+    box-shadow: none !important;
+    transition: all var(--mt-transition);
+}
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_length label {
+    font-size: .85rem;
+    font-weight: normal;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--mt-dark);
+    color: #fff !important;
+    border-radius: .25rem;
+    border: none;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+.dataTables_wrapper .dataTables_paginate .page-link:hover {
+    background: #eef4fb;
+    color: var(--mt-navy) !important;
+    border-color: #b9c6d6 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover,
+.dataTables_wrapper .dataTables_paginate .active .page-link {
+    background: var(--mt-dark) !important;
+    color: #fff !important;
+    border-color: var(--mt-dark) !important;
+    box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .page-item.disabled .page-link {
+    color: #98a6b5 !important;
+    background: #f8fafc;
+    border-color: #e5eaf0 !important;
+    box-shadow: none !important;
+}
+
+.ui-datepicker {
+    z-index: 2000 !important;
+}
+
+.table-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: .35rem;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.table-actions .btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: .25rem .5rem;
+}
+
+.table-actions .btn i {
+    margin-right: .25rem;
+}
+
+/* ================================================================
+   Card / panel layout improvements
+   ================================================================ */
+
+/* Card header with action button — always flex */
+.card-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+.card-header .btn { flex-shrink: 0; }
+
+/* Nested card (table inside a card) */
+.card .card {
+    box-shadow: none;
+    border: 1px solid rgba(0,0,0,.08);
+}
+
+/* ================================================================
+   Modal improvements
+   ================================================================ */
+.modal-footer {
+    gap: 0.4rem;
+    justify-content: flex-end;
+}
+
+/* ================================================================
+   Link hover utility (sidebar navigation)
+   ================================================================ */
+.hover-bg { transition: background var(--mt-transition); }
+.hover-bg:hover { background: #f0f4f8 !important; }
+
+/* ================================================================
+   Responsive helpers
+   ================================================================ */
+@media (max-width: 576px) {
+    .card-header { flex-direction: column; align-items: flex-start; }
+    .card-header .ms-auto { margin-left: 0 !important; }
+    .form-inline { flex-direction: column; align-items: stretch; }
+    .form-inline .btn { width: 100%; }
+    .stat-card .stat-value { font-size: 1.5rem; }
+    .heading-primary-main { font-size: 26px; letter-spacing: 8px; }
+    .heading-primary-sub { font-size: 13px; }
+}
+
+@media (max-width: 768px) {
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_length { float: none; text-align: left; }
+    .dataTables_wrapper .dataTables_paginate { justify-content: center; }
+    .navbar .dropdown-menu.show { max-height: 60vh; }
 }

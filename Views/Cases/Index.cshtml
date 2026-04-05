@@ -1,4 +1,4 @@
-﻿@model MtpApp.ViewModels.CaseViewModel
+@model MtpApp.ViewModels.CaseViewModel
 
 
 @{
@@ -8,18 +8,21 @@
 
 <div class="container-fluid">
 
-    <div class="panel panel-primary" style="margin-top: 10px">
-
-        <div class="panel-heading">
-            <a href="@Url.Action("Index", "Clients")" class="btn btn-danger btn-xs pull-right">
-                <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-                Go To Manage Client
-            </a>
-            <button data-toggle="modal" data-target="#caseModal" class="btn btn-success btn-xs m-2 pull-right" style="color:white; margin-right: 5px"><span class="glyphicon glyphicon-plus-sign"></span> Add New Case</button>
-            <h5 class="modal-title">Case Management</h5>
+    <div class="card mt-3">
+        <div class="card-header bg-dark text-white d-flex align-items-center">
+            <i class="fa fa-folder-open me-2"></i>
+            <span>Case Management</span>
+            <div class="ms-auto d-flex gap-2">
+                <button data-bs-toggle="modal" data-bs-target="#caseModal" class="btn btn-success btn-sm">
+                    <i class="fa fa-plus me-1"></i> Add New Case
+                </button>
+                <a href="@Url.Action("Index", "Clients")" class="btn btn-danger btn-sm">
+                    <i class="fa fa-link me-1"></i> Manage Clients
+                </a>
+            </div>
         </div>
 
-        <div class="panel-body">
+        <div class="card-body">
 
             <div class="row">
 
@@ -29,7 +32,7 @@
 
                         <div class="form-group">
                             <label for="displayCaseWorker">Show By Case Worker: </label>
-                            <select class="form-control input-sm" id="displayCaseWorker">
+                            <select class="form-control form-control-sm" id="displayCaseWorker">
                                 <option>--Show All Cases--</option>
                                 @foreach (var caseWorker in Model.CaseWorkers)
                                 {
@@ -39,36 +42,30 @@
                         </div>
 
                         <button onclick="ShowNewCase();" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-filter"></span> New Cases
+                            <i class="fa fa-filter me-1"></i> New Cases
                         </button>
-
                         <button onclick="ShowOpenedCase();" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-filter"></span> Opened Cases
+                            <i class="fa fa-filter me-1"></i> Opened
                         </button>
-
                         <button onclick="ShowInProgressCase();" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-filter"></span> In Progress Cases
+                            <i class="fa fa-filter me-1"></i> In Progress
                         </button>
-
-                        <button onclick="ShowHoldCase();" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-filter"></span> Hold Cases
+                        <button onclick="ShowHoldCase();" class="btn btn-warning btn-sm">
+                            <i class="fa fa-filter me-1"></i> Hold
                         </button>
-
-                        <button onclick="ShowClosedCase();" class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-filter"></span> Closed Cases
+                        <button onclick="ShowClosedCase();" class="btn btn-secondary btn-sm">
+                            <i class="fa fa-filter me-1"></i> Closed
                         </button>
 
                     </div>
 
                     <hr />
 
-                    <div class="panel panel-primary">
-
-                        <div class="panel-heading clearfix">
-                            <p class="modal-title">Case List: << Status: <b><span id="displayCaseStatus" style="color: red"></span></b> >></p>
+                    <div class="card mt-2">
+                        <div class="card-header bg-dark text-white">
+                            <i class="fa fa-list me-2"></i>Case List &mdash; Status: <span id="displayCaseStatus" class="ms-1 badge bg-danger"></span>
                         </div>
-
-                        <div class="panel-body">
+                        <div class="card-body p-0">
 
                             <div id="overflowTable" style="overflow-x: auto;">
                                 <table id="caseListTable" class="table table-hover table-bordered">
@@ -94,15 +91,10 @@
                         </div>
 
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 @Html.Partial("~/Views/Clients/_CaseModal.cshtml")

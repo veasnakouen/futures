@@ -1,11 +1,12 @@
-﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="caseModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="caseModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
 
     <div class="modal-dialog modal-lg" role="document">
 
         <div class="modal-content">
 
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Case Information</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-folder-open me-2"></i>Case Information</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -91,7 +92,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="caseSubject">Subject</label>
-                            <input id="caseSubject" name="caseSubject" placeholder="Enter subject" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="caseSubject" name="caseSubject" placeholder="Enter subject" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
@@ -102,7 +103,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="caseDescription">Description</label>
-                            <textarea class="form-control input-sm" id="caseDescription" placeholder="Enter description" rows="6" style="min-width: 100%; max-width: 100%"></textarea>
+                            <textarea class="form-control form-control-sm" id="caseDescription" placeholder="Enter description" rows="6" style="min-width: 100%; max-width: 100%"></textarea>
                         </div>
                     </div>
 
@@ -113,7 +114,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="caseStatus">Case Status</label>
-                            <select class="form-control input-sm" id="caseStatus">
+                            <select class="form-control form-control-sm" id="caseStatus">
                                 <option>New Case</option>
                                 <option>Opened Case</option>
                                 <option>In Progress Case</option>
@@ -127,7 +128,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" onclick="CaseAction();" id="btnCasesAction" class="btn btn-primary btn-sm">Add New</button>
             </div>
         </div>

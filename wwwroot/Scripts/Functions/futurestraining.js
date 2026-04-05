@@ -84,7 +84,7 @@ function ControlFuturestraining(bool) {
                     data: "id",
                     render: function (data) {
 
-                        return "<a href='#' onclick='FuturesTrainingEdit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='FuturesTrainingsDelete(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                        return "<a href='#' onclick='FuturesTrainingEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='FuturesTrainingsDelete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                     
                     }
                 }

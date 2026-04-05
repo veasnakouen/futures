@@ -37,7 +37,7 @@ function GetplacementMonitoringByClientId() {
                  {
                      data: { a: "id", b: "companyName" },
                     render: function (data) {
-                        return "<a href='#' onclick='placementMonitoring(" + data.id + ',' + '"' + data.companyName + '"' + ")'><span class='glyphicon glyphicon-edit'></span> Manage Monitoring</a>"
+                        return "<a href='#' onclick='placementMonitoring(" + data.id + ',' + '"' + data.companyName + '"' + ")'><i class='fa fa-pen-to-square'></i> Manage Monitoring</a>"
                         ;  
                     },
                     "width": "130px"
@@ -93,7 +93,7 @@ function GetplacementMonitoringActionByPlacementId() {
              {
                  data: { a: "id", b: "countedTime" },
                  render: function (data) {
-                     return "<a href='#' onclick='placementMonitoringEdit(" + data.id + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a> <a href='#' onclick='placementMonitoringDelete(" + data.monitoringId + ")'><span class='glyphicon glyphicon-edit'></span>Delete</a>"
+                     return "<a href='#' onclick='placementMonitoringEdit(" + data.id + ")'><i class='fa fa-pen-to-square'></i> Edit</a> <a href='#' onclick='placementMonitoringDelete(" + data.monitoringId + ")'><i class='fa fa-pen-to-square'></i>Delete</a>"
                      ;
                  },
                  "width": "250px"

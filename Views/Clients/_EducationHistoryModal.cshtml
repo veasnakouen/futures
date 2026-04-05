@@ -1,10 +1,11 @@
-﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="EducationHistoryModal" tabindex="-1" role="dialog" aria-labelledby="EducationHistoryModal" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="EducationHistoryModal" tabindex="-1" role="dialog" aria-labelledby="EducationHistoryModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
 
-            <div class="modal-header clearfix">
-                <h5 class="modal-title" id="exampleModalLabel">Education History</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-graduation-cap me-2"></i>Education History</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -13,13 +14,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="educationHistoryLevel">Education Level</label>
-                            <input id="educationHistoryLevel" name="educationHistoryLevel" placeholder="Enter education level" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="educationHistoryLevel" name="educationHistoryLevel" placeholder="Enter education level" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="educationHistoryGrade">Grade</label>
-                            <input id="educationHistoryGrade" name="educationHistoryGrade" placeholder="Enter grade" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="educationHistoryGrade" name="educationHistoryGrade" placeholder="Enter grade" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
@@ -28,13 +29,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="educationHistorySubject">Subject</label>
-                            <input id="educationHistorySubject" name="educationHistorySubject" placeholder="Enter subject" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="educationHistorySubject" name="educationHistorySubject" placeholder="Enter subject" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="educationHistoryGraduatedYear">Graduated Year</label>
-                            <input id="educationHistoryGraduatedYear" name="educationHistoryGraduatedYear" placeholder="Enter graduated year" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="educationHistoryGraduatedYear" name="educationHistoryGraduatedYear" placeholder="Enter graduated year" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
@@ -43,7 +44,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="educationHistorySchoolName">School Name</label>
-                            <input id="educationHistorySchoolName" name="educationHistorySchoolName" placeholder="Enter school name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="educationHistorySchoolName" name="educationHistorySchoolName" placeholder="Enter school name" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
@@ -51,7 +52,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="educationHistoryDescription">Description</label>
-                            <input id="educationHistoryDescription" name="educationHistoryDescription" placeholder="Enter Description" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="educationHistoryDescription" name="educationHistoryDescription" placeholder="Enter Description" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
@@ -59,7 +60,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" onclick="EducationHistoryAction();" id="btnEducationHistoryAction" class="btn btn-primary btn-sm">Add New</button>
             </div>
 

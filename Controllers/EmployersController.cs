@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
@@ -8,6 +9,7 @@ using System.Linq;
 
 namespace MtpApp.Controllers
 {
+    [Authorize]
     public class EmployersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -28,6 +30,7 @@ namespace MtpApp.Controllers
         }
 
         [Route("employers/overview")]
+        [Route("employers/dashboard")]
         public IActionResult Dashboard()
         {
             var jobsByCategory = (from c in _context.Vacancies

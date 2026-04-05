@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using MtpApp.App_Start;
 using MtpApp.Infrastructure;
 using MtpApp.Models;
+using System.IO;
 using System;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -38,16 +41,23 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
-// AutoMapper — register profiles from the application assembly
+// AutoMapper ï¿½ register profiles from the application assembly
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 
 // Legacy view helper compatibility services
 builder.Services.AddSingleton<ILegacyAssetRenderer, LegacyAssetRenderer>();
+builder.Services.AddScoped<LegacyReportService>();
+
+// Persist data-protection keys so encrypted cookies remain valid across restarts.
+builder.Services.AddDataProtection()
+    .SetApplicationName("MtpApp")
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "DataProtection-Keys")));
 
 // Session
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.Name = ".MtpApp.Session.v2";
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
@@ -55,6 +65,33 @@ builder.Services.AddSession(options =>
 
 // SignalR
 builder.Services.AddSignalR();
+
+// Global exception handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Antiforgery configuration
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.Name = "__Antiforgery";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
+
+// Authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(MtpApp.Infrastructure.PolicyNames.RequireAdmin, policy =>
+        policy.RequireRole(MtpApp.Infrastructure.RoleNames.Admin));
+    options.AddPolicy(MtpApp.Infrastructure.PolicyNames.RequireManager, policy =>
+        policy.RequireRole(MtpApp.Infrastructure.RoleNames.Manager, MtpApp.Infrastructure.RoleNames.Admin));
+    options.AddPolicy(MtpApp.Infrastructure.PolicyNames.RequireCaseWorker, policy =>
+        policy.RequireRole(MtpApp.Infrastructure.RoleNames.CaseWorker, MtpApp.Infrastructure.RoleNames.Manager, MtpApp.Infrastructure.RoleNames.Admin));
+    options.AddPolicy(MtpApp.Infrastructure.PolicyNames.RequireAuthenticated, policy =>
+        policy.RequireAuthenticatedUser());
+});
 
 // Forwarded headers for reverse proxy
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -68,9 +105,10 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
+    options.Cookie.Name = ".MtpApp.Auth.v2";
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     options.SlidingExpiration = true;
 
     options.Events.OnRedirectToLogin = context =>
@@ -94,8 +132,8 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    app.UseExceptionHandler(_ => { });
 }
 
 app.UseForwardedHeaders();
@@ -114,8 +152,21 @@ app.Use(async (context, next) =>
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Auto-generate antiforgery tokens for authenticated users
+app.Use(async (context, next) =>
+{
+    if (context.User.Identity?.IsAuthenticated == true)
+    {
+        var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
+        var tokens = antiforgery.GetAndStoreTokens(context);
+        // Token is stored in cookie; API calls send it via X-CSRF-TOKEN header
+    }
+    await next();
+});
+
 app.UseSession();
 
+app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

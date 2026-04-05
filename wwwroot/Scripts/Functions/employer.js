@@ -69,7 +69,7 @@ function GetEmployers(status) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='Edit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                    return "<a href='#' onclick='Edit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                 }
             }
         ],
@@ -142,7 +142,7 @@ function searchPartnership(startDate, endDate) {
                 {
                     data: "id",
                     render: function (data) {
-                        return "<a href='#' onclick='Edit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                        return "<a href='#' onclick='Edit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                     }
                 }
             ],

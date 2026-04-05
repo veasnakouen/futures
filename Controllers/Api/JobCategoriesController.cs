@@ -9,6 +9,8 @@ using System.Linq;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class JobCategoriesController : ControllerBase
     {
@@ -30,7 +32,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //GET /api/jobCategories/{id}
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetJobCategory(int id)
         {
             var jobCategory = _context.JobCategory.SingleOrDefault(c => c.Id == id);
@@ -64,7 +66,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //PUT /api/jobCategory/{id}
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult UpdateJobCategory(int id, JobCategoryDto jobCategoryDto)
         {
             if (!ModelState.IsValid)
@@ -84,7 +86,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //DELETE /api/jobCategory/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteJobCategory(int id)
         {
             var jobCategoryInDb = _context.JobCategory.SingleOrDefault(c => c.Id == id);

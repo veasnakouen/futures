@@ -3,59 +3,182 @@
 
 @{
     ViewBag.Title = "Log in";
+    Layout = null;
 }
 
-<div class="row justify-content-center" style="padding-top: 20px;">
-    <div class="col-md-4">
-        <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, antiforgery: null, htmlAttributes: new { @class = "", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — M'Lop Tapang</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
 
-                <div class="card">
-                    <div class="card-header text-center"><h4>Login To System</h4></div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control focus", @placeholder = "Enter your email" })
-                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 100%);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        .login-card-header {
+            background: #1a3a5c;
+            padding: 32px 32px 24px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .login-card-header .brand-title {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .login-card-header .brand-sub {
+            font-size: 0.85rem;
+            opacity: 0.75;
+            margin-top: 4px;
+        }
+
+        .login-card-body {
+            background: #fff;
+            padding: 32px;
+        }
+
+        .input-group-text {
+            background: #f0f4f8;
+            border-right: none;
+            color: #2e6da4;
+        }
+
+        .login-card-body .form-control {
+            border-left: none;
+            padding-left: 4px;
+        }
+
+        .login-card-body .form-control:focus {
+            box-shadow: none;
+            border-color: #2e6da4;
+        }
+
+        .login-card-body .form-control:focus + .input-group-text,
+        .input-group:focus-within .input-group-text {
+            border-color: #2e6da4;
+        }
+
+        .btn-login {
+            background: #2e6da4;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 10px;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background: #1a3a5c;
+        }
+
+        .form-check-label {
+            font-size: 0.875rem;
+            color: #555;
+        }
+
+        .field-validation-error {
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-card-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="rgba(255,255,255,0.85)" class="mb-2" viewBox="0 0 16 16">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.025 10 8 10c-2.024 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                </svg>
+                <p class="brand-title">M'Lop Tapang Organization</p>
+                <p class="brand-sub">Sign in to your account</p>
+            </div>
+            <div class="login-card-body">
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, antiforgery: null, htmlAttributes: new { role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size:.85rem; color:#333;">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.708 2.825L15 11.105V5.383zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741zM1 11.105l4.708-2.897L1 5.383v5.722z"/>
+                                </svg>
+                            </span>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control focus", placeholder = "Enter your email" })
                         </div>
-                        <div class="mb-3">
-                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Enter your password" })
-                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size:.85rem; color:#333;">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 1a4 4 0 0 1 4 4v2h.5A1.5 1.5 0 0 1 14 8.5v6A1.5 1.5 0 0 1 12.5 16h-9A1.5 1.5 0 0 1 2 14.5v-6A1.5 1.5 0 0 1 3.5 7H4V5a4 4 0 0 1 4-4zm0 1a3 3 0 0 0-3 3v2h6V5a3 3 0 0 0-3-3zm-5 6a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-6a.5.5 0 0 0-.5-.5H3zm4.5 3a1 1 0 0 1 .5 1.866V14a.5.5 0 0 1-1 0v-1.134A1 1 0 0 1 7.5 11z"/>
+                                </svg>
+                            </span>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Enter your password" })
                         </div>
-                        <div class="d-grid">
-                            <input type="submit" value="Log in" class="btn btn-secondary" />
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="mb-4 d-flex align-items-center justify-content-between">
+                        <div class="form-check">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                            @Html.LabelFor(m => m.RememberMe, new { @class = "form-check-label" })
                         </div>
                     </div>
-                </div>
-                @* Enable this once you have account confirmation enabled for password reset functionality
-                    <p>
-                        @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                    </p>*@
-            }
-        </section>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-login text-white">Sign In</button>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
-</div>
 
-
-@section Scripts {
-
-    <script>
-        $(document).ready(function () {
-            $(function () {
-                $('.focus').focus();
-            });
-        });
-
-        $(function () {
-            var a = '@TempData["msg"]';
-            if (a != '')
-            {
-                toastr.error(a,"Server Response");
-            }
-        })
-    </script>
-
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/jquery.validate.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
-}
+    <script>
+        $(function () {
+            $('.focus').focus();
+            var msg = '@TempData["msg"]';
+            if (msg) {
+                alert(msg);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -18,7 +18,7 @@ function GetBeneficiariesByClientId(id) {
                 {
                     data: "id",
                     render: function (data) {
-                        return "<a href='#' onclick='EditBeneficiary(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='DeleteBeneficiary(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                        return "<a href='#' onclick='EditBeneficiary(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='DeleteBeneficiary(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                     }
                 }
             ],

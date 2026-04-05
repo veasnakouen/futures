@@ -26,7 +26,7 @@ function GetBusinessSetUpCategoryBy() {
                 {
                     data: "id",
                     render: function (data) {
-                        return "<a href='#' onclick='EditbusinessSetUpCategory(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='DeletebusinessSetUpCategory(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                        return "<a href='#' onclick='EditbusinessSetUpCategory(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='DeletebusinessSetUpCategory(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                     }
                 }
             ],

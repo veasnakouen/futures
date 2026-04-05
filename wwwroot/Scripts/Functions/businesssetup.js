@@ -137,7 +137,7 @@ function GetBusinessSetUpByClientId(id) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='BusinessSetupEdit(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='BusinessSetupDelete(" + data + ")'><span class='glyphicon glyphicon-trash'></span> Delete</a>";
+                    return "<a href='#' onclick='BusinessSetupEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='BusinessSetupDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
                 },
                 "width": "130px"
             }

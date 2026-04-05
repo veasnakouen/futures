@@ -9,6 +9,8 @@ using System.Linq;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class LanguagesController : ControllerBase
     {
@@ -23,16 +25,19 @@ namespace MtpApp.Controllers.Api
 
         // GET: /api/languages?clientId={id}
         [HttpGet]
-        public IActionResult GetLanguages(int clientId)
+        public IActionResult GetLanguages([FromQuery] int clientId)
         {
-            var languages = _context.Languages.Select(_mapper.Map<Language, LanguageDto>).Where(c => c.ClientId == clientId);
+            var languages = _context.Languages
+                .Where(c => c.ClientId == clientId)
+                .ToList()
+                .Select(_mapper.Map<Language, LanguageDto>);
 
             return Ok(languages);
         }
 
         // GET: /api/languages/{id}
-        [HttpGet]
-        public IActionResult GetLanguage(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetLanguage([FromRoute] int id)
         {
             var language = _context.Languages.SingleOrDefault(c => c.Id == id);
 
@@ -60,8 +65,8 @@ namespace MtpApp.Controllers.Api
         }
 
         // PUT: /api/languages/{id}
-        [HttpPut]
-        public IActionResult UpdateLanguage(int id, LanguageDto languageDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateLanguage([FromRoute] int id, [FromBody] LanguageDto languageDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -79,8 +84,8 @@ namespace MtpApp.Controllers.Api
         }
 
         // DELETE: /api/languages/{id}
-        [HttpDelete]
-        public IActionResult DeleteLanguage(int id)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteLanguage([FromRoute] int id)
         {
             var languageInDb = _context.Languages.SingleOrDefault(c => c.Id == id);
 

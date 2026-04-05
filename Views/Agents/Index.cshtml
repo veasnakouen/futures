@@ -1,14 +1,15 @@
-﻿   
+   
 @{
     ViewBag.Title = "Index";
 }
 
-<div class="panel panel-default">
-    <div class="panel-heading clearfix">
-        <h5 class="panel-title pull-left" style="padding-top: 9px;">Manage Agents</h5>
-        <button onclick="clearForm();" type="button" data-toggle="modal" data-target="#agentModal" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Add Agent</button>
+<div class="card">
+    <div class="card-header bg-dark text-white d-flex align-items-center">
+        <i class="fa fa-user-tie me-2"></i>
+        <span>Manage Agents</span>
+        <button onclick="clearForm();" type="button" data-bs-toggle="modal" data-bs-target="#agentModal" class="btn btn-primary btn-sm ms-auto"><i class="fa fa-plus me-1"></i> Add Agent</button>
     </div>
-    <div class="panel-body">
+    <div class="card-body p-0">
         <table id="agents" class="table table-bordered table-hover">
             <thead>
                 <tr>
@@ -22,36 +23,39 @@
 </div>
 
 <form id="formAgent" method="post" enctype="multipart/form-data">
-    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="agentModal" tabindex="-1" role="dialog" aria-labelledby="agentModal" aria-hidden="true">
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="agentModal" tabindex="-1" role="dialog" aria-labelledby="agentModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa fa-user-tie me-2"></i>Agent</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
 
                     <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
 
-                    <div class="form-group">
-                        <label>Agent name</label>
-                        <input id="name" name="name" placeholder="Enter agent name" type="text" value="" class="form-control" style="min-width: 100%" />
+                    <div class="mb-3">
+                        <label class="form-label">Agent name</label>
+                        <input id="name" name="name" placeholder="Enter agent name" type="text" value="" class="form-control" />
                     </div>
 
-                    <div class="form-group">
-                        <label>Upload Photo</label>
-                        <input onchange="readURL(this);" type="file" name="file" id="file" style="width: 100%;" />
+                    <div class="mb-3">
+                        <label class="form-label">Upload Photo</label>
+                        <input onchange="readURL(this);" type="file" name="file" id="file" class="form-control" />
                     </div>
 
-                    <div class="form-group">
-                        <img class="center img-responsive" id="photo" src="" />
-                    </div>
-
-                    <div class="clearfix">
-                        <button type="button" class="btn btn-danger pull-right" data-dismiss="modal">Close</button>
-                        <button type="button" id="btnSave" class="btn btn-primary pull-right" onclick="Save();">Save</button>
-                        <button type="button" id="btnUpdate" class="btn btn-primary pull-right js-update" onclick="Update();">Update</button>
+                    <div class="mb-2 text-center">
+                        <img class="img-fluid img-thumbnail" id="photo" src="" style="max-height:120px;" />
                     </div>
 
                     <div id="loaderDiv" style="text-align:center; display:none;">
                         <img src="~/Content/InternetSlowdown_Day.gif" width="100" />
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="btnUpdate" class="btn btn-primary btn-sm js-update" onclick="Update();">Update</button>
+                    <button type="button" id="btnSave" class="btn btn-success btn-sm" onclick="Save();">Save</button>
                 </div>
             </div>
         </div>
@@ -86,7 +90,7 @@
                     {
                         data: "id",
                         render: function (data) {
-                            return "<a href='#' onclick='Edit(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><span class='glyphicon glyphicon-trash'></span> Delete</a>"
+                            return "<a href='#' onclick='Edit(" + data + ")'><i class='fa fa-pencil'></i> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>"
                         }
                     }
                 ]

@@ -1,10 +1,11 @@
-﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="LanguageModal" tabindex="-1" role="dialog" aria-labelledby="LanguageModal" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="LanguageModal" tabindex="-1" role="dialog" aria-labelledby="LanguageModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
 
-            <div class="modal-header clearfix">
-                <h5 class="modal-title" id="exampleModalLabel">Language</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-language me-2"></i>Language</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -13,13 +14,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="language">Language</label>
-                            <input id="language" name="language" placeholder="Enter language" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="language" name="language" placeholder="Enter language" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="levelLanguage">Level</label>
-                            <input id="levelLanguage" name="levelLanguage" placeholder="Enter level" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="levelLanguage" name="levelLanguage" placeholder="Enter level" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
@@ -27,7 +28,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" onclick="LanguageAction();" id="btnLanguageAction" class="btn btn-primary btn-sm">Add New</button>
             </div>
 

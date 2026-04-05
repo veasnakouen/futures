@@ -1,10 +1,11 @@
-﻿
-<div class="modal fade" data-backdrop="static" data-keyboard="false" id="referralSource" tabindex="-1" role="dialog" aria-labelledby="referralSource" aria-hidden="true">
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="referralSource" tabindex="-1" role="dialog" aria-labelledby="referralSource" aria-hidden="true">
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Referral Source</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-share-nodes me-2"></i>Referral Source</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -12,13 +13,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="referralSourceName">Referral Source</label>
-                            <input id="referralSourceName" name="referralSourceName" placeholder="Enter referral source" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="referralSourceName" name="referralSourceName" placeholder="Enter referral source" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="origin">Origin</label>
-                            <select class="form-control input-sm" id="origin">
+                            <select class="form-control form-control-sm" id="origin">
                                 <option>Internal</option>
                                 <option>External</option>
                             </select>
@@ -45,7 +46,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="btnReferralAction" onclick="ReferralSourceAction()" class="btn btn-primary btn-sm">Save changes</button>
             </div>
         </div>

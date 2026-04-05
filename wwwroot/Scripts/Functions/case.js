@@ -65,7 +65,7 @@ function GetCaseByClientId(id) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='CaseEdit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='CaseDelete(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                    return "<a href='#' onclick='CaseEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='CaseDelete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                 }
                }
         ],

@@ -1,14 +1,14 @@
-﻿@model MtpApp.ViewModels.EmployerViewModel
+@model MtpApp.ViewModels.EmployerViewModel
 
 <form id="formEmployer" method="post">
-    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="employerModal" tabindex="-1" role="dialog" aria-labelledby="employerModal" aria-hidden="true">
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="employerModal" tabindex="-1" role="dialog" aria-labelledby="employerModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <button type="button" class="btn btn-danger btn-xs pull-right" data-dismiss="modal" style="color:white;">X</button>
-                    <h4 class="modal-title">Employer Informations</h4>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa fa-building me-2"></i>Employer Information</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="panel-body">
+                <div class="modal-body">
                     <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
 
                     <div class="row">
@@ -21,7 +21,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="status">*Status</label>
-                                <select class="form-control input-sm" id="status">
+                                <select class="form-control form-control-sm" id="status">
                                     <option>Active</option>
                                     <option>Inactive</option>
                                 </select>
@@ -35,13 +35,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>*Employer Name</label>
-                                <input id="name" name="name" placeholder="Enter company name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="name" name="name" placeholder="Enter company name" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>*Sector</label>
-                                <select class="form-control input-sm" id="sector" name="sector" style="min-width: 100%">
+                                <select class="form-control form-control-sm" id="sector" name="sector" style="min-width: 100%">
                                     @foreach (var jobCategory in Model.JobCategories)
                                     {
                                         <option value=@jobCategory.Id>@jobCategory.Name</option>
@@ -55,13 +55,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>*Contact Person</label>
-                                <input id="contactPerson" name="contactPerson" placeholder="Enter contact person" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="contactPerson" name="contactPerson" placeholder="Enter contact person" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Contact Phone</label>
-                                <input id="contactPhone" name="contactPhone" placeholder="Enter contact phone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="contactPhone" name="contactPhone" placeholder="Enter contact phone" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                     </div>
@@ -70,13 +70,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Email</label>
-                                <input id="email" name="email" placeholder="Enter email" type="email" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="email" name="email" placeholder="Enter email" type="email" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Website</label>
-                                <input id="website" name="website" placeholder="Enter website" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="website" name="website" placeholder="Enter website" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Address</label>
-                                <input id="address" name="address" placeholder="Enter address" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="address" name="address" placeholder="Enter address" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                     </div>
@@ -94,20 +94,16 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Note</label>
-                                <input id="note" name="note" placeholder="Enter note" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="note" name="note" placeholder="Enter note" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                     </div>
 
                 </div>
-
-                <div class="panel-footer panel-primary">
-                    <div class="clearfix">
-                        @*<button data-toggle="modal" data-target="#vacancyModal" class="btn btn-success btn-xs pull-right"><span class="glyphicon glyphicon-plus-sign"></span> Add Vacancies</button>*@
-                        <button type="button" class="btn btn-danger btn-sm pull-right" data-dismiss="modal" style="margin-left: 5px"><span class="	glyphicon glyphicon-log-out"></span> Close</button>
-                        <button type="button" id="btnSave" class="btn btn-primary btn-sm pull-right" onclick="Save();"><span class="glyphicon glyphicon-floppy-saved"></span> Save</button>
-                        <button type="button" id="btnUpdate" class="btn btn-primary btn-sm pull-right js-update" onclick="Update();"><span class="glyphicon glyphicon-floppy-saved"></span> Update</button>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="fa fa-right-from-bracket me-1"></i>Close</button>
+                    <button type="button" id="btnUpdate" class="btn btn-primary btn-sm js-update" onclick="Update();"><i class="fa fa-floppy-disk me-1"></i>Update</button>
+                    <button type="button" id="btnSave" class="btn btn-success btn-sm" onclick="Save();"><i class="fa fa-floppy-disk me-1"></i>Save</button>
                 </div>
                 <div id="divLoadingModal"></div>
             </div>

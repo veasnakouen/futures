@@ -1,10 +1,11 @@
-﻿
 
-<div class="modal fade" data-backdrop="static" data-keyboard="false" id="LookbookModal" tabindex="-1" role="dialog" aria-labelledby="LookbookModal" aria-hidden="true">
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="LookbookModal" tabindex="-1" role="dialog" aria-labelledby="LookbookModal" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Add Log Book</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-book me-2"></i>Add Log Book</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -12,7 +13,7 @@
                         <input id="LogbookId" name="LogbookId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
                         <div class="form-group">
                             <label for="gender">Gender</label>
-                            <select class="form-control input-sm" id="gender">
+                            <select class="form-control form-control-sm" id="gender">
                                 <option>Male</option>
                                 <option>Female</option>
                                 <option>Other</option>
@@ -80,7 +81,7 @@
 
             <div class="modal-footer" style="overflow:auto;">
                 <div style="float:right;">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="button" onclick="LogBookAction();" id="btnLogBookAction" class="btn btn-primary btn-sm">Add New</button>
                 </div>
             </div>

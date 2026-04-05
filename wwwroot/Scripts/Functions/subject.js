@@ -20,7 +20,7 @@ function GetSubjects() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='SubjectEdit1(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='SubjectDelete(" + data + ")'><span class='glyphicon glyphicon-trash'></span> Delete</a>";
+                    return "<a href='#' onclick='SubjectEdit1(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='SubjectDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
                 },
                 "width": "130px"
             }

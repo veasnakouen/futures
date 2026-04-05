@@ -1,110 +1,88 @@
 ﻿@{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid">
 
-
-    <div class="row">
-        <div class="col-md-3">
-            <div class="panel panel-primary" style="margin-top: 10px;">
-                <div class="panel-heading clearfix">
-                    <h5 class="modal-title">Total Client</h5>
-                </div>
-                <div class="panel-body">
-                    <h5 id="TotalClientDashboard" class="modal-title" style="text-align:center;font-size: 46px;">0</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="panel panel-primary" style="margin-top: 10px;">
-                <div class="panel-heading clearfix">
-                    <h5 class="modal-title">Total Employer</h5>
-                </div>
-                <div class="panel-body">
-                    <h5 id="TotalEmployerDashboard" class="modal-title" style="text-align:center;font-size: 46px;">0</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="panel panel-primary" style="margin-top: 10px;">
-                <div class="panel-heading clearfix">
-                    <h5 class="modal-title">Total Log book</h5>
-                </div>
-                <div class="panel-body">
-                    <h5 id="TotalLogbookDashboard" class="modal-title" style="text-align:center;font-size: 46px;">0</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="panel panel-primary" style="margin-top: 10px;">
-                <div class="panel-heading clearfix">
-                    <h5 class="modal-title">Total Placement</h5>
-                </div>
-                <div class="panel-body">
-                    <h5 id="TotalPlacementDashboard" class="modal-title" style="text-align:center;font-size: 46px;">0</h5>
-                </div>
+<div class="row g-3 mb-3">
+    <div class="col-6 col-md-3">
+        <div class="stat-card stat-bg-blue">
+            <div class="stat-icon"><i class="fa fa-users"></i></div>
+            <div>
+                <div class="stat-value" id="TotalClientDashboard">—</div>
+                <div class="stat-label">Total Clients</div>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-md-9">
-            <div class="panel panel-primary" style="margin-top: 10px;">
-                <div class="panel-heading clearfix">
-                    <h5 class="modal-title">Manage Chart</h5>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <form class="form-inline">
-
-                                <div class="form-group">
-                                    <input class="form-control input-sm" disabled id="drawChartSelectBoxTotal">
-                                </div>
-
-                                <div class="form-group">
-                                    <select class="form-control input-sm" id="drawChartSelectBox">
-                                        <option value="TotalClient">Total Clients</option>
-                                        <option value="TotalEmployers">Total Employers</option>
-                                        <option value="TotalLogbooks">Total Log book</option>
-                                        <option value="TotalPlacements">Total Placements</option>
-                                    </select>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <hr />
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div id="piechart"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="panel panel-primary" style="margin-top: 10px;">
-                <div class="panel-heading clearfix">
-                    <h5 class="modal-title">Access By</h5>
-                </div>
-                <div class="panel-body">
-                    <table id="loggedRecordsTable" class="table table-bordered" style="width: 100%">
-                        <thead>
-                            <tr>
-                                <th>Logged by</th>
-                                <th>LoggedTime</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card stat-bg-green">
+            <div class="stat-icon"><i class="fa fa-briefcase"></i></div>
+            <div>
+                <div class="stat-value" id="TotalEmployerDashboard">—</div>
+                <div class="stat-label">Total Employers</div>
             </div>
         </div>
     </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card stat-bg-orange">
+            <div class="stat-icon"><i class="fa fa-book"></i></div>
+            <div>
+                <div class="stat-value" id="TotalLogbookDashboard">—</div>
+                <div class="stat-label">Total Logbooks</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card stat-bg-purple">
+            <div class="stat-icon"><i class="fa fa-clipboard-check"></i></div>
+            <div>
+                <div class="stat-value" id="TotalPlacementDashboard">—</div>
+                <div class="stat-label">Total Placements</div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <br />
+
+<div class="row g-3 mb-5">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-dark text-white d-flex align-items-center gap-3">
+                <i class="fa fa-chart-pie"></i>
+                <span>Data Chart</span>
+                <div class="ms-auto d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary" id="drawChartSelectBoxTotal" style="font-size:.85rem;padding:.4rem .7rem;"></span>
+                    <select class="form-select form-select-sm" id="drawChartSelectBox" style="width:auto;">
+                        <option value="TotalClient">Total Clients</option>
+                        <option value="TotalEmployers">Total Employers</option>
+                        <option value="TotalLogbooks">Total Logbooks</option>
+                        <option value="TotalPlacements">Total Placements</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center p-2">
+                <div id="piechart" style="width:100%;min-height:340px;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-dark text-white">
+                <i class="fa fa-history me-2"></i>Recent Access
+            </div>
+            <div class="card-body p-2">
+                <table id="loggedRecordsTable" class="table table-sm mb-0" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Logged by</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -124,174 +102,102 @@
         $(document).ready(function () {
             GetLoggedRecords();
             GetTotalData();
-        })
+        });
 
         var tableLoggedRecords = [];
 
         function GetLoggedRecords() {
             tableLoggedRecords = $('#loggedRecordsTable').DataTable({
-                ajax: {
-                    url: "/api/Login/loggedrecords",
-                    dataSrc: ""
-                },
+                ajax: { url: "/api/Login/loggedrecords", dataSrc: "" },
                 columns: [
-                    {
-                        data: "loggedBy"
-                    },
-                     {
-                         data: function (data) {
-                             return moment(data.loggedDate).format("DD MMM YYYY HH:mm:ss");
-                         }
-                     }
+                    { data: "loggedBy" },
+                    { data: function (d) { return moment(d.loggedDate).format("DD MMM YYYY HH:mm"); } }
                 ],
                 destroy: true,
-                "order": [[0, "desc"]],
-                "info": false,
-                "searching": false,
-                "paging": false
+                order: [[0, "desc"]],
+                info: false,
+                searching: false,
+                paging: false
             });
         }
 
         function GetTotalData() {
-            var data = {
-            };
-
             $.ajax({
                 url: "/api/Login/Totaldata",
-                data: JSON.stringify(data),
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
                 success: function (result) {
-                    $("#TotalClientDashboard").text(result[0].totalClients);
-                    $("#TotalEmployerDashboard").text(result[0].totalEmployers);
-                    $("#TotalLogbookDashboard").text(result[0].totalLogbooks);
-                    $("#TotalPlacementDashboard").text(result[0].totalPlacements);
-                },
-                error: function (errormessage) {
-
+                    var map = {};
+                    $.each(result, function (_, item) { map[item.label] = item.value; });
+                    $("#TotalClientDashboard").text(map["Clients"] ?? 0);
+                    $("#TotalEmployerDashboard").text(map["Employers"] ?? 0);
+                    $("#TotalLogbookDashboard").text(map["LogBooks"] ?? 0);
+                    $("#TotalPlacementDashboard").text(map["Placements"] ?? 0);
                 }
             });
         }
-
-
-
     </script>
 
     <script src="~/Scripts/charts-loader.js"></script>
     <script type="text/javascript">
-        $('#drawChartSelectBox').on('change', function (e) {
-
-            var ItemByCategory = $("#drawChartSelectBox option:selected").val();
-
-            drawChart(ItemByCategory, 0, 0, 0);
+        $('#drawChartSelectBox').on('change', function () {
+            drawChart($(this).val(), 0, 0, 0);
         });
 
-        google.charts.load('current', { 'packages': ['corechart'] });
-        google.charts.setOnLoadCallback(drawChart);
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(function () { drawChart('TotalClient', 0, 0, 0); });
 
-        function drawChart(ItemByCategory, PropertyRemaining, PropertyAvalibleandSale, PropertyRentandSale) {
-            var itemObj = {};
+        function drawChart(ItemByCategory) {
             $.ajax({
                 url: "/api/clients?Client=" + ItemByCategory,
-                data: JSON.stringify(itemObj),
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
                 success: function (result) {
-
-                    var piewidth;
-                    var pieheight;
-                    if ($(window).width() > 1080) {
-                        piewidth = 760;
-                        pieheight = 390;
-                    }
-                    else if ($(window).width() > 700) {
-                        piewidth = 400;
-                        pieheight = 280;
-                    }
-                    else if ($(window).width() > 400) {
-                        piewidth = 390;
-                        pieheight = 220;
-                    }
-                    else {
-                        piewidth = 310;
-                        pieheight = 120;
-                    }
+                    var w = $('#piechart').width();
+                    var h = Math.max(280, Math.min(w * .55, 420));
 
                     const Dat = Object.values(result['table']).map(Object.values);
                     var dataArray = Dat;
-
-                    var dataArrayTotal = 0;
-
-                    for (key in result.table) {
-                        dataArrayTotal = dataArrayTotal + result.table[key].qty;
-                    }
-
-                    $('#drawChartSelectBoxTotal').val($("#drawChartSelectBox option:selected").text() + ' : ' + dataArrayTotal);
-
                     var total = getTotal(dataArray);
 
-                    // Adding tooltip column
+                    $('#drawChartSelectBoxTotal').text(
+                        $("#drawChartSelectBox option:selected").text() + ': ' + total
+                    );
+
                     for (var i = 0; i < dataArray.length; i++) {
                         dataArray[i].push(customTooltip(dataArray[i][0], dataArray[i][1], total));
                     }
-
-                    // Changing legend
                     for (var i = 0; i < dataArray.length; i++) {
-                        dataArray[i][0] = dataArray[i][0] + " " +
-                                  dataArray[i][1] + " ( " + ((dataArray[i][1] / total) * 100).toFixed(1) + "% )";
+                        dataArray[i][0] = dataArray[i][0] + ' ' + dataArray[i][1] +
+                            ' (' + ((dataArray[i][1] / total) * 100).toFixed(1) + '%)';
                     }
-
-                    // Column names
                     dataArray.unshift(['Goal Name', 'No. of times Requested', 'Tooltip']);
 
                     var data = google.visualization.arrayToDataTable(dataArray);
-                    // Setting role tooltip
                     data.setColumnProperty(2, 'role', 'tooltip');
                     data.setColumnProperty(2, 'html', true);
 
                     var options = {
-                        title: ' ',
-                        width: piewidth,
-                        height: pieheight,
-                        chartArea: {
-                            left: 0,
-                            top: 0,
-                            width: piewidth,
-                            height: pieheight,
-                        },
+                        title: ' ', width: w, height: h,
+                        chartArea: { left: 0, top: 10, width: w, height: h - 10 },
                         tooltip: { isHtml: true },
                         pieSliceText: 'value-and-percentage',
                         legend: { textStyle: { fontSize: 11 } }
                     };
-
-                    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-                    chart.draw(data, options);
-                    var percent = 0;
-                    // start the animation loop
-
-
+                    new google.visualization.PieChart(document.getElementById('piechart')).draw(data, options);
                 }
             });
-
         }
 
         function customTooltip(name, value, total) {
-            return name + '<br/><b> ' + value + ' (' + ((value / total) * 100).toFixed(1) + '%)</b>';
+            return name + '<br/><b>' + value + ' (' + ((value / total) * 100).toFixed(1) + '%)</b>';
         }
-
         function getTotal(dataArray) {
-            var total = 0;
-            for (var i = 0; i < dataArray.length; i++) {
-                total += dataArray[i][1];
-            }
-            return total;
+            return dataArray.reduce(function (s, r) { return s + r[1]; }, 0);
         }
-
     </script>
-
 }
 
 

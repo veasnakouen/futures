@@ -1,5 +1,5 @@
-﻿
-@*<div class="modal fade" data-backdrop="static" data-keyboard="false" id="placementMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="placementMonitoringActionModal" aria-hidden="true">
+
+@*<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="placementMonitoringActionModal" tabindex="-1" role="dialog" aria-labelledby="placementMonitoringActionModal" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header clearfix">
@@ -23,7 +23,7 @@
 
                     <div class="col-md-3">
                         <label for="placementmonitoringtype">Monitoring type</label>
-                        <select class="form-control input-sm" id="placementmonitoringtype" name="placementmonitoringtype" style="min-width: 100%">
+                        <select class="form-control form-control-sm" id="placementmonitoringtype" name="placementmonitoringtype" style="min-width: 100%">
                             <option value="">Select monitor type</option>
                             <option value="1">1st : 1 month</option>
                             <option value="2">2nd : 2 months</option>
@@ -39,7 +39,7 @@
 
                     <div class="col-md-3">
                         <label for="placementcompleted">Completed</label>
-                        <select class="form-control input-sm" id="placementcompleted" name="placementcompleted" style="min-width: 100%">
+                        <select class="form-control form-control-sm" id="placementcompleted" name="placementcompleted" style="min-width: 100%">
                             <option value="">Please select this</option>
                             <option value="Pending">Pending</option>
                             <option value="Completed">Completed</option>
@@ -115,7 +115,7 @@
             </div>
             <div class="modal-footer" style="overflow:auto;">
                 <div style="float:right;">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="button" onclick="PlacementMonitoringAction();" id="btnPlacementProcessMonitoringAction" class="btn btn-primary btn-sm">Add New</button>
                 </div>
             </div>

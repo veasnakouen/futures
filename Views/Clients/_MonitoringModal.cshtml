@@ -1,9 +1,10 @@
-﻿
-<div class="modal fade" data-backdrop="static" data-keyboard="false" id="monitoiringModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="monitoiringModal" tabindex="-1" role="dialog" aria-labelledby="caseModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Add Monitoring</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-chart-line me-2"></i>Add Monitoring</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -12,7 +13,7 @@
                     <input id="enrollby" name="enrollby" type="text" style="display: none;" disabled="disabled" value="Admin Manager" class="form-control" />
                     <div class="col-md-6">
                         <label for="type">Type</label>
-                        <select class="form-control input-sm" id="type" name="type" style="min-width: 100%">
+                        <select class="form-control form-control-sm" id="type" name="type" style="min-width: 100%">
                             <option value="Placement">Placement</option>
                             <option value="Businesssetup">Business setup</option>
                             <option value="Furthereducation">Further Education</option>
@@ -21,7 +22,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="monitoringTime">Counted Time</label>
-                        <select class="form-control input-sm" id="monitoringTime" name="monitoringTime" style="min-width: 100%">
+                        <select class="form-control form-control-sm" id="monitoringTime" name="monitoringTime" style="min-width: 100%">
                             <option value=""></option>
                         </select>
                     </div>
@@ -41,7 +42,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <label for="monitoringtype">Monitoring type</label>
-                        <select class="form-control input-sm" id="monitoringtype" name="monitoringtype" style="min-width: 100%">
+                        <select class="form-control form-control-sm" id="monitoringtype" name="monitoringtype" style="min-width: 100%">
                             <option value="">Select monitor type</option>
                             <option value="1">1st : 1 month</option>
                             <option value="2">2nd : 2 months</option>
@@ -79,7 +80,7 @@
                         <input id="placementpmonitoringId" name="placementpmonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
                         <div class="col-md-6">
                             <label for="completed">Completed</label>
-                            <select class="form-control input-sm" id="completed" name="completed" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="completed" name="completed" style="min-width: 100%">
                                 <option value="Pending">Pending</option>
                                 <option value="Completed">Completed</option>
                             </select>
@@ -125,7 +126,7 @@
                         <input id="businessmonitoringId" name="businessmonitoringId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
                         <div class="col-md-6">
                             <label for="completed">Completed</label>
-                            <select class="form-control input-sm" id="completedB" name="completedB" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="completedB" name="completedB" style="min-width: 100%">
                                 <option value="Pending">Pending</option>
                                 <option value="Completed">Completed</option>
                             </select>
@@ -160,7 +161,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label for="ontraining">On training</label>
-                            <select class="form-control input-sm" id="ontraining" name="ontraining" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="ontraining" name="ontraining" style="min-width: 100%">
                                 <option value="StillIntraining">Still In training</option>
                                 <option value="dropout">Drop out</option>
                             </select>
@@ -189,7 +190,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label for="futuretrainingLessonId">Lesson</label>
-                            <select class="form-control input-sm" id="futuretrainingLessonId" name="futuretrainingLessonId" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="futuretrainingLessonId" name="futuretrainingLessonId" style="min-width: 100%">
                                 <option value=""></option>
                             </select>
                         </div>
@@ -197,7 +198,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label for="futuretrainingType">On training</label>
-                            <select class="form-control input-sm" id="futuretrainingType" name="futuretrainingType" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="futuretrainingType" name="futuretrainingType" style="min-width: 100%">
                                 <option value="Pending">Pending</option>
                                 <option value="Ongoing">Ongoing</option>
                                 <option value="dropout">Drop out</option>
@@ -223,7 +224,7 @@
             </div>
             <div class="modal-footer" style="overflow:auto;">
                 <div style="float:right;">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="button" onclick="MonitoringAction();" id="btnMonitoringAction" class="btn btn-primary btn-sm">Add New</button>
                 </div>
             </div>

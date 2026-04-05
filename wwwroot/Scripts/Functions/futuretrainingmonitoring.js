@@ -25,7 +25,7 @@ function GetfutureTrainingLessionMonitoringByClientId() {
                 {
                     data: {a:"id",b:"type"}  ,
                     render: function (data) {
-                        return "<a href='#' onclick='FutureTrainingMonitoring(" + data.subjectId + ',' + '"' + data.subject.subjectName + '"' + ")'><span class='glyphicon glyphicon-edit'></span> Manage Monitoring</a>"
+                        return "<a href='#' onclick='FutureTrainingMonitoring(" + data.subjectId + ',' + '"' + data.subject.subjectName + '"' + ")'><i class='fa fa-pen-to-square'></i> Manage Monitoring</a>"
                         ;  
                     },
                     "width": "130px"
@@ -74,7 +74,7 @@ function GetfutureTrainingMonitoringByClientId(SubjectId) {
             {
                 data: { a: "id", b: "type" },
                 render: function (data) {
-                    return "<a href='#' onclick='FunctionFutureTrainingMonitoringEdit(" + data.id + ")'><span class='glyphicon glyphicon-edit'></span> Edit </a> " + "<a href='#' onclick='FutureTrainingMonitoringDelete(" + data.monitoringId + ")'><span class='glyphicon  glyphicon-trash'></span> Delete </a>   "
+                    return "<a href='#' onclick='FunctionFutureTrainingMonitoringEdit(" + data.id + ")'><i class='fa fa-pen-to-square'></i> Edit </a> " + "<a href='#' onclick='FutureTrainingMonitoringDelete(" + data.monitoringId + ")'><i class='fa fa-trash'></i> Delete </a>   "
                     ;
                 },
                 "width": "130px"

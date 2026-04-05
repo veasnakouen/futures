@@ -1,5 +1,4 @@
 ﻿<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color:#2c3e50;">
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color:#2c3e50;">
     <div class="container-fluid">
         <a class="navbar-brand" asp-controller="Home" asp-action="Index">M'Lop Tapang</a>
         <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarMain">
@@ -49,27 +48,27 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">Chart Overview</a></li>
                                 <li><a class="dropdown-item" asp-controller="Clients" asp-action="Index">Manage Client</a></li>
-                                <li><a class="dropdown-item" asp-controller="Employers" asp-action="Overview">Vacancies Overview</a></li>
+                                <li><a class="dropdown-item" asp-controller="Employers" asp-action="Dashboard">Vacancies Overview</a></li>
                                 <li><a class="dropdown-item" asp-controller="Employers" asp-action="Index">Manage Employers</a></li>
                                 <li><a class="dropdown-item" asp-controller="Vacancies" asp-action="Index">Manage Vacancies</a></li>
                                 <li><hr class="dropdown-divider" /></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="client-summary-report/clientCodeSearch=all/startdate=null/enddate=null">1. Clients Summary Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="employee-seekerlist-report/postion=all/startdate=null/enddate=null">2. Employment Seeker List Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="placement-summary-report/gender=all/startdate=null/enddate=null">3. Placement Summary Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="clients-remaining-in-placement-report/gender=all/startdate=null/enddate=null">4. Clients Remaining in Placement Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="business-setup-report/gender=all/startdate=null/enddate=null">5. Business Setup Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="businesssetupmonitoiring-Report/gender=all/startdate=null/enddate=null">6. Business Setup Monitoring Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="beneficiaries-report/gender={gender}/startdate={startdate}/enddate={enddate}">7. Dependents Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="placement-monitoring-and-dropout-report/placement={placement}/startdate={startdate}/enddate={enddate}">8. Placement Monitoring and Dropout Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="job-readiness-report/ontraining=all/startdate=null/enddate=null">9. Job Readiness Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="employers-report/status={status}/startdate={startdate}/enddate={enddate}">10. Employer Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="job-vancancy-available-report/status={status}/startdate={startdate}/enddate={enddate}">11. Job Vacancy Available Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="further-euducation-seekerList-report/status={status}/startdate={startdate}/enddate={enddate}">12. Further Education Seeker List Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="client-Referral-From-MT-Program-report/startdate=null/enddate=null">13. Client Referral From MT Program</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="CaseManager-report/Report={Report}/startdate={startdate}/enddate={enddate}">14. Case Manager Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="vtc-student-report/startdate={startdate}/enddate={enddate}">15. VTC Student Report</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="logbooks-report/startdate={startdate}/enddate={enddate}">16. Log Books</a></li>
-                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="Client-Lookfor-bussinesss-Setup-Report/FindbusinessSetup=0/startdate={startdate}/enddate={enddate}">17. Client Lookfor Business Setup Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="ClientSummaryReport" asp-route-clientCodeSearch="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">1. Clients Summary Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="EmploymentSeekerListReport" asp-route-postion="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">2. Employment Seeker List Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="PlacementSummaryReport" asp-route-gender="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">3. Placement Summary Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="ClientsRemainingInPlacementReport" asp-route-gender="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">4. Clients Remaining in Placement Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="BusinessSetupReport" asp-route-gender="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">5. Business Setup Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="BusinessSetupMonitoringReport" asp-route-gender="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">6. Business Setup Monitoring Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="beneficiariesReport" asp-route-gender="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">7. Dependents Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="PlacementMonitoringAndDropoutReport" asp-route-placement="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">8. Placement Monitoring and Dropout Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="JobReadinessReport" asp-route-ontraining="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">9. Job Readiness Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="EmployersReport" asp-route-status="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">10. Employer Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="VancancysReport" asp-route-status="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">11. Job Vacancy Available Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="FurtherEuducationSeekerListReport" asp-route-status="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">12. Further Education Seeker List Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="clientReferralFromMTProgramReport" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">13. Client Referral From MT Program</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="CaseManagerReport" asp-route-Report="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">14. Case Manager Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="VTCstudentreport" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">15. VTC Student Report</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="LogBooksReport" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">16. Log Books</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="ClientLookforbussinesssSetupReport" asp-route-FindbusinessSetup="0" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">17. Client Lookfor Business Setup Report</a></li>
                             </ul>
                         </li>
                     }

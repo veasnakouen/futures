@@ -65,7 +65,7 @@ function GetbusinessSetupMonitoringByClientId() {
                  {
                      data: { a: "id", b: "businessType", c: "businessSetUpCategoryId" },
                     render: function (data) {
-                        return "<a href='#' onclick='businessSetupMonitoring(" + data.id + ',' + '"' + data.businessType + '"' + ',' + data.businessSetUpCategoryId + ")'><span class='glyphicon glyphicon-edit'></span> Manage Monitoring</a>"
+                        return "<a href='#' onclick='businessSetupMonitoring(" + data.id + ',' + '"' + data.businessType + '"' + ',' + data.businessSetUpCategoryId + ")'><i class='fa fa-pen-to-square'></i> Manage Monitoring</a>"
                         ;  
                     },
                     "width": "130px"
@@ -132,7 +132,7 @@ function GetbusinessSetupMonitoringActionByClientId() {
              {
                  data: { a: "id", b: "countedTime" },
                  render: function (data) {
-                     return "<a href='#' onclick='BusinessSetupMonitoringEdit(" + data.id + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a> <a href='#' onclick='BusinessSetupMonitoringDelete(" + data.monitoringId + ")'><span class='glyphicon glyphicon-edit'></span>Delete</a>"
+                     return "<a href='#' onclick='BusinessSetupMonitoringEdit(" + data.id + ")'><i class='fa fa-pen-to-square'></i> Edit</a> <a href='#' onclick='BusinessSetupMonitoringDelete(" + data.monitoringId + ")'><i class='fa fa-pen-to-square'></i>Delete</a>"
                      ;
                  },
                  "width": "250px"

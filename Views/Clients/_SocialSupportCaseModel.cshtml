@@ -1,9 +1,10 @@
-﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="socialSupportCaseModel" tabindex="-1" role="dialog" aria-labelledby="socialSupportCaseModel" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="socialSupportCaseModel" tabindex="-1" role="dialog" aria-labelledby="socialSupportCaseModel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
 
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Social Support Case</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-file-medical me-2"></i>Social Support Case</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -33,7 +34,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="SocialSupportcaseId">Case worker<span id="caseworkerprogramCase"></span></label>
-                                            <select class="form-control input-sm" id="SocialSupportcaseId" name="SocialSupportcaseId" style="min-width: 100%">
+                                            <select class="form-control form-control-sm" id="SocialSupportcaseId" name="SocialSupportcaseId" style="min-width: 100%">
                                                 <option value="">Please select Case worker</option>
                                             </select>
                                         </div>
@@ -92,7 +93,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label for="SocialsupportNoteProblem">Note</label>
-                                        <input id="SocialsupportNoteProblem" name="SocialsupportNoteProblem" placeholder="Enter note" type="text" value="" class="form-control input-sm" style="min-width: 100%; max-width: 100%" />
+                                        <input id="SocialsupportNoteProblem" name="SocialsupportNoteProblem" placeholder="Enter note" type="text" value="" class="form-control form-control-sm" style="min-width: 100%; max-width: 100%" />
                                     </div>
                                 </div>
 
@@ -112,7 +113,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="StatusSocialsupportCase">Status</label>
-                                            <select class="form-control input-sm" id="StatusSocialsupportCase" name="StatusSocialsupportCase" style="min-width: 100%">
+                                            <select class="form-control form-control-sm" id="StatusSocialsupportCase" name="StatusSocialsupportCase" style="min-width: 100%">
                                                 <option value="">Please select Status</option>
                                                 <option value="OpenCase">Open Case</option>
                                                 <option value="CloseCase">Close Case</option>
@@ -129,7 +130,7 @@
                 <hr />
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" onclick="SocialSupportCaseAction();" id="btnSocialSupportCasesAction" class="btn btn-primary btn-sm">Add New</button>
             </div>
         </div>

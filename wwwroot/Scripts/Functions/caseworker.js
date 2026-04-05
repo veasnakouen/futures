@@ -23,7 +23,7 @@ function GetCaseWorkers() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='CaseWorkerEdit(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='CaseWorkerDelete(" + data + ")'><span class='glyphicon glyphicon-trash'></span> Delete</a>";
+                    return "<a href='#' onclick='CaseWorkerEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='CaseWorkerDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
                 },
                 "width": "130px"
             }

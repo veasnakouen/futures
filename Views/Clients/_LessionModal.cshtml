@@ -1,8 +1,9 @@
-﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="lessonModal" tabindex="-1" role="dialog" aria-labelledby="lessonModal" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="lessonModal" tabindex="-1" role="dialog" aria-labelledby="lessonModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Add Lession</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-book-open me-2"></i>Add Lesson</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -10,7 +11,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="SubjectLesson">Subject</label>
-                            <select id="SubjectLesson" name="SubjectLesson" placeholder="Enter Subject" type="text" value="" class="form-control input-sm" style="min-width: 100%">
+                            <select id="SubjectLesson" name="SubjectLesson" placeholder="Enter Subject" type="text" value="" class="form-control form-control-sm" style="min-width: 100%">
                                 <option value="">Select lession</option>
                             </select>
                         </div>
@@ -18,7 +19,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="lessionSub">Lession's Name</label>
-                            <input id="lessionSub" name="lessionSub" placeholder="Enter lession" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="lessionSub" name="lessionSub" placeholder="Enter lession" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
@@ -42,7 +43,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="btnLessionAction" onclick="LessionAction()" class="btn btn-primary btn-sm">Save changes</button>
             </div>
         </div>

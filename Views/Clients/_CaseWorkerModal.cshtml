@@ -1,11 +1,12 @@
-﻿
 
-<div class="modal fade" data-backdrop="static" data-keyboard="false" id="caseWorkerModal" tabindex="-1" role="dialog" aria-labelledby="caseWorkerModal" aria-hidden="true">
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="caseWorkerModal" tabindex="-1" role="dialog" aria-labelledby="caseWorkerModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Case Worker</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-user-tie me-2"></i>Case Worker</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -13,13 +14,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="caseWorkerName">Case Worker's Name</label>
-                            <input id="caseWorkerName" name="caseWorkerName" placeholder="Enter case worker's name'" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="caseWorkerName" name="caseWorkerName" placeholder="Enter case worker's name'" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="Program">Program</label>
-                            <select class="form-control input-sm" id="Program" name="Program" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="Program" name="Program" style="min-width: 100%">
                                 <option value="Futures">Futures</option>
                                 <option value="ChildProtection">Child Protection</option>
                                 <option value="DropIn">Drop In</option>
@@ -35,7 +36,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="caseWorkerStatus">Status</label>
-                            <select class="form-control input-sm" id="caseWorkerStatus">
+                            <select class="form-control form-control-sm" id="caseWorkerStatus">
                                 <option>Active</option>
                                 <option>Inactive</option>
                             </select>
@@ -63,7 +64,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="btnCaseWorkerAction" onclick="CaseWorkerAction()" class="btn btn-primary btn-sm">Save changes</button>
             </div>
         </div>

@@ -126,7 +126,7 @@ function GetSocialSupportsByClientId(id) {
                     {
                         data: "id",
                         render: function (data) {
-                            return "<a href='#' onclick='EditSocial(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='DeleteSocial(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                            return "<a href='#' onclick='EditSocial(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='DeleteSocial(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                         }
                     }
                 ],

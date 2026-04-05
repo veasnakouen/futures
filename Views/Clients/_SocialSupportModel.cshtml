@@ -1,11 +1,12 @@
-﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="socialSupportModel" tabindex="-1" role="dialog" aria-labelledby="socialSupportModel" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="socialSupportModel" tabindex="-1" role="dialog" aria-labelledby="socialSupportModel" aria-hidden="true">
 
     <div class="modal-dialog modal-lg" role="document">
 
         <div class="modal-content">
 
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Social Support Problem and Case</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-hands-helping me-2"></i>Social Support Problem and Case</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -22,7 +23,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="caseIds">Case</label>
-                            <select class="form-control input-sm" id="caseIdss" name="caseIdss" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="caseIdss" name="caseIdss" style="min-width: 100%">
                                 @foreach (var caseId in Model.Cases)
                                 {
                                     <option value=@caseId.Id>@caseId.Id | @caseId.Client.FirstName @caseId.Client.LastName | @caseId.ServiceType | @caseId.OpenDate</option>
@@ -39,14 +40,14 @@
                         <div class="col-md-6">
                             <div class="checkbox">
                                 <label><input class="form-group-lg" id="healthProblemCheckbox" type="checkbox" value="">Health Problem</label>
-                                <input id="healthProblem" name="healthProblem" placeholder="Enter health problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="healthProblem" name="healthProblem" placeholder="Enter health problem" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
 
                        <div class="col-md-6">
                            <div class="checkbox">
                                <label><input id="drugProblemCheckbox" type="checkbox" value="">Drug Problem</label>
-                               <input id="drugProblem" name="drugProblem" placeholder="Enter drug problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                               <input id="drugProblem" name="drugProblem" placeholder="Enter drug problem" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                            </div>
                        </div>
                     </div>
@@ -55,13 +56,13 @@
                         <div class="col-md-6">
                             <div class="checkbox">
                                 <label><input id="babycareProblemCheckbox" type="checkbox" value="">Baby care problem</label>
-                                <input id="babycareProblem" name="babycareProblem" placeholder="Enter baby care problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="babycareProblem" name="babycareProblem" placeholder="Enter baby care problem" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="checkbox">
                                 <label><input id="personalProblemCheckbox" type="checkbox" value="">Personal problem</label>
-                                <input id="personalProblem" name="personalProblem" placeholder="Enter personal problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="personalProblem" name="personalProblem" placeholder="Enter personal problem" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                     </div>
@@ -70,13 +71,13 @@
                         <div class="col-md-6">
                             <div class="checkbox">
                                 <label><input id="legalProblemCheckbox" type="checkbox" value="">Legal problem</label>
-                                <input id="legalProblem" name="legalProblem" placeholder="Enter legal Problem" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                                <input id="legalProblem" name="legalProblem" placeholder="Enter legal Problem" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="checkbox">
                                 <label><input id="otherProblemCheckbox" type="checkbox" value="">Other problem</label>
-                                <input id="otherProblem" name="otherProblem" placeholder="Enter other problem" type="text" value="" class="form-control input-sm" style="min-width: 100%; max-width: 100%" />
+                                <input id="otherProblem" name="otherProblem" placeholder="Enter other problem" type="text" value="" class="form-control form-control-sm" style="min-width: 100%; max-width: 100%" />
                             </div>
                         </div>
                     </div>
@@ -84,7 +85,7 @@
                     <hr />
                 </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" onclick="SocialSupportAction();" id="btnSocialSupportsAction" class="btn btn-primary btn-sm">Add New</button>
             </div>
         </div>

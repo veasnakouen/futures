@@ -49,79 +49,78 @@ namespace MtpApp.Controllers
             return View(viewModel);
         }
 
-        // Reports: SSRS ReportViewer is not supported in .NET 8.
-        // These actions return a placeholder view until a replacement reporting solution is implemented.
+        // Legacy report views render through a shared HTML report helper in ASP.NET Core.
 
         [Route("clients/client-summary-report/clientCodeSearch={clientCodeSearch}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult ClientSummaryReport(string clientCodeSearch, DateTime? startdate, DateTime? enddate)
+        public IActionResult ClientSummaryReport(string clientCodeSearch, string startdate, string enddate)
             => View("ClientSummaryReport");
 
         [Route("clients/employee-seekerlist-report/postion={postion}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult EmploymentSeekerListReport(string postion, DateTime? startdate, DateTime? enddate)
+        public IActionResult EmploymentSeekerListReport(string postion, string startdate, string enddate)
             => View("EmploymentSeekerListReport");
 
         [Route("clients/placement-summary-report/gender={gender}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult PlacementSummaryReport(string gender, DateTime? startdate, DateTime? enddate)
+        public IActionResult PlacementSummaryReport(string gender, string startdate, string enddate)
             => View("PlacementSummaryReport");
 
         [Route("clients/clients-remaining-in-placement-report/gender={gender}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult ClientsRemainingInPlacementReport(string gender, DateTime? startdate, DateTime? enddate)
+        public IActionResult ClientsRemainingInPlacementReport(string gender, string startdate, string enddate)
             => View("ClientsRemainingInPlacement");
 
         [Route("clients/job-readiness-report/ontraining={ontraining}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult JobReadinessReport(string ontraining, DateTime? startdate, DateTime? enddate)
+        public IActionResult JobReadinessReport(string ontraining, string startdate, string enddate)
             => View("JobReadinessReport");
 
         [Route("clients/employers-report/status={status}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult EmployersReport(string status, DateTime? startdate, DateTime? enddate)
+        public IActionResult EmployersReport(string status, string startdate, string enddate)
             => View("EmployersReport");
 
         [Route("clients/job-vancancy-available-report/status={status}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult VancancysReport(string status, DateTime? startdate, DateTime? enddate)
+        public IActionResult VancancysReport(string status, string startdate, string enddate)
             => View("JobVancancyAvailableReport");
 
         [Route("clients/further-euducation-seekerList-report/status={status}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult FurtherEuducationSeekerListReport(string status, DateTime? startdate, DateTime? enddate)
+        public IActionResult FurtherEuducationSeekerListReport(string status, string startdate, string enddate)
             => View("FurtherEuducationseekerListReport");
 
         [Route("clients/placement-monitoring-and-dropout-report/placement={placement}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult PlacementMonitoringAndDropoutReport(string placement, DateTime? startdate, DateTime? enddate)
+        public IActionResult PlacementMonitoringAndDropoutReport(string placement, string startdate, string enddate)
             => View("PlacementMonitoringAndDropoutReport");
 
         [Route("clients/beneficiaries-report/gender={gender}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult beneficiariesReport(string gender, DateTime? startdate, DateTime? enddate)
+        public IActionResult beneficiariesReport(string gender, string startdate, string enddate)
             => View("BeneficiariesReport");
 
         [Route("clients/client-Referral-From-MT-Program-report/startdate={startdate}/enddate={enddate}")]
-        public IActionResult clientReferralFromMTProgramReport(DateTime? startdate, DateTime? enddate)
+        public IActionResult clientReferralFromMTProgramReport(string startdate, string enddate)
             => View("ClientReferralFromMTProgramReport");
 
         [Route("clients/logbooks-report/startdate={startdate}/enddate={enddate}")]
-        public IActionResult LogBooksReport(DateTime? startdate, DateTime? enddate)
+        public IActionResult LogBooksReport(string startdate, string enddate)
             => View("LogBooksReport");
 
         [Route("clients/CaseManager-report/Report={Report}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult CaseManagerReport(string Report, DateTime? startdate, DateTime? enddate)
-            => View("SocialSupportCaseReport");
+        public IActionResult CaseManagerReport(string Report, string startdate, string enddate)
+            => View("CaseManagerReport");
 
         [Route("clients/business-setup-report/gender={gender}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult BusinessSetupReport(string gender, DateTime? startdate, DateTime? enddate)
+        public IActionResult BusinessSetupReport(string gender, string startdate, string enddate)
             => View("BusinessSetupReport");
 
         [Route("clients/businesssetupmonitoiring-Report/gender={gender}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult BusinessSetupMonitoringReport(string gender, DateTime? startdate, DateTime? enddate)
-            => View("BusinessSetupMonitoriingReport");
+        public IActionResult BusinessSetupMonitoringReport(string gender, string startdate, string enddate)
+            => View("BusinessSetupMonitoringReport");
 
         [Route("clients/curriculum-vitae-by-cliend-Id-Report/cvtype={cvtype}/clientId={clientId}/Applyfor={Applyfor}")]
         public IActionResult CurriculumvitaebycliendIdReport(string cvtype, int clientId, string Applyfor)
             => View("CurriculumVitaeByClientReport");
 
         [Route("clients/vtc-student-report/startdate={startdate}/enddate={enddate}")]
-        public IActionResult VTCstudentreport(string clientCodeSearch, DateTime? startdate, DateTime? enddate)
+        public IActionResult VTCstudentreport(string startdate, string enddate)
             => View("VTCstudentReport");
 
         [Route("clients/Client-Lookfor-bussinesss-Setup-Report/FindbusinessSetup={FindbusinessSetup}/startdate={startdate}/enddate={enddate}")]
-        public IActionResult ClientLookforbussinesssSetupReport(string FindbusinessSetup, DateTime? startdate, DateTime? enddate)
+        public IActionResult ClientLookforbussinesssSetupReport(string FindbusinessSetup, string startdate, string enddate)
             => View("ClientLookforbussinesssSetup");
     }
 }

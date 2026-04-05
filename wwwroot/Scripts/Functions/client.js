@@ -36,7 +36,7 @@ function GetClients() {
                     var currentDate = new Date();
                     var year = new Date(data);
                     var age = currentDate.getFullYear() - year.getFullYear();
-                    return Number(age) + ' years old';
+                    return Number(age) + ' yr';
                 }
             },
             {
@@ -57,7 +57,11 @@ function GetClients() {
             {
                 data: "id",
                 render: function (data) {
-                    return "  <button type='button'  onclick='GenerateCV(" + data + ");' class='btn-xs btn-success'>  <span class='glyphicon glyphicon-list-alt'></span> CV​ </button>" + " | " + "<button type='button' class='btn-xs btn-warning'  onclick='Edit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit​ </button>" + " | " + "<button type='button' class='btn-xs btn-danger'  onclick='Delete(" + data + ")'><span class='glyphicon glyphicon-trash'></span> Delete​ </button>";
+                    return "<div class='table-actions'>" +
+                        "<button type='button' onclick='GenerateCV(" + data + ");' class='btn btn-success btn-sm'><i class='fa fa-file-lines me-1'></i>CV</button>" +
+                        "<button type='button' onclick='Edit(" + data + ");' class='btn btn-warning btn-sm'><i class='fa fa-pen-to-square me-1'></i>Edit</button>" +
+                        "<button type='button' onclick='Delete(" + data + ")' class='btn btn-danger btn-sm'><i class='fa fa-trash me-1'></i>Delete</button>" +
+                        "</div>";
                 }
             }
         ],
@@ -431,7 +435,7 @@ function Edit(id) {
             var currentDate = new Date();
             var year = new Date($('#dateOfBirth').val());
             var age = currentDate.getFullYear() - year.getFullYear();
-            var value = Number(age) + ' years old';
+            var value = Number(age) + ' yr';
             $('#age').val(value);
 
             if (result.photo == "") {

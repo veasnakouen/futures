@@ -1,68 +1,66 @@
 ﻿@model MtpApp.ViewModels.JobsViewModel
 
-<div class="container-fluid">
-    <div class="row" style="margin-top: 10px">
-        <div class="col-md-3">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h5 class="modal-title">Salary Range</h5>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>From</label>
-                                <input id="start" name="start" placeholder="0" type="number" value="150" class="form-control input-sm" style="min-width: 100%" />
-                            </div>
+<div class="row g-3">
+    
+        <div class="col-lg-3">
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white"><i class="fa fa-filter me-2"></i>Salary Range</div>
+                <div class="card-body">
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <label class="form-label small">From</label>
+                            <input id="start" name="start" type="number" value="150" class="form-control form-control-sm" />
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>To</label>
-                                <input id="end" name="end" placeholder="0" type="number" value="300" class="form-control input-sm" style="min-width: 100%" />
-                            </div>
+                        <div class="col-6">
+                            <label class="form-label small">To</label>
+                            <input id="end" name="end" type="number" value="300" class="form-control form-control-sm" />
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <button type="button" id="btnFilterSalary" class="btn btn-primary btn-block btn-sm js-filter-salary" onclick="FilterBySalary();"><span class="glyphicon glyphicon-search"></span> Search</button>
-                        </div>
-                    </div>
+                    <button type="button" id="btnFilterSalary" class="btn btn-primary btn-sm w-100" onclick="FilterBySalary();">
+                        <i class="fa fa-search me-1"></i> Search
+                    </button>
                 </div>
             </div>
 
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h5 class="modal-title">Available Jobs By Category</h5>
-                </div>
-                <div class="panel-body">
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white"><i class="fa fa-tags me-2"></i>By Category</div>
+                <div class="card-body p-2">
                     @foreach (var job in Model.JobsByCategory)
                     {
-                        <p><a href="#" onclick='FilterByCategory("@job.Name");'><span class="glyphicon glyphicon-briefcase"></span> <b>@job.Name</b> <span class="badge pull-right"> @job.Total positions</span></a></p>
+                        <a href="#" class="d-flex justify-content-between align-items-center text-decoration-none text-dark py-1 px-2 rounded hover-bg" onclick='FilterByCategory("@job.Name");'>
+                            <span><i class="fa fa-briefcase me-2 text-muted"></i>@job.Name</span>
+                            <span class="badge bg-primary rounded-pill">@job.Total</span>
+                        </a>
                     }
                 </div>
             </div>
 
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h5 class="modal-title">Available Jobs By Employer</h5>
-                </div>
-                <div class="panel-body">
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white"><i class="fa fa-building me-2"></i>By Employer</div>
+                <div class="card-body p-2">
                     @foreach (var job in Model.JobsByEmployer)
                     {
-                        <p><a href="#" onclick='FilterByEmployer("@job.EmployerName");'><span class="glyphicon glyphicon-briefcase"></span> <b>@job.EmployerName</b> <span class="badge pull-right"> @job.Total position(s)</span></a></p>
+                        <a href="#" class="d-flex justify-content-between align-items-center text-decoration-none text-dark py-1 px-2 rounded hover-bg" onclick='FilterByEmployer("@job.EmployerName");'>
+                            <span><i class="fa fa-briefcase me-2 text-muted"></i>@job.EmployerName</span>
+                            <span class="badge bg-success rounded-pill">@job.Total</span>
+                        </a>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-md-9">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <button type="button" id="btnJobList" class="btn btn-success pull-right btn-xs" onclick="ShowAllJobs();"><span class="glyphicon glyphicon-refresh"></span> Show All Available Jobs</button>
-                    <h5 class="modal-title">Job List <span id="jobCategoryTitle"></span></h5>
+
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header bg-dark text-white d-flex align-items-center">
+                    <i class="fa fa-clipboard-list me-2"></i>
+                    <span>Job List <span id="jobCategoryTitle" class="ms-1 badge bg-secondary"></span></span>
+                    <button type="button" id="btnJobList" class="btn btn-success btn-sm ms-auto" onclick="ShowAllJobs();">
+                        <i class="fa fa-rotate me-1"></i> Show All Available Jobs
+                    </button>
                 </div>
-                <div class="panel-body">
-                    <div id="overflowTable" style="overflow-x: auto;">
-                        <table id="jobList" class="table table-hover table-bordered">
+                <div class="card-body p-0">
+                    <div style="overflow-x: auto;">
+                        <table id="jobList" class="table table-hover table-bordered mb-0">
                             <thead>
                                 <tr>
                                     <th style="width: 35px">V.ID</th>
@@ -83,11 +81,10 @@
         </div>
     </div>
 
-</div>
-
 @Html.Partial("_JobDetailModal")
 
 @section scripts
 {
     <script src="~/Scripts/Functions/futuresdashboard.js"></script>
 }
+

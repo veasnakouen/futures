@@ -372,7 +372,7 @@ function GetVacancies(employerId) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='Edit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                    return "<a href='#' onclick='Edit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='Delete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                 }
             }
         ],
@@ -417,7 +417,7 @@ function GetOverDeadline() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='Reactivate(" + data + ")'><span class='glyphicon glyphicon-refresh'></span> Reactivate</a>";
+                    return "<a href='#' onclick='Reactivate(" + data + ")'><i class='fa fa-rotate'></i> Reactivate</a>";
                 }
             }
         ],

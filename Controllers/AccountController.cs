@@ -40,24 +40,48 @@ namespace MtpApp.Controllers
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (!ModelState.IsValid) return View(model);
+            ViewBag.ReturnUrl = returnUrl;
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid email or password.");
+                return View(model);
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(
+                user.UserName ?? user.Email,
+                model.Password,
+                model.RememberMe,
+                lockoutOnFailure: false);
+
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                _context.LoginHistorys.Add(new LoginHistory
+                try
                 {
-                    LoggedBy = $"{user?.FirstName} {user?.LastName}",
-                    LoggedDate = DateTime.UtcNow,
-                    IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                    HostName = Request.Headers["User-Agent"].ToString()
-                });
-                await _context.SaveChangesAsync();
+                    _context.LoginHistorys.Add(new LoginHistory
+                    {
+                        LoggedBy = $"{user.FirstName} {user.LastName}",
+                        LoggedDate = DateTime.UtcNow,
+                        IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                        HostName = Request.Headers["User-Agent"].ToString()
+                    });
+
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+                    // Do not block login if history logging fails.
+                }
+
                 return RedirectToLocal(returnUrl);
             }
 
-            TempData["msg"] = "Login failed.";
             ModelState.AddModelError(string.Empty, "Invalid email or password.");
             return View(model);
         }
@@ -142,6 +166,36 @@ namespace MtpApp.Controllers
             if (result.Succeeded) return View("ConfirmEmail");
             AddErrors(result);
             return View();
+        }
+
+        [HttpGet, Authorize]
+        public async Task<IActionResult> Manage(ManageMessageId? message = null)
+        {
+            ViewBag.StatusMessage = message switch
+            {
+                ManageMessageId.ChangePasswordSuccess => "Your password has been changed.",
+                ManageMessageId.Error => "An error has occurred.",
+                _ => ""
+            };
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userManager.FindByIdAsync(userId);
+            ViewBag.HasLocalPassword = user?.PasswordHash != null;
+            return View();
+        }
+
+        [HttpPost, Authorize, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Manage(ManageUserViewModel model)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return View(model);
+
+            var changeResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            if (changeResult.Succeeded)
+                return RedirectToAction(nameof(Manage), new { Message = ManageMessageId.ChangePasswordSuccess });
+
+            AddErrors(changeResult);
+            return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

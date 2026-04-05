@@ -38,9 +38,9 @@ function GetLogbook() {
               render: function (data) {
                   var jobinformation = data;
                   if (jobinformation == true) {
-                      return "<span style='color:#18bc9c;'> Need <span class='glyphicon glyphicon-ok'></span></span>";
+                      return "<span style='color:#18bc9c;'> Need <i class='fa fa-check'></i></span>";
                   } else {
-                      return "<span style='color:red;'>No Need <span class='glyphicon glyphicon-remove'></span></span>";
+                      return "<span style='color:red;'>No Need <i class='fa fa-xmark'></i></span>";
                   };
 
               }
@@ -50,9 +50,9 @@ function GetLogbook() {
                render: function (data) {
                    var jobinformation = data;
                    if (jobinformation == true) {
-                       return "<span style='color:#18bc9c;'> Need <span class='glyphicon glyphicon-ok'></span></span>";
+                       return "<span style='color:#18bc9c;'> Need <i class='fa fa-check'></i></span>";
                    } else {
-                       return "<span style='color:red;'>No Need <span class='glyphicon glyphicon-remove'></span></span>";
+                       return "<span style='color:red;'>No Need <i class='fa fa-xmark'></i></span>";
                    };
 
                }
@@ -62,9 +62,9 @@ function GetLogbook() {
                 render: function (data) {
                     var jobinformation = data;
                     if (jobinformation == true) {
-                        return "<span style='color:#18bc9c;'> Need <span class='glyphicon glyphicon-ok'></span></span>";
+                        return "<span style='color:#18bc9c;'> Need <i class='fa fa-check'></i></span>";
                     } else {
-                        return "<span style='color:red;'>No Need <span class='glyphicon glyphicon-remove'></span></span>";
+                        return "<span style='color:red;'>No Need <i class='fa fa-xmark'></i></span>";
                     };
 
                 }
@@ -74,9 +74,9 @@ function GetLogbook() {
                   render: function (data) {
                       var jobinformation = data;
                       if (jobinformation == true) {
-                          return "<span style='color:#18bc9c;'> Need <span class='glyphicon glyphicon-ok'></span></span>";
+                          return "<span style='color:#18bc9c;'> Need <i class='fa fa-check'></i></span>";
                       } else {
-                          return "<span style='color:red;'>No Need <span class='glyphicon glyphicon-remove'></span></span>";
+                          return "<span style='color:red;'>No Need <i class='fa fa-xmark'></i></span>";
                       };
 
                   }
@@ -86,9 +86,9 @@ function GetLogbook() {
                     render: function (data) {
                         var jobinformation = data;
                         if (jobinformation == true) {
-                            return "<span style='color:#18bc9c;'> Need <span class='glyphicon glyphicon-ok'></span></span>";
+                            return "<span style='color:#18bc9c;'> Need <i class='fa fa-check'></i></span>";
                         } else {
-                            return "<span style='color:red;'>No Need <span class='glyphicon glyphicon-remove'></span></span>";
+                            return "<span style='color:red;'>No Need <i class='fa fa-xmark'></i></span>";
                         };
                        
                     }
@@ -105,7 +105,7 @@ function GetLogbook() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='LogbookEdit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='LogbookDelete(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                    return "<a href='#' onclick='LogbookEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='LogbookDelete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                 }
             }
         ],

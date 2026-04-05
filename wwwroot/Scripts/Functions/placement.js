@@ -64,7 +64,7 @@ function GetPlacementByClientId(id) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='PlacementEdit(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='PlacementDelete(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                    return "<a href='#' onclick='PlacementEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='PlacementDelete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                 }
             }
         ],

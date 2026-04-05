@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using MtpApp.ViewModels;
@@ -6,6 +7,7 @@ using System.Linq;
 
 namespace MtpApp.Controllers
 {
+    [Authorize]
     public class VacanciesController : Controller
     {
         private readonly ApplicationDbContext _context;

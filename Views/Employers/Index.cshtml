@@ -1,59 +1,55 @@
-﻿@model MtpApp.ViewModels.EmployerViewModel
+@model MtpApp.ViewModels.EmployerViewModel
 
-<div class="container-fluid">
-    <div class="panel panel-primary" style="margin-top: 10px;">
-        <div class="panel-heading clearfix">
-            <h5 class="modal-title">Manage Employers</h5>
+<div class="card">
+    <div class="card-header bg-dark text-white d-flex align-items-center flex-wrap gap-2">
+        <i class="fa fa-building me-1"></i>
+        <span class="fw-semibold">Manage Employers</span>
+        <div class="ms-auto d-flex flex-wrap gap-1">
+            @Html.ActionLink("Manage Vacancy", "Index", "Vacancies", null, new { @class = "btn btn-outline-secondary btn-sm" })
+            <button data-bs-toggle="modal" data-bs-target="#jobPositionModal" class="btn btn-outline-secondary btn-sm">
+                <i class="fa fa-plus me-1"></i> Job Position
+            </button>
+            <button data-bs-toggle="modal" data-bs-target="#jobCategoryModal" class="btn btn-outline-secondary btn-sm">
+                <i class="fa fa-plus me-1"></i> Job Category
+            </button>
+            <button onclick="clearForm();" data-bs-toggle="modal" data-bs-target="#employerModal" class="btn btn-primary btn-sm">
+                <i class="fa fa-briefcase me-1"></i> Add Employer
+            </button>
         </div>
-        <div class="panel-body">
-            <div class="form-inline row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="displayStatus">Display Corporate Employer: </label>
-                        <select class="form-control input-sm" id="displayStatus">
-                            <option>Active</option>
-                            <option>Inactive</option>
-                        </select>
-                    </div>
-                    <button data-toggle="modal" data-target="#newPartnerFilter" class="btn btn-primary btn-sm" style="margin-right: 5px">
-                        <span class="glyphicon glyphicon-search"></span> Filter New Partner
-                    </button>
-                    <button onclick="resetFilter();" class="btn btn-primary btn-sm" style="margin-right: 5px">
-                        <span class="glyphicon glyphicon-search"></span> Reset Filter
-                    </button>
-                </div>
-                <div class="col-md-6">
-                    <button onclick="clearForm();" data-toggle="modal" data-target="#employerModal" class="btn btn-primary btn-sm pull-right">
-                        <span class="glyphicon glyphicon-briefcase"></span> Add Employer
-                    </button>
-                    <button data-toggle="modal" data-target="#jobCategoryModal" class="btn btn-primary btn-sm pull-right" style="margin-right: 5px">
-                        <span class="glyphicon glyphicon-plus-sign"></span> Add Job Category
-                    </button>
-                    <button data-toggle="modal" data-target="#jobPositionModal" class="btn btn-primary btn-sm pull-right" style="margin-right: 5px">
-                        <span class="glyphicon glyphicon-plus-sign"></span> Add Job Position
-                    </button>
-                    @Html.ActionLink("Manage Vacancy", "Index", "Vacancies", null, new { @class = "btn btn-primary btn-sm pull-right", @style = "margin-right: 5px" })
-                </div>
+    </div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <label for="displayStatus" class="mb-0 text-nowrap">Status:</label>
+                <select class="form-select form-select-sm" id="displayStatus" style="width:auto;">
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
             </div>
-            <hr />
-            <div id="overflowTable" style="overflow-x: auto;">
-                <table id="employers" class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <th style="width: 35px">E.ID</th>
-                            <th style="width: 95px">Corporate Date</th>
-                            <th style="width: 60px">Duration</th>
-                            <th>Employer Name</th>
-                            <th>Sector</th>
-                            <th>Contact Person</th>
-                            <th>Contact Phone</th>
-                            <th>Email</th>
-                            <th style="width: 90px;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <button data-bs-toggle="modal" data-bs-target="#newPartnerFilter" class="btn btn-outline-secondary btn-sm">
+                <i class="fa fa-search me-1"></i> Filter New Partner
+            </button>
+            <button onclick="resetFilter();" class="btn btn-outline-secondary btn-sm">
+                <i class="fa fa-rotate me-1"></i> Reset Filter
+            </button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="employers" class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 35px">E.ID</th>
+                        <th style="width: 95px">Corporate Date</th>
+                        <th style="width: 60px">Duration</th>
+                        <th>Employer Name</th>
+                        <th>Sector</th>
+                        <th>Contact Person</th>
+                        <th>Contact Phone</th>
+                        <th>Email</th>
+                        <th style="width: 90px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 

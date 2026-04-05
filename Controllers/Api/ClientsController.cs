@@ -2,12 +2,15 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MtpApp.Dtos;
+using MtpApp.Infrastructure;
 using MtpApp.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -40,15 +43,33 @@ namespace MtpApp.Controllers.Api
         [HttpGet("chart")]
         public IActionResult GetClientsChart([FromQuery] string Client)
         {
-            DataSet dts = new DataSet();
+            var results = new List<ChartDto>();
             var connectionString = GetConnectionString();
-            SqlConnection conx = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand("ChartDashBoard_Proc", conx);
+
+            using var conx = new SqlConnection(connectionString);
+            using var cmd = new SqlCommand("ChartDashBoard_Proc", conx);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@ChartReport", Client);
-            SqlDataAdapter adp = new SqlDataAdapter(cmd);
-            adp.Fill(dts);
-            return Ok(dts);
+            cmd.Parameters.Add("@ChartReport", SqlDbType.NVarChar, 255).Value = Client ?? (object)DBNull.Value;
+
+            try
+            {
+                conx.Open();
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    results.Add(new ChartDto
+                    {
+                        Label = reader.IsDBNull(0) ? string.Empty : reader.GetString(0),
+                        Value = reader.IsDBNull(1) ? 0 : reader.GetInt32(1)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Failed to fetch chart data.", detail = ex.Message });
+            }
+
+            return Ok(results);
         }
 
         [HttpGet]
@@ -56,9 +77,11 @@ namespace MtpApp.Controllers.Api
         {
             var userId = GetUserId();
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
+            if (user == null)
+                return Unauthorized();
 
             var clients = _context.Clients
-                .Where(c => c.Branch == user.Branch && c.Status == "Active")
+                .Where(c => c.Branch == user.Branch)
                 .ToList()
                 .Select(c => _mapper.Map<Client, ClientDto>(c));
 
@@ -68,7 +91,7 @@ namespace MtpApp.Controllers.Api
         [HttpGet("{id}")]
         public IActionResult GetClient(int id)
         {
-            var client = _context.Clients.SingleOrDefault(c => c.Id == id && c.Status == "Active");
+            var client = _context.Clients.SingleOrDefault(c => c.Id == id);
             if (client == null)
                 return NotFound();
 
@@ -78,90 +101,116 @@ namespace MtpApp.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> CreateClient()
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+            var form = Request.Form;
+            var errors = new List<string>();
 
-            var firstName = Request.Form["FirstName"].ToString();
-            var lastName = Request.Form["LastName"].ToString();
+            // Validate required fields
+            var firstName = FormHelpers.GetFormValue(form, "FirstName");
+            var lastName = FormHelpers.GetFormValue(form, "LastName");
+            if (string.IsNullOrWhiteSpace(firstName))
+                errors.Add("FirstName is required.");
+            if (string.IsNullOrWhiteSpace(lastName))
+                errors.Add("LastName is required.");
 
-            var clientInDb = _context.Clients
-                .FirstOrDefault(c => c.FirstName == firstName && c.LastName == lastName);
+            // Validate dates
+            var dobError = FormHelpers.ValidateDateString(form, "DateOfBirth", out var dateOfBirth);
+            if (dobError != null) errors.Add(dobError);
 
-            if (clientInDb != null)
-                return BadRequest("Client already exists");
+            var regDateError = FormHelpers.ValidateDateString(form, "RegisterDate", out var registerDate);
+            if (regDateError != null) errors.Add(regDateError);
 
-            string ImageName = "";
-            string ImageNameIdCard = "";
+            FormHelpers.ValidateDateString(form, "IdpoorValiddate", out var idpoorValiddate);
 
-            var httpPostedFile = Request.Form.Files.GetFile("UploadedFile");
-            if (httpPostedFile != null)
+            // Check for duplicate client
+            if (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
             {
-                ImageName = string.Concat(
-                    Path.GetFileNameWithoutExtension(httpPostedFile.FileName),
-                    DateTime.Now.ToString("_yyyy_MM_dd_HH_mm_ss"),
-                    Path.GetExtension(httpPostedFile.FileName));
-
-                var fileSavePath = Path.Combine(GetImagesPath(), ImageName);
-                using var stream = new FileStream(fileSavePath, FileMode.Create);
-                await httpPostedFile.CopyToAsync(stream);
+                var clientInDb = _context.Clients
+                    .IgnoreQueryFilters()
+                    .FirstOrDefault(c => c.FirstName == firstName && c.LastName == lastName && c.Status == "Active");
+                if (clientInDb != null)
+                    errors.Add("Client already exists.");
             }
 
-            var httpPostedFileCardId = Request.Form.Files.GetFile("UploadedFileIdCard");
-            if (httpPostedFileCardId != null)
-            {
-                ImageNameIdCard = string.Concat(
-                    Path.GetFileNameWithoutExtension(httpPostedFileCardId.FileName),
-                    DateTime.Now.ToString("_yyyy_MM_dd_HH_mm_ss"),
-                    Path.GetExtension(httpPostedFileCardId.FileName));
+            if (errors.Any())
+                return BadRequest(new { errors });
 
-                var fileSavePath = Path.Combine(GetImagesPath(), ImageNameIdCard);
-                using var stream = new FileStream(fileSavePath, FileMode.Create);
-                await httpPostedFileCardId.CopyToAsync(stream);
+            // Validate and upload photo
+            string imageName = "";
+            var httpPostedFile = Request.Form.Files.GetFile("UploadedFile");
+            if (httpPostedFile != null && httpPostedFile.Length > 0)
+            {
+                if (!FileUploadValidator.IsValidFile(httpPostedFile, out var fileError))
+                    return BadRequest(new { errors = new[] { fileError } });
+
+                imageName = FileUploadValidator.GenerateSafeFileName(httpPostedFile.FileName);
+                var fileSavePath = Path.Combine(GetImagesPath(), imageName);
+                using (var stream = new FileStream(fileSavePath, FileMode.Create))
+                {
+                    await httpPostedFile.CopyToAsync(stream);
+                }
+            }
+
+            // Validate and upload ID card
+            string imageNameIdCard = "";
+            var httpPostedFileCardId = Request.Form.Files.GetFile("UploadedFileIdCard");
+            if (httpPostedFileCardId != null && httpPostedFileCardId.Length > 0)
+            {
+                if (!FileUploadValidator.IsValidFile(httpPostedFileCardId, out var fileError))
+                    return BadRequest(new { errors = new[] { fileError } });
+
+                imageNameIdCard = FileUploadValidator.GenerateSafeFileName(httpPostedFileCardId.FileName);
+                var fileSavePath = Path.Combine(GetImagesPath(), imageNameIdCard);
+                using (var stream = new FileStream(fileSavePath, FileMode.Create))
+                {
+                    await httpPostedFileCardId.CopyToAsync(stream);
+                }
             }
 
             var userId = GetUserId();
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
+            if (user == null)
+                return Unauthorized();
 
             var clientDto = new ClientDto()
             {
                 Branch = user.Branch,
-                ClientCode = Request.Form["ClientCode"],
-                FirstName = Request.Form["FirstName"],
-                LastName = Request.Form["LastName"],
-                Gender = Request.Form["Gender"],
-                DateOfBirth = DateTime.ParseExact(Request.Form["DateOfBirth"], "MM/dd/yyyy", null),
-                ContactPhone = Request.Form["ContactPhone"],
-                RelativePhone = Request.Form["RelativePhone"],
-                MaritalStatus = Request.Form["MaritalStatus"],
-                Email = Request.Form["Email"],
-                Address = Request.Form["Address"],
-                Province = Request.Form["Province"],
-                Photo = ImageName,
-                IdCard = ImageNameIdCard,
-                CurrentSituation = Request.Form["CurrentSituation"],
-                FurtherEducation = Boolean.Parse(Request.Form["FurtherEducation"]),
-                Placement = Boolean.Parse(Request.Form["Placement"]),
-                TrainingFromFutures = Boolean.Parse(Request.Form["TrainingFromFutures"]),
-                SocialSupportRequired = Boolean.Parse(Request.Form["SocialSupportRequired"]),
-                HearBy = Request.Form["HearBy"],
-                ExpectedSupport = Request.Form["ExpectedSupport"],
+                ClientCode = FormHelpers.GetFormValue(form, "ClientCode"),
+                FirstName = firstName,
+                LastName = lastName,
+                Gender = FormHelpers.GetFormValue(form, "Gender"),
+                DateOfBirth = dateOfBirth,
+                ContactPhone = FormHelpers.GetFormValue(form, "ContactPhone"),
+                RelativePhone = FormHelpers.GetFormValue(form, "RelativePhone"),
+                MaritalStatus = FormHelpers.GetFormValue(form, "MaritalStatus"),
+                Email = FormHelpers.GetFormValue(form, "Email"),
+                Address = FormHelpers.GetFormValue(form, "Address"),
+                Province = FormHelpers.GetFormValue(form, "Province"),
+                Photo = imageName,
+                IdCard = imageNameIdCard,
+                CurrentSituation = FormHelpers.GetFormValue(form, "CurrentSituation"),
+                FurtherEducation = FormHelpers.ParseBool(FormHelpers.GetFormValue(form, "FurtherEducation")),
+                Placement = FormHelpers.ParseBool(FormHelpers.GetFormValue(form, "Placement")),
+                TrainingFromFutures = FormHelpers.ParseBool(FormHelpers.GetFormValue(form, "TrainingFromFutures")),
+                SocialSupportRequired = FormHelpers.ParseBool(FormHelpers.GetFormValue(form, "SocialSupportRequired")),
+                HearBy = FormHelpers.GetFormValue(form, "HearBy"),
+                ExpectedSupport = FormHelpers.GetFormValue(form, "ExpectedSupport"),
                 AspUserId = userId,
                 EnrollDate = DateTime.Now,
-                RegisterDate = DateTime.ParseExact(Request.Form["RegisterDate"], "MM/dd/yyyy", null),
-                PlaceOfBirth = Request.Form["PlaceOfBirth"],
-                Nationality = Request.Form["Nationality"],
-                Citizenship = Request.Form["Citizenship"],
-                Height = Request.Form["Height"],
-                Weight = Request.Form["Weight"],
-                SocialSupportProblem = Request.Form["SocialSupportProblem"],
-                IdpoorStatus = Request.Form["IdpoorStatus"],
-                IdpoorValiddate = DateTime.ParseExact(Request.Form["IdpoorValiddate"], "MM/dd/yyyy", null),
-                IdpoorLevel = Request.Form["IdpoorLevel"],
-                IdpoorAccountNumber = Request.Form["IdpoorAccountNumber"],
+                RegisterDate = registerDate,
+                PlaceOfBirth = FormHelpers.GetFormValue(form, "PlaceOfBirth"),
+                Nationality = FormHelpers.GetFormValue(form, "Nationality"),
+                Citizenship = FormHelpers.GetFormValue(form, "Citizenship"),
+                Height = FormHelpers.GetFormValue(form, "Height"),
+                Weight = FormHelpers.GetFormValue(form, "Weight"),
+                SocialSupportProblem = FormHelpers.GetFormValue(form, "SocialSupportProblem"),
+                IdpoorStatus = FormHelpers.GetFormValue(form, "IdpoorStatus"),
+                IdpoorValiddate = idpoorValiddate,
+                IdpoorLevel = FormHelpers.GetFormValue(form, "IdpoorLevel"),
+                IdpoorAccountNumber = FormHelpers.GetFormValue(form, "IdpoorAccountNumber"),
                 Status = "Active"
             };
 
-            var client = _mapper.Map<ClientDto, Client>(clientDto);
+            var client = _mapper.Map<Client>(clientDto);
 
             _context.Clients.Add(client);
             await _context.SaveChangesAsync();
@@ -174,24 +223,45 @@ namespace MtpApp.Controllers.Api
         [HttpPut]
         public async Task<IActionResult> UpdateClient()
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+            var form = Request.Form;
+            var errors = new List<string>();
 
-            var id = int.Parse(Request.Form["id"]);
+            if (!int.TryParse(FormHelpers.GetFormValue(form, "id"), out var id))
+                return BadRequest(new { errors = new[] { "Invalid client ID." } });
+
             var clientInDb = _context.Clients.SingleOrDefault(c => c.Id == id);
-
             if (clientInDb == null)
                 return NotFound();
 
+            // Validate dates
+            var dobError = FormHelpers.ValidateDateString(form, "DateOfBirth", out var dateOfBirth);
+            if (dobError != null) errors.Add(dobError);
+
+            var regDateError = FormHelpers.ValidateDateString(form, "RegisterDate", out var registerDate);
+            if (regDateError != null) errors.Add(regDateError);
+
+            FormHelpers.ValidateDateString(form, "RegisterDateNd", out var registerDateNd);
+            FormHelpers.ValidateDateString(form, "RegisterDateRd", out var registerDateRd);
+            FormHelpers.ValidateDateString(form, "IdpoorValiddate", out var idpoorValiddate);
+
+            if (errors.Any())
+                return BadRequest(new { errors });
+
             var userId = GetUserId();
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
+            if (user == null)
+                return Unauthorized();
 
-            string ImageName = clientInDb.Photo;
-            string ImageNameIdCard = clientInDb.IdCard;
+            string imageName = clientInDb.Photo;
+            string imageNameIdCard = clientInDb.IdCard;
 
+            // Validate and upload new photo
             var httpPostedFile = Request.Form.Files.GetFile("UploadedFile");
-            if (httpPostedFile != null)
+            if (httpPostedFile != null && httpPostedFile.Length > 0)
             {
+                if (!FileUploadValidator.IsValidFile(httpPostedFile, out var fileError))
+                    return BadRequest(new { errors = new[] { fileError } });
+
                 // Delete old image
                 if (!string.IsNullOrEmpty(clientInDb.Photo))
                 {
@@ -200,70 +270,70 @@ namespace MtpApp.Controllers.Api
                         System.IO.File.Delete(oldImagePath);
                 }
 
-                ImageName = string.Concat(
-                    Path.GetFileNameWithoutExtension(httpPostedFile.FileName),
-                    DateTime.Now.ToString("_yyyy_MM_dd_HH_mm_ss"),
-                    Path.GetExtension(httpPostedFile.FileName));
-
-                var fileSavePath = Path.Combine(GetImagesPath(), ImageName);
-                using var stream = new FileStream(fileSavePath, FileMode.Create);
-                await httpPostedFile.CopyToAsync(stream);
+                imageName = FileUploadValidator.GenerateSafeFileName(httpPostedFile.FileName);
+                var fileSavePath = Path.Combine(GetImagesPath(), imageName);
+                using (var stream = new FileStream(fileSavePath, FileMode.Create))
+                {
+                    await httpPostedFile.CopyToAsync(stream);
+                }
             }
 
+            // Validate and upload new ID card
             var httpPostedFileCardId = Request.Form.Files.GetFile("UploadedFileIdCard");
-            if (httpPostedFileCardId != null)
+            if (httpPostedFileCardId != null && httpPostedFileCardId.Length > 0)
             {
-                ImageNameIdCard = string.Concat(
-                    Path.GetFileNameWithoutExtension(httpPostedFileCardId.FileName),
-                    DateTime.Now.ToString("_yyyy_MM_dd_HH_mm_ss"),
-                    Path.GetExtension(httpPostedFileCardId.FileName));
+                if (!FileUploadValidator.IsValidFile(httpPostedFileCardId, out var fileError))
+                    return BadRequest(new { errors = new[] { fileError } });
 
-                var fileSavePath = Path.Combine(GetImagesPath(), ImageNameIdCard);
-                using var stream = new FileStream(fileSavePath, FileMode.Create);
-                await httpPostedFileCardId.CopyToAsync(stream);
+                imageNameIdCard = FileUploadValidator.GenerateSafeFileName(httpPostedFileCardId.FileName);
+                var fileSavePath = Path.Combine(GetImagesPath(), imageNameIdCard);
+                using (var stream = new FileStream(fileSavePath, FileMode.Create))
+                {
+                    await httpPostedFileCardId.CopyToAsync(stream);
+                }
             }
 
             var clientDto = new ClientDto()
             {
                 Id = id,
                 Branch = user.Branch,
-                ClientCode = Request.Form["ClientCode"],
-                FirstName = Request.Form["FirstName"],
-                LastName = Request.Form["LastName"],
-                Gender = Request.Form["Gender"],
-                DateOfBirth = DateTime.ParseExact(Request.Form["DateOfBirth"], "MM/dd/yyyy", null),
-                ContactPhone = Request.Form["ContactPhone"],
-                RelativePhone = Request.Form["RelativePhone"],
-                MaritalStatus = Request.Form["MaritalStatus"],
-                Email = Request.Form["Email"],
-                Address = Request.Form["Address"],
-                Province = Request.Form["Province"],
-                Photo = ImageName,
-                IdCard = ImageNameIdCard,
-                CurrentSituation = Request.Form["CurrentSituation"],
-                FurtherEducation = Boolean.Parse(Request.Form["FurtherEducation"]),
-                Placement = Boolean.Parse(Request.Form["Placement"]),
-                TrainingFromFutures = Boolean.Parse(Request.Form["TrainingFromFutures"]),
-                SocialSupportRequired = Boolean.Parse(Request.Form["SocialSupportRequired"]),
-                HearBy = Request.Form["HearBy"],
-                ExpectedSupport = Request.Form["ExpectedSupport"],
+                ClientCode = FormHelpers.GetFormValue(form, "ClientCode"),
+                FirstName = FormHelpers.GetFormValue(form, "FirstName"),
+                LastName = FormHelpers.GetFormValue(form, "LastName"),
+                Gender = FormHelpers.GetFormValue(form, "Gender"),
+                DateOfBirth = dateOfBirth,
+                ContactPhone = FormHelpers.GetFormValue(form, "ContactPhone"),
+                RelativePhone = FormHelpers.GetFormValue(form, "RelativePhone"),
+                MaritalStatus = FormHelpers.GetFormValue(form, "MaritalStatus"),
+                Email = FormHelpers.GetFormValue(form, "Email"),
+                Address = FormHelpers.GetFormValue(form, "Address"),
+                Province = FormHelpers.GetFormValue(form, "Province"),
+                Photo = imageName,
+                IdCard = imageNameIdCard,
+                CurrentSituation = FormHelpers.GetFormValue(form, "CurrentSituation"),
+                FurtherEducation = FormHelpers.ParseBool(FormHelpers.GetFormValue(form, "FurtherEducation")),
+                Placement = FormHelpers.ParseBool(FormHelpers.GetFormValue(form, "Placement")),
+                TrainingFromFutures = FormHelpers.ParseBool(FormHelpers.GetFormValue(form, "TrainingFromFutures")),
+                SocialSupportRequired = FormHelpers.ParseBool(FormHelpers.GetFormValue(form, "SocialSupportRequired")),
+                HearBy = FormHelpers.GetFormValue(form, "HearBy"),
+                ExpectedSupport = FormHelpers.GetFormValue(form, "ExpectedSupport"),
                 AspUserId = clientInDb.AspUserId,
                 EnrollDate = clientInDb.EnrollDate,
-                RegisterDate = DateTime.ParseExact(Request.Form["RegisterDate"], "MM/dd/yyyy", null),
-                RegisterDateNd = DateTime.ParseExact(Request.Form["RegisterDateNd"], "MM/dd/yyyy", null),
-                RegisterDateRd = DateTime.ParseExact(Request.Form["RegisterDateRd"], "MM/dd/yyyy", null),
+                RegisterDate = registerDate,
+                RegisterDateNd = registerDateNd,
+                RegisterDateRd = registerDateRd,
                 UpdateDate = DateTime.Today,
                 UpdateBy = userId,
-                PlaceOfBirth = Request.Form["PlaceOfBirth"],
-                Nationality = Request.Form["Nationality"],
-                Citizenship = Request.Form["Citizenship"],
-                Height = Request.Form["Height"],
-                Weight = Request.Form["Weight"],
-                SocialSupportProblem = Request.Form["SocialSupportProblem"],
-                IdpoorStatus = Request.Form["IdpoorStatus"],
-                IdpoorValiddate = DateTime.ParseExact(Request.Form["IdpoorValiddate"], "MM/dd/yyyy", null),
-                IdpoorLevel = Request.Form["IdpoorLevel"],
-                IdpoorAccountNumber = Request.Form["IdpoorAccountNumber"],
+                PlaceOfBirth = FormHelpers.GetFormValue(form, "PlaceOfBirth"),
+                Nationality = FormHelpers.GetFormValue(form, "Nationality"),
+                Citizenship = FormHelpers.GetFormValue(form, "Citizenship"),
+                Height = FormHelpers.GetFormValue(form, "Height"),
+                Weight = FormHelpers.GetFormValue(form, "Weight"),
+                SocialSupportProblem = FormHelpers.GetFormValue(form, "SocialSupportProblem"),
+                IdpoorStatus = FormHelpers.GetFormValue(form, "IdpoorStatus"),
+                IdpoorValiddate = idpoorValiddate,
+                IdpoorLevel = FormHelpers.GetFormValue(form, "IdpoorLevel"),
+                IdpoorAccountNumber = FormHelpers.GetFormValue(form, "IdpoorAccountNumber"),
                 Status = "Active"
             };
 
@@ -282,18 +352,11 @@ namespace MtpApp.Controllers.Api
             if (clientInDb == null)
                 return NotFound();
 
-            _context.Clients.Remove(clientInDb);
+            // Soft delete: update status instead of hard delete
+            clientInDb.Status = "Inactive";
             _context.SaveChanges();
-
-            if (!string.IsNullOrEmpty(clientInDb.Photo))
-            {
-                var imagePath = Path.Combine(GetImagesPath(), clientInDb.Photo);
-                if (System.IO.File.Exists(imagePath))
-                    System.IO.File.Delete(imagePath);
-            }
 
             return Ok(new { });
         }
     }
 }
-

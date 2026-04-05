@@ -16,8 +16,8 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.25" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
     <!-- Client libraries updated -->
     <PackageReference Include="jQuery" Version="3.7.1" />
     <PackageReference Include="jquery.datatables" Version="1.10.11" />
@@ -37,6 +37,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\**\*.cs" />
     <EmbeddedResource Remove="Migrations\**\*.resx" />
+  </ItemGroup>
+  <!-- Exclude legacy auto-generated DataSet files (not used in .NET Core migration) -->
+  <ItemGroup>
+    <Compile Remove="MtpAppDb2018DataSet.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Migrations\201806300823541_AddInitialModel.Designer.cs">

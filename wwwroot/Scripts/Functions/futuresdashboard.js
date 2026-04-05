@@ -69,7 +69,7 @@ function GetVacanciesByCategory(jobCategory, start, end) {
             selector: 'td:nth-child(2)'
         },
         ajax: {
-            url: (jobCategory == "all") ? "/api/vacancies?employerId=all" : (jobCategory == "") ? "/api/vacancies?start=" + start + "&end=" + end : "/api/vacancies?job=" + jobCategory,
+            url: (jobCategory == "all") ? "/api/vacancies?employerId=all" : (jobCategory == "") ? "/api/vacancies/bysalary?start=" + start + "&end=" + end : "/api/vacancies/bycategory?job=" + jobCategory,
             dataSrc: ""
         },
         columns: [
@@ -113,7 +113,7 @@ function GetVacanciesByCategory(jobCategory, start, end) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' data-toggle='modal' data-target='#jobDetail' onclick='Detail(" + data + ");' class='btn btn-primary btn-xs'><span class='glyphicon glyphicon-eye-open'></span> Detail</a>";
+                    return "<a href='#' data-bs-toggle='modal' data-bs-target='#jobDetail' onclick='Detail(" + data + ");' class='btn btn-primary btn-sm'><i class='fa fa-eye'></i> Detail</a>";
                 }
             }
         ],
@@ -128,7 +128,7 @@ function GetVacanciesByEmployer(employerName) {
     ShowLoadingScreen();
     table = $('#jobList').DataTable({
         ajax: {
-            url: "/api/vacancies?employerName=" + employerName,
+            url: "/api/vacancies/byemployer?employerName=" + employerName,
             dataSrc: ""
         },
         columns: [
@@ -171,7 +171,7 @@ function GetVacanciesByEmployer(employerName) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' data-toggle='modal' data-target='#jobDetail' onclick='Detail(" + data + ");' class='btn btn-primary btn-xs'><span class='glyphicon glyphicon-eye-open'></span> Detail</a>";
+                    return "<a href='#' data-bs-toggle='modal' data-bs-target='#jobDetail' onclick='Detail(" + data + ");' class='btn btn-primary btn-sm'><i class='fa fa-eye'></i> Detail</a>";
                 }
             }
         ],

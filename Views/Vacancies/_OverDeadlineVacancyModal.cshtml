@@ -1,13 +1,12 @@
-﻿<div class="modal fade" id="overDeadlineVacancy" role="dialog">
+<div class="modal fade" id="overDeadlineVacancy" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-body">
-            <div class="panel panel-primary">
-                <div class="panel-heading clearfix">
-                    <button type="button" class="btn btn-danger btn-xs pull-right" data-dismiss="modal">&times;</button>
-                    <p class="modal-title">Over Deadline Vacancy List</p>
+        <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa fa-clock me-2"></i>Over Deadline Vacancy List</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="panel-body">
-                    <div id="overflowTable" style="overflow-x: auto;">
+                <div class="modal-body">
+                    <div style="overflow-x: auto;">
                         <table id="overDeadline" style="width: 100%" class="table table-hover table-bordered">
                             <thead>
                                 <tr>
@@ -23,6 +22,9 @@
                             <tbody></tbody>
                         </table>
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 </div>
                 <div id="divLoadingModal"></div>
             </div>

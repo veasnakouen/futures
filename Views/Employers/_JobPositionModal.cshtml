@@ -1,31 +1,30 @@
-﻿<div class="modal fade" id="jobPositionModal" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-body">
-            <div class="panel panel-primary">
-                <div class="panel-heading clearfix">
-                    <button type="button" class="btn btn-danger btn-xs pull-right" data-dismiss="modal">&times;</button>
-                    <h5 class="modal-title">Manage Job Position</h5>
+<div class="modal fade" id="jobPositionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-briefcase me-2"></i>Manage Job Positions</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
+                    <input id="jobPositionName" name="name" placeholder="Enter job position name" type="text" value="" class="form-control form-control-sm" />
+                    <button type="button" id="btnActionPosition" class="btn btn-primary btn-sm" onclick="jobPositionAction();">Add New</button>
+                    <div id="divLoadingModal"></div>
                 </div>
-                <div class="panel-body">
-                    <div class="input-group">
-                        <input id="id" name="id" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
-                        <input id="jobPositionName" name="name" placeholder="Enter job position name" type="text" value="" class="form-control input-sm" disabled />
-                        <span class="input-group-btn">
-                            <button type="button" id="btnActionPosition" class="btn btn-primary btn-sm" onclick="jobPositionAction();">Add New</button>
-                        </span>
-                        <div id="divLoadingModal"></div>
-                    </div>
-                    <hr />
-                    <table id="jobPositionTable" class="table table-hover table-bordered table-responsive" style="width:100%;">
-                        <thead>
-                            <tr>
-                                <th>Job Position</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                <hr />
+                <table id="jobPositionTable" class="table table-hover table-bordered table-responsive" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>Job Position</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

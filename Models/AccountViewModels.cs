@@ -3,6 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MtpApp.Models
 {
+    public enum ManageMessageId
+    {
+        ChangePasswordSuccess,
+        SetPasswordSuccess,
+        RemoveLoginSuccess,
+        Error
+    }
+
     public class ExternalLoginConfirmationViewModel
     {
         [Required]

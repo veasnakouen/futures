@@ -1,5 +1,4 @@
-﻿@using MtpApp.Models;
-@using Microsoft.AspNet.Identity;
+﻿@using MtpApp.Models
 @{
     ViewBag.Title = "Manage Account";
 }
@@ -15,10 +14,6 @@
         {
             @Html.Partial("_SetPasswordPartial")
         }
-
-        <section id="externalLogins">
-            @Html.Action("RemoveAccountList")
-        </section>
     </div>
 </div>
 @section Scripts {

@@ -1,12 +1,13 @@
-﻿
-<div class="modal fade" data-backdrop="static" data-keyboard="false" id="placementModal" tabindex="-1" role="dialog" aria-labelledby="placementModal" aria-hidden="true">
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="placementModal" tabindex="-1" role="dialog" aria-labelledby="placementModal" aria-hidden="true">
 
     <div class="modal-dialog modal-lg" role="document">
 
         <div class="modal-content">
 
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Job Placement</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-briefcase me-2"></i>Job Placement</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -20,7 +21,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="caseIds">Count Time</label>
-                            <select class="form-control input-sm" id="caseIds" name="caseIds" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="caseIds" name="caseIds" style="min-width: 100%">
                                 <option value="1st">1st</option>
                                 <option value="2nd">2nd</option>
                                 <option value="3rd">3rd</option>
@@ -45,7 +46,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="placementType">Placement Type</label>
-                            <select class="form-control input-sm" id="placementType">
+                            <select class="form-control form-control-sm" id="placementType">
                                 <option>Fixed Term</option>
                                 <option>Unspecific Term</option>
                                 <option>Internship</option>
@@ -62,7 +63,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="positionId">Position</label>
-                            <select class="form-control input-sm" id="positionId" name="positionId" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="positionId" name="positionId" style="min-width: 100%">
                                 @foreach (var position in Model.JobPositions)
                                 {
                                     <option value=@position.Id>@position.Name</option>
@@ -74,7 +75,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="placementBy">Placed By</label>
-                            <select class="form-control input-sm" id="placementBy">
+                            <select class="form-control form-control-sm" id="placementBy">
                                 <option>Futures</option>
                                 <option>Her/Him self</option>
                             </select>
@@ -92,21 +93,21 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="companyName">Company Name</label>
-                            <input id="companyName" name="companyName" placeholder="Enter Company Name" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="companyName" name="companyName" placeholder="Enter Company Name" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="companyContactName">Contact Person</label>
-                            <input id="companyContactName" name="companyContactName" placeholder="Enter contact person" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="companyContactName" name="companyContactName" placeholder="Enter contact person" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="companyContactPhone">Contact Phone</label>
-                            <input id="companyContactPhone" name="companyContactPhone" placeholder="Enter contact phone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="companyContactPhone" name="companyContactPhone" placeholder="Enter contact phone" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
@@ -117,14 +118,14 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="companyEmail">Email</label>
-                            <input id="companyEmail" name="companyEmail" placeholder="Enter email" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="companyEmail" name="companyEmail" placeholder="Enter email" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
                     <div class="col-md-8">
                         <div class="form-group">
                             <label for="companyAddress">Address</label>
-                            <textarea class="form-control input-sm" id="companyAddress" placeholder="Enter address" rows="4" style="min-width: 100%; max-width: 100%"></textarea>
+                            <textarea class="form-control form-control-sm" id="companyAddress" placeholder="Enter address" rows="4" style="min-width: 100%; max-width: 100%"></textarea>
                         </div>
                     </div>
 
@@ -139,21 +140,21 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="placementSalary">Salary</label>
-                            <input id="placementSalary" name="placementSalary" placeholder="Enter salary" type="number" value="0" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="placementSalary" name="placementSalary" placeholder="Enter salary" type="number" value="0" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="placementTip">Tips</label>
-                            <input id="placementTip" name="placementTip" placeholder="Enter tips" type="number" value="0" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="placementTip" name="placementTip" placeholder="Enter tips" type="number" value="0" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="totalIncome">Total Income</label>
-                            <input id="totalIncome" name="totalIncome" disabled placeholder="Enter total income" type="number" value="0" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="totalIncome" name="totalIncome" disabled placeholder="Enter total income" type="number" value="0" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
@@ -164,21 +165,21 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="workingTime">Working Time</label>
-                            <input id="workingTime" name="workingTime" placeholder="Enter working time" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="workingTime" name="workingTime" placeholder="Enter working time" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="numberOfDayOff">#Days Off</label>
-                            <input id="numberOfDayOff" name="numberOfDayOff" placeholder="Enter number of day off" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="numberOfDayOff" name="numberOfDayOff" placeholder="Enter number of day off" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="numberOfAnnualLeave">#Annual Leave</label>
-                            <input id="numberOfAnnualLeave" name="numberOfAnnualLeave" placeholder="Enter number of annual leave" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="numberOfAnnualLeave" name="numberOfAnnualLeave" placeholder="Enter number of annual leave" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
 
@@ -258,7 +259,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" onclick="PlacementAction();" id="btnPlacementsAction" class="btn btn-primary btn-sm">Add New</button>
             </div>
         </div>

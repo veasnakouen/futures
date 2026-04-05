@@ -1,12 +1,13 @@
-﻿
-<div class="modal fade" data-backdrop="static" data-keyboard="false" id="cvReferenceModal" tabindex="-1" role="dialog" aria-labelledby="cvReferenceModal" aria-hidden="true">
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="cvReferenceModal" tabindex="-1" role="dialog" aria-labelledby="cvReferenceModal" aria-hidden="true">
 
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
 
-            <div class="modal-header clearfix">
-                <h5 class="modal-title">Job Reference</h5>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-address-card me-2"></i>Job Reference</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -17,13 +18,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="cvReferenceName">Name </label>
-                            <input id="cvReferenceName" name="cvReferenceName" placeholder="Enter employer" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="cvReferenceName" name="cvReferenceName" placeholder="Enter employer" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="cvReferencePositionId">Job Position</label>
-                            <select class="form-control input-sm" id="cvReferencePositionId" name="cvReferencePositionId" style="min-width: 100%">
+                            <select class="form-control form-control-sm" id="cvReferencePositionId" name="cvReferencePositionId" style="min-width: 100%">
                                 @foreach (var jobPosition in Model.JobPositions)
                                 {
                                     <option value=@jobPosition.Id>@jobPosition.Name</option>
@@ -37,13 +38,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="cvReferenceOrganization">Organization </label>
-                            <input id="cvReferenceOrganization" name="cvReferenceOrganization" placeholder="Enter Organization" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="cvReferenceOrganization" name="cvReferenceOrganization" placeholder="Enter Organization" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="cvReferencePhone">Phone</label>
-                            <input id="cvReferencePhone" name="cvReferencePhone" placeholder="Enter Phone" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="cvReferencePhone" name="cvReferencePhone" placeholder="Enter Phone" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
@@ -52,7 +53,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="cvReferenceEmail">Email</label>
-                            <input id="cvReferenceEmail" name="cvReferenceEmail" placeholder="Enter email" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="cvReferenceEmail" name="cvReferenceEmail" placeholder="Enter email" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
@@ -61,13 +62,13 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="cvReferenceDescription">Description </label>
-                            <input id="cvReferenceDescription" name="cvReferenceDescription" placeholder="Enter Description" type="text" value="" class="form-control input-sm" style="min-width: 100%" />
+                            <input id="cvReferenceDescription" name="cvReferenceDescription" placeholder="Enter Description" type="text" value="" class="form-control form-control-sm" style="min-width: 100%" />
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                 <button type="button" onclick="cvReferenceAction();" id="btncvReferenceAction" class="btn btn-primary btn-sm">Add New</button>
             </div>
         </div>

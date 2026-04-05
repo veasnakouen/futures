@@ -97,7 +97,7 @@ function GetSocialSupportsByClientId(id) {
                     {
                         data: "id",
                         render: function (data) {
-                            return "<a href='#' onclick='EditSocialSupportCaseByCase(" + data + ");'><span class='glyphicon glyphicon-edit'></span> Edit</a>" + " | " + "<a href='#' onclick='DeleteSocialSupportCase(" + data + ")'><span class='glyphicon glyphicon-edit'></span> Delete</a>";
+                            return "<a href='#' onclick='EditSocialSupportCaseByCase(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='DeleteSocialSupportCase(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
                         }
                     }
                 ],
