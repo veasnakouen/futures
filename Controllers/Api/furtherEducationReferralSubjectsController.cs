@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class furtherEducationReferralSubjectsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

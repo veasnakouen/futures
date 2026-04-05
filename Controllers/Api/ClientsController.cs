@@ -339,7 +339,14 @@ namespace MtpApp.Controllers.Api
 
             _mapper.Map(clientDto, clientInDb);
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message, detail = ex.InnerException?.Message });
+            }
 
             return Ok(new { });
         }

@@ -245,7 +245,7 @@ function LogBookAction() {
         };
 
         $.ajax({
-            url: "/api/LogBooks",
+            url: "/api/LogBooks/" + data.Id,
             data: JSON.stringify(data),
             type: "PUT",
             contentType: "application/json;charset=utf-8",

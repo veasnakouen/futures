@@ -217,7 +217,7 @@ function GetMonitoringByClientId(id) {
 
         tableMonitoring = $('#MonitoringPlacementTableshow').DataTable({
             ajax: {
-                url: "api/placementMonitoring?clientId2=" + id,
+                url: "api/placementMonitoring/all?clientId2=" + id,
                 dataSrc: ""
             },
 
@@ -546,7 +546,7 @@ function MonitoringAction() {
                     data.append("ReasondateFurtureTraining", $("#futuretrainingreason").val());
             }
             $.ajax({
-                url: "/api/monitoringoption?" + data.id + "&" + data.type, //Value get directly from form
+                url: "/api/monitoringoption", //Value get directly from form
                 type: "PUT",
                 contentType: false,
                 processData: false,

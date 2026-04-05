@@ -9,6 +9,8 @@ using System.Linq;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class FurtherEducationsController : ControllerBase
     {
@@ -22,7 +24,7 @@ namespace MtpApp.Controllers.Api
         }
 
         // GET: /api/furthereducations/{id}
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetFurtherEducation(int id)
         {
             var furtherEducation = _context.FurtherEducations.SingleOrDefault(c => c.Id == id);
@@ -60,7 +62,7 @@ namespace MtpApp.Controllers.Api
         //}
 
         // PUT: /api/furthereducations/{id}
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult UpdateFurtherEducation(int id)
         {
             if (!ModelState.IsValid)
@@ -101,7 +103,7 @@ namespace MtpApp.Controllers.Api
         }
 
         // DELETE: /api/furthereducation/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteFurtherEducation(int id)
         {
             var furtherEducation = _context.FurtherEducations.SingleOrDefault(c => c.Id == id);

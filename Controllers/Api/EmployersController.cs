@@ -11,6 +11,8 @@ using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class EmployersController : ControllerBase
     {
@@ -43,8 +45,8 @@ namespace MtpApp.Controllers.Api
             }
         }
 
-        //GET /api/employers?start=&end=
-        [HttpGet]
+        //GET /api/employers/date-range?start=&end=
+        [HttpGet("date-range")]
         public IActionResult GetEmployers(DateTime start, DateTime end)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -60,7 +62,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //GET /api/employers/{id}
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetEmployer(int id)
         {
             var employer = _context.Employers.Include(m => m.JobCategory).SingleOrDefault(c => c.Id == id);
@@ -101,7 +103,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //PUT /api/employers/{id}
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult UpdateEmployer(int id, EmployerDto employerDto)
         {
             if (!ModelState.IsValid)
@@ -131,7 +133,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //DELETE /api/employers/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteEmployer(int id)
         {
             var employer = _context.Employers.SingleOrDefault(c => c.Id == id);

@@ -42,7 +42,7 @@ var tablefutureTrainingMonitoring = [];
 function GetfutureTrainingMonitoringByClientId(SubjectId) {
     tablefutureTrainingMonitoring = $('#futureTrainingMonitoringActionTable').DataTable({
         ajax: {
-            url: "/api/futureTrainingMonitoring?clientid=" + $('#id').val() + " &subjectId=" + SubjectId,
+            url: "/api/futureTrainingMonitoring/bysubject?clientid=" + $('#id').val() + "&subjectId=" + SubjectId,
             dataSrc: ""
         },
         "lengthMenu": [[3, 10, 25, 50, -1], [3, 10, 25, 50, "All"]],
@@ -330,7 +330,7 @@ function FutureTrainingMonitoringAction() {
 
 function FunctionFutureTrainingMonitoringEdit(Id) {
          $.ajax({
-         url: "/api/futureTrainingMonitoring?Id=" + Id,
+         url: "/api/futureTrainingMonitoring/byid?Id=" + Id,
          type: "GET",
          contentType: "application/json;charset=UTF-8",
          dataType: "json",

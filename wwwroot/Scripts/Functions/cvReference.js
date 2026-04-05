@@ -35,7 +35,7 @@ var tablecvReference = [];
 function getcvReference() {
     tablecvReference = $('#cvReferenceTable').DataTable({
         ajax: {
-            url: "/api/CvReferences/" + $('#id').val(),
+            url: "/api/CvReferences/byclient/" + $('#id').val(),
             dataSrc: ""
         },
         columns: [

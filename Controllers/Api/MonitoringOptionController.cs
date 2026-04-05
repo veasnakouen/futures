@@ -13,6 +13,8 @@ using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class MonitoringOptionController : ControllerBase
     {

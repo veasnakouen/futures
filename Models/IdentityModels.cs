@@ -91,8 +91,20 @@ namespace MtpApp.Models
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Call base first so IdentityDbContext sets up its default Identity relationships,
+            // then we override the UserRole relationship below to use the Roles nav property.
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<ApplicationUserRole>()
                 .HasKey(x => new { x.UserId, x.RoleId });
+
+            // Override the base Identity HasMany<TUserRole>().WithOne() (which has no nav property)
+            // with our explicit navigation so EF Core doesn't create a spurious ApplicationUserId FK.
+            modelBuilder.Entity<ApplicationUser>()
+                .HasMany(u => u.Roles)
+                .WithOne()
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
 
             // Map all entities to legacy EF6 table names to avoid convention mismatches.
             modelBuilder.Entity<TicketType>().ToTable("TicketTypes");
@@ -165,7 +177,6 @@ namespace MtpApp.Models
             modelBuilder.Entity<FutureTrainingProgress>().HasQueryFilter(e => e.Monitoring.Client.Status == "Active");
             modelBuilder.Entity<PlacementProgress>().HasQueryFilter(e => e.Monitoring.Client.Status == "Active");
 
-            base.OnModelCreating(modelBuilder);
         }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

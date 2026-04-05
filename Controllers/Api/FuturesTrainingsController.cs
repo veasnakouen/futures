@@ -10,6 +10,8 @@ using System.Linq;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class FuturesTrainingsController : ControllerBase
     {
@@ -30,8 +32,8 @@ namespace MtpApp.Controllers.Api
             return Ok(FuturesTrainings);
         }
 
-        // GET: /api/futurestrainings?clientId={id}
-        [HttpGet]
+        // GET: /api/futurestrainings/bystatus?futurestrainingsId={id}&status={status}
+        [HttpGet("bystatus")]
         public IActionResult GetFuturesTrainings(string futurestrainingsId, string status)
         {
             if (futurestrainingsId == "all")
@@ -46,7 +48,7 @@ namespace MtpApp.Controllers.Api
             }
         }
         // GET: /api/futurestrainings/{id}
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetFuturesTraining(int id)
         {
             var FuturesTrainings = _context.FuturesTrainings.Include(c => c.Client).Include(c => c.Subject).SingleOrDefault(c => c.id == id);
@@ -72,7 +74,7 @@ namespace MtpApp.Controllers.Api
         }
 
         // PUT: /api/futurestrainings/{id}
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult Updatefuturestraining(int id, FuturesTrainingDto FuturesTrainingDto)
         {
             var futurestrainingsInDb = _context.FuturesTrainings.SingleOrDefault(c => c.id == id);
@@ -92,7 +94,7 @@ namespace MtpApp.Controllers.Api
         }
 
         // DELETE: /api/futurestrainings/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult Deletefuturestraining(int id)
         {
             if (!ModelState.IsValid)

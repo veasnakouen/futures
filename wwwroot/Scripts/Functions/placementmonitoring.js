@@ -53,7 +53,7 @@ var tableplacementMonitoringAction = [];
 function GetplacementMonitoringActionByPlacementId() {
     tableplacementMonitoringAction = $('#PlacementMonitoringActionTable').DataTable({
         ajax: {
-            url: "/api/PlacementMonitoring?PlacementId=" + $('#placementclientId').val(),
+            url: "/api/PlacementMonitoring/process?PlacementId=" + $('#placementclientId').val(),
             dataSrc: ""
         },
         "lengthMenu": [[3, 10, 25, 50, -1], [3, 10, 25, 50, "All"]],
@@ -256,7 +256,7 @@ function PlacementMonitoringAction() {
 
 function placementMonitoringEdit(Id) {
          $.ajax({
-         url: "/api/PlacementMonitoring?Id=" + Id,
+         url: "/api/PlacementMonitoring/byid?Id=" + Id,
          type: "GET",
          contentType: "application/json;charset=UTF-8",
          dataType: "json",

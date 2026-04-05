@@ -13,6 +13,8 @@ using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class FutureTrainingMonitoringController : ControllerBase
     {
@@ -43,7 +45,8 @@ namespace MtpApp.Controllers.Api
             return Ok(MonitoringFutureTrainingInDb);
         }
 
-        [HttpGet]
+        //GET /api/FutureTrainingMonitoring/bysubject?ClientId=&SubjectId=
+        [HttpGet("bysubject")]
         public IActionResult GetMonitoringFutureTraining(int ClientId , int SubjectId)
         {
             var MonitoringFutureTrainingInDb = _context.FutureTrainingProgresses
@@ -60,8 +63,8 @@ namespace MtpApp.Controllers.Api
             return Ok(MonitoringFutureTrainingInDb);
         }
 
-        //GET /api/FutureTrainingMonitoring?Id
-        [HttpGet]
+        //GET /api/FutureTrainingMonitoring/byid?Id=
+        [HttpGet("byid")]
         public IActionResult GetMonitoringFutureTrainingById(int Id)
         {
             var MonitoringFutureTrainingInDb = _context.FutureTrainingProgresses

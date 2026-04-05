@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/Content/toastr.min.css" />
     <link rel="stylesheet" href="~/Content/Site.css" />
     <link rel="stylesheet" href="~/Content/DropDownNotification.css" />
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     @RenderSection("head", required: false)
@@ -154,32 +154,37 @@
     <div id="divLoading"></div>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         (function ($) {
-            if (!$ || !$.datepicker) {
-                return;
-            }
+            // ── flatpickr shim: make all $(...).datepicker({}) calls use flatpickr ──
+            // Individual view pages call  $(".js-date").datepicker({...})
+            // This shim transparently redirects those calls to flatpickr so no
+            // view file needs to change.
+            $.fn.datepicker = function () {
+                return this.each(function () {
+                    if (this._flatpickr) return; // already initialised
+                    flatpickr(this, {
+                        dateFormat: 'm/d/Y',
+                        allowInput: true,
+                        disableMobile: false,
+                        appendTo: $(this).closest('.modal')[0] || document.body,
+                        monthSelectorType: 'dropdown',
+                        yearRange: [1950, 2100]
+                    });
+                });
+            };
 
-            $.datepicker.setDefaults({
-                showAnim: 'fadeIn',
-                beforeShow: function (input, inst) {
-                    var modal = $(input).closest('.modal');
-                    window.setTimeout(function () {
-                        $(inst.dpDiv).css({
-                            zIndex: 2000
-                        });
-
-                        if (modal.length > 0) {
-                            $(inst.dpDiv).appendTo(modal);
-                        }
-                    }, 0);
-                }
+            // Auto-init every .js-date present now or added later (e.g. inside modals).
+            $(document).on('shown.bs.modal focus', '.js-date', function () {
+                if (!this._flatpickr) { $(this).datepicker(); }
             });
+            $(function () { $('.js-date').datepicker(); });
 
+            // ── Modal stacking (z-index) ────────────────────────────────────────────
             $(document).on('shown.bs.modal', '.modal', function () {
                 var zIndex = 1050 + ($('.modal.show').length * 20);
                 $(this).css('z-index', zIndex);
-
                 window.setTimeout(function () {
                     $('.modal-backdrop').not('.modal-stack').last().css('z-index', zIndex - 1).addClass('modal-stack');
                 }, 0);
@@ -194,9 +199,64 @@
     </script>
     <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script>
+        // ── Global DataTables defaults ───────────────────────────────────────────
+        // dom: f = filter (top-right), r = processing, t = table,
+        //      <"dt-bottom-row"li> = bottom bar: info (left) + length + pagination (right)
+        $.extend(true, $.fn.dataTable.defaults, {
+            dom: '<"dt-top-row"f>rt<"dt-bottom-row"lip>'
+        });
+    </script>
     <script src="~/Scripts/moment.min.js"></script>
     <script src="~/Scripts/toastr.min.js"></script>
     <script src="~/Scripts/bootbox.min.js"></script>
+    <script>
+        // ── Global bootbox.confirm override ──────────────────────────────────────
+        // All JS files call bootbox.confirm(message, callback) with a plain string.
+        // We intercept that form here and replace it with a fully styled dialog
+        // so no individual JS file needs to change.
+        (function () {
+            if (!window.bootbox) { return; }
+
+            var _orig = bootbox.confirm.bind(bootbox);
+
+            bootbox.confirm = function (options, callback) {
+                // Only restyle the simple (string, callback) signature
+                if (typeof options !== 'string') {
+                    return _orig(options, callback);
+                }
+
+                var message = options;
+                var isDelete = /delete|remove/i.test(message);
+
+                var icon    = isDelete
+                    ? '<i class="fa fa-triangle-exclamation fa-lg me-2 text-danger"></i>'
+                    : '<i class="fa fa-circle-question fa-lg me-2 text-warning"></i>';
+                var title   = isDelete ? 'Confirm Delete' : 'Confirm Action';
+                var btnClass = isDelete ? 'btn-danger' : 'btn-warning';
+                var btnLabel = isDelete ? '<i class="fa fa-trash me-1"></i> Delete' : '<i class="fa fa-check me-1"></i> Confirm';
+
+                return bootbox.dialog({
+                    title: icon + title,
+                    message: '<p class="mb-0">' + message + '</p>',
+                    size: 'small',
+                    onEscape: true,
+                    backdrop: true,
+                    buttons: {
+                        cancel: {
+                            label: '<i class="fa fa-xmark me-1"></i> Cancel',
+                            className: 'btn-secondary'
+                        },
+                        confirm: {
+                            label: btnLabel,
+                            className: btnClass,
+                            callback: callback
+                        }
+                    }
+                });
+            };
+        })();
+    </script>
     <script>
         (function ($, bootstrap) {
             if (!$ || !bootstrap || !bootstrap.Modal) {
@@ -245,53 +305,188 @@
     </script>
     <script>
         (function () {
-            var nestedModalCount = 0;
+            if (!window.bootstrap || !window.bootstrap.Modal) { return; }
 
-            document.addEventListener('click', function (event) {
-                var trigger = event.target.closest('.modal [data-bs-toggle="modal"]');
+            // ─────────────────────────────────────────────────────────────────────
+            // Nested-modal support for Bootstrap 5
+            //
+            // THREE problems when a child modal opens inside a parent modal:
+            //
+            //  A) Bootstrap's data-api click handler calls
+            //     Modal.getInstance(openParent).hide() before showing the child,
+            //     which closes the parent.
+            //
+            //  B) Bootstrap activates a FocusTrap on every shown modal.
+            //     When two are open, the parent's trap immediately steals focus
+            //     back from any element clicked inside the child — inputs become
+            //     unresponsive.
+            //
+            //  C) The child modal's OWN newly-activated focustrap also fights
+            //     with the parent's trap.
+            //
+            // Fixes:
+            //  A) Patch Modal.prototype.hide
+            //  B) Patch Modal.prototype.show  ← most reliable approach
+            //  C) show/shown/hidden.bs.modal event listeners as safety nets
+            // ─────────────────────────────────────────────────────────────────────
 
-                if (!trigger) {
-                    return;
-                }
+            /* ── A: Protect parent from being hidden ──────────────────────────── */
+            var _protectedModal = null;
 
-                var targetSelector = trigger.getAttribute('data-bs-target');
-                if (!targetSelector) {
-                    return;
-                }
-
-                var targetModal = document.querySelector(targetSelector);
-                var parentModal = trigger.closest('.modal');
-
-                if (!targetModal || !parentModal) {
-                    return;
-                }
-
-                event.preventDefault();
-                event.stopPropagation();
-                event.stopImmediatePropagation();
-
-                nestedModalCount += 1;
-                targetModal.setAttribute('data-parent-modal', parentModal.id || '');
-
-                window.bootstrap.Modal.getOrCreateInstance(targetModal, { focus: false, keyboard: false }).show(trigger);
+            document.addEventListener('mousedown', function (e) {
+                var trigger = e.target.closest('[data-bs-toggle="modal"]');
+                _protectedModal = trigger ? trigger.closest('.modal') : null;
             }, true);
 
-            document.addEventListener('hide.bs.modal', function (event) {
-                if (event.target && event.target.classList && event.target.classList.contains('modal') && event.target.id === 'clientModal' && nestedModalCount > 0) {
-                    event.preventDefault();
-                }
+            document.addEventListener('click', function () {
+                setTimeout(function () { _protectedModal = null; }, 200);
             }, true);
 
-            document.addEventListener('hidden.bs.modal', function (event) {
-                if (event.target && event.target.classList && event.target.classList.contains('modal') && event.target.hasAttribute('data-parent-modal')) {
-                    nestedModalCount = Math.max(0, nestedModalCount - 1);
-                    event.target.removeAttribute('data-parent-modal');
+            var _origHide = window.bootstrap.Modal.prototype.hide;
+            window.bootstrap.Modal.prototype.hide = function () {
+                if (_protectedModal && _protectedModal === this._element) { return; }
+                _origHide.call(this);
+            };
+
+            /* ── B: Patch show() — runs INSIDE Bootstrap before _showElement()
+                    so focus:false is set before focustrap.activate() is called.
+                    This is the most reliable path because the instance is fully
+                    constructed at this point regardless of how show() was called. */
+            var _origShow = window.bootstrap.Modal.prototype.show;
+            window.bootstrap.Modal.prototype.show = function (relatedTarget) {
+                var isNested = document.querySelector('.modal.show') &&
+                               this._element !== document.querySelector('.modal.show');
+                if (isNested) {
+                    // Disable this modal's own focustrap before _showElement runs
+                    if (this._config) { this._config.focus = false; }
+                    // Also silence the already-open parent modal's trap
+                    document.querySelectorAll('.modal.show').forEach(function (el) {
+                        var inst = window.bootstrap.Modal.getInstance(el);
+                        if (!inst) { return; }
+                        if (inst._config) { inst._config.focus = false; }
+                        if (inst._focustrap) { try { inst._focustrap.deactivate(); } catch (_) {} }
+                    });
                 }
+                _origShow.call(this, relatedTarget);
+            };
+
+            /* ── Helper: silence all focustraps on every open modal ───────────── */
+            function deactivateAllTraps() {
+                document.querySelectorAll('.modal.show').forEach(function (el) {
+                    var inst = window.bootstrap.Modal.getInstance(el);
+                    if (!inst) { return; }
+                    if (inst._config) { inst._config.focus = false; }
+                    if (inst._focustrap) { try { inst._focustrap.deactivate(); } catch (_) {} }
+                });
+            }
+
+            /* ── Safety net: shown.bs.modal fires after animation completes.
+                    By this time the instance definitely exists and any focustrap
+                    that slipped through the show() patch is cleaned up. ────────── */
+            document.addEventListener('shown.bs.modal', function () {
+                var openModals = document.querySelectorAll('.modal.show');
+                if (openModals.length <= 1) { return; }
+                deactivateAllTraps();
             }, true);
+
+            /* ── Restore focustrap for the remaining top modal after child closes. */
+            document.addEventListener('hidden.bs.modal', function () {
+                setTimeout(function () {
+                    var openModals = document.querySelectorAll('.modal.show');
+                    if (openModals.length === 0) { return; }
+                    var topEl = openModals[openModals.length - 1];
+                    var inst = window.bootstrap.Modal.getInstance(topEl);
+                    if (inst) {
+                        if (inst._config) { inst._config.focus = true; }
+                        if (inst._focustrap) { try { inst._focustrap.activate(); } catch (_) {} }
+                    }
+                }, 50);
+            }, true);
+
         })();
+    </script>
+    <script>
+        // Make every modal dialog scrollable (vertical) and protect against
+        // wide content (e.g. DataTables) pushing the modal beyond the viewport.
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // 1. Scrollable dialogs — header/footer pinned, body scrolls vertically.
+            document.querySelectorAll('.modal-dialog').forEach(function (d) {
+                d.classList.add('modal-dialog-scrollable');
+            });
+
+            // 2. Wrap every bare <table> inside a modal-body with .table-responsive
+            //    BEFORE DataTables initialises so horizontal overflow scrolls inside
+            //    the wrapper instead of pushing the whole modal wider.
+            document.querySelectorAll('.modal-body table').forEach(function (t) {
+                if (!t.closest('.table-responsive')) {
+                    var wrapper = document.createElement('div');
+                    wrapper.className = 'table-responsive';
+                    t.parentNode.insertBefore(wrapper, t);
+                    wrapper.appendChild(t);
+                }
+            });
+        });
     </script>
     @RenderSection("scripts", required: false)
     <script src="~/js/site.js"></script>
+    <script>
+        // ── Global DataTable action-cell beautifier ─────────────────────────────
+        // Runs on every DataTable draw (all pages, all tables).
+        // Handles three different patterns found across the JS files:
+        //   1. <a onclick='…'> | <a onclick='…'>           (most files)
+        //   2. <a class='btn btn-*'> …                      (futuresdashboard.js)
+        //   3. <button class='btn btn-warning/danger'> …    (client.js)
+        $(document).on('draw.dt', function (e) {
+            $(e.target).find('tbody tr td').each(function () {
+                var $td = $(this);
+                if ($td.hasClass('dt-actions-done')) { return; }
+
+                // Only process cells whose element children are <a> and/or <button> tags
+                var $elems = $td.children();
+                if ($elems.length === 0) { return; }
+                if ($elems.not('a, button').length > 0) { return; }
+
+                $td.addClass('dt-actions-done');
+
+                $elems.each(function () {
+                    var $el = $(this);
+
+                    // ── If element already carries Bootstrap btn classes,
+                    //    strip them so our outline style takes over cleanly.
+                    if ($el.hasClass('btn')) {
+                        $el.removeClass(function (_, cls) {
+                            return (cls.match(/\bbtn(-\S+)?/g) || []).join(' ');
+                        });
+                    }
+
+                    $el.addClass('dt-action-link');
+
+                    var txt       = $el.text().trim().toLowerCase();
+                    var iconClass = ($el.find('i').attr('class') || '');
+
+                    if (iconClass.indexOf('fa-trash') !== -1 || txt === 'delete' || txt === 'del') {
+                        $el.addClass('dt-action-delete');
+                    } else if (iconClass.indexOf('fa-pen') !== -1 || txt === 'edit') {
+                        $el.addClass('dt-action-edit');
+                    } else if (iconClass.indexOf('fa-share') !== -1 || iconClass.indexOf('fa-rotate') !== -1 || iconClass.indexOf('fa-repeat') !== -1 || txt === 'open' || txt === 'in progress' || txt === 'reopen') {
+                        $el.addClass('dt-action-open');
+                    } else if (iconClass.indexOf('fa-circle-check') !== -1 || txt === 'close') {
+                        $el.addClass('dt-action-close');
+                    } else if (iconClass.indexOf('fa-stop') !== -1 || txt === 'hold') {
+                        $el.addClass('dt-action-hold');
+                    } else if (iconClass.indexOf('fa-eye') !== -1 || txt === 'detail' || txt === 'view') {
+                        $el.addClass('dt-action-view');
+                    } else {
+                        $el.addClass('dt-action-other');
+                    }
+                });
+
+                // Wrap in flex container — also removes bare " | " text nodes
+                $td.wrapInner('<div class="dt-actions"></div>');
+            });
+        });
+    </script>
     <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
     <script src="~/js/placement-monitoring.js"></script>
 
@@ -305,6 +500,32 @@
             hubNotify.client.refreshEmployeeData = function () {
                 getAll(0);
             };
+        });
+    </script>
+
+    <script>
+        // ── Bootstrap 5 nested modal fix ────────────────────────────────────────
+        // When a child modal opens on top of a parent modal, Bootstrap adds a
+        // second backdrop at z-index 1040 which overlays the child modal dialog
+        // (z-index 1055), making all buttons inside the child unclickable.
+        // Fix: stack each new modal and its backdrop above the previous one.
+        $(document).on('show.bs.modal', '.modal', function () {
+            var $visibleModals = $('.modal.show');
+            if ($visibleModals.length > 0) {
+                var zIndex = 1055 + ($visibleModals.length * 20);
+                $(this).css('z-index', zIndex);
+                setTimeout(function () {
+                    // Move the most-recently-added backdrop above previous modals
+                    $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+                }, 0);
+            }
+        });
+
+        // Re-enable body scroll class when a nested modal closes but a parent is still open
+        $(document).on('hidden.bs.modal', '.modal', function () {
+            if ($('.modal.show').length > 0) {
+                $('body').addClass('modal-open');
+            }
         });
     </script>
 

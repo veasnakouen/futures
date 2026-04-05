@@ -82,7 +82,7 @@ var tablebusinessSetupMonitoringAction = [];
 function GetbusinessSetupMonitoringActionByClientId() {
     tablebusinessSetupMonitoringAction = $('#BusinessSetupMonitoringActionTable').DataTable({
         ajax: {
-            url: "/api/businessSetupMonitoring?PClientId=" + $('#id').val(),
+            url: "/api/businessSetupMonitoring/monitoring?clientId=" + $('#id').val(),
             dataSrc: ""
         },
         "lengthMenu": [[3, 10, 25, 50, -1], [3, 10, 25, 50, "All"]],
@@ -314,7 +314,7 @@ function BusinessSetupMonitoringAction() {
 
 function BusinessSetupMonitoringEdit(Id) {
          $.ajax({
-         url: "/api/businessSetupMonitoring?Id=" + Id,
+         url: "/api/businessSetupMonitoring/" + Id,
          type: "GET",
          contentType: "application/json;charset=UTF-8",
          dataType: "json",
@@ -372,7 +372,7 @@ function BusinessSetupMonitoringDelete(id) {
     bootbox.confirm("Are you sure you want to delete this?", function (result) {
         if (result) {
             $.ajax({
-                url: "/api/businessSetupMonitoring?id=" + id,
+                url: "/api/businessSetupMonitoring/" + id,
                 method: "DELETE",
                 success: function () {
                     tablebusinessSetupMonitoringAction.ajax.reload();

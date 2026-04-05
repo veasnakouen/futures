@@ -402,35 +402,42 @@
 
                         <div class="col-md-8">
 
-                            <ul class="nav nav-pills flex-wrap">
+                            <div class="client-tab-menu" role="tablist">
+                                <span class="client-tab-slider"></span>
 
-                                <li class="nav-item" id="furtherEducationTab">
-                                    <a class="nav-link" data-bs-toggle="pill" href="#further-education">Further Education</a>
-                                </li>
-                                <li class="nav-item" id="educationTab">
-                                    <a class="nav-link" data-bs-toggle="pill" href="#education">Education</a>
-                                </li>
-                                <li class="nav-item" id="jobSpecificationTab">
-                                    <a class="nav-link" data-bs-toggle="pill" href="#job-specification">Job Specification</a>
-                                </li>
-                                <li class="nav-item" id="beneficiaryTab">
-                                    <a class="nav-link" data-bs-toggle="pill" href="#beneficiary">Dependents</a>
-                                </li>
-                                <li class="nav-item" id="placementTab">
-                                    <a class="nav-link" data-bs-toggle="pill" href="#client-placement">Placement</a>
-                                </li>
-                                <li class="nav-item" id="futuresTrainingTab">
-                                    <a class="nav-link" data-bs-toggle="pill" href="#futures-training">Futures Training</a>
-                                </li>
-                                <li class="nav-item" id="socialSupportTab">
-                                    <a class="nav-link" data-bs-toggle="pill" href="#social-support">Social Support</a>
-                                </li>
-                                <li class="nav-item" id="monitoringTab">
-                                    <a class="nav-link" data-bs-toggle="pill" href="#monitoring">Monitoring</a>
-                                </li>
-                            </ul>
-
-                            <hr style="margin-top:10px; margin-bottom:10px;" />
+                                <a class="ctab-item" role="tab" data-bs-toggle="pill" href="#further-education" id="furtherEducationTab">
+                                    <i class="fa fa-graduation-cap"></i>
+                                    <span>Further Education</span>
+                                </a>
+                                <a class="ctab-item" role="tab" data-bs-toggle="pill" href="#education" id="educationTab">
+                                    <i class="fa fa-book"></i>
+                                    <span>Education</span>
+                                </a>
+                                <a class="ctab-item" role="tab" data-bs-toggle="pill" href="#job-specification" id="jobSpecificationTab">
+                                    <i class="fa fa-briefcase"></i>
+                                    <span>Job Spec.</span>
+                                </a>
+                                <a class="ctab-item" role="tab" data-bs-toggle="pill" href="#beneficiary" id="beneficiaryTab">
+                                    <i class="fa fa-users"></i>
+                                    <span>Dependents</span>
+                                </a>
+                                <a class="ctab-item" role="tab" data-bs-toggle="pill" href="#client-placement" id="placementTab">
+                                    <i class="fa fa-map-marker"></i>
+                                    <span>Placement</span>
+                                </a>
+                                <a class="ctab-item" role="tab" data-bs-toggle="pill" href="#futures-training" id="futuresTrainingTab">
+                                    <i class="fa fa-cogs"></i>
+                                    <span>Training</span>
+                                </a>
+                                <a class="ctab-item" role="tab" data-bs-toggle="pill" href="#social-support" id="socialSupportTab">
+                                    <i class="fa fa-heart"></i>
+                                    <span>Social Support</span>
+                                </a>
+                                <a class="ctab-item" role="tab" data-bs-toggle="pill" href="#monitoring" id="monitoringTab">
+                                    <i class="fa fa-bar-chart"></i>
+                                    <span>Monitoring</span>
+                                </a>
+                            </div>
 
                             <!--All function-->
                             <div class="tab-content">
@@ -438,9 +445,11 @@
                                 <div id="case-management" class="tab-pane fade show active">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#caseModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New</button>
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#caseWorkerModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i> Add Case Worker</button>
-                                            Case Information
+                                            <span>Case Information</span>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#caseWorkerModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add Case Worker</button>
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#caseModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New</button>
+                                            </div>
                                         </div>
                                         <div class="panel-body">
                                             <div id="overflowTable" style="overflow-x: auto;">
@@ -569,10 +578,12 @@
                                     <!-- Further Education -->
 
                                     <div class="panel panel-default">
-                                        <div class="panel-heading clearfix">
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#referralEducation" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New</button>
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#referralSource" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i> Add Referral Source</button>
-                                            Referal History
+                                        <div class="panel-heading">
+                                            <span>Referal History</span>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#referralSource" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add Referral Source</button>
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#referralEducation" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New</button>
+                                            </div>
                                         </div>
                                         <div class="panel-body">
                                             <div id="overflowTable" style="overflow-x: auto;">
@@ -797,9 +808,11 @@
                                     </div> <!-- Job Expectation -->
 
                                     <div class="panel panel-default">
-                                        <div class="panel-heading clearfix">
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#cvReferenceModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
-                                            Job Reference
+                                        <div class="panel-heading">
+                                            <span>Job Reference</span>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#cvReferenceModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
+                                            </div>
                                         </div>
                                         <div class="panel-body">
                                             <div id="overflowTable" style="overflow-x: auto;">
@@ -821,9 +834,11 @@
                                     </div> <!-- CV Reference -->
 
                                     <div class="panel panel-default">
-                                        <div class="panel-heading clearfix">
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#jobExperienceModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
-                                            Job Experience
+                                        <div class="panel-heading">
+                                            <span>Job Experience</span>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#jobExperienceModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
+                                            </div>
                                         </div>
                                         <div class="panel-body">
                                             <div id="overflowTable" style="overflow-x: auto;">
@@ -850,9 +865,11 @@
                                 <div id="education" class="tab-pane fade">
 
                                     <div class="panel panel-default">
-                                        <div class="panel-heading clearfix">
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#EducationHistoryModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
-                                            Education History
+                                        <div class="panel-heading">
+                                            <span>Education History</span>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#EducationHistoryModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
+                                            </div>
                                         </div>
                                         <div class="panel-body">
                                             <div id="overflowTable" style="overflow-x: auto;">
@@ -875,9 +892,11 @@
                                     </div>
 
                                     <div class="panel panel-default">
-                                        <div class="panel-heading clearfix">
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#LanguageModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
-                                            Languages
+                                        <div class="panel-heading">
+                                            <span>Languages</span>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#LanguageModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
+                                            </div>
                                         </div>
                                         <div class="panel-body">
                                             <div id="overflowTable" style="overflow-x: auto;">
@@ -897,9 +916,11 @@
                                     </div>
 
                                     <div class="panel panel-default">
-                                        <div class="panel-heading clearfix">
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#ComputerSkillModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
-                                            Computer Skills
+                                        <div class="panel-heading">
+                                            <span>Computer Skills</span>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#ComputerSkillModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
+                                            </div>
                                         </div>
                                         <div class="panel-body">
                                             <div id="overflowTable" style="overflow-x: auto;">
@@ -947,9 +968,11 @@
                                         <div class="col-md-12">
                                             <div class="panel panel-default">
 
-                                                <div class="panel-heading clearfix">
-                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#placementModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
-                                                    Jobs Placement History
+                                                <div class="panel-heading">
+                                                    <span>Jobs Placement History</span>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" data-bs-toggle="modal" data-bs-target="#placementModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New Record</button>
+                                                    </div>
                                                 </div>
                                                 <div class="panel-body">
                                                     <div id="overflowTable" style="overflow-x: auto;">
@@ -977,10 +1000,12 @@
                                         <div class="col-md-12">
                                             <div class="panel panel-default">
 
-                                                <div class="panel-heading clearfix">
-                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#businessSetUpModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add Business set up</button>
-                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#businessSetUpCategoryModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i> Add Business set up category</button>
-                                                    @*Business-Setup*@                                Business Setup History
+                                                <div class="panel-heading">
+                                                    <span>Business Setup History</span>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" data-bs-toggle="modal" data-bs-target="#businessSetUpCategoryModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add Category</button>
+                                                        <button type="button" data-bs-toggle="modal" data-bs-target="#businessSetUpModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add Business Set Up</button>
+                                                    </div>
                                                 </div>
                                                 <div class="panel-body">
                                                     <div id="overflowTable" style="overflow-x: auto;">
@@ -1010,10 +1035,12 @@
                                 <div id="futures-training" class="tab-pane fade">
                                             <div class="panel panel-default">
                                                 <div class="panel-heading">
-                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#FuturestrainingModal" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add New FuturesTraning</button>
-                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#subjectModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i>  Add New Subject</button>
-                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#lessonModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i>  Add New Lesson</button>
-                                                    Futures-Training
+                                                    <span>Futures Training</span>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" data-bs-toggle="modal" data-bs-target="#lessonModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add Lesson</button>
+                                                        <button type="button" data-bs-toggle="modal" data-bs-target="#subjectModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add Subject</button>
+                                                        <button type="button" data-bs-toggle="modal" data-bs-target="#FuturestrainingModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add New</button>
+                                                    </div>
                                                 </div>
                                                 <div class="panel-body">
                                                     <div id="overflowTable" style="overflow-x: auto;">
@@ -1038,9 +1065,11 @@
                                 <div id="social-support" class="tab-pane fade">
                                             <div class="panel panel-default">
                                                 <div class="panel-heading">
-                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#socialSupportCaseModel" class="btn btn-success btn-sm m-2 float-end" style="color:white;"><i class="fa fa-plus"></i> Add Social Support</button>
-                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#caseWorkerModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i> Add Case Worker</button>
-                                                    Social Support History
+                                                    <span>Social Support History</span>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" data-bs-toggle="modal" data-bs-target="#caseWorkerModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add Case Worker</button>
+                                                        <button type="button" data-bs-toggle="modal" data-bs-target="#socialSupportCaseModel" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Add Social Support</button>
+                                                    </div>
                                                 </div>
                                                 <div class="panel-body">
                                                     <div id="overflowTable" style="overflow-x: auto;">
@@ -1066,11 +1095,11 @@
                                 <div id="monitoring" class="tab-pane fade">
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
-                                                <button type="button" data-bs-toggle="modal" data-bs-target="#businessSetupMonitoringModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i> Business setup Monitoring</button>
-                                                <button type="button" data-bs-toggle="modal" data-bs-target="#futureTrainingMonitoringModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i> Future training Monitoring</button>
-                                                <!-- <button data-bs-toggle="modal" data-bs-target="#placementMonitoringModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i> Placement Monitoring</button> -->
-                                                
-                                                Monitoring Information
+                                                <span>Monitoring Information</span>
+                                                <div class="d-flex gap-2">
+                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#futureTrainingMonitoringModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Future Training</button>
+                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#businessSetupMonitoringModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Business Setup</button>
+                                                </div>
                                             </div>
                                             <div id="overflowTable" style="overflow-x: auto;">
                                                 <table id="MonitoringTableshow" class="table table-hover table-bordered" style="width: 100%;">
@@ -1089,8 +1118,10 @@
                                             </div>
 
                                             <div class="panel-heading">
-                                                <button type="button" data-bs-toggle="modal" data-bs-target="#placementMonitoringModal" class="btn btn-success btn-sm m-2 float-end" style="color:white; margin-right: 5px;"><i class="fa fa-plus"></i> Placement Monitoring</button>
-                                                Monitoring Placement Information
+                                                <span>Monitoring Placement Information</span>
+                                                <div class="d-flex gap-2">
+                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#placementMonitoringModal" class="btn btn-success btn-sm" style="color:white;"><i class="fa fa-plus"></i> Placement Monitoring</button>
+                                                </div>
                                             </div>
                                             <div id="overflowTable" style="overflow-x: auto;">
                                                 <table id="MonitoringPlacementTableshow" class="table table-hover table-bordered" style="width: 100%;">

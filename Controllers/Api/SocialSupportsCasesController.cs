@@ -12,6 +12,8 @@ using System.Security.Claims;
 namespace MtpApp.Controllers.Api
 {
     [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
     public class SocialSupportCasesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -25,7 +27,7 @@ namespace MtpApp.Controllers.Api
 
         // GET: /api/SocialSupportCases?clientId={id}
         [HttpGet]
-        public IActionResult GetSocialSupportCases(int clientId)
+        public IActionResult GetSocialSupportCases([FromQuery] int clientId)
         {
             var Socialsupportcases = _context.SocialsupportCases
                                 .Include(c => c.Client)
@@ -38,9 +40,9 @@ namespace MtpApp.Controllers.Api
             return Ok(Socialsupportcases);
         }
 
-        // GET: /api/SocialSupportCases?SocialSupportCaseId={id}
-        [HttpGet]
-        public IActionResult GetSocialSupportCaseBySocialSupportCaseId(int SocialSupportCaseId)
+        // GET: /api/SocialSupportCases/{id}/problem
+        [HttpGet("{id}/problem")]
+        public IActionResult GetSocialSupportCaseBySocialSupportCaseId(int id)
         {
             var SocialsupportProblem = (from
                                         SC in _context.SocialsupportCases
@@ -49,7 +51,7 @@ namespace MtpApp.Controllers.Api
                                         on SC.Id equals SP.SocialSupportCaseId
                                         into SPGroup
                                         from SP in SPGroup.DefaultIfEmpty()
-                                        where SC.Id == SocialSupportCaseId
+                                        where SC.Id == id
                                         select new
                                         {
                                             SocialproblemId = SP == null ? 0 : SP.Id,
@@ -78,15 +80,15 @@ namespace MtpApp.Controllers.Api
             return Ok(SocialsupportProblem);
         }
 
-        // GET: /api/SocialSupportCases
-        [HttpGet]
-        public IActionResult GetSocialSupportCase(int Id)
+        // GET: /api/SocialSupportCases/{id}
+        [HttpGet("{id}")]
+        public IActionResult GetSocialSupportCase(int id)
         {
             var Socialsupportcases = _context.SocialsupportCases
                                 .Include(c => c.Client)
                                 .Include(c => c.CaseWorker)
                                 .Select(_mapper.Map<SocialsupportCase, SocialsupportCaseDto>)
-                                .Where(c => c.Id == Id);
+                                .Where(c => c.Id == id);
             if (Socialsupportcases == null)
                 return NotFound();
 
@@ -95,7 +97,7 @@ namespace MtpApp.Controllers.Api
 
         // POST: /api/SocialSupportCases
         [HttpPost]
-        public IActionResult CreateSocialSupportCases(SocialsupportCaseDto socialsupportCaseDto)
+        public IActionResult CreateSocialSupportCases([FromBody] SocialsupportCaseDto socialsupportCaseDto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
@@ -123,9 +125,9 @@ namespace MtpApp.Controllers.Api
 
 
         //Save with problem
-         //POST: /api/SocialSupportCases
-        [HttpPost]
-        public IActionResult CreateSocialSupportWithProblem(SocialsupportCaseMulObj SocialsupportCaseMulObj, string SaveMultipleTAble)
+        // POST: /api/SocialSupportCases/withproblem
+        [HttpPost("withproblem")]
+        public IActionResult CreateSocialSupportWithProblem([FromBody] SocialsupportCaseMulObj SocialsupportCaseMulObj)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
@@ -163,8 +165,8 @@ namespace MtpApp.Controllers.Api
         }
 
         // PUT: /api/SocialSupportCases/{id}
-        [HttpPut]
-        public IActionResult UpdateSocialSupportCases(SocialsupportCaseDto socialsupportCaseDto)
+        [HttpPut("{id}")]
+        public IActionResult UpdateSocialSupportCases(int id, [FromBody] SocialsupportCaseDto socialsupportCaseDto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
@@ -196,9 +198,9 @@ namespace MtpApp.Controllers.Api
             return Ok(new { });
         }
 
-        // PUT: /api/SocialSupportCases?UpdateMultipleTAble=
-        [HttpPut]
-        public IActionResult UpdateSocialSupportCasesWithProblem(SocialsupportCaseMulObj SocialsupportCaseMulObj, string UpdateMultipleTAble)
+        // PUT: /api/SocialSupportCases/{id}/withproblem
+        [HttpPut("{id}/withproblem")]
+        public IActionResult UpdateSocialSupportCasesWithProblem(int id, [FromBody] SocialsupportCaseMulObj SocialsupportCaseMulObj)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
@@ -238,7 +240,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //// DELETE: /api/SocialSupportCases/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteSocialSupportCase(int id)
         {
             if (!ModelState.IsValid)

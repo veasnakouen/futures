@@ -150,7 +150,7 @@ function Reactivate(id) {
     $('#postingDate').css('border-color', '#cccccc');
     $('#deadline').css('border-color', '#cccccc');
     $.ajax({
-        url: "/api/vacancies?jobId=" + id,
+        url: "/api/vacancies/" + id,
         type: "GET",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",

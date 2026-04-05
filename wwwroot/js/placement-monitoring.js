@@ -78,7 +78,7 @@ function validatePlacementMonitoring() {
 
 function placementMonitoringNotificationEdit(Id) {
     $.ajax({
-        url: "/api/PlacementMonitoring?Id=" + Id,
+        url: "/api/PlacementMonitoring/byid?Id=" + Id,
         type: "GET",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
@@ -221,7 +221,7 @@ function PlacementMonitoringActionNotification() {
 function GetplacementMonitoringActionByPlacementIdNotification(PlacementId) {
     tableplacementMonitoringAction = $('#PlacementMonitoringActionTable').DataTable({
         ajax: {
-            url: "/api/PlacementMonitoring?PlacementId=" + PlacementId,
+            url: "/api/PlacementMonitoring/process?PlacementId=" + PlacementId,
             dataSrc: ""
         },
         "lengthMenu": [[3, 10, 25, 50, -1], [3, 10, 25, 50, "All"]],
@@ -262,7 +262,7 @@ function GetplacementMonitoringActionByPlacementIdNotification(PlacementId) {
 
 function getAll(countskip) {
     $.ajax({
-        url: '/api/PlacementMonitoring?countskip=' + countskip,
+        url: '/api/PlacementMonitoring/notification?countskip=' + countskip,
         type: "GET",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",

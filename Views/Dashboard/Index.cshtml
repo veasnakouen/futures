@@ -150,7 +150,7 @@
 
         function drawChart(ItemByCategory) {
             $.ajax({
-                url: "/api/clients?Client=" + ItemByCategory,
+                url: "/api/clients/chart?Client=" + ItemByCategory,
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
@@ -158,8 +158,8 @@
                     var w = $('#piechart').width();
                     var h = Math.max(280, Math.min(w * .55, 420));
 
-                    const Dat = Object.values(result['table']).map(Object.values);
-                    var dataArray = Dat;
+                    // result is [{label: "Active", value: 10}, ...]
+                    var dataArray = result.map(function (r) { return [r.label, r.value]; });
                     var total = getTotal(dataArray);
 
                     $('#drawChartSelectBoxTotal').text(
@@ -187,6 +187,9 @@
                         legend: { textStyle: { fontSize: 11 } }
                     };
                     new google.visualization.PieChart(document.getElementById('piechart')).draw(data, options);
+                },
+                error: function () {
+                    $('#piechart').html('<div class="text-center text-muted py-5">No chart data available.</div>');
                 }
             });
         }

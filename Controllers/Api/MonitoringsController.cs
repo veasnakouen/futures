@@ -11,6 +11,8 @@ using System.Linq;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class MonitoringsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -22,8 +24,8 @@ namespace MtpApp.Controllers.Api
             _mapper = mapper;
         }
 
-        //GET /api/monitorings
-        [HttpGet]
+        //GET /api/monitorings/all
+        [HttpGet("all")]
         public IActionResult GetMonitoring()
         {
             var monitoring = _context.Monitorings.Include(c => c.Client).Select(_mapper.Map<Monitoring, MonitoringDto>);
@@ -31,7 +33,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //GET /api/monitorings/{id}
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetMonitoring(int id)
         {
             var monitoring = _context.Monitorings.Include(c => c.Client).SingleOrDefault(c => c.Id == id);
@@ -57,8 +59,8 @@ namespace MtpApp.Controllers.Api
         
 
         
-         //GET: /api/placements?clientId={id}
-        [HttpGet]
+         //GET: /api/monitorings/placement?clientId2={id}
+        [HttpGet("placement")]
         public IActionResult GetMonitoringPlacementByClient(int clientId2)
         {
             var monitoring = _context.Monitorings
@@ -94,7 +96,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //PUT /api/monitorings/{id}
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult UpdateMonitoring(int id, MonitoringDto monitoringDto)
         {
             if (!ModelState.IsValid)
@@ -114,7 +116,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //DELETE /api/monitorings/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteMonitoring(int id)
         {
             var monitoringInDB = _context.Monitorings.SingleOrDefault(c => c.Id == id);

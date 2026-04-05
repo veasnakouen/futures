@@ -12,6 +12,8 @@ using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class FurtherEducationReferralsController : ControllerBase
     {
@@ -39,7 +41,7 @@ namespace MtpApp.Controllers.Api
 
 
         // GET: /api/furthereducationreferrals/{id}
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetFurtherEducationReferral(int id)
         {
             var furtherEducationReferralInDb = _context.FurtherEducationReferrals
@@ -83,7 +85,7 @@ namespace MtpApp.Controllers.Api
         }
 
         // PUT: /api/furthereducationreferrals/{id}
-        [HttpPut]
+        [HttpPut("{id}")]
         public IActionResult UpdateFurtherEducationReferral(int id, FurtherEducationReferralDto furtherEducationReferralDto)
         {
             if (!ModelState.IsValid)
@@ -103,7 +105,7 @@ namespace MtpApp.Controllers.Api
         }
 
         // DELETE: /api/furthereducationreferrals/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteFurtherEducationReferral(int id)
         {
             var furtherEducationReferralInDb = _context.FurtherEducationReferrals.SingleOrDefault(c => c.Id == id);

@@ -1,4 +1,4 @@
-﻿@if (User?.Identity?.IsAuthenticated == true)
+@if (User?.Identity?.IsAuthenticated == true)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "d-flex align-items-center" }))
     {

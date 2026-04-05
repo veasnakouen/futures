@@ -103,6 +103,14 @@
 
             ageCalculation();
 
+            $('#clientModal').on('shown.bs.modal', function () {
+                // Position slider on the initially-active tab after the modal is visible
+                // (offsetLeft is zero while the modal is hidden)
+                var $active = $('.client-tab-menu .ctab-item.active');
+                if (!$active.length) $active = $('.client-tab-menu .ctab-item').first();
+                moveTabSlider($active);
+            });
+
             $('#clientModal').on('show.bs.modal', function () {
 
                 activateTab('education');
@@ -142,9 +150,10 @@
 
           
 
-            $(".nav-pills a").click(function () {
-                var menu = $(this).context.innerHTML.trim();
-                if (menu == "Dependents") {
+            $(".ctab-item").on('click', function () {
+                var href = $(this).attr('href');
+                moveTabSlider($(this));
+                if (href == "#beneficiary") {
                     if ($('#id').val().trim() == "") {
                         tableBeneficiary.clear().draw();
                         toastr.error("You must create client first.", "Server Response");
@@ -152,7 +161,7 @@
                         GetBeneficiariesByClientId($('#id').val());
                     }
                 }
-                else if (menu == "Further Education") {
+                else if (href == "#further-education") {
                     if ($('#id').val().trim() == "") {
                         tableReferralEducation.clear().draw();
                         toastr.error("You must create client first.", "Server Response");
@@ -162,7 +171,7 @@
                         GetReferralEducation();
                     }
                 }
-                else if (menu == "Education") {
+                else if (href == "#education") {
                     if ($('#id').val().trim() == "") {
                         $('#strength').val('');
                         $('#weakness').val('');
@@ -174,7 +183,7 @@
                         GetPersonalitiesByClientId($('#id').val());
                     }
                 }
-                else if (menu == "Job Specification") {
+                else if (href == "#job-specification") {
                     if ($('#id').val().trim() == "") {
                         $('#jobExpectationId').val('');
                         $('#jobExpectationAvailableTime').val('');
@@ -201,17 +210,17 @@
                         getcvReference();
                     }
                 }
-                else if (menu == "Placement") {
+                else if (href == "#client-placement") {
                     if ($('#id').val().trim() == "") {
                         tableBusinessSetUps.clear().draw();
                         tablePlacements.clear().draw();
                         toastr.error("You must create client first.", "Server Response");
                     } else {
                         GetBusinessSetUpByClientId($('#id').val());
-                        GetPlacementByClientId($('#id').val());    
+                        GetPlacementByClientId($('#id').val());
                     }
                 }
-                else if (menu == "Futures Training") {
+                else if (href == "#futures-training") {
                     if ($('#id').val().trim() == "") {
                         tableFuturesTraining.clear().draw();
                         toastr.error("You must create client first.", "Server Response");
@@ -219,17 +228,16 @@
                         GetFuturesTrainingsByClientId($('#id').val());
                     }
                 }
-                else if (menu == "Social Support") {
+                else if (href == "#social-support") {
                     if ($('#id').val().trim() == "") {
                         tableSocialSupportCase.clear().draw();
                         toastr.error("You must create client first.", "Server Response");
                     } else {
-                        GetSocialSupportsByClientId($('#id').val());
+                        GetSocialSupportCasesByClientId($('#id').val());
                     }
                 }
-                else if (menu == "Monitoring") {
+                else if (href == "#monitoring") {
                     if ($('#id').val().trim() == "") {
-                        //tableMonitoring.clear().draw();
                         toastr.error("You must create client first.", "Server Response");
                     } else {
                         GetMonitoringByClientId($('#id').val());
@@ -237,7 +245,10 @@
                 }
             });
 
-            // After close bootbox, it doesn't hide scroll bar
+            // Keep slider in sync whenever Bootstrap activates a tab (any method)
+            $(document).on('show.bs.tab', '.ctab-item', function () {
+                moveTabSlider($(this));
+            });
             $(document).on('hidden.bs.modal', function () {
                 $('body').addClass('modal-open');
             });
@@ -310,7 +321,10 @@
 
 
         function activateTab(tab) {
-            $('.nav-pills a[href="#' + tab + '"]').tab('show');
+            var $item = $('.ctab-item[href="#' + tab + '"]');
+            $item.tab('show');
+            // Move slider on programmatic activation too
+            if ($item.length) moveTabSlider($item);
         };
 
         function ageCalculation() {
@@ -325,8 +339,18 @@
         }
 
         function TabChanged() {
-            $(".nav-pills a").click(function () {
-                $(this).tab('show');
+            // Bootstrap 5 already handles tab activation via data-bs-toggle="pill";
+            // we just keep this for any legacy .tab('show') calls.
+        }
+
+        function moveTabSlider($item) {
+            var $menu = $item.closest('.client-tab-menu');
+            if (!$menu.length) return;
+            $menu.find('.ctab-item').removeClass('active');
+            $item.addClass('active');
+            $menu.find('.client-tab-slider').css({
+                left:  $item[0].offsetLeft  + 'px',
+                width: $item[0].offsetWidth + 'px'
             });
         }
 

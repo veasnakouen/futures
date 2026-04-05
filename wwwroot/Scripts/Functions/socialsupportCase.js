@@ -49,7 +49,7 @@ function activateSocialSupportTab(tab) {
 
 var tableSocialSupportCase = [];
 //This function used when get Id when click and use the selector from table Socials  in clients 
-function GetSocialSupportsByClientId(id) {
+function GetSocialSupportCasesByClientId(id) {
         if ($('#id').val() != "") {
             tableSocialSupportCase = $('#SocialsSupportCaseTable').DataTable({
                 ajax: {    
@@ -305,7 +305,7 @@ function SocialSupportCaseAction() {
             "SocialSupportProblemDto": socialSupportProblem
         };
         $.ajax({
-            url: "/api/SocialSupportCases?SaveMultipleTAble='MultipleObject'",
+            url: "/api/SocialSupportCases/withproblem",
             data: JSON.stringify(SocialsupportCaseMulObj),
             type: "POST",
             contentType: "application/json;charset=utf-8",
@@ -403,7 +403,7 @@ function SocialSupportCaseAction() {
         };
 
         $.ajax({
-            url: "/api/SocialSupportCases?UpdateMultipleTAble=MultipleTable",
+            url: "/api/SocialSupportCases/" + socialSupportCase.Id + "/withproblem",
             data: JSON.stringify(SocialsupportCaseMulObj),
             type: "PUT",
             contentType: "application/json;charset=utf-8",
@@ -424,7 +424,7 @@ function SocialSupportCaseAction() {
 
 function EditSocialSupportCaseByCase(id) {
     $.ajax({
-        url: "/api/SocialSupportCases?SocialSupportCaseId=" + id,
+        url: "/api/SocialSupportCases/" + id + "/problem",
         type: "GET",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",

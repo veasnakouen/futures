@@ -493,7 +493,7 @@ function Update() {
         data.append("UploadedFileIdCard", fileIdCard[0]);
     }
 
-    data.append("Id", $("#id").val());
+    data.append("id", $("#id").val());
     data.append("ClientCode", $("#clientCode").val());
     data.append("FirstName", $("#firstName").val());
     data.append("LastName", $("#lastName").val());
@@ -564,7 +564,7 @@ function Update() {
 
     var ajaxRequest = $.ajax({
         type: "PUT",
-        url: "/api/clients/" + $("#id").val(),
+        url: "/api/clients",
         contentType: false,
         processData: false,
         data: data,
@@ -577,7 +577,13 @@ function Update() {
         },
         error: function (errormessage) {
             RemoveLoadingScreen();
-            toastr.error("Something unexpected happen.");
+            var detail = '';
+            if (errormessage.responseJSON) {
+                detail = JSON.stringify(errormessage.responseJSON);
+            } else if (errormessage.responseText) {
+                detail = errormessage.responseText.substring(0, 200);
+            }
+            toastr.error("Update failed [" + errormessage.status + "]: " + detail, "Server Response");
         }
     });
 

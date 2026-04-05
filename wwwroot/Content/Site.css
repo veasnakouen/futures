@@ -1,4 +1,4 @@
-﻿/* ================================================================
+/* ================================================================
    Design tokens
    ================================================================ */
 :root {
@@ -109,8 +109,9 @@ footer {
 .panel-body {
     padding: 1rem 1.25rem;
 }
-.panel-primary > .panel-heading  { background: var(--mt-dark); color: #fff; }
-.panel-success > .panel-heading  { background: var(--mt-green); color: #fff; }
+.panel-primary > .panel-heading  { background: var(--mt-dark);   color: #fff; }
+.panel-default > .panel-heading  { background: #3d5a73;          color: #fff; }
+.panel-success > .panel-heading  { background: var(--mt-green);  color: #fff; }
 .panel-info    > .panel-heading  { background: #0ea5e9;          color: #fff; }
 .panel-warning > .panel-heading  { background: var(--mt-orange); color: #fff; }
 .panel-danger  > .panel-heading  { background: var(--mt-red);    color: #fff; }
@@ -118,7 +119,6 @@ footer {
 /* panel "Add" button inside header */
 .panel-heading .btn,
 .panel-heading a.btn {
-    margin-left: auto;
     flex-shrink: 0;
 }
 
@@ -257,7 +257,58 @@ footer {
     color: #fff;
     border-bottom: none;
 }
-.modal-header .btn-close { filter: invert(1) grayscale(1); }
+/* ── Close button — shared base ─────────────────────────────────── */
+/* Use 3-class selector (.modal-content .modal-header .btn-close) so we
+   beat Bootstrap 5.3's .modal-header .btn-close (2-class) in specificity   */
+.modal-content .modal-header .btn-close,
+.modal-content .modal-header .bootbox-close-button {
+    width: 1.9rem;
+    height: 1.9rem;
+    margin: 0 0 0 auto;              /* keep margin-left:auto → pushes button to the right */
+    padding: 0;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
+}
+/* Bootstrap 5 btn-close SVG × — keep it white and sized inside the circle */
+.modal-content .modal-header .btn-close {
+    filter: invert(1) grayscale(1);
+    opacity: 1;
+    background-size: 0.72em;
+}
+/* Bootbox renders raw &times; text with class .close */
+.modal-content .modal-header .bootbox-close-button {
+    color: #fff;
+    font-size: 1.15rem;
+    line-height: 1.9rem;
+    text-align: center;
+    text-shadow: none;
+    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+/* Hover — brighten + rotate */
+.modal-content .modal-header .btn-close:hover,
+.modal-content .modal-header .bootbox-close-button:hover {
+    background-color: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.65);
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+    opacity: 1;
+    color: #fff;
+    text-decoration: none;
+}
+/* Focus ring */
+.modal-content .modal-header .btn-close:focus,
+.modal-content .modal-header .bootbox-close-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+}
 .modal-title { font-weight: 600; }
 
 /* ================================================================
@@ -587,18 +638,38 @@ top : 0;
 .dataTables_wrapper {
     padding: 0.6rem 0.75rem;
 }
-.dataTables_wrapper .dataTables_filter,
-.dataTables_wrapper .dataTables_length {
+
+/* Top row: filter/search on the right */
+.dt-top-row {
+    display: flex;
+    justify-content: flex-end;
     margin-bottom: 0.5rem;
 }
-.dataTables_wrapper .dataTables_info,
-.dataTables_wrapper .dataTables_paginate {
+.dataTables_wrapper .dataTables_filter input {
+    margin-left: 0.4rem;
+}
+
+/* Bottom row: info on left, length + pagination on right */
+.dt-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     margin-top: 0.5rem;
     font-size: .82rem;
 }
+.dataTables_wrapper .dataTables_info {
+    flex: 1 1 auto;
+    white-space: nowrap;
+}
+.dataTables_wrapper .dataTables_length {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
 .dataTables_wrapper .dataTables_paginate {
+    flex: 0 0 auto;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
     flex-wrap: wrap;
     gap: .25rem;
@@ -626,6 +697,18 @@ top : 0;
 .dataTables_wrapper .dataTables_length label {
     font-size: .85rem;
     font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    margin: 0;
+}
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    font-size: .85rem;
+    padding: .25rem .5rem;
+    border: 1px solid #d6dde6;
+    border-radius: .35rem;
+    background: #fff;
 }
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,
 .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
@@ -656,9 +739,116 @@ top : 0;
     box-shadow: none !important;
 }
 
-.ui-datepicker {
-    z-index: 2000 !important;
+/* ================================================================
+   flatpickr — custom theme matched to app palette
+   ================================================================ */
+
+/* Calendar wrapper */
+.flatpickr-calendar {
+    font-family: inherit;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 6px 28px rgba(0,0,0,.13), 0 1px 6px rgba(0,0,0,.07);
+    padding: 0 0 0.5rem;
+    overflow: hidden;
+    background: #fff;
 }
+.flatpickr-calendar.arrowTop::before,
+.flatpickr-calendar.arrowTop::after { border-bottom-color: var(--mt-blue); }
+.flatpickr-calendar.arrowBottom::before,
+.flatpickr-calendar.arrowBottom::after { border-top-color: var(--mt-blue); }
+
+/* Month/nav header */
+.flatpickr-months {
+    background: var(--mt-blue);
+    border-radius: 0.75rem 0.75rem 0 0;
+    padding: 0.2rem 0;
+}
+.flatpickr-months .flatpickr-month { color: #fff; }
+.flatpickr-current-month {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.45rem 0 0.35rem;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.numInputWrapper input.cur-year {
+    color: #fff;
+    font-weight: 600;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 0.35rem;
+    padding: 1px 4px;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover,
+.numInputWrapper:hover { background: rgba(255,255,255,0.22); }
+.flatpickr-current-month .flatpickr-monthDropdown-months option { color: #1a3a5c; background: #fff; }
+.numInputWrapper span.arrowUp::after  { border-bottom-color: #fff; }
+.numInputWrapper span.arrowDown::after{ border-top-color: #fff; }
+
+/* Prev / Next month arrows */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    color: #fff !important;
+    fill: #fff !important;
+    padding: 6px 10px !important;
+    top: 4px !important;
+}
+.flatpickr-prev-month:hover svg,
+.flatpickr-next-month:hover svg { fill: rgba(255,255,255,0.7) !important; }
+
+/* Weekday labels */
+.flatpickr-weekdays { background: #f0f5fa; padding: 0.25rem 0; }
+span.flatpickr-weekday {
+    color: var(--mt-blue);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: transparent;
+}
+
+/* Day cells */
+.flatpickr-day {
+    border-radius: 50%;
+    color: #2c3e50;
+    font-size: 0.83rem;
+    max-width: 34px;
+    height: 34px;
+    line-height: 34px;
+    border: none;
+    transition: background 0.12s, color 0.12s;
+}
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+    background: #daeaf7;
+    color: var(--mt-blue);
+    border: none;
+}
+.flatpickr-day.today {
+    border: 2px solid var(--mt-blue) !important;
+    color: var(--mt-blue);
+    font-weight: 700;
+    background: #eef5fc;
+}
+.flatpickr-day.today:hover { background: #daeaf7; }
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.selected:focus {
+    background: var(--mt-blue) !important;
+    border-color: var(--mt-blue) !important;
+    color: #fff !important;
+    font-weight: 700;
+}
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay { color: #bcc5ce; }
+.flatpickr-day.disabled,
+.flatpickr-day.disabled:hover { color: #d0d8e0; }
+
+/* Inner days area padding */
+.dayContainer { padding: 0.2rem 0.5rem; }
+.flatpickr-innerContainer { padding: 0 0.25rem; }
 
 .table-actions {
     display: flex;
@@ -677,6 +867,64 @@ top : 0;
 .table-actions .btn i {
     margin-right: .25rem;
 }
+
+/* ================================================================
+   DataTable action links  (auto-styled by the draw.dt global hook)
+   ================================================================ */
+.dt-actions {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: .3rem;
+    align-items: center;
+}
+
+/* Base outline style */
+.dt-action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .28rem;
+    padding: .18rem .55rem;
+    border-radius: 0.5rem;
+    font-size: .76rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none !important;
+    line-height: 1.4;
+    background: transparent;
+    border: 1.5px solid currentColor;
+    transition: background .15s, color .15s, box-shadow .15s;
+}
+.dt-action-link:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+
+/* Edit — blue outline */
+.dt-action-edit               { color: #1a6fc4; }
+.dt-action-edit:hover         { background: #1a6fc4; color: #fff; }
+
+/* Delete — red outline */
+.dt-action-delete             { color: #c0392b; }
+.dt-action-delete:hover       { background: #c0392b; color: #fff; }
+
+/* Open / In Progress / Reopen — teal outline */
+.dt-action-open               { color: #117a65; }
+.dt-action-open:hover         { background: #117a65; color: #fff; }
+
+/* Close — green outline */
+.dt-action-close              { color: #1e7e34; }
+.dt-action-close:hover        { background: #1e7e34; color: #fff; }
+
+/* Hold — amber outline */
+.dt-action-hold               { color: #856404; }
+.dt-action-hold:hover         { background: #856404; color: #fff; }
+
+/* Detail / View — indigo outline */
+.dt-action-view               { color: #4a3fc0; }
+.dt-action-view:hover         { background: #4a3fc0; color: #fff; }
+
+/* Manage / other — grey outline */
+.dt-action-other              { color: #495057; }
+.dt-action-other:hover        { background: #495057; color: #fff; }
 
 /* ================================================================
    Card / panel layout improvements
@@ -698,11 +946,161 @@ top : 0;
 }
 
 /* ================================================================
+   Client Information — animated tab menu
+   ================================================================ */
+.client-tab-menu {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    background: #eef2f7;
+    border-radius: .65rem;
+    padding: 5px 6px;
+    margin-bottom: 12px;
+    overflow: hidden;          /* keeps slider inside */
+}
+
+/* Gliding highlight pill (JS-driven) */
+.client-tab-slider {
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    height: calc(100% - 10px);
+    border-radius: .5rem;
+    background: linear-gradient(135deg, var(--mt-blue) 0%, var(--mt-navy) 100%);
+    box-shadow: 0 3px 10px rgba(44,109,164,.35);
+    transition: left .28s cubic-bezier(.45,1.4,.55,1), width .28s cubic-bezier(.45,1.4,.55,1);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ctab-item {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: .5rem;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #4a5568;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: color .2s;
+    cursor: pointer;
+}
+.ctab-item i {
+    font-size: .85rem;
+    transition: transform .25s;
+}
+.ctab-item:hover {
+    color: var(--mt-blue);
+}
+.ctab-item:hover i {
+    transform: scale(1.2);
+}
+.ctab-item.active {
+    color: #fff !important;
+}
+.ctab-item.active i {
+    transform: scale(1.15);
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.25));
+}
+/* Ripple on click */
+.ctab-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: .5rem;
+    background: radial-gradient(circle, rgba(255,255,255,.35) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0);
+    pointer-events: none;
+    transition: transform .4s, opacity .4s;
+}
+.ctab-item:active::after {
+    opacity: 1;
+    transform: scale(1);
+    transition: none;
+}
+
+/* ================================================================
    Modal improvements
    ================================================================ */
 .modal-footer {
     gap: 0.4rem;
     justify-content: flex-end;
+}
+
+/* ── Bootbox confirm dialog ─────────────────────────────────────── */
+.bootbox .modal-header {
+    padding: .75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;   /* title left, close button right */
+}
+.bootbox .modal-title {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+}
+.bootbox .modal-body {
+    padding: 1.25rem 1rem .75rem;
+    font-size: .95rem;
+    color: #333;
+}
+.bootbox .modal-footer {
+    padding: .6rem 1rem;
+    border-top: 1px solid #e9ecef;
+}
+.bootbox .modal-footer .btn {
+    min-width: 90px;
+    border-radius: 0.4rem;
+    font-size: .875rem;
+}
+
+/* Fit each modal dialog to its content width instead of using
+   Bootstrap's fixed max-width tiers (500 / 800 / 1140 px).
+   - min-width  : comfortable lower bound so tiny-content dialogs stay readable
+   - max-width  : never exceed 95 % of the viewport on any screen
+   margin: auto keeps it horizontally centered automatically.            */
+.modal-dialog {
+    width: fit-content;
+    min-width: min(380px, 94vw);
+    max-width: 95vw;
+    margin-inline: auto;
+}
+
+/* When modals are stacked, only the topmost backdrop should be
+   visible — otherwise each child modal darkens the background again. */
+.modal-backdrop ~ .modal-backdrop {
+    opacity: 0 !important;
+}
+
+/* ── Horizontal overflow inside modals ────────────────────────────────── */
+/* Prevent the modal-body from stretching the modal wider than the viewport
+   when content (e.g. a DataTable with many columns) is naturally too wide. */
+.modal-body {
+    overflow-x: hidden; /* clip at body edge; inner .table-responsive scrolls  */
+    min-width: 0;       /* allow flex child to shrink below natural content width */
+}
+
+/* DataTables wraps the <table> in .dataTables_wrapper after DOMContentLoaded.
+   Keep the wrapper from growing past its container. */
+.modal-body .dataTables_wrapper {
+    overflow-x: auto;
+    min-width: 0;
+    width: 100%;
+}
+
+/* table-responsive inside a modal body — remove the default bottom border
+   that duplicates the table's own border. */
+.modal-body .table-responsive {
+    border: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* ================================================================
@@ -729,4 +1127,134 @@ top : 0;
     .dataTables_wrapper .dataTables_length { float: none; text-align: left; }
     .dataTables_wrapper .dataTables_paginate { justify-content: center; }
     .navbar .dropdown-menu.show { max-height: 60vh; }
+}
+
+/* ================================================================
+   UI Enhancements
+   ================================================================ */
+
+/* ── Form labels ─────────────────────────────────────────────────── */
+.form-group label,
+.form-label {
+    font-weight: 600;
+    font-size: .83rem;
+    color: #4a5568;
+    margin-bottom: .3rem;
+    display: block;
+}
+
+/* ── select used with form-control (old Bootstrap 3 markup) ──────── */
+select.form-control {
+    appearance: auto;
+    cursor: pointer;
+}
+select.form-control:focus {
+    border-color: var(--mt-accent);
+    box-shadow: 0 0 0 .2rem rgba(52,152,219,.2);
+}
+
+/* ── Form control base ──────────────────────────────────────────── */
+.form-control, .form-select {
+    border-color: #ced4da;
+    border-radius: .35rem;
+    font-size: .9rem;
+    transition: border-color var(--mt-transition), box-shadow var(--mt-transition);
+}
+.form-control::placeholder { color: #adb5bd; }
+.form-control:disabled { background-color: #f8f9fa; cursor: not-allowed; }
+
+/* ── Modal body & footer polish ─────────────────────────────────── */
+.modal-body { padding: 1.25rem 1.5rem; }
+.modal-footer {
+    padding: .8rem 1.5rem;
+    border-top: 1px solid #e9ecef;
+    gap: .5rem;
+}
+.modal-footer .btn { min-width: 100px; }
+
+/* ── Nav pills inside modals (client tab navigation) ────────────── */
+.nav-pills .nav-link {
+    border-radius: .35rem;
+    font-size: .83rem;
+    font-weight: 500;
+    color: #4a5568;
+    padding: .4rem .85rem;
+    transition: background var(--mt-transition), color var(--mt-transition);
+}
+.nav-pills .nav-link:hover { background: #e8f0fe; color: var(--mt-blue); }
+.nav-pills .nav-link.active {
+    background: var(--mt-dark);
+    color: #fff;
+}
+
+/* ── DataTable wrapper ───────────────────────────────────────────── */
+.dataTables_wrapper .dataTables_filter input {
+    border-radius: .35rem;
+    border: 1px solid #ced4da;
+    padding: .3rem .7rem;
+    font-size: .88rem;
+    transition: border-color var(--mt-transition), box-shadow var(--mt-transition);
+}
+.dataTables_wrapper .dataTables_filter input:focus {
+    border-color: var(--mt-accent);
+    box-shadow: 0 0 0 .15rem rgba(52,152,219,.2);
+    outline: none;
+}
+.dataTables_wrapper .dataTables_length select {
+    border-radius: .35rem;
+    border: 1px solid #ced4da;
+    padding: .25rem .5rem;
+    font-size: .88rem;
+}
+.dataTables_wrapper .dataTables_info { font-size: .82rem; color: #6c757d; }
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: .3rem !important;
+    font-size: .83rem;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--mt-dark) !important;
+    color: #fff !important;
+    border-color: var(--mt-dark) !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #e8f0fe !important;
+    color: var(--mt-blue) !important;
+    border-color: #c8d8f0 !important;
+}
+
+/* ── Table row selected/highlighted ─────────────────────────────── */
+.table tbody tr.selected td { background: #d6eaf8 !important; }
+.table > :not(:first-child) { border-top: none; }
+
+/* ── Toastr toast polish ─────────────────────────────────────────── */
+#toast-container > div {
+    border-radius: .5rem !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,.18) !important;
+    font-size: .9rem !important;
+}
+
+/* ── Loading overlay (used by ShowLoadingScreen/RemoveLoadingScreen) */
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,.6);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Scrollable overflow table inside modals ─────────────────────── */
+#overflowTable { overflow-x: auto; }
+
+/* ── Bootbox dialog polish ───────────────────────────────────────── */
+.bootbox .modal-body { font-size: .95rem; color: #333; }
+.bootbox .modal-footer .btn-danger  { background: var(--mt-red);   border-color: var(--mt-red);   }
+.bootbox .modal-footer .btn-default,
+.bootbox .modal-footer .btn-secondary {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
 }

@@ -15,6 +15,8 @@ using System.Security.Claims;
 
 namespace MtpApp.Controllers.Api
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
     public class PlacementMonitoringController : ControllerBase
     {
@@ -45,38 +47,7 @@ namespace MtpApp.Controllers.Api
         }
 
         //GET /api/PlacementMonitoring?CountPlacmentPending=
-        //[HttpGet]
-        //public IActionResult GetPlacementMonitoringNotification(int countskip)
-        //{
-        //    DateTime startdate = DateTime.Today.AddDays(10);
-        //    var PLacementProcessInDb =
-        //        (from pp in _context.PlacementProgresses
-        //         join m in _context.Monitorings on pp.MonitoringId equals m.Id
-        //         join c in _context.Clients on m.ClientId equals c.Id
-        //         where m.NextMonitoringDate <= startdate && pp.Completed == "Pending"
-        //         orderby m.NextMonitoringDate ?
-        //         select new { PlacementProgress = pp, Monitorings = m, Client=c }
-        //         ).ToList().Skip(countskip).Take(5);
-
-        //    var PLacementProcessCount =
-        //        (from pp in _context.PlacementProgresses
-        //         join m in _context.Monitorings on pp.MonitoringId equals m.Id
-        //         join c in _context.Clients on m.ClientId equals c.Id
-        //         where m.NextMonitoringDate <= startdate && pp.Completed == "Pending"
-        //         orderby pp.Id
-        //         select new { PlacementProgress = pp, Monitorings = m, Client = c }
-        //         ).ToList().Count();
-
-        //    object[] Arrayobj = new object[2];
-
-        //    Arrayobj[0] = PLacementProcessInDb;
-        //    Arrayobj[1] = PLacementProcessCount;
-
-        //    return Ok(new { Arrayobj });
-        //}
-
-
-        [HttpGet]
+        [HttpGet("notification")]
         public IActionResult GetPlacementMonitoringNotification(int countskip)
         {
             DateTime startdate = DateTime.Today.AddDays(10);
@@ -109,8 +80,8 @@ namespace MtpApp.Controllers.Api
         }
 
         // for doing 
-        //GET /api/PlacementMonitoring?PlacementId=
-        [HttpGet]
+        //GET /api/PlacementMonitoring/process?PlacementId=
+        [HttpGet("process")]
         public IActionResult GetPlacementProcessMonitoring(int PlacementId)
         {
             var MonitoringPlacementInDb = _context.PlacementProgresses
@@ -127,8 +98,8 @@ namespace MtpApp.Controllers.Api
 
 
         // for doing 
-        //GET /api/PlacementMonitoring?PlacementId=
-        [HttpGet]
+        //GET /api/PlacementMonitoring/all?ClientId2=
+        [HttpGet("all")]
         public IActionResult GetAllPlacementProcessMonitoring(int ClientId2)
         {
             var MonitoringInDb =
@@ -144,8 +115,8 @@ namespace MtpApp.Controllers.Api
         }
 
 
-        //GET /api/PlacementMonitoring?Id
-        [HttpGet]
+        //GET /api/PlacementMonitoring/byid?Id=
+        [HttpGet("byid")]
         public IActionResult GetPlacementProcessById(int Id)
         {
             var MonitoringPlecementInDb = _context.PlacementProgresses

@@ -6,10 +6,36 @@
         DisabledReferralEducation();
 
         GetFurtherEducationSubject("");
+        GetEducationReferralSources("");
         document.getElementById('btnReferralEducationAction').innerText = "Add New";
         $('#referralDate').val('');
     });
 });
+
+function GetEducationReferralSources(selectedValue) {
+    $.ajax({
+        url: "/api/ReferralSources",
+        type: "GET",
+        contentType: "application/json;charset=utf-8",
+        dataType: "json",
+        success: function (result) {
+            $("#referralSourceId").empty();
+            $("#referralSourceId").prepend("<option value=''>-- Select Referral To --</option>");
+            for (var i = 0; i < result.length; i++) {
+                var status = result[i]['status'] ? ' (' + result[i]['status'] + ')' : '';
+                $("#referralSourceId").append(
+                    '<option value="' + result[i]['id'] + '">' + result[i]['referralSource'] + status + '</option>'
+                );
+            }
+            if (selectedValue) {
+                $("#referralSourceId").val(selectedValue);
+            }
+        },
+        error: function () {
+            toastr.error("Could not load referral sources.", "Server Response");
+        }
+    });
+}
 
 function GetFurtherEducationSubject(SelectedValue) {
     var data = {};
@@ -112,13 +138,13 @@ function ReferralEducationAction(referralClientType) {
                     $('#provider').css('border-color', '#cccccc');
                    
                         var data = {
-                            ClientId: $('#id').val(),
+                            ClientId: parseInt($('#id').val()) || 0,
                             ReferralDate: $('#referralDate').val(),
-                            EducationReferralSourceId: $('#referralSourceId').val(),
-                            furtherEducationReferralSubjectId: $('#subjectfurtherEducationreferral').val(),
+                            EducationReferralSourceId: parseInt($('#referralSourceId').val()) || 0,
+                            furtherEducationReferralSubjectId: parseInt($('#subjectfurtherEducationreferral').val()) || 0,
                             Provider: $('#provider').val(),
                             Duration: $('#duration').val(),
-                            ClientType: 'NONE'
+                            clientType: 'NONE'
                         };
                         $.ajax({
                             url: "/api/furthereducationreferrals",
@@ -139,14 +165,10 @@ function ReferralEducationAction(referralClientType) {
                                 $('#referralEducation').modal('hide');
                             },
                             error: function (errormessage) {
-                                toastr.error("This referral is already exists.", "Server Response");
-                                //DisabledReferralEducation();
-                                //document.getElementById('btnReferralEducationAction').innerText = "Add New";
-                                //$('#referralDate').val('');
-                                //$('#subjectfurtherEducationreferral').val('');
-                                //$('#provider').val('');
-                                //$('#duration').val('');
-                                //$('#referralClientType').val('');
+                                var msg = (errormessage.responseJSON && errormessage.responseJSON.errors)
+                                    ? errormessage.responseJSON.errors.join(' ')
+                                    : 'Failed to save referral. Please check all fields.';
+                                toastr.error(msg, "Server Response");
                             }
                         });
                 }
@@ -190,14 +212,14 @@ function ReferralEducationAction(referralClientType) {
                 else {
                     $('#provider').css('border-color', '#cccccc');
                         var data = {
-                            Id: $('#referralEducationId').val(),
-                            ClientId: $('#id').val(),
+                            Id: parseInt($('#referralEducationId').val()) || 0,
+                            ClientId: parseInt($('#id').val()) || 0,
                             ReferralDate: $('#referralDate').val(),
-                            EducationReferralSourceId: $('#referralSourceId').val(),
-                            furtherEducationReferralSubjectId: $('#subjectfurtherEducationreferral').val(),
+                            EducationReferralSourceId: parseInt($('#referralSourceId').val()) || 0,
+                            furtherEducationReferralSubjectId: parseInt($('#subjectfurtherEducationreferral').val()) || 0,
                             Provider: $('#provider').val(),
                             Duration: $('#duration').val(),
-                            ClientType: 'NONE'
+                            clientType: 'NONE'
                         };
                         $.ajax({
                             url: "/api/furthereducationreferrals/" + data.Id,
@@ -218,13 +240,10 @@ function ReferralEducationAction(referralClientType) {
                                 $('#referralEducation').modal('hide');
                             },
                             error: function (errormessage) {
-                                toastr.error("This referral is already exists.", "Server Response");
-                                //DisabledReferralEducation();
-                                //document.getElementById('btnReferralEducationAction').innerText = "Add New";
-                                //$('#referralDate').val('');
-                                //$('#subjectfurtherEducationreferral').val('');
-                                //$('#provider').val('');
-                                //$('#duration').val('');
+                                var msg = (errormessage.responseJSON && errormessage.responseJSON.errors)
+                                    ? errormessage.responseJSON.errors.join(' ')
+                                    : 'Failed to update referral. Please check all fields.';
+                                toastr.error(msg, "Server Response");
                             }
                         });
                     }
@@ -249,6 +268,8 @@ function ReferralEducationEdit(id) {
             $('#referralEducationId').val(result.furtherEducationReferralDto.id);
 
             GetFurtherEducationSubject(result.furtherEducationReferralDto.furtherEducationReferralSubjectId);
+            GetEducationReferralSources(result.furtherEducationReferralDto.educationReferralSource
+                ? result.furtherEducationReferralDto.educationReferralSource.id : '');
 
             var referralDate = new Date(result.furtherEducationReferralDto.referralDate);
             var dd = referralDate.getDate();
@@ -266,7 +287,6 @@ function ReferralEducationEdit(id) {
             $('#provider').val(result.furtherEducationReferralDto.provider);
             $('#duration').val(result.furtherEducationReferralDto.duration);
             $('#referralClientType').val(result.furtherEducationReferralDto.clientType);
-            $('#referralSourceId').val(result.furtherEducationReferralDto.educationReferralSource.id);
             
             document.getElementById('btnReferralEducationAction').innerText = "Update";
             EnabledReferralEducation();

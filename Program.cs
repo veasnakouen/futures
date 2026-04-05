@@ -34,6 +34,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+// Support legacy ASP.NET Identity v2 (.NET Framework) password hashes.
+builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, MtpApp.Infrastructure.LegacyPasswordHasher>();
+
 // MVC + API controllers with views
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
@@ -125,6 +128,74 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
+
+// Dev-only: reset passwords so you can log in after migration.
+// Remove this block once you have confirmed login works.
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var um = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    foreach (var email in new[] { "khornveasna@mloptapang.org", "it.mt@mloptapang.org" })
+    {
+        var u = await um.FindByEmailAsync(email);
+        if (u != null)
+        {
+            var token = await um.GeneratePasswordResetTokenAsync(u);
+            await um.ResetPasswordAsync(u, token, "Admin@12345");
+        }
+    }
+}
+
+// ── Super-admin seed (runs once; idempotent) ─────────────────────────────────
+{
+    using var scope = app.Services.CreateScope();
+    var sp   = scope.ServiceProvider;
+    var rm   = sp.GetRequiredService<RoleManager<IdentityRole>>();
+    var um   = sp.GetRequiredService<UserManager<ApplicationUser>>();
+
+    // Ensure every role the app uses exists in the database
+    var allRoles = new[]
+    {
+        "Admin", "Manager", "CaseWorker", "User",
+        "Futures System", "HR System", "Stock System",
+        "Medical System", "Ticket System"
+    };
+    foreach (var role in allRoles)
+    {
+        if (!await rm.RoleExistsAsync(role))
+            await rm.CreateAsync(new IdentityRole(role));
+    }
+
+    // Create the super-admin user if it does not already exist
+    const string superEmail = "superadmin@mloptapang.org";
+    var superUser = await um.FindByEmailAsync(superEmail);
+    if (superUser == null)
+    {
+        superUser = new ApplicationUser
+        {
+            UserName      = superEmail,
+            Email         = superEmail,
+            EmailConfirmed = true,
+            FirstName     = "Super",
+            LastName      = "Admin",
+            Branch        = "All",
+            IsDeleted     = false
+        };
+        var result = await um.CreateAsync(superUser, "Admin@123");
+        if (!result.Succeeded)
+        {
+            var errs = string.Join("; ", System.Linq.Enumerable.Select(result.Errors, e => e.Description));
+            throw new Exception($"Failed to create super-admin: {errs}");
+        }
+    }
+
+    // Assign all roles to the super-admin
+    foreach (var role in allRoles)
+    {
+        if (!await um.IsInRoleAsync(superUser, role))
+            await um.AddToRoleAsync(superUser, role);
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
