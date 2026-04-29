@@ -2,7 +2,7 @@
 function SavePersonality() {
 
     var data = {
-        ClientId: $('#id').val(),
+        ClientId: parseInt($('#id').val()),
         Strength: $('#strength').val(),
         Weakness: $('#weakness').val()
     };

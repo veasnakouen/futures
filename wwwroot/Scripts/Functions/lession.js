@@ -89,8 +89,8 @@ function LessionAction() {
     {
         $('#SubjectLesson').css('border-color', '#cccccc');
         var data = {
-            Id: $('#lessonId').val(),
-            subjectId: $('#SubjectLesson').val(),
+            Id: parseInt($('#lessonId').val()),
+            subjectId: parseInt($('#SubjectLesson').val()),
             lessionSub: $('#lessionSub').val()
         };
         console.log(data);

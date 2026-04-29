@@ -33,7 +33,7 @@ var tableCaseManagement = [];
 function GetCaseManagementByCaseWorker(caseWorkerId, status) {
     tableCaseManagement = $('#caseListTable').DataTable({
         ajax: {
-            url: (caseWorkerId == "all" && status == "New Case") ? "/api/cases?caseWorkerId=all&status=New Case" : "/api/cases?caseWorkerId=" + caseWorkerId + "&status=" + status,
+            url: "/api/cases/bycaseworker?caseWorkerId=" + caseWorkerId + "&status=" + encodeURIComponent(status),
             dataSrc: ""
         },
         columns: [
@@ -373,13 +373,15 @@ function CaseAction() {
             else {
                 $('#caseSubject').css('border-color', '#cccccc');
 
+                var openRaw = $('#openDate').val();
+                var closeRaw = $('#closeDate').val();
                 var data = {
-                    ClientId: $('#clientId').val(),
-                    CaseWorkerId: $('#caseWorkerIds').val(),
+                    ClientId: parseInt($('#clientId').val()),
+                    CaseWorkerId: parseInt($('#caseWorkerIds').val()),
                     Priority: $('#priority').val(),
                     ServiceType: $('#serviceType').val(),
-                    OpenDate: $('#openDate').val(),
-                    CloseDate: $('#closeDate').val(),
+                    OpenDate: openRaw ? new Date(openRaw).toISOString() : null,
+                    CloseDate: closeRaw ? new Date(closeRaw).toISOString() : null,
                     Subject: $('#caseSubject').val(),
                     Description: $('#caseDescription').val(),
                     Status: $('#caseStatus').val()
@@ -399,10 +401,8 @@ function CaseAction() {
                         $('#caseModal').modal('hide');
                     },
                     error: function (errormessage) {
-                        toastr.error("This case is already exists.", "Server Response");
-                        DisabledCases();
-                        document.getElementById('btnCasesAction').innerText = "Add New";
-                        ClearCases();
+                        toastr.error("Failed to save case. Please check all fields and try again.", "Server Response");
+                        document.getElementById('btnCasesAction').innerText = "Save changes";
                     }
                 });
             }
@@ -418,14 +418,16 @@ function CaseAction() {
         $('#openDate').css('border-color', '#cccccc');
         $('#caseSubject').css('border-color', '#cccccc');
 
+        var openRaw2 = $('#openDate').val();
+        var closeRaw2 = $('#closeDate').val();
         var data = {
-            Id: $('#caseId').val(),
-            ClientId: $('#clientId').val(),
-            CaseWorkerId: $('#caseWorkerIds').val(),
+            Id: parseInt($('#caseId').val()),
+            ClientId: parseInt($('#clientId').val()),
+            CaseWorkerId: parseInt($('#caseWorkerIds').val()),
             Priority: $('#priority').val(),
             ServiceType: $('#serviceType').val(),
-            OpenDate: $('#openDate').val(),
-            CloseDate: $('#closeDate').val(),
+            OpenDate: openRaw2 ? new Date(openRaw2).toISOString() : null,
+            CloseDate: closeRaw2 ? new Date(closeRaw2).toISOString() : null,
             Subject: $('#caseSubject').val(),
             Description: $('#caseDescription').val(),
             Status: $('#caseStatus').val()
@@ -445,10 +447,8 @@ function CaseAction() {
                 $('#caseModal').modal('hide');
             },
             error: function (errormessage) {
-                toastr.error("This case is already exists.", "Server Response");
-                DisabledCases();
-                document.getElementById('btnCasesAction').innerText = "Add New";
-                ClearCases();
+                toastr.error("Failed to update case. Please check all fields and try again.", "Server Response");
+                document.getElementById('btnCasesAction').innerText = "Update";
             }
         });
     }

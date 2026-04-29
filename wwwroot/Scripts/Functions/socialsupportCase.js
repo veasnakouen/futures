@@ -97,7 +97,7 @@ function GetSocialSupportCasesByClientId(id) {
                     {
                         data: "id",
                         render: function (data) {
-                            return "<a href='#' onclick='EditSocialSupportCaseByCase(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='DeleteSocialSupportCase(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
+                            return "<a href='javascript:void(0);' onclick='EditSocialSupportCaseByCase(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='javascript:void(0);' onclick='DeleteSocialSupportCase(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</a>";
                         }
                     }
                 ],
@@ -282,11 +282,11 @@ function SocialSupportCaseAction() {
 
         var socialSupportCase = {
             HaveCaseManager: Havecasemanager,
-            CaseWorkerId: $("#SocialSupportcaseId").val(),
+            CaseWorkerId: parseInt($("#SocialSupportcaseId").val()),
             OpenDate: $("#OpendatesocialSupportCase").val(),
             CloseDate: CloseDateVar,
             HaveProblem: HaveProblem,
-            ClientId: $('#id').val(),
+            ClientId: parseInt($('#id').val()),
             Status: $('#StatusSocialsupportCase').val()
         };
 
@@ -377,13 +377,13 @@ function SocialSupportCaseAction() {
         }
         var HaveProblem = "Have";
         var socialSupportCase = {
-            Id: $("#socialSupportCaseId").val(),
+            Id: parseInt($("#socialSupportCaseId").val()),
             HaveCaseManager: Havecasemanager,
-            CaseWorkerId: $("#SocialSupportcaseId").val(),
+            CaseWorkerId: parseInt($("#SocialSupportcaseId").val()),
             OpenDate: $("#OpendatesocialSupportCase").val(),
             CloseDate: CloseDateVar,
             HaveProblem: HaveProblem,
-            ClientId: $('#id').val(),
+            ClientId: parseInt($('#id').val()),
             Status: $('#StatusSocialsupportCase').val()
         };
 

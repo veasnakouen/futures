@@ -45,6 +45,7 @@ namespace MtpApp.Infrastructure
                 ["BusinessSetupMonitoriingReport"] = new LegacyReportDefinition("Business Setup Monitoring Report", "BusinessSetupMonitoiringReport", LegacyReportKind.Table, "MonitoringDate", "NextMonitoringDate", "EnrollDate"),
                 ["CurriculumvitaebycliendIdReport"] = new LegacyReportDefinition("Curriculum Vitae", null, LegacyReportKind.ClientProfile),
                 ["CurriculumVitaeByClientReport"] = new LegacyReportDefinition("Curriculum Vitae", null, LegacyReportKind.ClientProfile),
+                ["CurriculumvitaeEmbed"] = new LegacyReportDefinition("Curriculum Vitae", null, LegacyReportKind.ClientProfile),
                 ["VTCstudentreport"] = new LegacyReportDefinition("VTC Student Report", "ClientSummaryReport", LegacyReportKind.Table, "RegisterDate", "EnrollDate"),
                 ["ClientLookforbussinesssSetupReport"] = new LegacyReportDefinition("Client Look For Business Setup Report", "ClientLookforbussinesssSetup", LegacyReportKind.Table, "EnrollDate", "RegisterDate")
             };
@@ -71,6 +72,29 @@ namespace MtpApp.Infrastructure
             {
                 return RenderError(definition.Title, ex.Message);
             }
+        }
+
+        public DataTable? GetReportDataTable(string actionName, IReadOnlyDictionary<string, string?> routeValues)
+        {
+            if (!ReportDefinitions.TryGetValue(actionName ?? string.Empty, out var definition))
+            {
+                return null;
+            }
+
+            if (definition.Kind != LegacyReportKind.Table)
+            {
+                return null;
+            }
+
+            var dataTable = LoadDataTable(definition.SourceObject!);
+            var filteredRows = ApplyFilters(dataTable, definition, routeValues).ToList();
+
+            if (filteredRows.Count == 0)
+            {
+                return dataTable.Clone();
+            }
+
+            return filteredRows.CopyToDataTable();
         }
 
         private string RenderTableReport(LegacyReportDefinition definition, IReadOnlyDictionary<string, string?> routeValues)
@@ -177,154 +201,260 @@ namespace MtpApp.Infrastructure
                 .OrderByDescending(item => item.Id)
                 .ToList();
 
-            var body = new StringBuilder();
-            body.Append(RenderFieldGrid("Personal Data", new[]
-            {
-                Field("Client Code", client.ClientCode),
-                Field("Full Name", BuildClientName(client.FirstName, client.LastName)),
-                Field("Gender", client.Gender),
-                Field("Branch", client.Branch),
-                Field("Date of Birth", FormatDate(client.DateOfBirth)),
-                Field("Age", FormatAge(client.DateOfBirth)),
-                Field("Contact Phone", client.ContactPhone),
-                Field("Relative Phone", client.RelativePhone),
-                Field("Email", client.Email),
-                Field("Address", client.Address),
-                Field("Province", client.Province),
-                Field("Nationality", client.Nationality),
-                Field("Citizenship", client.Citizenship),
-                Field("Current Situation", client.CurrentSituation),
-                Field("Status", client.Status),
-                Field("Further Education", YesNo(client.FurtherEducation)),
-                Field("Placement", YesNo(client.Placement)),
-                Field("Training From Futures", YesNo(client.TrainingFromFutures)),
-                Field("Social Support Required", YesNo(client.SocialSupportRequired)),
-                Field("Hear By", client.HearBy),
-                Field("Expected Support", client.ExpectedSupport),
-                Field("Register Date", FormatDate(client.RegisterDate)),
-                Field("Enroll Date", FormatDate(client.EnrollDate)),
-                Field("Update Date", FormatDate(client.UpdateDate)),
-                Field("Place of Birth", client.PlaceOfBirth),
-                Field("Height", client.Height),
-                Field("Weight", client.Weight),
-                Field("ID Poor Status", client.IdpoorStatus),
-                Field("ID Poor Valid Date", FormatDate(client.IdpoorValiddate)),
-                Field("ID Poor Level", client.IdpoorLevel),
-                Field("ID Poor Account Number", client.IdpoorAccountNumber)
-            }));
+            var jobExperiences = _context.JobExperiences.AsNoTracking()
+                .Include(item => item.JobPositions)
+                .Where(item => item.ClientId == clientId)
+                .OrderByDescending(item => item.Id)
+                .ToList();
 
-            if (trainings.Count > 0)
+            var personality = _context.Personalities.AsNoTracking()
+                .Where(item => item.ClientId == clientId)
+                .FirstOrDefault();
+
+            return RenderCvDocument(client, routeValues, jobExperiences, educations, languages, skills, expectations, references, personality);
+        }
+
+        private string RenderCvDocument(
+            Client client,
+            IReadOnlyDictionary<string, string?> routeValues,
+            List<JobExperience> jobExperiences,
+            List<Education> educations,
+            List<Language> languages,
+            List<ComputerSkill> skills,
+            List<JobExpectation> expectations,
+            List<CvReference> references,
+            Personality? personality = null)
+        {
+            routeValues.TryGetValue("cvtype", out var cvType);
+            routeValues.TryGetValue("Applyfor", out var applyFor);
+            var showImage   = string.Equals(cvType,   "Image", StringComparison.OrdinalIgnoreCase);
+            var showApplyFor = string.Equals(applyFor, "yes",  StringComparison.OrdinalIgnoreCase);
+
+            // Pre-resolve job position names for "Apply for" line (TypeOfEmployment1 in original view).
+            var jobPositions = _context.JobPosition.AsNoTracking().ToDictionary(p => p.Id, p => p.Name);
+
+            var sb = new StringBuilder();
+            sb.Append("<style>\n");
+            sb.Append("*{box-sizing:border-box;}\n");
+            sb.Append("body{margin:0;padding:16px;background:#e8ebef;}\n");
+            // Document card
+            sb.Append(".cv-page{font-family:'Times New Roman',Georgia,serif;font-size:12.5pt;color:#1a1a1a;background:#fff;max-width:720px;margin:0 auto;padding:40px 52px 48px;box-shadow:0 4px 24px rgba(0,0,0,.14);border-radius:3px;line-height:1.6;}\n");
+            // Title
+            sb.Append(".cv-title{text-align:center;font-size:17pt;font-weight:bold;letter-spacing:3px;margin:0 0 4px;padding-bottom:12px;border-bottom:2.5px solid #1e3a6e;}\n");
+            // Header info block (Name / Address / Tel / Apply for)
+            sb.Append(".cv-header-tbl{width:100%;border-collapse:collapse;margin-top:10px;}\n");
+            sb.Append(".cv-header-tbl td{padding:2px 4px;vertical-align:top;font-size:12pt;}\n");
+            sb.Append(".cv-hlbl{width:110px;color:#555;}\n");
+            sb.Append(".cv-hcolon{width:14px;color:#555;}\n");
+            // Section heading — bold + coloured left bar
+            sb.Append(".cv-section{display:block;font-weight:bold;font-size:11.5pt;letter-spacing:.5px;color:#1e3a6e;border-left:4px solid #1e3a6e;padding:2px 0 2px 9px;margin:16px 0 6px;}\n");
+            // Data rows inside sections
+            sb.Append(".cv-tbl{width:100%;border-collapse:collapse;}\n");
+            sb.Append(".cv-tbl tr{border-bottom:1px solid #f0f0f0;}\n");
+            sb.Append(".cv-tbl tr:last-child{border-bottom:none;}\n");
+            sb.Append(".cv-tbl td{padding:3.5px 4px;vertical-align:top;font-size:12pt;}\n");
+            sb.Append(".cv-lbl{width:150px;color:#4a4a4a;}\n");
+            sb.Append(".cv-colon{width:14px;color:#888;}\n");
+            sb.Append(".cv-sect-tbl{margin-left:13px;width:calc(100% - 13px);}\n");
+            // Separator
+            sb.Append(".cv-sep{border:none;border-top:1px solid #e0e0e0;margin:12px 0;}\n");
+            // Photo
+            sb.Append(".cv-photo{width:94px;height:118px;object-fit:cover;border-radius:4px;border:1px solid #ccc;box-shadow:0 3px 10px rgba(0,0,0,.18);display:block;}\n");
+            // ID card
+            sb.Append(".cv-idcard-wrap{margin-top:12px;text-align:center;}\n");
+            sb.Append(".cv-idcard{max-width:360px;max-height:220px;border-radius:6px;border:1px solid #ccc;box-shadow:0 3px 12px rgba(0,0,0,.15);}\n");
+            // Hobby
+            sb.Append(".cv-hobby{margin:4px 0 4px 13px;font-style:italic;color:#333;}\n");
+            // Print overrides
+            sb.Append("@media print{body{background:#fff;padding:0;}  .cv-page{box-shadow:none;border-radius:0;padding:20px 32px;} .cv-sep{border-top-color:#bbb;} .cv-section{border-left-color:#000;color:#000;}}\n");
+            sb.Append("</style>\n");
+
+            sb.Append("<div class=\"cv-page\">");
+
+            // ── Title + optional photo ─────────────────────────────────────
+            sb.Append("<div style=\"position:relative;" + (showImage ? "min-height:126px;" : "") + "\">");
+            sb.Append("<h2 class=\"cv-title\">CURRICULUM VITAE</h2>");
+
+            if (showImage)
             {
-                body.Append(RenderTableSection("Training Records", new[] { "Subject", "Open Date", "Close Date", "Status", "Note" }, trainings.Select(item => new[]
-                {
-                    item.Subject?.SubjectName ?? string.Empty,
-                    FormatDate(item.OpenDate),
-                    FormatDate(item.CloseDate),
-                    item.Status,
-                    item.Note
-                })));
+                var photoSrc = !string.IsNullOrWhiteSpace(client.Photo)
+                    ? "/Images/" + Encode(client.Photo)
+                    : "/Images/blank_profile.png";
+                sb.Append("<img class=\"cv-photo\" src=\"" + photoSrc + "\" alt=\"Photo\" style=\"position:absolute;top:0;right:0;\" />");
             }
 
-            if (furtherEducations.Count > 0)
+            var headerWidth = showImage ? "calc(100% - 112px)" : "100%";
+            sb.Append("<table class=\"cv-header-tbl\" style=\"width:" + headerWidth + ";\">");
+            sb.Append(HRow("Name",    BuildClientName(client.FirstName, client.LastName)));
+            sb.Append(HRow("Address", client.Address));
+            sb.Append(HRow("Tel",     client.ContactPhone));
+            if (showApplyFor)
             {
-                body.Append(RenderTableSection("Further Education", new[] { "University", "Public School", "Vocational Training", "Computer School", "English School", "Chinese School", "Available Time" }, furtherEducations.Select(item => new[]
-                {
-                    YesNo(item.University),
-                    YesNo(item.PublicSchool),
-                    YesNo(item.VocationalTraining),
-                    YesNo(item.ComputerSchool),
-                    YesNo(item.EnglishSchool),
-                    YesNo(item.ChineseSchool),
-                    item.AvailableTime
-                })));
+                // Matches RDLC: TypeOfEmployment1 (first job position name) + " " + Candidate
+                var exp = expectations.FirstOrDefault();
+                var typeOfEmployment1 = exp?.JobPositionIdOne.HasValue == true && jobPositions.TryGetValue(exp.JobPositionIdOne!.Value, out var posName)
+                    ? posName : string.Empty;
+                var candidate = exp?.Candidate ?? string.Empty;
+                string applyValue;
+                if (!string.IsNullOrWhiteSpace(typeOfEmployment1) && !string.IsNullOrWhiteSpace(candidate))
+                    applyValue = typeOfEmployment1 + " ( " + candidate + " )";
+                else
+                    applyValue = typeOfEmployment1 ?? candidate ?? string.Empty;
+                sb.Append(HRow("Apply for", applyValue));
             }
+            sb.Append("</table>");
+            sb.Append("</div>"); // position:relative
+            CvSep();
 
+            // ── PERSONAL DATA ──────────────────────────────────────────────
+            sb.Append("<span class=\"cv-section\">PERSONAL DATA</span>");
+            sb.Append("<table class=\"cv-tbl cv-sect-tbl\">");
+            sb.Append(CvRow("Sex",            client.Gender));
+            sb.Append(CvRow("Marital",        client.MaritalStatus));
+            sb.Append(CvRow("Date of birth",  FormatCvDate(client.DateOfBirth)));
+            sb.Append(CvRow("Place of birth", client.PlaceOfBirth));
+            sb.Append(CvRow("Nationality",    client.Nationality));
+            sb.Append(CvRow("Citizenship",    client.Citizenship));
+            sb.Append("</table>");
+            CvSep();
+
+            // ── EDUCATION BACKGROUND ───────────────────────────────────────
+            sb.Append("<span class=\"cv-section\">EDUCATION BACKGROUND</span>");
+            sb.Append("<table class=\"cv-tbl cv-sect-tbl\">");
             if (educations.Count > 0)
             {
-                body.Append(RenderTableSection("Education Background", new[] { "Level", "Subject", "Grade", "Year", "School Name", "Description" }, educations.Select(item => new[]
+                foreach (var edu in educations)
                 {
-                    item.Level,
-                    item.Subject,
-                    item.Grade,
-                    item.Year,
-                    item.SchoolName,
-                    item.Description
-                })));
+                    var eduLabel = !string.IsNullOrWhiteSpace(edu.Level) ? edu.Level : "N/A";
+                    var eduParts = new System.Collections.Generic.List<string>();
+                    if (!string.IsNullOrWhiteSpace(edu.SchoolName)) eduParts.Add(edu.SchoolName);
+                    if (!string.IsNullOrWhiteSpace(edu.Year))        eduParts.Add("(" + edu.Year + ")");
+                    if (!string.IsNullOrWhiteSpace(edu.Grade))       eduParts.Add("Grade: " + edu.Grade);
+                    if (!string.IsNullOrWhiteSpace(edu.Subject))     eduParts.Add("Major: " + edu.Subject);
+                    sb.Append(CvRow(eduLabel, string.Join("  ", eduParts)));
+                }
             }
+            else
+                sb.Append(CvRow("N/A", "N/A"));
+            sb.Append("</table>");
+            CvSep();
 
-            if (placements.Count > 0)
-            {
-                body.Append(RenderTableSection("Placement History", new[] { "Placement Date", "Placement Type", "Job Position", "Company Name", "Job Placed By", "Salary", "Work Time", "Status" }, placements.Select(item => new[]
-                {
-                    FormatDate(item.PlacementDate),
-                    item.PlacementType,
-                    item.JobPosition?.Name,
-                    item.CompanyName,
-                    item.JobPlacedBy,
-                    item.Salary,
-                    item.WorkTime,
-                    item.Status
-                })));
-            }
-
-            if (languages.Count > 0)
-            {
-                body.Append(RenderTableSection("Languages", new[] { "Name", "Level" }, languages.Select(item => new[]
-                {
-                    item.Name,
-                    item.Level
-                })));
-            }
-
+            // ── SHORT COURSE ───────────────────────────────────────────────
+            sb.Append("<span class=\"cv-section\">SHORT COURSE</span>");
+            sb.Append("<table class=\"cv-tbl cv-sect-tbl\">");
             if (skills.Count > 0)
             {
-                body.Append(RenderTableSection("Computer Skills", new[] { "Skill", "Level", "Certified", "During", "Description" }, skills.Select(item => new[]
+                foreach (var skill in skills)
                 {
-                    item.Skill,
-                    item.Level,
-                    item.Certified,
-                    item.During,
-                    item.Description
-                })));
+                    var skillLabel = !string.IsNullOrWhiteSpace(skill.Skill) ? skill.Skill : "N/A";
+                    var skillParts = new System.Collections.Generic.List<string>();
+                    if (!string.IsNullOrWhiteSpace(skill.Level))     skillParts.Add(skill.Level);
+                    if (!string.IsNullOrWhiteSpace(skill.During))    skillParts.Add("Duration: " + skill.During);
+                    if (!string.IsNullOrWhiteSpace(skill.Certified)) skillParts.Add("Cert: " + skill.Certified);
+                    sb.Append(CvRow(skillLabel, string.Join("  /  ", skillParts)));
+                }
             }
+            else
+                sb.Append(CvRow("N/A", "N/A"));
+            sb.Append("</table>");
+            CvSep();
 
-            if (expectations.Count > 0)
+            // ── WORKING EXPERIENCE ─────────────────────────────────────────
+            sb.Append("<span class=\"cv-section\">WORKING EXPERIENCE</span>");
+            sb.Append("<table class=\"cv-tbl cv-sect-tbl\">");
+            if (jobExperiences.Count > 0)
             {
-                body.Append(RenderTableSection("Job Expectations", new[] { "Preferred Categories", "Preferred Positions", "Employment Type", "Available Time", "Salary", "Permanent", "Temporary", "Seasonal", "Candidate", "Hobby", "Self Employment", "Business Type", "Expectation Status", "Note" }, expectations.Select(item => new[]
+                foreach (var jexp in jobExperiences)
                 {
-                    JoinLookupNames(item.JobCategoryIdOne, item.JobCategoryIdTwo, item.JobCategoryIdThree, jobCategories),
-                    JoinLookupNames(item.JobPositionIdOne, item.JobPositionIdTwo, item.JobPositionIdThree, jobPositions),
-                    item.EmploymentType,
-                    item.AvailableTime,
-                    item.SalaryExpectation,
-                    YesNo(item.Permanent),
-                    YesNo(item.Temporary),
-                    YesNo(item.Seasonal),
-                    item.Candidate,
-                    item.Hobby,
-                    item.SelfEmployment,
-                    ResolveBusinessType(item, businessCategories),
-                    item.ExpectationStatus,
-                    item.Note
-                })));
+                    jobPositions.TryGetValue(jexp.JobPositionId, out var jposName);
+                    var jexpLabel = !string.IsNullOrWhiteSpace(jposName)   ? jposName
+                                 : !string.IsNullOrWhiteSpace(jexp.Employer) ? jexp.Employer
+                                 : "N/A";
+                    var jexpParts = new System.Collections.Generic.List<string>();
+                    if (!string.IsNullOrWhiteSpace(jexp.Employer)     && jexp.Employer != jexpLabel) jexpParts.Add(jexp.Employer);
+                    if (!string.IsNullOrWhiteSpace(jexp.Duration))    jexpParts.Add(jexp.Duration);
+                    if (!string.IsNullOrWhiteSpace(jexp.Salary))      jexpParts.Add("Salary: " + jexp.Salary);
+                    if (!string.IsNullOrWhiteSpace(jexp.Description)) jexpParts.Add(jexp.Description);
+                    sb.Append(CvRow(jexpLabel, string.Join("  /  ", jexpParts)));
+                }
             }
+            else
+                sb.Append(CvRow("N/A", "N/A"));
+            sb.Append("</table>");
+            CvSep();
+
+            // ── LANGUAGE ──────────────────────────────────────────────────
+            // RDLC: Name : Level  (Datalanguage dataset)
+            sb.Append("<span class=\"cv-section\">LANGUAGE</span>");
+            sb.Append("<table class=\"cv-tbl cv-sect-tbl\">");
+            if (languages.Count > 0)
+                foreach (var lang in languages)
+                    sb.Append(CvRow(lang.Name, lang.Level));
+            else
+                sb.Append(CvRow("N/A", "N/A"));
+            sb.Append("</table>");
+            CvSep();
+
+            // ── HOBBY ─────────────────────────────────────────────────────
+            sb.Append("<span class=\"cv-section\">HOBBY</span>");
+            var hobbyText = !string.IsNullOrWhiteSpace(personality?.Strength)
+                ? personality!.Strength
+                : expectations.FirstOrDefault()?.Hobby;
+            sb.Append("<p class=\"cv-hobby\">" + Encode(!string.IsNullOrWhiteSpace(hobbyText) ? hobbyText : "N/A") + "</p>");
+            CvSep();
+
+            // ── REFERENCE ─────────────────────────────────────────────────
+            sb.Append("<span class=\"cv-section\">REFERENCE</span>");
+            var hasRefContent = false;
 
             if (references.Count > 0)
             {
-                body.Append(RenderTableSection("References", new[] { "Name", "Job Position", "Organization", "Phone", "Email", "Description" }, references.Select(item => new[]
+                hasRefContent = true;
+                sb.Append("<table class=\"cv-tbl cv-sect-tbl\" style=\"margin-bottom:8px;\">");
+                foreach (var cvRef in references)
                 {
-                    item.Name,
-                    item.JobPositions?.Name,
-                    item.Organization,
-                    item.Phone,
-                    item.Email,
-                    item.Description
-                })));
+                    var refParts = new System.Collections.Generic.List<string>();
+                    if (!string.IsNullOrWhiteSpace(cvRef.Organization)) refParts.Add(cvRef.Organization);
+                    if (!string.IsNullOrWhiteSpace(cvRef.Phone))        refParts.Add("Tel: " + cvRef.Phone);
+                    if (!string.IsNullOrWhiteSpace(cvRef.Email))        refParts.Add("Email: " + cvRef.Email);
+                    if (!string.IsNullOrWhiteSpace(cvRef.Description))  refParts.Add(cvRef.Description);
+                    sb.Append(CvRow(cvRef.Name, string.Join("  /  ", refParts)));
+                }
+                sb.Append("</table>");
             }
 
-            var badges = BuildProfileBadges(routeValues, client);
-            var subtitle = $"Client #{client.Id} · {BuildClientName(client.FirstName, client.LastName)}";
-            return WrapReport(definition.Title, subtitle, badges, body.ToString());
+            if (showImage && !string.IsNullOrWhiteSpace(client.IdCard))
+            {
+                hasRefContent = true;
+                sb.Append("<div class=\"cv-idcard-wrap\"><img class=\"cv-idcard\" src=\"/Images/" + Encode(client.IdCard) + "\" alt=\"ID Card\" /></div>");
+            }
+
+            if (!hasRefContent)
+                sb.Append("<p class=\"cv-hobby\">N/A</p>");
+
+            sb.Append("</div>"); // cv-page
+            return sb.ToString();
+
+            // Section data row — label / colon / value
+            string CvRow(string? lbl, string? val) =>
+                "<tr>"
+                + "<td class=\"cv-lbl\">" + Encode(lbl ?? string.Empty) + "</td>"
+                + "<td class=\"cv-colon\">:</td>"
+                + "<td>" + Encode(val ?? string.Empty) + "</td>"
+                + "</tr>";
+            // Header block row (Name / Address / Tel) — slightly different muted label
+            string HRow(string? lbl, string? val) =>
+                "<tr>"
+                + "<td class=\"cv-hlbl\">" + Encode(lbl ?? string.Empty) + "</td>"
+                + "<td class=\"cv-hcolon\">:</td>"
+                + "<td>" + Encode(val ?? string.Empty) + "</td>"
+                + "</tr>";
+            void CvSep() => sb.Append("<hr class=\"cv-sep\" />");
+        }
+
+        private static string FormatCvDate(DateTime? value)
+        {
+            return value.HasValue ? value.Value.ToString("dd MMMM yyyy", InvariantCulture) : string.Empty;
         }
 
         private DataTable LoadDataTable(string sourceObject)

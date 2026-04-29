@@ -60,7 +60,7 @@ function getJobExperiences() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='JobExperienceEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='JobExperienceDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
+                    return "<a href='javascript:void(0);' onclick='JobExperienceEdit(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='javascript:void(0);' onclick='JobExperienceDelete(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</a>";
                 },
                 "width": "130px"
             }
@@ -97,10 +97,10 @@ function JobExperienceAction() {
                     $('#jobExperienceCategoryId').css('border-color', '#cccccc');
 
                     var data = {
-                        ClientId: $('#id').val(),
-                        JobPositionId: $('#jobExperiencePositionId').val(),
+                        ClientId: parseInt($('#id').val()),
+                        JobPositionId: parseInt($('#jobExperiencePositionId').val()),
                         Employer: $('#jobExperienceEmployer').val(),
-                        JobCategoryId: $('#jobExperienceCategoryId').val(),
+                        JobCategoryId: parseInt($('#jobExperienceCategoryId').val()),
                         Duration: $('#jobExperienceDuration').val(),
                         Salary: $('#jobExperienceSalary').val(),
                         Description: $('#jobExperienceDescription').val()
@@ -137,11 +137,11 @@ function JobExperienceAction() {
         $('#jobExperiencePositionId').css('border-color', '#cccccc');
 
         var data = {
-            Id: $('#jobExperienceId').val(),
-            ClientId: $('#id').val(),
-            JobPositionId: $('#jobExperiencePositionId').val(),
+            Id: parseInt($('#jobExperienceId').val()),
+            ClientId: parseInt($('#id').val()),
+            JobPositionId: parseInt($('#jobExperiencePositionId').val()),
             Employer: $('#jobExperienceEmployer').val(),
-            JobCategoryId: $('#jobExperienceCategoryId').val(),
+            JobCategoryId: parseInt($('#jobExperienceCategoryId').val()),
             Duration: $('#jobExperienceDuration').val(),
             Salary: $('#jobExperienceSalary').val(),
             Description: $('#jobExperienceDescription').val()

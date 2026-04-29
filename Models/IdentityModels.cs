@@ -157,7 +157,9 @@ namespace MtpApp.Models
             modelBuilder.Entity<Placement>().HasQueryFilter(e => e.Status == "Active");
             modelBuilder.Entity<Vacancy>().HasQueryFilter(e => e.Status == "Active");
             modelBuilder.Entity<CaseWorker>().HasQueryFilter(e => e.Status == "Active");
-            modelBuilder.Entity<Case>().HasQueryFilter(e => e.Status == "Active");
+            // REMOVED: modelBuilder.Entity<Case>().HasQueryFilter(e => e.Status == "Active");
+            // Reason: Case entity uses workflow statuses (New Case, Opened Case, In Progress Case, Hold Case, Closed Case)
+            // not "Active"/"Inactive" like other entities. The global filter was preventing all cases from being displayed.
             modelBuilder.Entity<FuturesTraining>().HasQueryFilter(e => e.Status == "Active");
             modelBuilder.Entity<SocialSupportProblem>().HasQueryFilter(e => e.Status == "Active");
             modelBuilder.Entity<Employee>().HasQueryFilter(e => e.Status == "Active");
@@ -171,7 +173,8 @@ namespace MtpApp.Models
             modelBuilder.Entity<FurtherEducationReferral>().HasQueryFilter(e => e.Clients.Status == "Active");
             modelBuilder.Entity<JobExperience>().HasQueryFilter(e => e.JobPositions != null && !e.JobPositions.IsDeleted);
             modelBuilder.Entity<Monitoring>().HasQueryFilter(e => e.Client.Status == "Active");
-            modelBuilder.Entity<SocialSupport>().HasQueryFilter(e => e.Client.Status == "Active" && e.Cases.Status == "Active");
+            // REMOVED Case.Status filter from SocialSupport - Case entity uses workflow statuses, not "Active"/"Inactive"
+            modelBuilder.Entity<SocialSupport>().HasQueryFilter(e => e.Client.Status == "Active");
             modelBuilder.Entity<BusinessInProgress>().HasQueryFilter(e => e.Monitoring.Client.Status == "Active");
             modelBuilder.Entity<FurthereducationInProgress>().HasQueryFilter(e => e.Monitoring.Client.Status == "Active");
             modelBuilder.Entity<FutureTrainingProgress>().HasQueryFilter(e => e.Monitoring.Client.Status == "Active");

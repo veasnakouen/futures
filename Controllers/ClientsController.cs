@@ -115,6 +115,10 @@ namespace MtpApp.Controllers
         public IActionResult CurriculumvitaebycliendIdReport(string cvtype, int clientId, string Applyfor)
             => View("CurriculumVitaeByClientReport");
 
+        [Route("clients/cv-embed/cvtype={cvtype}/clientId={clientId}/Applyfor={Applyfor}")]
+        public IActionResult CurriculumvitaeEmbed(string cvtype, int clientId, string Applyfor)
+            => View("CurriculumVitaeEmbed");
+
         [Route("clients/vtc-student-report/startdate={startdate}/enddate={enddate}")]
         public IActionResult VTCstudentreport(string startdate, string enddate)
             => View("VTCstudentReport");

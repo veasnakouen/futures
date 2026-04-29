@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="icon" type="image/png" href="~/images/mt_logo.png" />
     @RenderSection("head", required: false)
 </head>
 <body id="FutureSystemId" class="@(string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), "Home", StringComparison.OrdinalIgnoreCase) && string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), "Index", StringComparison.OrdinalIgnoreCase) ? "home-page" : string.Empty)">
@@ -37,9 +38,7 @@
                         <input id="PlacementMonitoringCounttimeId" name="PlacementMonitoringCounttimeId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
                         <input id="placementMonitoringenrollby" name="placementMonitoringenrollby" type="text" style="display: none;" disabled="disabled" value="Admin Manager" class="form-control" />
                     </div>
-
                     <div class="row">
-
                         <div class="col-md-3">
                             <label for="placementnextmonitoringdate">Next placement monitoring Date</label>
                             <input id="placementnextmonitoringdate" name="placementnextmonitoringdate" placeholder="Enter next monitoring date" class="form-control input-sm js-date " style="min-width: 100%">
@@ -60,7 +59,6 @@
                                 <option value="12">Final</option>
                             </select>
                         </div>
-
                         <div class="col-md-3">
                             <label for="placementcompleted">Completed</label>
                             <select class="form-control form-control-sm" id="placementcompleted" name="placementcompleted" style="min-width: 100%">
@@ -69,7 +67,6 @@
                                 <option value="Completed">Completed</option>
                             </select>
                         </div>
-
                         <div class="col-md-3">
                             <label for="placementsalary">Salary</label>
                             <input id="placementsalary" name="placementsalary" placeholder="Enter salary" class="form-control input-sm " style="min-width: 100%">

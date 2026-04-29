@@ -24,14 +24,44 @@ namespace MtpApp.Controllers.Api
         }
 
         [HttpGet]
-        public IActionResult GetCases([FromQuery] int clientId)
+        public IActionResult GetCases([FromQuery] int? clientId)
         {
-            var cases = _context.Cases
-                .Include(c => c.Client)
-                .Include(c => c.CaseWorker)
-                .Where(c => c.ClientId == clientId)
-                .ToList()
-                .Select(c => _mapper.Map<Case, CaseDto>(c));
+            var query = _context.Cases.AsQueryable();
+
+            if (clientId.HasValue && clientId.Value > 0)
+                query = query.Where(c => c.ClientId == clientId.Value);
+
+            var cases = query
+                .OrderByDescending(c => c.Id)
+                .Select(c => new CaseDto
+                {
+                    Id = c.Id,
+                    ClientId = c.ClientId,
+                    CaseWorkerId = c.CaseWorkerId,
+                    Priority = c.Priority,
+                    ServiceType = c.ServiceType,
+                    Subject = c.Subject,
+                    Description = c.Description,
+                    OpenDate = c.OpenDate,
+                    CloseDate = c.CloseDate,
+                    Status = c.Status,
+                    Client = c.Client == null ? null : new ClientDto
+                    {
+                        Id = c.Client.Id,
+                        FirstName = c.Client.FirstName,
+                        LastName = c.Client.LastName,
+                        ContactPhone = c.Client.ContactPhone
+                    },
+                    CaseWorker = c.CaseWorker == null ? null : new CaseWorkerDto
+                    {
+                        Id = c.CaseWorker.Id,
+                        Name = c.CaseWorker.Name,
+                        Program = c.CaseWorker.Program,
+                        Status = c.CaseWorker.Status
+                    }
+                })
+                .ToList();
+
             return Ok(cases);
         }
 
@@ -41,19 +71,71 @@ namespace MtpApp.Controllers.Api
             if (caseWorkerId == "all")
             {
                 var cases = _context.Cases
-                    .Include(c => c.Client).Include(c => c.CaseWorker)
                     .Where(c => c.Status == status)
-                    .ToList()
-                    .Select(c => _mapper.Map<Case, CaseDto>(c));
+                    .OrderByDescending(c => c.Id)
+                    .Select(c => new CaseDto
+                    {
+                        Id = c.Id,
+                        ClientId = c.ClientId,
+                        CaseWorkerId = c.CaseWorkerId,
+                        Priority = c.Priority,
+                        ServiceType = c.ServiceType,
+                        Subject = c.Subject,
+                        Description = c.Description,
+                        OpenDate = c.OpenDate,
+                        CloseDate = c.CloseDate,
+                        Status = c.Status,
+                        Client = c.Client == null ? null : new ClientDto
+                        {
+                            Id = c.Client.Id,
+                            FirstName = c.Client.FirstName,
+                            LastName = c.Client.LastName,
+                            ContactPhone = c.Client.ContactPhone
+                        },
+                        CaseWorker = c.CaseWorker == null ? null : new CaseWorkerDto
+                        {
+                            Id = c.CaseWorker.Id,
+                            Name = c.CaseWorker.Name,
+                            Program = c.CaseWorker.Program,
+                            Status = c.CaseWorker.Status
+                        }
+                    })
+                    .ToList();
                 return Ok(cases);
             }
             else
             {
                 var cases = _context.Cases
-                    .Include(c => c.Client).Include(c => c.CaseWorker)
                     .Where(c => c.CaseWorkerId == int.Parse(caseWorkerId) && c.Status == status)
-                    .ToList()
-                    .Select(c => _mapper.Map<Case, CaseDto>(c));
+                    .OrderByDescending(c => c.Id)
+                    .Select(c => new CaseDto
+                    {
+                        Id = c.Id,
+                        ClientId = c.ClientId,
+                        CaseWorkerId = c.CaseWorkerId,
+                        Priority = c.Priority,
+                        ServiceType = c.ServiceType,
+                        Subject = c.Subject,
+                        Description = c.Description,
+                        OpenDate = c.OpenDate,
+                        CloseDate = c.CloseDate,
+                        Status = c.Status,
+                        Client = c.Client == null ? null : new ClientDto
+                        {
+                            Id = c.Client.Id,
+                            FirstName = c.Client.FirstName,
+                            LastName = c.Client.LastName,
+                            ContactPhone = c.Client.ContactPhone
+                        },
+                        CaseWorker = c.CaseWorker == null ? null : new CaseWorkerDto
+                        {
+                            Id = c.CaseWorker.Id,
+                            Name = c.CaseWorker.Name,
+                            Program = c.CaseWorker.Program,
+                            Status = c.CaseWorker.Status
+                        }
+                    })
+                    .ToList();
                 return Ok(cases);
             }
         }
@@ -62,11 +144,38 @@ namespace MtpApp.Controllers.Api
         public IActionResult GetCase(int id)
         {
             var caseManagement = _context.Cases
-                .Include(c => c.Client).Include(c => c.CaseWorker)
-                .SingleOrDefault(c => c.Id == id);
+                .Where(c => c.Id == id)
+                .Select(c => new CaseDto
+                {
+                    Id = c.Id,
+                    ClientId = c.ClientId,
+                    CaseWorkerId = c.CaseWorkerId,
+                    Priority = c.Priority,
+                    ServiceType = c.ServiceType,
+                    Subject = c.Subject,
+                    Description = c.Description,
+                    OpenDate = c.OpenDate,
+                    CloseDate = c.CloseDate,
+                    Status = c.Status,
+                    Client = c.Client == null ? null : new ClientDto
+                    {
+                        Id = c.Client.Id,
+                        FirstName = c.Client.FirstName,
+                        LastName = c.Client.LastName,
+                        ContactPhone = c.Client.ContactPhone
+                    },
+                    CaseWorker = c.CaseWorker == null ? null : new CaseWorkerDto
+                    {
+                        Id = c.CaseWorker.Id,
+                        Name = c.CaseWorker.Name,
+                        Program = c.CaseWorker.Program,
+                        Status = c.CaseWorker.Status
+                    }
+                })
+                .SingleOrDefault();
             if (caseManagement == null)
                 return NotFound();
-            return Ok(_mapper.Map<Case, CaseDto>(caseManagement));
+            return Ok(caseManagement);
         }
 
         [HttpPost]
@@ -95,7 +204,7 @@ namespace MtpApp.Controllers.Api
                 _mapper.Map(caseDto, caseInDb);
 
             _context.SaveChanges();
-            return Ok(new { });
+            return Ok(new { id = caseInDb.Id, clientId = caseInDb.ClientId });
         }
 
         [HttpDelete("{id}")]

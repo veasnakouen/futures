@@ -329,7 +329,7 @@ function MonitoringAction() {
                 MonitoringTime: $('#monitoringTime').val(),
                 Enroll: $('#enrollby').val(),
                 Type: $('#type').val(),
-                ClientId: $('#id').val(),
+                ClientId: parseInt($('#id').val()),
                 MonitoringDate: $('#monitoringDate').val(),
                 NextMonitoringDate: $('#nextmonitoringdate').val(),
                 Monitoringtype: $('#monitoringtype').val()

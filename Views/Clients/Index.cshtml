@@ -61,6 +61,7 @@
 @Html.Partial("_businessSetupMonitoringModal")
 @Html.Partial("_BusinessSetupMonitoringActionModal")
 @Html.Partial("_CvReferenceModal")
+@Html.Partial("_CvViewerModal")
 
 @section scripts
 {
@@ -113,7 +114,7 @@
 
             $('#clientModal').on('show.bs.modal', function () {
 
-                activateTab('education');
+                activateTab('case-management');
                 if ($('#id').val().trim() == "") {
 
                     $('#EducationHistoryTable').dataTable().fnClearTable();
@@ -125,10 +126,24 @@
                     //toastr.error("You must create client first.", "Server Response");
                 }
                 else {
+                    // Load case table for the current client
+                    var caseClientId = parseInt($('#id').val()) || 0;
+                    if (caseClientId > 0) {
+                        console.log('Modal opened, loading cases for client:', caseClientId);
+                        if (typeof RefreshCasesTable === 'function') {
+                            RefreshCasesTable(caseClientId);
+                        } else {
+                            GetCaseByClientId(caseClientId);
+                        }
+                    }
+                    
                     getEducationHistories();
                     getLanguages();
                     getComputerSkill();
                     GetPersonalitiesByClientId($('#id').val());
+                    GetCaseByClientId($('#id').val());
+                    GetBusinessSetUpByClientId($('#id').val());
+                    GetPlacementByClientId($('#id').val());
                 }
             });
 
@@ -153,7 +168,19 @@
             $(".ctab-item").on('click', function () {
                 var href = $(this).attr('href');
                 moveTabSlider($(this));
-                if (href == "#beneficiary") {
+                if (href == "#case-management") {
+                    var caseClientId = parseInt($('#clientModal #id').val()) || parseInt($('#caseModal #clientId').val()) || 0;
+                    if (!caseClientId) {
+                        toastr.error("You must create client first.", "Server Response");
+                    } else {
+                        if (typeof RefreshCasesTable === 'function') {
+                            RefreshCasesTable(caseClientId);
+                        } else {
+                            GetCaseByClientId(caseClientId);
+                        }
+                    }
+                }
+                else if (href == "#beneficiary") {
                     if ($('#id').val().trim() == "") {
                         tableBeneficiary.clear().draw();
                         toastr.error("You must create client first.", "Server Response");
@@ -322,7 +349,13 @@
 
         function activateTab(tab) {
             var $item = $('.ctab-item[href="#' + tab + '"]');
-            $item.tab('show');
+            if ($item.length) {
+                if (window.bootstrap && window.bootstrap.Tab) {
+                    window.bootstrap.Tab.getOrCreateInstance($item[0]).show();
+                } else if (typeof $item.tab === 'function') {
+                    $item.tab('show');
+                }
+            }
             // Move slider on programmatic activation too
             if ($item.length) moveTabSlider($item);
         };

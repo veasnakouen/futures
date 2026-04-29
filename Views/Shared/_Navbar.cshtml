@@ -6,6 +6,11 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarMain">
             <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-info" asp-controller="Reports" asp-action="Viewer">
+                        <i class="fa-solid fa-chart-pie me-1"></i> Modern Report Viewer
+                    </a>
+                </li>
                 @if (User?.Identity?.IsAuthenticated == true)
                 {
                     if (User.IsInRole("HR System"))
@@ -51,6 +56,8 @@
                                 <li><a class="dropdown-item" asp-controller="Employers" asp-action="Dashboard">Vacancies Overview</a></li>
                                 <li><a class="dropdown-item" asp-controller="Employers" asp-action="Index">Manage Employers</a></li>
                                 <li><a class="dropdown-item" asp-controller="Vacancies" asp-action="Index">Manage Vacancies</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item fw-bold text-primary" asp-controller="Reports" asp-action="Viewer"><i class="fa-solid fa-chart-pie me-2"></i> Modern Report Viewer</a></li>
                                 <li><hr class="dropdown-divider" /></li>
                                 <li><a class="dropdown-item" asp-controller="Clients" asp-action="ClientSummaryReport" asp-route-clientCodeSearch="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">1. Clients Summary Report</a></li>
                                 <li><a class="dropdown-item" asp-controller="Clients" asp-action="EmploymentSeekerListReport" asp-route-postion="all" asp-route-startdate="1900-01-01" asp-route-enddate="2099-12-31">2. Employment Seeker List Report</a></li>

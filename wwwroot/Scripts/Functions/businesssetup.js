@@ -107,6 +107,13 @@ function Validation(){
 
 var tableBusinessSetUps = [];
 
+function RefreshBusinessSetupsByClient() {
+    var clientId = $('#id').val();
+    if (clientId && $('#tableBusinessSetup').length) {
+        GetBusinessSetUpByClientId(clientId);
+    }
+}
+
 function GetBusinessSetUpByClientId(id) {
     tableBusinessSetUps = $('#tableBusinessSetup').DataTable({
         ajax: {
@@ -137,7 +144,7 @@ function GetBusinessSetUpByClientId(id) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='BusinessSetupEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='BusinessSetupDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
+                    return "<a href='javascript:void(0);' onclick='BusinessSetupEdit(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='javascript:void(0);' onclick='BusinessSetupDelete(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</a>";
                 },
                 "width": "130px"
             }
@@ -160,9 +167,9 @@ function BusinessSetupAction() {
         }
 
         var data = {
-            clientId: $('#id').val(),
+            clientId: parseInt($('#id').val()),
             StartBusinessSetUpDate: $('#startbusinessdate').val(),
-            businessSetUpCategoryId: $('#business-setupcateogryId').val(),
+            businessSetUpCategoryId: parseInt($('#business-setupcateogryId').val()),
             businessType: $('#businessType').val(),
             income: $('#income').val(),
             expense: $('#expense').val(),
@@ -178,7 +185,7 @@ function BusinessSetupAction() {
             dataType: "json",
             success: function (result) {
                 toastr.success("Business set up has been saved to database.", "Server Response");
-                tableBusinessSetUps.ajax.reload();
+                RefreshBusinessSetupsByClient();
                 document.getElementById('business-setupcateogryId').disabled = true;
                 document.getElementById('btnBusinessSetup').innerText = "Add New";
                 resetBuninessSetup();
@@ -202,10 +209,10 @@ function BusinessSetupAction() {
     else if (action === "Update") {
         Validation();
         var data = {
-            Id: $('#bussuinessSetUpId').val(),
+            Id: parseInt($('#bussuinessSetUpId').val()),
             StartBusinessSetUpDate: $('#startbusinessdate').val(),
-            clientId: $('#id').val(),
-            businessSetUpCategoryId: $('#business-setupcateogryId').val(),
+            clientId: parseInt($('#id').val()),
+            businessSetUpCategoryId: parseInt($('#business-setupcateogryId').val()),
             businessType: $('#businessType').val(),
             income: $('#income').val(),
             expense: $('#expense').val(),
@@ -221,7 +228,7 @@ function BusinessSetupAction() {
             dataType: "json",
             success: function (result) {
                 toastr.success("Business set up has been updated.", "Server Response");
-                tableBusinessSetUps.ajax.reload();
+                RefreshBusinessSetupsByClient();
                 document.getElementById('business-setupcateogryId').disabled = true;
                 document.getElementById('btnBusinessSetup').innerText = "Add New";
                 resetBuninessSetup();
@@ -287,7 +294,7 @@ function BusinessSetupDelete(id) {
                     url: "/api/BusinessSetups/" + id,
                     method: "DELETE",
                     success: function () {
-                        tableBusinessSetUps.ajax.reload();
+                        RefreshBusinessSetupsByClient();
                         toastr.success("Deleted successfully.", "Server Response");
                     },
                     error: function () {

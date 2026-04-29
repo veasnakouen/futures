@@ -312,6 +312,12 @@ footer {
 .modal-title { font-weight: 600; }
 
 /* ================================================================
+   Nested modals — z-index stacking is handled dynamically by
+   the show.bs.modal / hidden.bs.modal handlers in site.js.
+   ================================================================ */
+body.modal-open .modal { overflow-x: hidden; overflow-y: auto; }
+
+/* ================================================================
    Badges
    ================================================================ */
 .badge { font-size: .72rem; font-weight: 600; }
@@ -951,13 +957,15 @@ span.flatpickr-weekday {
 .client-tab-menu {
     position: relative;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 4px;
     background: #eef2f7;
     border-radius: .65rem;
     padding: 5px 6px;
     margin-bottom: 12px;
-    overflow: hidden;          /* keeps slider inside */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Gliding highlight pill (JS-driven) */
@@ -977,6 +985,7 @@ span.flatpickr-weekday {
 .ctab-item {
     position: relative;
     z-index: 1;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     gap: 5px;
@@ -1101,6 +1110,18 @@ span.flatpickr-weekday {
     border: 0;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+/* Many client tables use repeated id='overflowTable' wrappers.
+   Force horizontal scrolling there as well. */
+div[id='overflowTable'] {
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+}
+div[id='overflowTable'] .dataTables_wrapper {
+    min-width: 100%;
 }
 
 /* ================================================================

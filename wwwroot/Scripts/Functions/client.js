@@ -74,8 +74,8 @@ function GetClients() {
 
 function GenerateCV(Id) {
     var dialog = bootbox.dialog({
-        title: 'Image Idition',
-        message: "<p>Note: Please image to show image when </p>",
+        title: 'Select CV Type',
+        message: "<p>Choose how to generate this client's CV:</p>",
         size: 'large',
         buttons: {
 
@@ -83,16 +83,14 @@ function GenerateCV(Id) {
                 label: "CV with Image",
                 className: 'btn-warning',
                 callback: function () {
-                    var url = "/clients/curriculum-vitae-by-cliend-Id-Report/cvtype=Image/clientId=" + Id + "/Applyfor=no";
-                    window.open(window.location.assign = url);
+                    openCvViewer(Id, 'Image', 'no');
                 }
             },
             ViewImage: {
                 label: "CV without image",
                 className: 'btn-info',
                 callback: function () {
-                    var url = "/clients/curriculum-vitae-by-cliend-Id-Report/cvtype=NoImage/clientId=" + Id + "/Applyfor=no";
-                    window.open(window.location.assign = url);
+                    openCvViewer(Id, 'NoImage', 'no');
                 }
             },
 
@@ -100,29 +98,51 @@ function GenerateCV(Id) {
                 label: "Image And Apply for",
                 className: 'btn-success',
                 callback: function () {
-                    var url = "/clients/curriculum-vitae-by-cliend-Id-Report/cvtype=Image/clientId=" + Id + "/Applyfor=yes";
-                    window.open(window.location.assign = url);
+                    openCvViewer(Id, 'Image', 'yes');
                 }
             },
             NoImageAndApplyfor: {
                 label: "No Image And Apply for",
                 className: 'btn-primary',
                 callback: function () {
-                    var url = "/clients/curriculum-vitae-by-cliend-Id-Report/cvtype=NoImage/clientId=" + Id + "/Applyfor=yes";
-                    window.open(window.location.assign = url);
+                    openCvViewer(Id, 'NoImage', 'yes');
                 }
-            },
-
-            //cancel: {
-            //    label: "Cancel",
-            //    className: 'btn-danger',
-            //    callback: function () {
-            //        //console.log('Custom cancel clicked');
-            //    }
-            //}
+            }
         }
     });
 }
+
+function openCvViewer(clientId, cvtype, applyfor) {
+    var embedUrl = '/clients/cv-embed/cvtype=' + cvtype + '/clientId=' + clientId + '/Applyfor=' + applyfor;
+    var fullUrl = '/clients/curriculum-vitae-by-cliend-Id-Report/cvtype=' + cvtype + '/clientId=' + clientId + '/Applyfor=' + applyfor;
+    var label = (cvtype === 'Image' ? 'CV with Image' : 'CV without Image') + (applyfor === 'yes' ? ' & Apply For' : '');
+    $('#cvViewerTitle').text(label);
+    $('#cvViewerFrame').attr('src', embedUrl);
+    $('#cvViewerOpenBtn').attr('href', fullUrl);
+
+    // Bootbox is still closing when this runs — wait for it to fully hide
+    // before showing the CV modal to avoid Bootstrap backdrop conflicts.
+    var $bootbox = $('.bootbox.modal:visible');
+    if ($bootbox.length) {
+        $bootbox.one('hidden.bs.modal', function () {
+            $('#cvViewerModal').modal('show');
+        });
+    } else {
+        $('#cvViewerModal').modal('show');
+    }
+}
+
+function cvViewerPrint() {
+    var iframe = document.getElementById('cvViewerFrame');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+}
+
+$(document).on('hidden.bs.modal', '#cvViewerModal', function () {
+    $('#cvViewerFrame').attr('src', '');
+});
 
 // Create New Client
 
@@ -240,6 +260,7 @@ function Save() {
             table.ajax.reload();
             RemoveLoadingScreen();
             $('#id').val(result.id);
+            window.currentClientId = result.id;
             $('#clientModal').modal('hide');
         },
         statusCode: {
@@ -269,6 +290,7 @@ function Edit(id) {
         success: function (result) {
 
             $('#id').val(result.id);
+            window.currentClientId = result.id;
             $('#clientCode').val(result.clientCode);
             $('#firstName').val(result.firstName);
             $('#lastName').val(result.lastName);
@@ -615,6 +637,7 @@ function Delete(id) {
 function clearForm() {
 
     $('#id').val('');
+    window.currentClientId = 0;
     $('#clientCode').val('');
     $('#firstName').val('');
     $('#lastName').val('');

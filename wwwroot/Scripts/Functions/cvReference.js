@@ -60,7 +60,7 @@ function getcvReference() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='CvReferencesEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='CvReferencesDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
+                    return "<a href='javascript:void(0);' onclick='CvReferencesEdit(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='javascript:void(0);' onclick='CvReferencesDelete(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</a>";
                 },
                 "width": "130px"
             }
@@ -82,9 +82,9 @@ function cvReferenceAction() {
         else {
             $('#cvReferenceName').css('border-color', '#cccccc');
                     var data = {
-                        ClientId: $('#id').val(),
+                        ClientId: parseInt($('#id').val()),
                         Name: $('#cvReferenceName').val(),
-                        JobPositionId: $('#cvReferencePositionId').val(),
+                        JobPositionId: parseInt($('#cvReferencePositionId').val()),
                         Description: $('#cvReferenceDescription').val(),
                         Organization: $('#cvReferenceOrganization').val(),
                         Phone: $('#cvReferencePhone').val(),
@@ -119,10 +119,10 @@ function cvReferenceAction() {
         $('#cvReferencePositionId').css('border-color', '#cccccc');
 
         var data = {
-            Id: $('#cvReferenceId').val(),
-            ClientId: $('#id').val(),
+            Id: parseInt($('#cvReferenceId').val()),
+            ClientId: parseInt($('#id').val()),
             Name: $('#cvReferenceName').val(),
-            JobPositionId: $('#cvReferencePositionId').val(),
+            JobPositionId: parseInt($('#cvReferencePositionId').val()),
             Description: $('#cvReferenceDescription').val(),
             Organization: $('#cvReferenceOrganization').val(),
             Phone: $('#cvReferencePhone').val(),
@@ -142,7 +142,7 @@ function cvReferenceAction() {
                 resetFormReferecnce();
                 document.getElementById('btncvReferenceAction').innerText = "Add New";
                 $('#referralSourceName').val('');
-                $('#jobExperienceModal').modal('hide');
+                $('#cvReferenceModal').modal('hide');
             },
             error: function (errormessage) {
                 toastr.error("This reference cannot updated.", "Server Response");
@@ -154,17 +154,18 @@ function cvReferenceAction() {
 // Edit Job Exerpience
 function CvReferencesEdit(id) {
 
-    $('#jobExperiencePositionId').css('border-color', '#cccccc');
+    $('#cvReferencePositionId').css('border-color', '#cccccc');
+
+    $('#cvReferenceModal').modal('show');
 
     $.ajax({
-        url: "/api/CvReferences?ReferenceId=" + id,
+        url: "/api/CvReferences/" + id,
         type: "GET",
         contentType: "application/json;charset=UTF-8",
         dataType: "json",
         success: function (result) {
-            $('#cvReferenceModal').modal('show');
             $('#cvReferenceId').val(result.id);
-            $('#cvReferencePositionId').val(result.jobPositions.id);
+            $('#cvReferencePositionId').val(result.jobPositionId);
             $('#cvReferenceName').val(result.name);
             $('#cvReferenceDescription').val(result.description);
             $('#cvReferenceOrganization').val(result.organization);
@@ -172,10 +173,12 @@ function CvReferencesEdit(id) {
             $('#cvReferenceEmail').val(result.email);
             document.getElementById('btncvReferenceAction').innerText = "Update";
             enableFormReferecnce();
-            $('#cvReferencePositionId').focus();
+            $('#cvReferenceName').focus();
+            toastr.info("Reference loaded for editing.", "Info");
         },
-        error: function (errormessage) {
-            toastr.error("Something unexpected happen.", "Server Response");
+        error: function (xhr) {
+            console.error('Edit CV reference error:', xhr);
+            toastr.error("Failed to load reference data.", "Error");
         }
     });
     return false;
@@ -183,17 +186,20 @@ function CvReferencesEdit(id) {
 
 // Delete Job Experience
 function CvReferencesDelete(id) {
-    bootbox.confirm("Are you sure you want to delete this?", function (result) {
+    bootbox.confirm("Are you sure you want to delete this reference?", function (result) {
         if (result) {
             $.ajax({
                 url: "/api/CvReferences/" + id,
                 method: "DELETE",
                 success: function () {
-                    tablecvReference.ajax.reload();
-                    toastr.success("Deleted successfully.", "Server Response");
+                    if (tablecvReference && typeof tablecvReference.ajax !== 'undefined') {
+                        tablecvReference.ajax.reload();
+                    }
+                    toastr.success("Reference deleted successfully.", "Success");
                 },
-                error: function () {
-                    toastr.error("This reference cannot deleted.", "Server Response");
+                error: function (xhr) {
+                    console.error('Delete CV reference error:', xhr);
+                    toastr.error("Cannot delete this reference. It may be in use.", "Error");
                 }
             });
         }

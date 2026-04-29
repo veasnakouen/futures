@@ -31,6 +31,13 @@ $(document).ready(function () {
 
 var tablePlacements = [];
 
+function RefreshPlacementsByClient() {
+    var clientId = $('#id').val();
+    if (clientId && $('#placementTable').length) {
+        GetPlacementByClientId(clientId);
+    }
+}
+
 function GetPlacementByClientId(id) {
     tablePlacements = $('#placementTable').DataTable({
         ajax: {
@@ -64,7 +71,7 @@ function GetPlacementByClientId(id) {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='PlacementEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='PlacementDelete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
+                    return "<a href='javascript:void(0);' onclick='PlacementEdit(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='javascript:void(0);' onclick='PlacementDelete(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</a>";
                 }
             }
         ],
@@ -169,7 +176,7 @@ function PlacementAction() {
                     data: data,
                     success: function (result) {
                         toastr.success("New placement has been saved to database.", "Server Response");
-                        tablePlacements.ajax.reload();
+                        RefreshPlacementsByClient();
                         DisabledPlacements();
                         document.getElementById('btnPlacementsAction').innerText = "Add New";
                         ClearPlacements();
@@ -275,7 +282,7 @@ function PlacementAction() {
             data: data,
             success: function (result) {
                 toastr.success("Placement has been updated.", "Server Response");
-                tablePlacements.ajax.reload();
+                RefreshPlacementsByClient();
                 DisabledPlacements();
                 document.getElementById('btnPlacementsAction').innerText = "Add New";
                 ClearPlacements();
@@ -355,10 +362,10 @@ function PlacementEdit(id) {
                 $('#placementAccidentInsurance').prop('checked', false);
             }
             if (result.accommodation == true) {
-                $('#PlacementAccommodation').prop('checked', true);
+                $('#placementAccomodation').prop('checked', true);
             }
             else {
-                $('#PlacementAccommodation').prop('checked', false);
+                $('#placementAccomodation').prop('checked', false);
             }
             if (result.overtime == true) {
                 $('#placementOvertime').prop('checked', true);
@@ -409,7 +416,7 @@ function PlacementDelete(id) {
                 url: "/api/placements/" + id,
                 method: "DELETE",
                 success: function () {
-                    tablePlacements.ajax.reload();
+                    RefreshPlacementsByClient();
                     toastr.success("Deleted successfully.", "Server Response");
                 },
                 error: function () {

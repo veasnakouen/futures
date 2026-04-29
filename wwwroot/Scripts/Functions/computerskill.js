@@ -40,7 +40,8 @@ function getComputerSkill() {
         },
         columns: [
             {
-                data: "id"
+                data: "id",
+                visible: false
             },
             {
                 data: "skill"
@@ -54,9 +55,10 @@ function getComputerSkill() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='ComputerSkillEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='ComputerSkillDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
+                    return "<button type='button' class='btn btn-outline-primary btn-xs me-1' onclick='ComputerSkillEdit(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</button>"
+                         + "<button type='button' class='btn btn-outline-danger btn-xs' onclick='ComputerSkillDelete(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</button>";
                 },
-                "width": "130px"
+                "width": "150px"
             }
         ],
         destroy: true,
@@ -83,7 +85,7 @@ function ComputerSkillAction() {
                 $('#computerSkillLevel').css('border-color', '#cccccc');
 
                 var data = {
-                    ClientId: $('#id').val(),
+                    ClientId: parseInt($('#id').val()),
                     Skill: $('#computerSkillSubject').val(),
                     Level: $('#computerSkillLevel').val(),
                     Certified: $('#computerSkillCertified').val(),
@@ -123,8 +125,8 @@ function ComputerSkillAction() {
         $('#computerSkillId').css('border-color', '#cccccc');
 
         var data = {
-            Id: $('#computerSkillId').val(),
-            ClientId: $('#id').val(),
+            Id: parseInt($('#computerSkillId').val()),
+            ClientId: parseInt($('#id').val()),
             Skill: $('#computerSkillSubject').val(),
             Level: $('#computerSkillLevel').val(),
             Certified: $('#computerSkillCertified').val(),
@@ -185,17 +187,20 @@ function ComputerSkillEdit(id) {
 }
 
 function ComputerSkillDelete(id) {
-    bootbox.confirm("Are you sure you want to delete this?", function (result) {
+    bootbox.confirm("Are you sure you want to delete this computer skill?", function (result) {
         if (result) {
             $.ajax({
                 url: "/api/computerskills/" + id,
                 method: "DELETE",
                 success: function () {
-                    tableComputerSkill.ajax.reload();
-                    toastr.success("Deleted successfully.", "Server Response");
+                    if (tableComputerSkill && typeof tableComputerSkill.ajax !== 'undefined') {
+                        tableComputerSkill.ajax.reload();
+                    }
+                    toastr.success("Computer skill deleted successfully.", "Success");
                 },
-                error: function () {
-                    toastr.error("This computer skill is being used.", "Server Response");
+                error: function (xhr) {
+                    console.error('Delete computer skill error:', xhr);
+                    toastr.error("Cannot delete this computer skill. It may be in use.", "Error");
                 }
             });
         }

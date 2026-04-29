@@ -213,7 +213,7 @@ function BusinessSetupMonitoringAction() {
             MonitoringTime: $('#businessSetupMonitoringCounttimeId').val(),
             Enroll: "Get in API",
             Type: "Businesssetup",
-            ClientId: $('#id').val(),
+            ClientId: parseInt($('#id').val()),
             MonitoringDate: $('#businessSetupmonitoringDate').val(),
             NextMonitoringDate: $('#businessSetupnextmonitoringdate').val(),
             Monitoringtype: $('#businessSetupmonitoringtype').val()
@@ -221,7 +221,7 @@ function BusinessSetupMonitoringAction() {
 
         var businessInProgressDto =
             {
-                BusinessSetUpCategoryId: $('#businessSetupTypeCatagory').val(),
+                BusinessSetUpCategoryId: parseInt($('#businessSetupTypeCatagory').val()),
                 StillInbusiness: $('input[name=businessSetupMonitoringstatus]:checked').val(),
                 BusinessType: $('#businessSetupcompleted').val(),
                 Expense: $('#businessSetupExpense').val(),
@@ -264,11 +264,11 @@ function BusinessSetupMonitoringAction() {
         }
 
         var monitoringobj = {
-            Id: $('#businessMonitoringId').val(),
+            Id: parseInt($('#businessMonitoringId').val()),
             MonitoringTime: $('#businessSetupMonitoringCounttimeId').val(),
             Enroll: "Get in API",
             Type: "Businesssetup",
-            ClientId: $('#id').val(),
+            ClientId: parseInt($('#id').val()),
             MonitoringDate: $('#businessSetupmonitoringDate').val(),
             NextMonitoringDate: $('#businessSetupnextmonitoringdate').val(),
             Monitoringtype: $('#businessSetupmonitoringtype').val()
@@ -276,9 +276,9 @@ function BusinessSetupMonitoringAction() {
 
         var BusinessInprogressobj =
             {
-                Id: $('#businessSetupMonitoringId').val(),
+                Id: parseInt($('#businessSetupMonitoringId').val()),
                 MonitoringId: monitoringobj.Id,
-                BusinessSetUpCategoryId: $('#businessSetupTypeCatagory').val(),
+                BusinessSetUpCategoryId: parseInt($('#businessSetupTypeCatagory').val()),
                 StillInbusiness: $('input[name=businessSetupMonitoringstatus]:checked').val(),
                 BusinessType: $('#businessSetupcompleted').val(),
                 Expense: $('#businessSetupExpense').val(),

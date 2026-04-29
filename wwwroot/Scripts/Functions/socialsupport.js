@@ -202,8 +202,8 @@ function SocialSupportAction() {
             $('#otherProblem').val('');
         }       
             var data = {
-                clientId: $('#id').val(),
-                caseId: $('#caseIdss').val(),
+                clientId: parseInt($('#id').val()),
+                caseId: parseInt($('#caseIdss').val()),
                 healthProblembool:
                    healthProblemCheckboxCon,
                 healthProblem:
@@ -315,9 +315,9 @@ function SocialSupportAction() {
             $('#otherProblem').val('');
         }
             var data = {
-                Id: $('#socialSupportId').val(),
-                clientId: $('#id').val(),
-                caseId: $('#caseIdss').val(),
+                Id: parseInt($('#socialSupportId').val()),
+                clientId: parseInt($('#id').val()),
+                caseId: parseInt($('#caseIdss').val()),
                 healthProblembool:
                    healthProblemCheckboxCon,
                 healthProblem:

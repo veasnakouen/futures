@@ -15,6 +15,10 @@ namespace MtpApp.Models
         [StringLength(255)]
         public string Name { get; set; }
 
+        [Display(Name = "Job Category")]
+        public int? JobCategoryId { get; set; }
+        public JobCategory JobCategory { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public JobPosition()

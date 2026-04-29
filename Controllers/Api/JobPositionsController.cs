@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MtpApp.Dtos;
 using MtpApp.Models;
 using System;
@@ -23,10 +24,19 @@ namespace MtpApp.Controllers.Api
         }
 
         [HttpGet]
-        public IActionResult GetJobPositions()
+        public IActionResult GetJobPositions([FromQuery] int? jobCategoryId)
         {
-            var jobPositions = _context.JobPosition
-                .Where(c => c.IsDeleted == false)
+            var query = _context.JobPosition
+                .Include(j => j.JobCategory)
+                .Where(c => c.IsDeleted == false);
+
+            // Filter by JobCategoryId if provided
+            if (jobCategoryId.HasValue && jobCategoryId.Value > 0)
+            {
+                query = query.Where(c => c.JobCategoryId == jobCategoryId.Value);
+            }
+
+            var jobPositions = query
                 .ToList()
                 .Select(c => _mapper.Map<JobPosition, JobPositionDto>(c));
             return Ok(jobPositions);

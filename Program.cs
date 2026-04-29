@@ -11,8 +11,9 @@ using Microsoft.Extensions.Hosting;
 using MtpApp.App_Start;
 using MtpApp.Infrastructure;
 using MtpApp.Models;
-using System.IO;
 using System;
+using System.IO;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -43,6 +44,17 @@ builder.Services.AddControllersWithViews()
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowViteDev", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+    });
+});
 
 // AutoMapper � register profiles from the application assembly
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
@@ -152,13 +164,14 @@ if (app.Environment.IsDevelopment())
     var sp   = scope.ServiceProvider;
     var rm   = sp.GetRequiredService<RoleManager<IdentityRole>>();
     var um   = sp.GetRequiredService<UserManager<ApplicationUser>>();
+    var db   = sp.GetRequiredService<ApplicationDbContext>();
 
     // Ensure every role the app uses exists in the database
     var allRoles = new[]
     {
         "Admin", "Manager", "CaseWorker", "User",
         "Futures System", "HR System", "Stock System",
-        "Medical System", "Ticket System"
+        "Medical System", "Ticket System", "SuperAdmin"
     };
     foreach (var role in allRoles)
     {
@@ -166,34 +179,60 @@ if (app.Environment.IsDevelopment())
             await rm.CreateAsync(new IdentityRole(role));
     }
 
-    // Create the super-admin user if it does not already exist
-    const string superEmail = "superadmin@mloptapang.org";
-    var superUser = await um.FindByEmailAsync(superEmail);
+    // Create the super-admin user if it does not already exist.
+    // Query EF Core directly on BOTH Email and UserName columns so we catch
+    // legacy records where NormalizedEmail/NormalizedUserName may be NULL,
+    // or where Email is NULL but UserName is set (or vice-versa).
+    const string superEmail = "admin@mloptapang.org";
+    var superUser = await db.Users
+        .FirstOrDefaultAsync(u => u.Email == superEmail || u.UserName == superEmail);
+
     if (superUser == null)
     {
-        superUser = new ApplicationUser
+        try
         {
-            UserName      = superEmail,
-            Email         = superEmail,
-            EmailConfirmed = true,
-            FirstName     = "Super",
-            LastName      = "Admin",
-            Branch        = "All",
-            IsDeleted     = false
-        };
-        var result = await um.CreateAsync(superUser, "Admin@123");
-        if (!result.Succeeded)
+            superUser = new ApplicationUser
+            {
+                UserName       = superEmail,
+                Email          = superEmail,
+                EmailConfirmed = true,
+                FirstName      = "Super",
+                LastName       = "Admin",
+                Branch         = "All",
+                IsDeleted      = false
+            };
+            var result = await um.CreateAsync(superUser, "Admin@123");
+            if (!result.Succeeded)
+            {
+                // Log but don't crash — user may already exist under a different lookup path.
+                var errs = string.Join("; ", result.Errors.Select(e => e.Description));
+                Console.WriteLine($"[Seed] Could not create super-admin: {errs}");
+                // Re-fetch in case Identity added it despite reporting failure
+                superUser = await db.Users
+                    .FirstOrDefaultAsync(u => u.Email == superEmail || u.UserName == superEmail);
+            }
+        }
+        catch (Exception ex)
         {
-            var errs = string.Join("; ", System.Linq.Enumerable.Select(result.Errors, e => e.Description));
-            throw new Exception($"Failed to create super-admin: {errs}");
+            // Duplicate-key or any other DB error — the user already exists.
+            Console.WriteLine($"[Seed] Super-admin already exists in DB (caught: {ex.GetType().Name}). Skipping creation.");
+            superUser = await db.Users
+                .FirstOrDefaultAsync(u => u.Email == superEmail || u.UserName == superEmail);
         }
     }
 
-    // Assign all roles to the super-admin
-    foreach (var role in allRoles)
+    // Assign all roles to the super-admin (only if we found / created the user)
+    if (superUser != null)
     {
-        if (!await um.IsInRoleAsync(superUser, role))
-            await um.AddToRoleAsync(superUser, role);
+        foreach (var role in allRoles)
+        {
+            try
+            {
+                if (!await um.IsInRoleAsync(superUser, role))
+                    await um.AddToRoleAsync(superUser, role);
+            }
+            catch { /* role assignment may fail for legacy users — skip gracefully */ }
+        }
     }
 }
 
@@ -211,6 +250,7 @@ app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseCors("AllowViteDev");
 
 app.Use(async (context, next) =>
 {

@@ -43,7 +43,8 @@ function getEducationHistories() {
         },
         columns: [
             {
-                data: "id"
+                data: "id",
+                visible: false
             },
             {
                 data: "level"
@@ -63,9 +64,10 @@ function getEducationHistories() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='EducationHistoryEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='EducationHistoryDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
+                    return "<button type='button' class='btn btn-outline-primary btn-xs me-1' onclick='EducationHistoryEdit(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</button>"
+                         + "<button type='button' class='btn btn-outline-danger btn-xs' onclick='EducationHistoryDelete(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</button>";
                 },
-                "width": "130px"
+                "width": "150px"
             }
         ],
         destroy: true,
@@ -92,7 +94,7 @@ function EducationHistoryAction() {
                 $('#educationHistoryGrade').css('border-color', '#cccccc');
 
                 var data = {
-                    ClientId: $('#id').val(),
+                    ClientId: parseInt($('#id').val()),
                     Level: $('#educationHistoryLevel').val(),
                     Grade: $('#educationHistoryGrade').val(),
                     Subject: $('#educationHistorySubject').val(),
@@ -132,8 +134,8 @@ function EducationHistoryAction() {
         $('#educationHistoryId').css('border-color', '#cccccc');
 
         var data = {
-            Id: $('#educationHistoryId').val(),
-            ClientId: $('#id').val(),
+            Id: parseInt($('#educationHistoryId').val()),
+            ClientId: parseInt($('#id').val()),
             Level: $('#educationHistoryLevel').val(),
             Grade: $('#educationHistoryGrade').val(),
             Subject: $('#educationHistorySubject').val(),
@@ -198,17 +200,20 @@ function EducationHistoryEdit(id) {
 }
 
 function EducationHistoryDelete(id) {
-    bootbox.confirm("Are you sure you want to delete this?", function (result) {
+    bootbox.confirm("Are you sure you want to delete this education history?", function (result) {
         if (result) {
             $.ajax({
                 url: "/api/educations/" + id,
                 method: "DELETE",
                 success: function () {
-                    tableEducationHistory.ajax.reload();
-                    toastr.success("Deleted successfully.", "Server Response");
+                    if (tableEducationHistory && typeof tableEducationHistory.ajax !== 'undefined') {
+                        tableEducationHistory.ajax.reload();
+                    }
+                    toastr.success("Education history deleted successfully.", "Success");
                 },
-                error: function () {
-                    toastr.error("This education history is being used.", "Server Response");
+                error: function (xhr) {
+                    console.error('Delete education history error:', xhr);
+                    toastr.error("Cannot delete this education history. It may be in use.", "Error");
                 }
             });
         }

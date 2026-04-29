@@ -44,6 +44,7 @@ namespace System.Web
     {
         public int StatusCode { get; set; }
     }
+    
 }
 
 // Owin startup attribute shim
@@ -522,7 +523,7 @@ namespace Microsoft.Owin
             return default(T);
         }
     }
-}
+}   
 
 // Provide GetOwinContext extension for HttpContext
 namespace System.Web
@@ -530,7 +531,7 @@ namespace System.Web
     public static class OwinContextExtensions
     {
         public static Microsoft.Owin.IOwinContext GetOwinContext(this HttpContextBase context)
-        {
+        {           
             return null;
         }
 

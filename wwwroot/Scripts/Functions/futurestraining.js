@@ -84,8 +84,8 @@ function ControlFuturestraining(bool) {
                     data: "id",
                     render: function (data) {
 
-                        return "<a href='#' onclick='FuturesTrainingEdit(" + data + ");'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='FuturesTrainingsDelete(" + data + ")'><i class='fa fa-pen-to-square'></i> Delete</a>";
-                    
+                        return "<a href='javascript:void(0);' onclick='FuturesTrainingEdit(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='javascript:void(0);' onclick='FuturesTrainingsDelete(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</a>";
+
                     }
                 }
             ],
@@ -164,8 +164,8 @@ function ControlFuturestraining(bool) {
                 $('#openDateFuturesTraining').css('border-color', '#cccccc');
 
                     var data = {
-                        ClientId: $('#id').val(),
-                        SubjectId: $('#subjectId-Name').val(),
+                        ClientId: parseInt($('#id').val()),
+                        SubjectId: parseInt($('#subjectId-Name').val()),
                         OpenDate: $('#openDateFuturesTraining').val(),
                         CloseDate: $('#closeDateFuturesTraining').val(),
                         Status: $('#futurestrainingStatus').val(),
@@ -207,9 +207,9 @@ function ControlFuturestraining(bool) {
             $('#futurestrainingNote').val();
 
             var data = {
-                Id: $('#futuresTrainingId').val(),
-                ClientId: $('#id').val(),
-                SubjectId: $('#subjectId-Name').val(),
+                Id: parseInt($('#futuresTrainingId').val()),
+                ClientId: parseInt($('#id').val()),
+                SubjectId: parseInt($('#subjectId-Name').val()),
                 OpenDate: $('#openDateFuturesTraining').val(),
                 CloseDate: $('#closeDateFuturesTraining').val(),
                 Status: $('#futurestrainingStatus').val(),

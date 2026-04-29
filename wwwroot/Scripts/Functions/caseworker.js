@@ -95,7 +95,7 @@ function CaseWorkerAction() {
         $('#caseWorkerName').css('border-color', '#cccccc');
 
         var data = {
-            Id: $('#caseWorkerId').val(),
+            Id: parseInt($('#caseWorkerId').val()),
             Name: $('#caseWorkerName').val(),
             Program: $('#Program').val(),
             Status: $('#caseWorkerStatus').val()

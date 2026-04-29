@@ -223,7 +223,7 @@ function FutureTrainingMonitoringAction() {
             MonitoringTime: "Testing subject only",
             Enroll: "Testing Only",
             Type: "Futuretraining",
-            ClientId: $('#id').val(),
+            ClientId: parseInt($('#id').val()),
             MonitoringDate: $('#monitoringDateAction').val(),
             NextMonitoringDate: $('#nextmonitoringdateAction').val(),
             Monitoringtype: $('#monitoringTypeAction').val()
@@ -234,7 +234,7 @@ function FutureTrainingMonitoringAction() {
                 //LessionId: $('#futureTrainingLessonActionId').find(":selected").val(),
                 //id: $('#futuretrainingprocessActionId').val(),
                 //monitoringId: monitoringobj.Id,  // get Id from monitoringobj 
-                LessionId: $('#futureTrainingLessonActionId').val(),
+                LessionId: parseInt($('#futureTrainingLessonActionId').val()),
                 Ontraining: $('#futuretrainingOntrainingIdAction').val(),
                 GraduateDate: $('#futuretraininggraduatedateAction').val(),
                 DropoutDate: $('#futuretrainingdropoutdateAction').val(),
@@ -278,11 +278,11 @@ function FutureTrainingMonitoringAction() {
             return false;
         }
         var monitoringobj = {
-            Id: $('#futureTrainingmonitoringActionId').val(),
+            Id: parseInt($('#futureTrainingmonitoringActionId').val()),
             MonitoringTime: "Testing subject only",
             Enroll: "Testing Only",
             Type: "Futuretraining",
-            ClientId: $('#id').val(),
+            ClientId: parseInt($('#id').val()),
             MonitoringDate: $('#monitoringDateAction').val(),
             NextMonitoringDate: $('#nextmonitoringdateAction').val(),
             Monitoringtype: $('#monitoringTypeAction').val()
@@ -291,9 +291,9 @@ function FutureTrainingMonitoringAction() {
         var futureTrainingObj =
             {
                 //LessionId: $('#futureTrainingLessonActionId').find(":selected").val(),
-                id: $('#futuretrainingprocessActionId').val(),
+                id: parseInt($('#futuretrainingprocessActionId').val()),
                 monitoringId: monitoringobj.Id,  // get Id from monitoringobj 
-                LessionId: $('#futureTrainingLessonActionId').val(),
+                LessionId: parseInt($('#futureTrainingLessonActionId').val()),
                 Ontraining: $('#futuretrainingOntrainingIdAction').val(),
                 GraduateDate: $('#futuretraininggraduatedateAction').val(),
                 DropoutDate: $('#futuretrainingdropoutdateAction').val(),

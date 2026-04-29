@@ -157,11 +157,11 @@ function PlacementMonitoringAction() {
             MonitoringTime: $('#PlacementMonitoringCounttimeId').val(), 
             Enroll: "Get in API",
             Type: "Placement",
-            ClientId: $('#id').val(),
+            ClientId: parseInt($('#id').val()),
             MonitoringDate: $('#placementnextmonitoringdate').val(),// update to getdate in server side
             NextMonitoringDate: $('#placementnextmonitoringdate').val(),
             Monitoringtype: $('#placementmonitoringtype').val(),
-            PlacementId: $('#placementclientId').val()
+            PlacementId: parseInt($('#placementclientId').val())
         };
         var Placementobj = 
             {
@@ -207,20 +207,20 @@ function PlacementMonitoringAction() {
         }
 
         var monitoringobj = {
-            Id : $('#PlacementMonitoringId').val(),
+            Id : parseInt($('#PlacementMonitoringId').val()),
             MonitoringTime: $('#PlacementMonitoringCounttimeId').val(),
             Enroll: "Get in API",
             Type: "Placement",
-            ClientId: $('#id').val(),
+            ClientId: parseInt($('#id').val()),
             MonitoringDate: $('#placementnextmonitoringdate').val(),
             NextMonitoringDate: $('#placementnextmonitoringdate').val(),
             Monitoringtype: $('#placementmonitoringtype').val(),
-            PlacementId: $('#placementclientId').val()
+            PlacementId: parseInt($('#placementclientId').val())
         };
 
         var Placementobj =
             {
-                Id: $('#placementprocessMonitoringId').val(),
+                Id: parseInt($('#placementprocessMonitoringId').val()),
                 Completed: $('#placementcompleted').val(),
                 MonitoringId: monitoringobj.Id ,
                 PlacementStatus: $('input[name=placementMonitoringstatus]:checked').val(),

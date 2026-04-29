@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -17,6 +17,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.25" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Include="ReportViewerCore.NETCore" Version="15.1.33" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
     <!-- Client libraries updated -->
     <PackageReference Include="jQuery" Version="3.7.1" />
@@ -793,4 +794,17 @@
     <EmbeddedResource Include="Reports\PlacementMonitoringAndDropoutReport.rdlc" />
     <EmbeddedResource Include="Reports\PlacementSummaryReport.rdlc" />
   </ItemGroup>
+
+  <Target Name="BuildReactViewer" BeforeTargets="Build" Inputs="react-viewer\package.json;react-viewer\vite.config.ts;react-viewer\src\**\*" Outputs="react-viewer\dist\index.html">
+    <Message Importance="high" Text="Building React Viewer app..." />
+    <Exec Command="npm install" WorkingDirectory="react-viewer" />
+    <Exec Command="npm run build" WorkingDirectory="react-viewer" />
+  </Target>
+
+  <Target Name="PublishReactViewer" AfterTargets="BuildReactViewer">
+    <ItemGroup>
+      <ReactViewerFiles Include="react-viewer\dist\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ReactViewerFiles)" DestinationFolder="wwwroot\viewer\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

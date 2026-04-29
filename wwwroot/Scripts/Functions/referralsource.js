@@ -88,7 +88,7 @@ function ReferralSourceAction() {
         $('#referralSourceName').css('border-color', '#cccccc');
 
         var data = {
-            Id: $('#referralSourceId').val(),
+            Id: parseInt($('#referralSourceId').val()),
             ReferralSource: $('#referralSourceName').val(),
             Status: $('#origin').val()
         };

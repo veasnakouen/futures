@@ -31,7 +31,8 @@ function getLanguages() {
         },
         columns: [
             {
-                data: "id"
+                data: "id",
+                visible: false
             },
             {
                 data: "name"
@@ -42,9 +43,10 @@ function getLanguages() {
             {
                 data: "id",
                 render: function (data) {
-                    return "<a href='#' onclick='LanguageEdit(" + data + ")'><i class='fa fa-pen-to-square'></i> Edit</a>" + " | " + "<a href='#' onclick='LanguageDelete(" + data + ")'><i class='fa fa-trash'></i> Delete</a>";
+                    return "<button type='button' class='btn btn-outline-primary btn-xs me-1' onclick='LanguageEdit(" + data + "); return false;'><i class='fa fa-pen-to-square'></i> Edit</button>"
+                         + "<button type='button' class='btn btn-outline-danger btn-xs' onclick='LanguageDelete(" + data + "); return false;'><i class='fa fa-trash'></i> Delete</button>";
                 },
-                "width": "130px"
+                "width": "150px"
             }
         ],
         destroy: true,
@@ -71,7 +73,7 @@ function LanguageAction() {
                 $('#levelLanguage').css('border-color', '#cccccc');
 
                 var data = {
-                    ClientId: $('#id').val(),
+                    ClientId: parseInt($('#id').val()),
                     Name: $('#language').val(),
                     Level: $('#levelLanguage').val()
                 };
@@ -109,8 +111,8 @@ function LanguageAction() {
         $('#languageId').css('border-color', '#cccccc');
 
         var data = {
-            Id: $('#languageId').val(),
-            ClientId: $('#id').val(),
+            Id: parseInt($('#languageId').val()),
+            ClientId: parseInt($('#id').val()),
             Name: $('#language').val(),
             Level: $('#levelLanguage').val()
         };
@@ -167,17 +169,20 @@ function LanguageEdit(id) {
 }
 
 function LanguageDelete(id) {
-    bootbox.confirm("Are you sure you want to delete this?", function (result) {
+    bootbox.confirm("Are you sure you want to delete this language record?", function (result) {
         if (result) {
             $.ajax({
                 url: "/api/languages/" + id,
                 method: "DELETE",
                 success: function () {
-                    tableLanguage.ajax.reload();
-                    toastr.success("Deleted successfully.", "Server Response");
+                    if (tableLanguage && typeof tableLanguage.ajax !== 'undefined') {
+                        tableLanguage.ajax.reload();
+                    }
+                    toastr.success("Language record deleted successfully.", "Success");
                 },
-                error: function () {
-                    toastr.error("This language is being used.", "Server Response");
+                error: function (xhr) {
+                    console.error('Delete language error:', xhr);
+                    toastr.error("Cannot delete this language record. It may be in use.", "Error");
                 }
             });
         }
