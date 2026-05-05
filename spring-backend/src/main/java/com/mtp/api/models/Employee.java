@@ -132,4 +132,7 @@ public class Employee {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     @JdbcTypeCode(SqlTypes.LONGNVARCHAR)
     private String customFields;
+
+    @Version
+    private Integer version; // For CAP Consistency (Optimistic Locking)
 }

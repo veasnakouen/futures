@@ -94,6 +94,13 @@ public class GlobalExceptionHandler {
                 body(409, "Conflict", message, req.getRequestURI()));
     }
 
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<?> handleOptimisticLocking(org.springframework.orm.ObjectOptimisticLockingFailureException ex, HttpServletRequest req) {
+        log.error("CAP Consistency Conflict on [{}]: {}", req.getRequestURI(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                body(409, "Consistency Conflict", "The record was updated by another user while you were editing. Please refresh and try again.", req.getRequestURI()));
+    }
+
     // 500 — Catch-all: never expose internal details to the client
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAll(Exception ex, HttpServletRequest req) {

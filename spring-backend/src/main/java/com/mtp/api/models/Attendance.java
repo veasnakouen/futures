@@ -35,4 +35,7 @@ public class Attendance {
 
     @Size(max = 20)
     private String status; // Present, Late, Early Leave
+
+    @Version
+    private Integer version;
 }
