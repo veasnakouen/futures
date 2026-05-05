@@ -1,0 +1,43 @@
+{
+  "name": "react-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/sockjs-client": "^1.5.4",
+    "@vitejs/plugin-basic-ssl": "^1.2.0",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^3.4.19",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.9",
+    "vite-plugin-pwa": "^1.2.0"
+  },
+  "dependencies": {
+    "@stomp/stompjs": "^7.3.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "axios": "^1.15.1",
+    "date-fns": "^4.1.0",
+    "flowbite": "^4.0.1",
+    "flowbite-react": "^0.12.17",
+    "i18next": "^26.0.6",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "lucide-react": "^1.8.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-hot-toast": "^2.6.0",
+    "react-i18next": "^17.0.4",
+    "react-is": "^19.2.5",
+    "react-router-dom": "^7.14.2",
+    "recharts": "^2.12.7",
+    "sockjs-client": "^1.6.1",
+    "zustand": "^5.0.12"
+  }
+}
