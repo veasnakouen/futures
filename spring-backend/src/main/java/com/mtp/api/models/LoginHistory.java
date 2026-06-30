@@ -21,4 +21,12 @@ public class LoginHistory {
     private LocalDateTime loggedDate;
     private String ipAddress;
     private String hostName;
+
+    // --- Extended Security & Tracking Features ---
+    private String deviceType; // Desktop, Mobile, Tablet
+    private String os; // Windows, macOS, Linux, iOS, Android
+    private String browser; // Chrome, Safari, Firefox, Edge
+    private String location; // City, Country
+    private String dataUsageType; // Heavy, Standard, API Access
+    private String status; // Success, Failed, Suspicious
 }

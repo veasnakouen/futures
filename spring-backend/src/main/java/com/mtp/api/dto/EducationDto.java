@@ -13,4 +13,8 @@ public class EducationDto {
     private String status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private String grade;
+    private String subject;
+    private String year;
+    private String description;
 }

@@ -30,5 +30,17 @@ public class MonitoringController {
     public MonitoringDto create(@RequestBody MonitoringDto monitoring) {
         return progressService.saveMonitoring(monitoring);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MonitoringDto> update(@PathVariable Integer id, @RequestBody MonitoringDto monitoring) {
+        monitoring.setId(id);
+        return ResponseEntity.ok(progressService.saveMonitoring(monitoring));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        progressService.deleteMonitoring(id);
+        return ResponseEntity.ok().build();
+    }
 }
 

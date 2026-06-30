@@ -94,11 +94,18 @@ public class GlobalExceptionHandler {
                 body(409, "Conflict", message, req.getRequestURI()));
     }
 
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<?> handleOptimisticLocking(org.springframework.orm.ObjectOptimisticLockingFailureException ex, HttpServletRequest req) {
+        log.error("CAP Consistency Conflict on [{}]: {}", req.getRequestURI(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                body(409, "Consistency Conflict", "The record was updated by another user while you were editing. Please refresh and try again.", req.getRequestURI()));
+    }
+
     // 500 — Catch-all: never expose internal details to the client
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAll(Exception ex, HttpServletRequest req) {
         log.error("Unhandled exception on [{}]: {}", req.getRequestURI(), ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                body(500, "Internal Server Error", "An unexpected error occurred. Contact system administrator.", req.getRequestURI()));
+                body(500, "Internal Server Error", "Error: " + ex.getClass().getSimpleName() + " - " + ex.getMessage(), req.getRequestURI()));
     }
 }

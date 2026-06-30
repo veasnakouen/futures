@@ -1,6 +1,6 @@
-import { Client, type IMessage } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import authService from './authService';
+import { Client, type IMessage } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import authService from "./authService";
 
 class WebSocketService {
   private client: Client | null = null;
@@ -25,24 +25,24 @@ class WebSocketService {
     const token = user?.token;
 
     this.client = new Client({
-      webSocketFactory: () => new SockJS('/ws'),
+      webSocketFactory: () => new SockJS("/ws"),
       debug: (str) => console.log(str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
       connectHeaders: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     this.client.onConnect = (frame) => {
-      console.log('Connected: ' + frame);
+      console.log("Connected: " + frame);
       if (onConnectCallback) onConnectCallback();
     };
 
     this.client.onStompError = (frame) => {
-      console.error('Broker reported error: ' + frame.headers['message']);
-      console.error('Additional details: ' + frame.body);
+      console.error("Broker reported error: " + frame.headers["message"]);
+      console.error("Additional details: " + frame.body);
     };
 
     this.client.activate();
@@ -71,7 +71,7 @@ class WebSocketService {
         body: JSON.stringify(body),
       });
     } else {
-      console.error('STOMP client not connected');
+      console.error("STOMP client not connected");
     }
   }
 
@@ -80,7 +80,7 @@ class WebSocketService {
   }
 
   disconnect() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions.clear();
     this.client?.deactivate();
   }

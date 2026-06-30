@@ -3,6 +3,8 @@ package com.mtp.api.controllers;
 import com.mtp.api.models.Permission;
 import com.mtp.api.models.Role;
 import com.mtp.api.models.User;
+import com.mtp.api.models.AuditLog;
+import com.mtp.api.repositories.AuditLogRepository;
 import com.mtp.api.repositories.PermissionRepository;
 import com.mtp.api.repositories.RoleRepository;
 import com.mtp.api.repositories.UserRepository;
@@ -21,7 +23,6 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("isAuthenticated()")
 public class UserManagementController {
 
     @Autowired
@@ -39,15 +40,27 @@ public class UserManagementController {
     @Autowired
     private com.mtp.api.services.ImageUploadService imageUploadService;
 
+    @Autowired
+    private com.mtp.api.services.AuditLogService auditLogService;
+
+    private void logAuditAction(String action, String target, String type) {
+        auditLogService.logActivity(action, target, type);
+    }
+
     // User Management
     @GetMapping("/users")
-    @Cacheable(value = "users", key = "#pageable")
-    public Page<User> getAllUsers(Pageable pageable) {
+    @PreAuthorize("hasAuthority('USER_READ')")
+    public Page<User> getAllUsers(
+            @RequestParam(required = false) String search,
+            Pageable pageable) {
+        if (search != null && !search.trim().isEmpty()) {
+            return userRepository.searchUsers(search.trim(), pageable);
+        }
         return userRepository.findAll(pageable);
     }
 
     @PostMapping("/users")
-    @CacheEvict(value = "users", allEntries = true)
+    @PreAuthorize("hasAuthority('USER_WRITE')")
     public ResponseEntity<?> createUser(@RequestBody User user) {
         if (userRepository.findByUserName(user.getUserName()).isPresent()) {
             return ResponseEntity.badRequest().body("Username already exists");
@@ -65,91 +78,129 @@ public class UserManagementController {
         if (user.getAvatarUrl() != null && user.getAvatarUrl().startsWith("data:image")) {
             try {
                 user.setAvatarUrl(imageUploadService.uploadBase64Image(user.getAvatarUrl(), "users"));
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
 
-        return ResponseEntity.ok(userRepository.save(user));
+        user = userRepository.save(user);
+        logAuditAction("CREATE_USER", user.getUserName(), "info");
+        return ResponseEntity.ok(user);
     }
 
-
     @PutMapping("/users/{userId}")
-    @CacheEvict(value = "users", allEntries = true)
+    @PreAuthorize("hasAuthority('USER_WRITE')")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User userDetails) {
         User user = userRepository.findById(userId).orElseThrow();
         user.setFirstName(userDetails.getFirstName());
         user.setLastName(userDetails.getLastName());
         user.setEmail(userDetails.getEmail());
         user.setUserName(userDetails.getUserName());
-        
+        user.setBranch(userDetails.getBranch());
+        user.setActive(userDetails.isActive());
+
         if (userDetails.getAvatarUrl() != null && userDetails.getAvatarUrl().startsWith("data:image")) {
             try {
                 user.setAvatarUrl(imageUploadService.uploadBase64Image(userDetails.getAvatarUrl(), "users"));
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         } else {
             user.setAvatarUrl(userDetails.getAvatarUrl());
         }
-        
-        return ResponseEntity.ok(userRepository.save(user));
+
+        user = userRepository.save(user);
+        logAuditAction("UPDATE_USER", user.getUserName(), "info");
+        return ResponseEntity.ok(user);
     }
 
-
-    @PostMapping("/users/{userId}/reset-password")
-    @CacheEvict(value = "users", allEntries = true)
-    public ResponseEntity<?> resetPassword(@PathVariable String userId, @RequestBody String newPassword) {
+    @DeleteMapping("/users/{userId}")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         User user = userRepository.findById(userId).orElseThrow();
-        // Basic cleanup of the input string (remove quotes if sent as JSON string)
-        String cleanedPassword = newPassword.replace("\"", "");
-        user.setPasswordHash(passwordEncoder.encode(cleanedPassword));
-        user.setPasswordText(cleanedPassword);
-        userRepository.save(user);
+        userRepository.delete(user);
+        logAuditAction("DELETE_USER", user.getUserName(), "warning");
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/users/{userId}/reset-password")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    public ResponseEntity<?> resetPassword(@PathVariable String userId,
+            @RequestBody java.util.Map<String, String> payload) {
+        User user = userRepository.findById(userId).orElseThrow();
+        String newPassword = payload.get("newPassword");
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        user.setPasswordText(newPassword);
+        userRepository.save(user);
+        logAuditAction("RESET_PASSWORD", user.getUserName(), "warning");
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/users/{userId}/toggle-status")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    public ResponseEntity<?> toggleUserStatus(@PathVariable String userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.setActive(user.isActive() == null ? false : !user.isActive());
+        userRepository.save(user);
+        logAuditAction(user.isActive() != null && user.isActive() ? "ENABLE_USER" : "DISABLE_USER", user.getUserName(),
+                "warning");
+        return ResponseEntity.ok(user);
+    }
+
     @PutMapping("/users/{userId}/roles")
-    @CacheEvict(value = "users", allEntries = true)
+    @PreAuthorize("hasAuthority('ROLE_MANAGE')")
     public ResponseEntity<?> updateUserRoles(@PathVariable String userId, @RequestBody Set<String> roleNames) {
         User user = userRepository.findById(userId).orElseThrow();
         Set<Role> roles = new HashSet<>(roleRepository.findAllByNameIn(roleNames));
         user.setRoles(roles);
         userRepository.save(user);
+        logAuditAction("UPDATE_USER_ROLES", user.getUserName(), "info");
         return ResponseEntity.ok().build();
     }
 
     // Role & Permission Management
     @GetMapping("/roles")
+    @PreAuthorize("hasAuthority('ROLE_MANAGE')")
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
 
     @PostMapping("/roles")
+    @PreAuthorize("hasAuthority('ROLE_MANAGE')")
     public ResponseEntity<?> createRole(@RequestBody Role role) {
         if (roleRepository.findByName(role.getName()).isPresent()) {
             return ResponseEntity.badRequest().body("Role already exists");
         }
         role.setNormalizedName(role.getName().toUpperCase());
-        return ResponseEntity.ok(roleRepository.save(role));
+        role = roleRepository.save(role);
+        logAuditAction("CREATE_ROLE", role.getName(), "info");
+        return ResponseEntity.ok(role);
     }
 
     @GetMapping("/permissions")
+    @PreAuthorize("hasAuthority('ROLE_MANAGE')")
     public List<Permission> getAllPermissions() {
         return permissionRepository.findAll();
     }
 
     @PostMapping("/permissions")
+    @PreAuthorize("hasAuthority('ROLE_MANAGE')")
     public ResponseEntity<?> createPermission(@RequestBody Permission permission) {
         if (permission.getResource() != null && permission.getAction() != null) {
             String generatedName = permission.getResource().toUpperCase() + "_" + permission.getAction().toUpperCase();
             permission.setName(generatedName);
         }
-        
+
         if (permissionRepository.findByName(permission.getName()).isPresent()) {
             return ResponseEntity.badRequest().body("Permission already exists");
         }
-        return ResponseEntity.ok(permissionRepository.save(permission));
+        permission = permissionRepository.save(permission);
+        logAuditAction("CREATE_PERMISSION", permission.getName(), "info");
+        return ResponseEntity.ok(permission);
     }
 
     @PutMapping("/roles/{roleId}/permissions")
-    public ResponseEntity<?> updateRolePermissions(@PathVariable String roleId, @RequestBody Set<String> permissionNames) {
+    @PreAuthorize("hasAuthority('ROLE_MANAGE')")
+    public ResponseEntity<?> updateRolePermissions(@PathVariable String roleId,
+            @RequestBody Set<String> permissionNames) {
         Role role = roleRepository.findById(roleId).orElseThrow();
         Set<Permission> permissions = new java.util.HashSet<>();
         for (String permName : permissionNames) {
@@ -157,6 +208,7 @@ public class UserManagementController {
         }
         role.setPermissions(permissions);
         roleRepository.save(role);
+        logAuditAction("UPDATE_ROLE_PERMISSIONS", role.getName(), "info");
         return ResponseEntity.ok().build();
     }
 }

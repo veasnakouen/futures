@@ -14,8 +14,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @org.springframework.cache.annotation.EnableCaching
 @org.springframework.scheduling.annotation.EnableAsync
+@org.springframework.scheduling.annotation.EnableScheduling
+@org.springframework.cloud.client.discovery.EnableDiscoveryClient
+@org.springframework.cloud.openfeign.EnableFeignClients
 public class ApiApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(ApiApplication.class, args);
 	}
@@ -23,7 +25,7 @@ public class ApiApplication {
 	@Bean
 	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
 		return factory -> factory.addConnectorCustomizers(connector -> {
-			connector.setProperty("maxHttpHeaderSize", "2097152");
+			connector.setProperty("maxHttpHeaderSize", "8388608");
 			connector.setProperty("relaxedPathChars", "<>[\\]^`{|}");
 			connector.setProperty("relaxedQueryChars", "<>[\\]^`{|}");
 			connector.setProperty("maxParameterCount", "10000");

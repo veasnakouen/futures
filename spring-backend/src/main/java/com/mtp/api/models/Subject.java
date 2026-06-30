@@ -19,5 +19,6 @@ public class Subject {
 
     @NotNull
     @Size(max = 255)
+    @Column(name = "SubjectName")
     private String name;
 }

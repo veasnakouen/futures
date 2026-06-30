@@ -8,6 +8,12 @@ public interface ProgressService {
     List<MonitoringDto> getAllMonitorings();
     List<MonitoringDto> getMonitoringsByClient(Integer clientId);
     MonitoringDto saveMonitoring(MonitoringDto dto);
+    void deleteMonitoring(Integer id);
+    
+    // Placement Monitoring (Combined)
+    List<com.mtp.api.dto.PlacementMonitoringDto> getPlacementMonitoringsByClient(Integer clientId);
+    com.mtp.api.dto.PlacementMonitoringDto savePlacementMonitoring(com.mtp.api.dto.PlacementMonitoringDto dto);
+    void deletePlacementMonitoring(Integer placementProgressId);
     
     // Detailed progress methods can be added here as needed
 }

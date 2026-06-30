@@ -1,29 +1,7 @@
-import axios from 'axios';
+import api from "./api";
+import { useAuthStore } from "../store/authStore";
 
-const API_URL = '/api/auth';
-
-// Add axios interceptor for JWT
-axios.interceptors.request.use(
-  (config) => {
-    console.log('Interpreting request to:', config.url);
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      const user = JSON.parse(userStr);
-      if (user.token) {
-        console.log('Attaching token for user:', user.username);
-        config.headers.Authorization = `Bearer ${user.token}`;
-      } else {
-        console.warn('No token found in user object');
-      }
-    } else {
-      console.warn('No user found in localStorage');
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+const API_URL = "/auth";
 
 export interface AuthResponse {
   token: string;
@@ -35,40 +13,37 @@ export interface AuthResponse {
 }
 
 class AuthService {
-  login(username: string, password: string): Promise<AuthResponse> {
-    return axios
-      .post(API_URL + '/login', { username, password })
-      .then((response) => {
-        if (response.data.token) {
-          localStorage.setItem('user', JSON.stringify(response.data));
-        }
-        return response.data;
-      });
+  async login(username: string, password: string): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>(API_URL + "/login", {
+      username,
+      password,
+    });
+    if (response.data.token) {
+      useAuthStore.getState().login(response.data);
+    }
+    return response.data;
   }
 
   logout() {
-    localStorage.removeItem('user');
+    useAuthStore.getState().logout();
   }
 
   getCurrentUser(): AuthResponse | null {
-    const userStr = localStorage.getItem('user');
-    if (userStr) return JSON.parse(userStr);
-    return null;
+    return useAuthStore.getState().user;
   }
 
-  refreshToken() {
+  async refreshToken() {
     const user = this.getCurrentUser();
-    if (!user) return Promise.reject('No user logged in');
+    if (!user) throw new Error("No user logged in");
 
-    return axios.post(API_URL + '/refresh', {
+    const response = await api.post(API_URL + "/refresh", {
       refreshToken: user.refreshToken,
-    }).then(response => {
-      if (response.data.token) {
-        const newUser = { ...user, token: response.data.token };
-        localStorage.setItem('user', JSON.stringify(newUser));
-      }
-      return response.data;
     });
+
+    if (response.data.token) {
+      useAuthStore.getState().updateToken(response.data.token);
+    }
+    return response.data;
   }
 }
 

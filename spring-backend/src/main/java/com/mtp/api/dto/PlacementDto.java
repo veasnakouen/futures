@@ -16,4 +16,5 @@ public class PlacementDto {
     private String companyName;
     private String salary;
     private String status;
+    private String imageUrl;
 }

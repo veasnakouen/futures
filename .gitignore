@@ -1,0 +1,38 @@
+# Root .gitignore for FuturesSystem
+
+# Gradle temporary files and build folders
+.gradle/
+**/build/
+**/bin/
+**/out/
+
+# Log files
+*.log
+*.log.*
+spring-backend/spring-app.log*
+
+# Node modules
+node_modules/
+react-frontend/node_modules/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Next.js and temporary files
+.next/
+scratch/
+*.tsbuildinfo
+test_login.mjs
+
+# Database files
+*.fmp12
+excell/
+

@@ -25,7 +25,7 @@ public class LogBookController {
             @RequestParam(required = false) String search) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("enrollDate").descending());
         if (search != null && !search.isEmpty()) {
-            return repository.findByNoteContainingOrPhoneContaining(search, search, pageable);
+            return repository.findByNoteContainingIgnoreCaseOrPhoneContainingIgnoreCase(search, search, pageable);
         }
         return repository.findAll(pageable);
     }

@@ -45,7 +45,7 @@ class EmployeeControllerTest {
     void getEmployees_authenticated_returns200() throws Exception {
         mvc.perform(get("/api/employees"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     // --- Validation Tests ---
@@ -60,7 +60,7 @@ class EmployeeControllerTest {
         dto.setIdNo("MTP-TEST-001");
 
         mvc.perform(post("/api/employees")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Validation Failed"))
@@ -75,10 +75,10 @@ class EmployeeControllerTest {
         dto.setFirstNameEnglish("John");
         dto.setLastNameEnglish("Doe");
         dto.setIdNo("MTP-TEST-002");
-        dto.setEmail("not-a-valid-email");  // Should fail @Email
+        dto.setEmail("not-a-valid-email"); // Should fail @Email
 
         mvc.perform(post("/api/employees")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Validation Failed"));

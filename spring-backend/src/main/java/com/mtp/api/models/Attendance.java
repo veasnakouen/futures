@@ -35,4 +35,13 @@ public class Attendance {
 
     @Size(max = 20)
     private String status; // Present, Late, Early Leave
+
+    @Size(max = 50)
+    private String biometricId;
+
+    @Size(max = 100)
+    private String employeeName;
+
+    @Version
+    private Integer version;
 }

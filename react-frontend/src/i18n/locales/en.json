@@ -1,0 +1,20 @@
+{
+  "welcome": "Welcome Back, Admin",
+  "clients": "Clients",
+  "dashboard": "Dashboard",
+  "reports": "Reports",
+  "settings": "Settings",
+  "employers": "Employers",
+  "vacancies": "Vacancies",
+  "open_portal": "Open Portal",
+  "edit_record": "Edit Record",
+  "decommission": "Decommission",
+  "view_details": "View Details",
+  "update_details": "Update Details",
+  "terminate": "Terminate",
+  "purge_record": "Purge Record",
+  "stock_movement": "Stock Movement",
+  "movement": "Movement",
+  "audit_details": "Audit Details",
+  "audit_node": "Audit Node"
+}

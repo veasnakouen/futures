@@ -4,13 +4,20 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.example'
+group = 'com.mtp'
 version = '0.0.1-SNAPSHOT'
+
+ext {
+	set('springCloudVersion', "2023.0.4")
+	set('lombok.version', "1.18.46")
+}
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -18,6 +25,13 @@ repositories {
 }
 
 dependencies {
+	// implementation "io.projectreactor:reactor-core:3.6.12"
+	// //log -  logback
+	// implementation "ch.qos.logback:logback-classic:1.4.14"
+	// // refactor-debug-agent
+	// implementation "io.projectreactor:reactor-tools:3.6.12" 
+
+	// Core Spring Boot
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -25,25 +39,51 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
-	implementation 'com.bucket4j:bucket4j-core:8.10.1'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// Microservices (Spring Cloud)
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// Security & JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
-	compileOnly 'org.projectlombok:lombok'
-	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+
+	// Database & Performance
 	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+	implementation 'com.bucket4j:bucket4j-core:8.10.1'
+
+	// Utils & External Services
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testCompileOnly 'org.projectlombok:lombok'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-	implementation 'org.springframework.boot:spring-boot-starter-cache'
-	implementation 'com.github.ben-manes.caffeine:caffeine'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	implementation 'com.cloudinary:cloudinary-http5:2.1.0'
+	
+	// Cloud Storage
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.720'
+	
+	// Excel Processing
+	implementation 'org.apache.poi:poi:5.2.2'
+	implementation 'org.apache.poi:poi-ooxml:5.2.2'
+	implementation 'org.apache.poi:poi-ooxml-full:5.2.2'
+	implementation 'org.apache.commons:commons-collections4:4.4'
+
+	// Testing
+	// testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
 
 tasks.named('test') {
 	useJUnitPlatform()

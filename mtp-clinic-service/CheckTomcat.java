@@ -1,0 +1,1 @@
+import java.lang.reflect.Method; public class CheckTomcat { public static void main(String[] args) throws Exception { Class<?> clazz = Class.forName("org.apache.tomcat.util.net.AbstractEndpoint"); for (Method m : clazz.getDeclaredMethods()) { if (m.getName().startsWith("bind") || m.getName().startsWith("init")) { System.out.println(m.toString()); } } } }

@@ -40,11 +40,11 @@ public class SecurityConfig {
                         .contentSecurityPolicy(csp -> csp
                                 .policyDirectives(
                                         "default-src 'self'; " +
-                                        "script-src 'self' 'unsafe-inline'; " +
-                                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-                                        "font-src 'self' https://fonts.gstatic.com; " +
-                                        "img-src 'self' data: https://res.cloudinary.com; " +
-                                        "connect-src 'self' ws: wss:;"))
+                                                "script-src 'self' 'unsafe-inline'; " +
+                                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+                                                "font-src 'self' https://fonts.gstatic.com; " +
+                                                "img-src 'self' data: https://res.cloudinary.com; " +
+                                                "connect-src 'self' ws: wss: http://localhost:3000 http://localhost:8080 http://localhost:8081;"))
                         .httpStrictTransportSecurity(hsts -> hsts
                                 .maxAgeInSeconds(31536000)
                                 .includeSubDomains(true)))
@@ -57,10 +57,14 @@ public class SecurityConfig {
                         }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/socket.io/**").permitAll()
                         .requestMatchers("/api/hr/attendance/biometric").permitAll()
+                        .requestMatchers("/api/hr/attendance/sync-device").permitAll()
+                        .requestMatchers("/api/hr/attendance/device-users").permitAll()
+                        .requestMatchers("/api/hr/attendance/test-connection").permitAll()
+                        .requestMatchers("/api/vacancies/public/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/job-applications").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/health").permitAll() // Health check for load balancers
                         // All other endpoints require authentication
@@ -96,12 +100,15 @@ public class SecurityConfig {
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        // Restrict to trusted frontend origins
-        config.setAllowedOriginPatterns(Arrays.asList("*"));
+        // Explicitly allow both names and IPs
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "http://localhost:8080",
+                "http://127.0.0.1:8080"));
         config.setAllowedHeaders(
-                Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "x-requested-with"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-
+                Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "Cache-Control"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

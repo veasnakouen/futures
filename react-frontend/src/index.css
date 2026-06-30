@@ -5,6 +5,72 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-position: right 0.75rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.25em 1.25em !important;
+    padding-right: 2.5rem !important;
+    appearance: none !important;
+  }
+
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -87,7 +153,7 @@ body {
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -95,30 +161,64 @@ body {
   animation: fadeInUp 0.4s ease-out forwards;
 }
 
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glass-effect {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Removed overflow auto which clipped absolute elements */
 /* Global Popover/Tooltip Elevation */
-[role="tooltip"], .popover, [data-popover] {
+[role="tooltip"],
+.popover,
+[data-popover] {
   z-index: 9999 !important;
 }
 
 /* Datepicker Styling Overrides - Premium SaaS Look */
+
 .datepicker-picker {
-  @apply border-none shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] rounded-2xl p-4 bg-white dark:bg-gray-900 !important;
+  @apply border-none rounded-2xl p-4 bg-white dark:bg-gray-900 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
   backdrop-filter: blur(10px);
 }
 
-.datepicker-footer button {
-  @apply rounded-lg font-black uppercase text-[9px] tracking-[0.1em] px-4 py-2 transition-all !important;
+.datepicker-footer button,
+[data-testid="flowbite-datepicker-popup"] .mt-2 button,
+.datepicker-picker>div:last-child>button,
+[id^="portal-"] .mt-2 button {
+  @apply rounded-lg font-black uppercase text-[10px] tracking-[0.1em] px-4 py-2 transition-all w-full !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  color: #2563eb !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
 }
 
-.datepicker-footer .btn-clear {
-  @apply bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 !important;
+.datepicker-footer button:hover,
+[data-testid="flowbite-datepicker-popup"] .mt-2 button:hover,
+.datepicker-picker>div:last-child>button:hover,
+[id^="portal-"] .mt-2 button:hover {
+  background-color: rgba(59, 130, 246, 0.2) !important;
 }
 
-.datepicker-footer .btn-today {
-  @apply bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 !important;
+.dark .datepicker-footer button,
+.dark [data-testid="flowbite-datepicker-popup"] .mt-2 button,
+.dark .datepicker-picker>div:last-child>button,
+.dark [id^="portal-"] .mt-2 button {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
 }
 
 .datepicker-header .datepicker-title {
@@ -144,6 +244,8 @@ body {
 .datepicker-view .datepicker-grid .datepicker-cell.today {
   @apply text-blue-600 dark:text-blue-400 border-2 border-blue-100 dark:border-blue-900/50 !important;
 }
+
+
 
 .hide-scrollbar {
   -ms-overflow-style: none;
@@ -196,6 +298,10 @@ tr:hover td {
   background-color: #f8fafc;
 }
 
+.dark tr:hover td {
+  background-color: #374151 !important;
+}
+
 .badge {
   padding: 0.25rem 0.625rem;
   border-radius: 9999px;
@@ -238,10 +344,21 @@ tr:hover td {
   --text-secondary: #64748b;
   --accent: #3b82f6;
   --accent-hover: #2563eb;
-  --border: rgba(0, 0, 0, 0.1);
+  --custom-border: rgba(0, 0, 0, 0.1);
   --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   --skeleton-base: rgba(0, 0, 0, 0.06);
   --skeleton-shine: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  --bg-dark: hsl(224, 71%, 4%);
+  --bg-card: hsl(222, 47%, 8%);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --custom-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --skeleton-base: rgba(255, 255, 255, 0.05);
+  --skeleton-shine: rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -266,7 +383,7 @@ body {
 /* ── Glass panel ─────────────────────────────────────────────────────────── */
 .glass-panel {
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
   border-radius: 0.5rem;
   box-shadow: var(--glass-shadow);
   padding: 1.25rem;
@@ -277,10 +394,10 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  background: #f8f9fb;
+  background: var(--bg-dark);
   padding: 0.9rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
   margin-bottom: 1rem;
   align-items: center;
 }
@@ -297,10 +414,10 @@ body {
 }
 
 .date-group {
-  background: #fff;
+  background: var(--bg-card);
   padding: 0.2rem 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -340,8 +457,8 @@ body {
 
 /* ── Inputs & selects ────────────────────────────────────────────────────── */
 .custom-input {
-  background: #fff;
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--custom-border);
   color: var(--text-primary);
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -372,8 +489,8 @@ body {
   width: 100%;
   padding: 0.55rem 0.9rem;
   border-radius: 0.5rem;
-  background: #fff;
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--custom-border);
   color: var(--text-primary);
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -388,7 +505,7 @@ body {
 }
 
 .custom-select option {
-  background: #fff;
+  background: var(--bg-card);
 }
 
 /* ── Controls row ────────────────────────────────────────────────────────── */
@@ -405,10 +522,10 @@ body {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: #f8f9fb;
+  background: var(--bg-dark);
   padding: 0.4rem 0.6rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
 }
 
 .page-btn {
@@ -426,7 +543,7 @@ body {
 }
 
 .page-btn:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(128, 128, 128, 0.15);
   transform: translateY(-1px);
 }
 
@@ -459,10 +576,10 @@ body {
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-secondary);
-  background: #f8f9fb;
+  background: var(--bg-dark);
   padding: 0.4rem 0.85rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
   max-width: 340px;
   white-space: nowrap;
   overflow: hidden;
@@ -478,9 +595,9 @@ body {
 }
 
 .btn-secondary {
-  background: #f0f2f5;
+  background: var(--bg-dark);
   color: var(--text-primary);
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
   padding: 0.55rem 1.1rem;
   border-radius: 0.5rem;
   font-weight: 500;
@@ -492,13 +609,13 @@ body {
 }
 
 .btn-secondary:hover {
-  background: #e2e5ea;
+  background: rgba(128, 128, 128, 0.15);
 }
 
 .btn-icon {
   background: transparent;
   color: var(--text-primary);
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
   padding: 0.55rem 1rem;
   border-radius: 0.5rem;
   font-weight: 500;
@@ -513,7 +630,7 @@ body {
 }
 
 .btn-icon:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(128, 128, 128, 0.15);
   transform: translateY(-2px);
 }
 
@@ -556,10 +673,10 @@ body {
   position: absolute;
   right: 0;
   top: calc(100% + 0.4rem);
-  background: #1e293b;
+  background: var(--bg-card);
   min-width: 210px;
   box-shadow: var(--glass-shadow);
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
   border-radius: 0.5rem;
   z-index: 100;
   overflow: hidden;
@@ -601,7 +718,7 @@ body {
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -609,11 +726,11 @@ body {
 .viewer-container {
   position: relative;
   min-height: 600px;
-  background: #f8f9fb;
+  background: var(--bg-dark);
   border-radius: 0.5rem;
   padding: 1.5rem;
   overflow: auto;
-  border: 1px solid var(--border);
+  border: 1px solid var(--custom-border);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -657,7 +774,8 @@ body {
 .loading-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--bg-card);
+  opacity: 0.85;
   backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
@@ -676,7 +794,7 @@ body {
 }
 
 .skeleton-page {
-  background: #f0f2f5;
+  background: var(--bg-dark);
   padding: 1.5rem;
   border-radius: 0.5rem;
 }
@@ -780,7 +898,7 @@ body {
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -806,14 +924,14 @@ body {
   top: 0 !important;
   z-index: 50 !important;
   background-color: white !important;
-  border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .dark [role="dialog"] [class*="rounded-t"],
 .dark [role="dialog"] [class*="modal-header"],
 .dark [role="dialog"] header:first-child {
   background-color: #1f2937 !important;
-  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Targets Flowbite Modal Footer */
@@ -824,40 +942,183 @@ body {
   bottom: 0 !important;
   z-index: 40 !important;
   background-color: white !important;
-  border-top: 1px solid rgba(0,0,0,0.05) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .dark [role="dialog"] [class*="modal-footer"],
 .dark [role="dialog"] [class*="rounded-b"],
 .dark [role="dialog"] footer:last-child {
   background-color: #1f2937 !important;
-  border-top: 1px solid rgba(255,255,255,0.05) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-/* Ensure the modal content allows the sticky items to work */
-[role="dialog"] [class*="relative bg-white rounded-lg shadow"] {
+/* Ensure the modal content card is constrained and displays as a flex container */
+[role="dialog"] [data-testid="modal-content"],
+[role="dialog"] div[class*="rounded-lg"][class*="shadow"]:not(button):not(nav):not(div.w-64) {
   display: flex !important;
   flex-direction: column !important;
-  max-height: 90vh !important;
-  overflow: hidden !important;
+  max-height: 85vh !important;
+  overflow: visible !important;
 }
 
-[role="dialog"] [class*="modal-body"],
-[role="dialog"] .p-6.space-y-6,
-[role="dialog"] form {
-  overflow-y: auto !important;
-  flex: 1 !important;
+
+
+/* Premium Minimalist Scrollbars */
+::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
 }
 
-/* Specific fix for Flowbite React Datepicker in Modals */
-.overflow-x-visible {
-  overflow-x: visible !important;
+::-webkit-scrollbar-track {
+  background: transparent !important;
 }
 
-/* Force Flowbite Datepicker popup to be on top */
-.datepicker[role="tooltip"],
-div.absolute.z-50.block-ui,
-[data-testid="flowbite-datepicker-popup"] {
-  z-index: 100000 !important;
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15) !important;
+  border-radius: 9999px !important;
+  transition: background 0.2s ease !important;
 }
-
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Dark mode overrides for scrollbars */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Firefox compatibility */
+* {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent !important;
+}
+
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent !important;
+}
+
+/* ── Custom Premium Animations ── */
+@keyframes fadeInUpCustom {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slideInUpCustom {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scaleInCustom {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUpCustom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in {
+  animation: slideInUpCustom 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleInCustom 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Global Premium Component Overrides ──────────────────────────────────── */
+
+
+
+/* Theme variables (space-separated RGB for Tailwind opacity support) */
+:root {
+  --gray-50: 249 250 251;
+  --gray-100: 243 244 246;
+  --gray-200: 229 231 235;
+  --gray-300: 209 213 219;
+  --gray-400: 156 163 175;
+  --gray-500: 107 114 128;
+  --gray-600: 75 85 99;
+  --gray-700: 55 65 81;
+  --gray-800: 31 41 55;
+  --gray-900: 17 24 39;
+  --gray-950: 3 7 18;
+}
+
+html[data-theme="antigravity"] {
+  --gray-50: 249 250 251;
+  --gray-100: 243 244 246;
+  --gray-200: 229 231 235;
+  --gray-300: 209 213 219;
+  --gray-400: 156 163 175;
+  --gray-500: 107 114 128;
+  --gray-600: 60 60 60;
+  --gray-700: 51 51 51;
+  --gray-800: 37 37 38;
+  --gray-900: 30 30 30;
+}
+
+
+
+/* Flowbite Modal Global Overrides for Antigravity Theme */
+.dark [data-testid="modal"]>div>div {
+  background-color: rgb(37 37 38) !important;
+  /* dark:bg-gray-800 */
+  border: 1px solid rgb(51 51 51) !important;
+  /* dark:border-gray-700 */
+}
+
+[data-testid="modal"]>div>div {
+  border-radius: 0.75rem !important;
+  /* rounded-xl */
+}
+
+/* Force Flowbite React Dropdowns to top z-index */
+div[data-floating-ui-portal],
+div[role="menu"],
+div:has(> ul[role="menu"]) {
+  z-index: 50 !important;
+}
+
+
+[data-testid="flowbite-dropdown-target"]+div {
+  z-index: 60 !important;
+}

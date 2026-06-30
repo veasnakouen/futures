@@ -56,4 +56,8 @@ public class Placement {
     @Size(max = 20)
     @Column(name = "Status")
     private String status;
+
+    @Size(max = 500)
+    @Column(name = "ImageUrl")
+    private String imageUrl;
 }

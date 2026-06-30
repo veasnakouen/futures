@@ -8,6 +8,10 @@ import com.mtp.api.models.Education;
 import com.mtp.api.models.Language;
 import com.mtp.api.models.ComputerSkill;
 import com.mtp.api.models.JobExperience;
+import com.mtp.api.models.Beneficiary;
+import com.mtp.api.models.JobExpectation;
+import com.mtp.api.models.Monitoring;
+import com.mtp.api.models.Personality;
 import lombok.Data;
 import java.util.List;
 
@@ -21,4 +25,8 @@ public class ClientProfileDto {
     private List<Language> languages;
     private List<ComputerSkill> computerSkills;
     private List<JobExperience> jobExperiences;
+    private List<Beneficiary> beneficiaries;
+    private List<JobExpectation> jobExpectations;
+    private List<Monitoring> monitorings;
+    private List<Personality> personalities;
 }

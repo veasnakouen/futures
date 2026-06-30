@@ -8,10 +8,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Table(name = "Clients", indexes = {
-    @Index(name = "idx_client_code", columnList = "ClientCode"),
-    @Index(name = "idx_client_status", columnList = "Status")
+        @Index(name = "idx_client_code", columnList = "ClientCode"),
+        @Index(name = "idx_client_status", columnList = "Status")
 })
 @Data
 public class Client {
@@ -108,37 +108,37 @@ public class Client {
 
     @Column(name = "RegisterDate")
     private LocalDateTime registerDate;
-    
+
     @Column(name = "RegisterDateNd")
     private LocalDateTime registerDateNd;
-    
+
     @Column(name = "RegisterDateRd")
     private LocalDateTime registerDateRd;
 
     @Column(name = "EnrollDate")
     private LocalDateTime enrollDate;
-    
+
     @Column(name = "UpdateDate")
     private LocalDateTime updateDate;
-    
+
     @Column(name = "PlaceOfBirth")
     private String placeOfBirth;
-    
+
     @Column(name = "Nationality")
     private String nationality;
-    
+
     @Column(name = "Citizenship")
     private String citizenship;
-    
+
     @Column(name = "Height")
     private String height;
-    
+
     @Column(name = "Weight")
     private String weight;
-    
+
     @Column(name = "UpdateBy")
     private String updateBy;
-    
+
     @Column(name = "SocialSupportProblem")
     private String socialSupportProblem;
 
@@ -148,7 +148,7 @@ public class Client {
 
     @Column(name = "IdpoorValiddate")
     private LocalDateTime idpoorValiddate;
-    
+
     @Column(name = "IdpoorLevel")
     private String idpoorLevel;
 
@@ -159,4 +159,19 @@ public class Client {
     @Size(max = 255)
     @Column(name = "Status")
     private String status;
+
+    @Column(name = "PhotoIdAttachment", columnDefinition = "NVARCHAR(MAX)")
+    private String photoIdAttachment;
+
+    @Column(name = "ContractAttachment", columnDefinition = "NVARCHAR(MAX)")
+    private String contractAttachment;
+
+    @Column(name = "IdPoorAttachment", columnDefinition = "NVARCHAR(MAX)")
+    private String idPoorAttachment;
+
+    @Column(name = "CvAttachment", columnDefinition = "NVARCHAR(MAX)")
+    private String cvAttachment;
+
+    @Column(name = "CustomFields", columnDefinition = "NVARCHAR(MAX)")
+    private String customFields;
 }

@@ -1,0 +1,20 @@
+{
+  "welcome": "Bon retour, Administrateur",
+  "clients": "Clients",
+  "dashboard": "Tableau de bord",
+  "reports": "Rapports",
+  "settings": "Paramètres",
+  "employers": "Employeurs",
+  "vacancies": "Postes Vacants",
+  "open_portal": "Ouvrir le portail",
+  "edit_record": "Modifier le dossier",
+  "decommission": "Déclasser",
+  "view_details": "Voir les détails",
+  "update_details": "Modifier les détails",
+  "terminate": "Résilier",
+  "purge_record": "Purger le dossier",
+  "stock_movement": "Mouvement de stock",
+  "movement": "Mouvement",
+  "audit_details": "Détails de l'audit",
+  "audit_node": "Auditer le nœud"
+}
