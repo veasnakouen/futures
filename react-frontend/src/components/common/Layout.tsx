@@ -68,7 +68,7 @@ const Layout = ({ children, title }: LayoutProps) => {
     sidebarTheme,
     topbarTheme,
   } = useTheme();
-  const { unreadCount } = useNotifications();
+  const { notifications, unreadCount, markAsRead } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -488,17 +488,61 @@ const Layout = ({ children, title }: LayoutProps) => {
             >
               <Users size={20} />
             </button>
-            <button
-              className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-md transition-colors relative"
-              title="Notifications"
+            <Dropdown
+              arrowIcon={false}
+              inline
+              label={
+                <div
+                  className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-md transition-colors relative cursor-pointer"
+                  title="Notifications"
+                >
+                  <Bell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-gray-800">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </div>
+              }
             >
-              <Bell size={20} />
-              {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-gray-800">
-                  {unreadCount > 9 ? "9+" : unreadCount}
+              <DropdownHeader>
+                <span className="block text-sm font-black dark:text-white">
+                  Notifications
                 </span>
-              )}
-            </button>
+              </DropdownHeader>
+              <div className="max-h-80 overflow-y-auto custom-scrollbar w-72">
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-gray-500">
+                    No notifications yet
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <DropdownItem
+                      key={n.id}
+                      onClick={() => {
+                        if (!n.read) markAsRead(n.id);
+                      }}
+                    >
+                      <div
+                        className={`flex flex-col gap-1 w-full text-left ${!n.read ? "font-bold" : "opacity-75"}`}
+                      >
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="text-xs text-blue-600 dark:text-blue-400 truncate">
+                            {n.title}
+                          </span>
+                          <span className="text-[9px] text-gray-400 shrink-0">
+                            {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className="text-xs truncate dark:text-gray-300">
+                          {n.message}
+                        </p>
+                      </div>
+                    </DropdownItem>
+                  ))
+                )}
+              </div>
+            </Dropdown>
 
             <Dropdown
               arrowIcon={false}

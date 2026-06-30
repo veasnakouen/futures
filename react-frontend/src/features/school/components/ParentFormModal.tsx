@@ -8,6 +8,7 @@ import { schoolService, ParentDto } from "../../../services/schoolService";
 import { toast } from "react-hot-toast";
 import CustomModalHeader from "../../../components/common/CustomModalHeader";
 import CustomModalFooter from "../../../components/common/CustomModalFooter";
+import AddressFields from "../../../components/common/AddressFields";
 import { Modal, ModalBody } from "@/lib/flowbite-compat";
 
 const schema = z.object({
@@ -18,6 +19,9 @@ const schema = z.object({
   address: z.object({
     street: z.string().optional(),
     city: z.string().optional(),
+    district: z.string().optional(),
+    commune: z.string().optional(),
+    village: z.string().optional(),
     state: z.string().optional(),
     zipCode: z.string().optional(),
     country: z.string().optional(),
@@ -40,6 +44,8 @@ export default function ParentFormModal({ isOpen, onClose, parentToEdit }: Props
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -64,6 +70,9 @@ export default function ParentFormModal({ isOpen, onClose, parentToEdit }: Props
           address: {
             street: "",
             city: "",
+            district: "",
+            commune: "",
+            village: "",
             state: "",
             zipCode: "",
             country: "",
@@ -159,65 +168,13 @@ export default function ParentFormModal({ isOpen, onClose, parentToEdit }: Props
             </div>
           </div>
 
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Address</h4>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Street
-                </label>
-                <input
-                  {...register("address.street")}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                  placeholder="123 Main St"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    City
-                  </label>
-                  <input
-                    {...register("address.city")}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    placeholder="New York"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    State
-                  </label>
-                  <input
-                    {...register("address.state")}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    placeholder="NY"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Zip Code
-                  </label>
-                  <input
-                    {...register("address.zipCode")}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    placeholder="10001"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Country
-                  </label>
-                  <input
-                    {...register("address.country")}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    placeholder="USA"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <AddressFields
+            register={register}
+            errors={errors}
+            prefix="address"
+            watch={watch}
+            setValue={setValue}
+          />
         </ModalBody>
 
         <CustomModalFooter

@@ -8,9 +8,9 @@ spring:
   application:
     name: mtp-school-service
   datasource:
-    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=MtpAppDB2018_full;encrypt=true;trustServerCertificate=true;loginTimeout=30;
+    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=MtpSchoolDB;encrypt=true;trustServerCertificate=true;loginTimeout=30;
     username: sa
-    password: 123
+    password: ${DB_PASSWORD:123}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:

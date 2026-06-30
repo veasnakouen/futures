@@ -100,7 +100,7 @@ export default function ParentList() {
                     Loading parents...
                   </td>
                 </tr>
-              ) : data?.content?.length === 0 ? (
+              ) : !data?.content || data.content.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center">

@@ -273,10 +273,10 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Select Parents / Guardians
                 </label>
-                {parentsData?.content?.length === 0 && (
+                {(!parentsData || (parentsData.content ? parentsData.content.length === 0 : parentsData.length === 0)) && (
                   <p className="text-sm text-gray-500 italic">No parents found in the database.</p>
                 )}
-                {parentsData?.content?.map((parent: any) => (
+                {(parentsData?.content || (Array.isArray(parentsData) ? parentsData : [])).map((parent: any) => (
                   <div key={parent.id} className="flex flex-col mb-2 p-2 border border-gray-100 dark:border-gray-700 rounded bg-white dark:bg-gray-800">
                     <div className="flex items-center">
                       <input
@@ -319,10 +319,10 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Select Extracurricular Activities
                 </label>
-                {extracurricularsData?.content?.length === 0 && (
+                {(!extracurricularsData || (extracurricularsData.content ? extracurricularsData.content.length === 0 : extracurricularsData.length === 0)) && (
                   <p className="text-sm text-gray-500 italic">No activities found in the database.</p>
                 )}
-                {extracurricularsData?.content?.map((activity: any) => (
+                {(extracurricularsData?.content || (Array.isArray(extracurricularsData) ? extracurricularsData : [])).map((activity: any) => (
                   <div key={activity.id} className="flex items-center">
                     <input
                       type="checkbox"

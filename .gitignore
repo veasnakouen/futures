@@ -36,3 +36,9 @@ test_login.mjs
 *.fmp12
 excell/
 
+
+# Secrets and Environment Variables
+.env
+*.env
+*-secrets.properties
+

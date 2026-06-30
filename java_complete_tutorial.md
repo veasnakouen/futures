@@ -1,7 +1,6 @@
 # Java: Complete Tutorial — Beginner to Master
 
 > **Coverage:** Java Fundamentals → OOP → Collections → Generics → Concurrency → Streams/Lambdas → Design Patterns → Data Structures & Algorithms → Best Practices
-
 ---
 
 ## Table of Contents
@@ -2398,4 +2397,4 @@ public int coinChange(int[] coins, int amount) {
 │  │            Runtime Data Areas               │  │
 │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  │  │
 │  │  │  Method  │  │   Heap   │  │  Stack   │  │  │
-│  │  �
+│  │  �

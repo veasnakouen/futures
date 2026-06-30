@@ -7,11 +7,22 @@ import React, {
 } from "react";
 import websocketService from "../services/websocketService";
 import authService from "../services/authService";
+import api from "../services/api";
+
+export interface Notification {
+  id: number;
+  recipientUsername: string;
+  title: string;
+  message: string;
+  type: string;
+  read: boolean;
+  createdAt: string;
+}
 
 interface NotificationContextType {
-  notifications: string[];
-  setNotifications: React.Dispatch<React.SetStateAction<string[]>>;
-  clearNotifications: () => void;
+  notifications: Notification[];
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+  markAsRead: (id: number) => Promise<void>;
   unreadCount: number;
 }
 
@@ -20,16 +31,22 @@ const NotificationContext = createContext<NotificationContextType | undefined>(
 );
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
-  const [notifications, setNotifications] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     const user = authService.getCurrentUser();
     if (user) {
+      // 1. Fetch existing notifications on load
+      api.get("/notifications")
+        .then(res => {
+          setNotifications(res.data);
+        })
+        .catch(err => console.error("Failed to fetch notifications", err));
+
+      // 2. Connect to WebSocket and subscribe to personal queue
       websocketService.connect(() => {
-        websocketService.subscribe("/topic/updates", (msg) => {
-          setNotifications((prev) =>
-            [msg.content || "New update received", ...prev].slice(0, 5),
-          );
+        websocketService.subscribe("/user/queue/notifications", (newNotification: Notification) => {
+          setNotifications((prev) => [newNotification, ...prev]);
         });
       });
     }
@@ -39,17 +56,26 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const clearNotifications = () => {
-    setNotifications([]);
+  const markAsRead = async (id: number) => {
+    try {
+      await api.put(`/notifications/${id}/read`);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      );
+    } catch (err) {
+      console.error("Failed to mark notification as read", err);
+    }
   };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
     <NotificationContext.Provider
       value={{
         notifications,
         setNotifications,
-        clearNotifications,
-        unreadCount: notifications.length,
+        markAsRead,
+        unreadCount,
       }}
     >
       {children}

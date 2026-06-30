@@ -3,10 +3,7 @@ import {
   MessageCircle,
   X,
   Send,
-  User,
-  Circle,
   Users,
-  Search,
   Phone,
   PhoneOff,
   Mic,
@@ -25,14 +22,14 @@ interface Message {
   sender: string;
   recipient?: string;
   type:
-    | "CHAT"
-    | "JOIN"
-    | "LEAVE"
-    | "CALL_OFFER"
-    | "CALL_ANSWER"
-    | "ICE_CANDIDATE"
-    | "CALL_REJECT"
-    | "AUDIO";
+  | "CHAT"
+  | "JOIN"
+  | "LEAVE"
+  | "CALL_OFFER"
+  | "CALL_ANSWER"
+  | "ICE_CANDIDATE"
+  | "CALL_REJECT"
+  | "AUDIO";
   sentAt?: string;
   timestamp?: Date;
 }
@@ -260,8 +257,15 @@ const Chat: React.FC = () => {
         content: JSON.stringify(offer),
       });
     } catch (err: any) {
-      toast.error("Microphone access failed");
+      console.error("Call start failed:", err);
       setIsCalling(false);
+      if (err.name === 'NotAllowedError') {
+        toast.error("Microphone access blocked. Please allow permissions in your browser settings.", { duration: 5000 });
+      } else if (err.name === 'NotFoundError') {
+        toast.error("No microphone detected. Please plug in a microphone.", { duration: 5000 });
+      } else {
+        toast.error("Microphone access failed: " + (err.message || "Unknown error"));
+      }
     }
   };
 
@@ -308,7 +312,13 @@ const Chat: React.FC = () => {
       setCallActive(true);
     } catch (err: any) {
       console.error("Failed to accept call:", err);
-      toast.error(`Accept failed: ${err.name || "Check permissions"}`);
+      if (err.name === 'NotAllowedError') {
+        toast.error("Microphone access blocked. Please allow permissions in your browser settings.", { duration: 5000 });
+      } else if (err.name === 'NotFoundError') {
+        toast.error("No microphone detected. Please plug in a microphone.", { duration: 5000 });
+      } else {
+        toast.error(`Accept failed: ${err.message || err.name || "Check permissions"}`);
+      }
       stopCall();
     }
   };
@@ -377,9 +387,15 @@ const Chat: React.FC = () => {
       timerIntervalRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Recording start failed:", err);
-      toast.error("Microphone access failed");
+      if (err.name === 'NotAllowedError') {
+        toast.error("Microphone access blocked. Please allow permissions in your browser settings.", { duration: 5000 });
+      } else if (err.name === 'NotFoundError') {
+        toast.error("No microphone detected. Please plug in a microphone.", { duration: 5000 });
+      } else {
+        toast.error("Microphone access failed: " + (err.message || "Unknown error"));
+      }
     }
   };
 
@@ -454,7 +470,7 @@ const Chat: React.FC = () => {
           timestamp: new Date(msg.sentAt),
         })),
       );
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -759,11 +775,10 @@ const Chat: React.FC = () => {
                 type="button"
                 onClick={isRecording ? stopRecording : startRecording}
                 title={isRecording ? "Stop & Send" : "Record Voice Note"}
-                className={`p-3 rounded-md transition-all flex items-center justify-center ${
-                  isRecording
-                    ? "bg-red-600 text-white animate-pulse"
-                    : "bg-gray-100 hover:bg-blue-100 text-gray-500 hover:text-blue-600"
-                }`}
+                className={`p-3 rounded-md transition-all flex items-center justify-center ${isRecording
+                  ? "bg-red-600 text-white animate-pulse"
+                  : "bg-gray-100 hover:bg-blue-100 text-gray-500 hover:text-blue-600"
+                  }`}
               >
                 {isRecording ? <MicOff size={24} /> : <Mic size={24} />}
               </button>

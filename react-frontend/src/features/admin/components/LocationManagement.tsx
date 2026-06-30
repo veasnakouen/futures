@@ -87,13 +87,13 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
           <div className="flex flex-col gap-2 mb-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
             <input
               autoFocus
-              className="px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Name (En)..."
             />
             <input
-              className="px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={postcodeValue}
               onChange={(e) => setPostcodeValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSaveAdd()}
@@ -120,13 +120,13 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
                 <div className="flex flex-col gap-2 flex-1 p-2 bg-gray-50 dark:bg-gray-800/80 rounded border border-gray-200 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
                   <input
                     autoFocus
-                    className="px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="Name (En)..."
                   />
                   <input
-                    className="px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={postcodeValue}
                     onChange={(e) => setPostcodeValue(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSaveEdit(item.id)}

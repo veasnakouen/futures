@@ -44,6 +44,7 @@ public class LocationController {
         return provinceRepository.findById(id).map(province -> {
             province.setNameEn(provinceDetails.getNameEn());
             province.setNameKh(provinceDetails.getNameKh());
+            province.setPostcode(provinceDetails.getPostcode());
             return provinceRepository.save(province);
         }).orElseThrow();
     }
@@ -70,6 +71,7 @@ public class LocationController {
             district.setNameEn(districtDetails.getNameEn());
             district.setNameKh(districtDetails.getNameKh());
             district.setProvinceId(districtDetails.getProvinceId());
+            district.setPostcode(districtDetails.getPostcode());
             return districtRepository.save(district);
         }).orElseThrow();
     }
@@ -96,6 +98,7 @@ public class LocationController {
             commune.setNameEn(communeDetails.getNameEn());
             commune.setNameKh(communeDetails.getNameKh());
             commune.setDistrictId(communeDetails.getDistrictId());
+            commune.setPostcode(communeDetails.getPostcode());
             return communeRepository.save(commune);
         }).orElseThrow();
     }
@@ -122,6 +125,7 @@ public class LocationController {
             village.setNameEn(villageDetails.getNameEn());
             village.setNameKh(villageDetails.getNameKh());
             village.setCommuneId(villageDetails.getCommuneId());
+            village.setPostcode(villageDetails.getPostcode());
             return villageRepository.save(village);
         }).orElseThrow();
     }
