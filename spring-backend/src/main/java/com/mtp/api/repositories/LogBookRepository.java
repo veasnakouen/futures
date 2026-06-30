@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LogBookRepository extends JpaRepository<LogBook, Integer> {
-    Page<LogBook> findByNoteContainingOrPhoneContaining(String note, String phone, Pageable pageable);
+    Page<LogBook> findByNoteContainingIgnoreCaseOrPhoneContainingIgnoreCase(String note, String phone, Pageable pageable);
 }

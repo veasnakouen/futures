@@ -1,0 +1,105 @@
+server:
+  port: 8080
+  address: 0.0.0.0
+  max-http-request-header-size: 8388608
+  netty:
+    max-initial-line-length: 8388608
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  application:
+    name: mtp-api-gateway
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 15s
+      default-filters:
+        - name: RequestSize
+          args:
+            maxSize: 50000000
+        - name: Retry
+          args:
+            retries: 3
+            methods: GET
+            backoff:
+              firstBackoff: 100ms
+              maxBackoff: 1000ms
+        - name: CircuitBreaker
+          args:
+            name: backendCircuitBreaker
+            fallbackUri: forward:/fallback
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: 
+              - "http://localhost:3000"
+              - "http://127.0.0.1:3000"
+              - "http://localhost:8080"
+              - "http://127.0.0.1:8080"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+      routes:
+        - id: stock-service
+          uri: lb://mtp-stock-service
+          predicates:
+            - Path=/api/stock/**
+        - id: auth-service
+          uri: lb://mtp-auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: report-builder-service
+          uri: lb://mtp-report-service
+          predicates:
+            - Path=/api/report-builder/**, /api/custom-reports/**
+        - id: school-service
+          uri: lb://mtp-school-service
+          predicates:
+            - Path=/api/school/**
+        - id: clinic-service
+          uri: lb://mtp-clinic-service
+          predicates:
+            - Path=/api/clinic/**
+        - id: hotel-service
+          uri: lb://mtp-hotel-service
+          predicates:
+            - Path=/api/hotel/**
+        - id: future-service
+          uri: lb://mtp-future-service
+          predicates:
+            - Path=/api/future/**
+        - id: pos-service
+          uri: lb://mtp-pos-service
+          predicates:
+            - Path=/api/pos/**
+        - id: hr-service
+          uri: lb://mtp-hr-service
+          predicates:
+            - Path=/api/**, /ws/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      backendCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+  timelimiter:
+    instances:
+      backendCircuitBreaker:
+        timeoutDuration: 15s

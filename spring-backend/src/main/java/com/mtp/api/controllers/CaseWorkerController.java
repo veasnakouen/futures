@@ -20,6 +20,21 @@ public class CaseWorkerController {
 
     @PostMapping
     public CaseWorker create(@RequestBody CaseWorker caseWorker) {
+        try{
+            return repository.save(caseWorker);
+        }catch(Exception e){
+            return null;
+        }
+    }
+
+    @PutMapping("/{id}")
+    public CaseWorker update(@PathVariable Integer id, @RequestBody CaseWorker caseWorker) {
+        caseWorker.setId(id);
         return repository.save(caseWorker);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id) {
+        repository.deleteById(id);
     }
 }

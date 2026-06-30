@@ -1,6 +1,7 @@
 package com.mtp.api.controllers;
 
 import com.mtp.api.models.ChatMessage;
+import com.mtp.api.models.LocationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,8 @@ public class ChatController {
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
         // Save to database only if it's a CHAT or AUDIO type message
-        if (chatMessage.getType() == ChatMessage.MessageType.CHAT || 
-            chatMessage.getType() == ChatMessage.MessageType.AUDIO) {
+        if (chatMessage.getType() == ChatMessage.MessageType.CHAT ||
+                chatMessage.getType() == ChatMessage.MessageType.AUDIO) {
             chatMessageRepository.save(chatMessage);
         }
         return chatMessage;
@@ -46,8 +47,8 @@ public class ChatController {
     @MessageMapping("/chat.privateMessage")
     public void sendPrivateMessage(@Payload ChatMessage chatMessage) {
         // Save to database ONLY if it's a regular CHAT or AUDIO message
-        if (chatMessage.getType() == ChatMessage.MessageType.CHAT || 
-            chatMessage.getType() == ChatMessage.MessageType.AUDIO) {
+        if (chatMessage.getType() == ChatMessage.MessageType.CHAT ||
+                chatMessage.getType() == ChatMessage.MessageType.AUDIO) {
             chatMessageRepository.save(chatMessage);
         }
 
@@ -56,10 +57,10 @@ public class ChatController {
             messagingTemplate.convertAndSendToUser(
                     chatMessage.getRecipient(),
                     "/queue/messages",
-                    chatMessage
-            );
+                    chatMessage);
         } catch (Exception e) {
-            logger.error("Failed to route private/signal message to {}: {}", chatMessage.getRecipient(), e.getMessage());
+            logger.error("Failed to route private/signal message to {}: {}", chatMessage.getRecipient(),
+                    e.getMessage());
         }
     }
 
@@ -69,8 +70,19 @@ public class ChatController {
         // Add username in web socket session
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         eventListener.addUser(chatMessage.getSender());
-        return chatMessage;
+        return chatMessage;     
     }
+
+    @MessageMapping("/location.update")
+    public void updateLocation(@Payload LocationMessage location, SimpMessageHeaderAccessor headerAccessor) {
+        String username = (String) headerAccessor.getSessionAttributes().get("username");
+        if (username != null) {
+            eventListener.updateLocation(username, location);
+        } else if (location.getUsername() != null) {
+            eventListener.updateLocation(location.getUsername(), location);
+        }
+    }
+
     @PostMapping("/api/chat/upload-voice")
     @ResponseBody
     public Map<String, String> uploadVoice(@RequestParam("file") MultipartFile file) throws IOException {

@@ -10,12 +10,14 @@ import java.util.Optional;
 
 public interface JobService {
     // Employers
-    Page<EmployerDto> getAllEmployers(Pageable pageable);
+    Page<EmployerDto> getAllEmployers(Pageable pageable, String search);
     EmployerDto saveEmployer(EmployerDto dto);
     void deleteEmployer(Integer id);
     
     // Vacancies
-    Page<VacancyDto> getAllVacancies(Pageable pageable);
+    Page<VacancyDto> getAllVacancies(Pageable pageable, String search);
+    Page<VacancyDto> getPublicVacancies(Pageable pageable, String search);
+    VacancyDto getVacancyById(Integer id);
     VacancyDto saveVacancy(VacancyDto dto);
     void deleteVacancy(Integer id);
     

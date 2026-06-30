@@ -7,6 +7,8 @@ import java.util.List;
 
 @Repository
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Integer> {
-    List<LeaveRequest> findByEmployeeId(Integer employeeId);
+    List<LeaveRequest> findByEmployeeIdOrderByCreatedAtDesc(Integer employeeId);
+    List<LeaveRequest> findByManagerIdAndStatusOrderByCreatedAtDesc(Integer managerId, String status);
+    List<LeaveRequest> findByChairmanIdAndStatusOrderByCreatedAtDesc(Integer chairmanId, String status);
     List<LeaveRequest> findByStatus(String status);
 }

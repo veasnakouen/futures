@@ -42,7 +42,10 @@ public class SecurityDataSeeder implements CommandLineRunner {
         Role userRole = createRoleIfNotFound("USER", Set.of(userRead));
 
         // 3. Ensure a SuperAdmin user exists
-        User sa = userRepository.findByUserName("superadmin").orElseGet(() -> {
+        User sa = userRepository.findAll().stream()
+            .filter(u -> "superadmin".equals(u.getUserName()))
+            .findFirst()
+            .orElseGet(() -> {
             User newUser = new User();
             newUser.setUserName("superadmin");
             newUser.setFirstName("Super");
@@ -61,7 +64,10 @@ public class SecurityDataSeeder implements CommandLineRunner {
         System.out.println("SuperAdmin user verified/updated: superadmin");
 
         // 4. Ensure an Admin user exists
-        User admin = userRepository.findByUserName("admin").orElseGet(() -> {
+        User admin = userRepository.findAll().stream()
+            .filter(u -> "admin".equals(u.getUserName()))
+            .findFirst()
+            .orElseGet(() -> {
             User newUser = new User();
             newUser.setUserName("admin");
             newUser.setFirstName("System");
@@ -90,12 +96,13 @@ public class SecurityDataSeeder implements CommandLineRunner {
     }
 
     private Role createRoleIfNotFound(String name, Set<Permission> permissions) {
-        return roleRepository.findByName(name).orElseGet(() -> {
-            Role r = new Role();
-            r.setName(name);
-            r.setNormalizedName(name.toUpperCase());
-            r.setPermissions(permissions);
-            return roleRepository.save(r);
+        Role r = roleRepository.findByName(name).orElseGet(() -> {
+            Role newRole = new Role();
+            newRole.setName(name);
+            newRole.setNormalizedName(name.toUpperCase());
+            return newRole;
         });
+        r.setPermissions(permissions);
+        return roleRepository.save(r);
     }
 }

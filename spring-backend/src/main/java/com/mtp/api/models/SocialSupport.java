@@ -49,4 +49,21 @@ public class SocialSupport {
     @Size(max = 255)
     @Column(name = "PersonalProblem")
     private String personalProblemDetail;
+
+    @Column(name = "LegalProblembool")
+    private boolean legalProblem;
+
+    @Size(max = 255)
+    @Column(name = "LegalProblem")
+    private String legalProblemDetail;
+
+    @Column(name = "OtherProblembool")
+    private boolean otherProblem;
+
+    @Size(max = 255)
+    @Column(name = "OtherProblem")
+    private String otherProblemDetail;
+
+    @Column(name = "Description")
+    private String description;
 }

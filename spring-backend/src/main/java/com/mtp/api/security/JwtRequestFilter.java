@@ -23,6 +23,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private com.mtp.api.services.LoginHistoryService loginHistoryService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -42,6 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 System.out.println("JWT token parsing failed: " + e.getMessage());
                 logger.warn("JWT token parsing failed: " + e.getMessage());
+                loginHistoryService.recordEvent("Invalid Token / Intruder", "Suspicious", "API Access (25KB)", request);
             }
         }
 

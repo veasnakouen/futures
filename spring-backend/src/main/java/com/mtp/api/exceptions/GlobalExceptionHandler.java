@@ -106,6 +106,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleAll(Exception ex, HttpServletRequest req) {
         log.error("Unhandled exception on [{}]: {}", req.getRequestURI(), ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                body(500, "Internal Server Error", "An unexpected error occurred. Contact system administrator.", req.getRequestURI()));
+                body(500, "Internal Server Error", "Error: " + ex.getClass().getSimpleName() + " - " + ex.getMessage(), req.getRequestURI()));
     }
 }

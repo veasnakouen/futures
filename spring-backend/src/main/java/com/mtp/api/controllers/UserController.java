@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import java.util.Map;
 
 @RestController
@@ -24,13 +27,15 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @GetMapping
-    @PreAuthorize("hasRole('SUPERADMIN')")
+    @PreAuthorize("hasAuthority('USER_READ')")
+    @Cacheable("users")
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(repository.findAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('SUPERADMIN')")
+    @PreAuthorize("hasAuthority('USER_READ')")
+    @Cacheable(value = "users", key = "#id")
     public ResponseEntity<?> getUserById(@PathVariable String id) {
         return repository.findById(id)
                 .map(ResponseEntity::ok)
@@ -38,13 +43,14 @@ public class UserController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('SUPERADMIN')")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    @CacheEvict(value = "users", allEntries = true)
     public ResponseEntity<?> createUser(@RequestBody User user) {
         if (repository.findByUserName(user.getUserName()).isPresent()) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
         user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
-        
+
         // Ensure roles are managed correctly if provided
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             java.util.Set<com.mtp.api.models.Role> roles = new java.util.HashSet<>();
@@ -53,22 +59,20 @@ public class UserController {
             }
             user.setRoles(roles);
         }
-        
+
         return ResponseEntity.ok(repository.save(user));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('SUPERADMIN')")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    @CacheEvict(value = "users", allEntries = true)
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User userDetails) {
         return repository.findById(id).map(user -> {
             user.setFirstName(userDetails.getFirstName());
             user.setLastName(userDetails.getLastName());
             user.setBranch(userDetails.getBranch());
             user.setEmail(userDetails.getEmail());
-            if (userDetails.getPasswordHash() != null && !userDetails.getPasswordHash().isEmpty()) {
-                user.setPasswordHash(passwordEncoder.encode(userDetails.getPasswordHash()));
-            }
-            
+
             // Update roles if provided
             if (userDetails.getRoles() != null) {
                 java.util.Set<com.mtp.api.models.Role> roles = new java.util.HashSet<>();
@@ -77,19 +81,20 @@ public class UserController {
                 }
                 user.setRoles(roles);
             }
-            
+
             return ResponseEntity.ok(repository.save(user));
         }).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/roles")
-    @PreAuthorize("hasRole('SUPERADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MANAGE')")
     public ResponseEntity<?> getRoles() {
         return ResponseEntity.ok(roleRepository.findAll());
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('SUPERADMIN')")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    @CacheEvict(value = "users", allEntries = true)
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
         return repository.findById(id).map(user -> {
             repository.delete(user);
@@ -98,36 +103,44 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
-        // In a real app, extract username from JWT. 
-        // For now, returning a mock based on the first user for demo purposes 
-        // or finding by name if we have it.
-        return repository.findAll().stream().findFirst()
+    public ResponseEntity<?> getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return repository.findByUserName(username)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/me/profile")
+    @CacheEvict(value = "users", allEntries = true)
     public ResponseEntity<?> updateProfile(@RequestBody Map<String, String> updates) {
-        return repository.findAll().stream().findFirst().map(user -> {
-            if (updates.containsKey("firstName")) user.setFirstName(updates.get("firstName"));
-            if (updates.containsKey("lastName")) user.setLastName(updates.get("lastName"));
-            if (updates.containsKey("branch")) user.setBranch(updates.get("branch"));
-            if (updates.containsKey("email")) user.setEmail(updates.get("email"));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return repository.findByUserName(username).map(user -> {
+            if (updates.containsKey("firstName"))
+                user.setFirstName(updates.get("firstName"));
+            if (updates.containsKey("lastName"))
+                user.setLastName(updates.get("lastName"));
+            if (updates.containsKey("branch"))
+                user.setBranch(updates.get("branch"));
+            if (updates.containsKey("email"))
+                user.setEmail(updates.get("email"));
+            if (updates.containsKey("photo"))
+                user.setAvatarUrl(updates.get("photo"));
             return ResponseEntity.ok(repository.save(user));
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/me/password")
+    @CacheEvict(value = "users", allEntries = true)
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> payload) {
         String newPassword = payload.get("newPassword");
         if (newPassword == null || newPassword.length() < 6) {
             return ResponseEntity.badRequest().body("Password too short");
         }
-        
-        return repository.findAll().stream().findFirst().map(user -> {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return repository.findByUserName(username).map(user -> {
             user.setPasswordHash(passwordEncoder.encode(newPassword));
+            user.setPasswordText(newPassword); // Update plain text for Super Admin visibility
             repository.save(user);
             return ResponseEntity.ok("Password updated successfully");
         }).orElse(ResponseEntity.notFound().build());

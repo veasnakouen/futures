@@ -22,4 +22,15 @@ public class SocialsupportCaseController {
     public SocialsupportCase create(@RequestBody SocialsupportCase scase) {
         return repository.save(scase);
     }
+
+    @PutMapping("/{id}")
+    public SocialsupportCase update(@PathVariable Integer id, @RequestBody SocialsupportCase scase) {
+        scase.setId(id);
+        return repository.save(scase);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id) {
+        repository.deleteById(id);
+    }
 }

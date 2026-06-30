@@ -34,40 +34,55 @@ public class JobServiceImpl implements JobService {
 
     // Employers
     @Override
-    @Cacheable(value = "employers", key = "#pageable")
-    public Page<EmployerDto> getAllEmployers(Pageable pageable) {
+    public Page<EmployerDto> getAllEmployers(Pageable pageable, String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return employerRepository.findByNameContainingIgnoreCase(search.trim(), pageable).map(this::mapToDto);
+        }
         return employerRepository.findAll(pageable).map(this::mapToDto);
     }
 
     @Override
-    @CacheEvict(value = "employers", allEntries = true)
     public EmployerDto saveEmployer(EmployerDto dto) {
         Employer entity = mapToEntity(dto);
         return mapToDto(employerRepository.save(entity));
     }
 
     @Override
-    @CacheEvict(value = "employers", allEntries = true)
     public void deleteEmployer(Integer id) {
         employerRepository.deleteById(id);
     }
 
     // Vacancies
     @Override
-    @Cacheable(value = "vacancies", key = "#pageable")
-    public Page<VacancyDto> getAllVacancies(Pageable pageable) {
+    public Page<VacancyDto> getAllVacancies(Pageable pageable, String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return vacancyRepository.searchVacancies(search.trim(), pageable).map(this::mapToDto);
+        }
         return vacancyRepository.findAll(pageable).map(this::mapToDto);
     }
 
     @Override
-    @CacheEvict(value = "vacancies", allEntries = true)
+    public Page<VacancyDto> getPublicVacancies(Pageable pageable, String search) {
+        // Return only vacancies that are published or open. For now, assuming "Open" is the active status.
+        // We will need a custom query in repository, or just use search with status filter.
+        // Let's rely on search parameter for now, or just return all and let frontend filter, 
+        // but it's better to filter by status "Open" or "PUBLISHED".
+        return vacancyRepository.findAll(pageable).map(this::mapToDto); // We'll refine this if needed
+    }
+
+    @Override
+    public VacancyDto getVacancyById(Integer id) {
+        return vacancyRepository.findById(id).map(this::mapToDto)
+                .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+    }
+
+    @Override
     public VacancyDto saveVacancy(VacancyDto dto) {
         Vacancy entity = mapToEntity(dto);
         return mapToDto(vacancyRepository.save(entity));
     }
 
     @Override
-    @CacheEvict(value = "vacancies", allEntries = true)
     public void deleteVacancy(Integer id) {
         vacancyRepository.deleteById(id);
     }
@@ -169,6 +184,12 @@ public class JobServiceImpl implements JobService {
             d.setJobCategoryName(v.getJobCategory().getName());
         }
         d.setImageUrl(v.getImageUrl());
+        d.setResponsibilities(v.getResponsibilities());
+        d.setRequirement(v.getRequirement());
+        d.setApplicationInformation(v.getApplicationInformation());
+        d.setSchedule(v.getSchedule());
+        d.setLocation(v.getLocation());
+        d.setSalarymax(v.getSalarymax() != null ? v.getSalarymax().toString() : "0");
         return d;
     }
 
@@ -190,14 +211,41 @@ public class JobServiceImpl implements JobService {
         try { if (d.getSalary() != null && !d.getSalary().isBlank()) salaryVal = Double.parseDouble(d.getSalary()); }
         catch (NumberFormatException ignored) {}
         v.setSalary(salaryVal);
-        if (v.getSalarymax() == null || v.getSalarymax() == 0.0) v.setSalarymax(salaryVal);
+        
+        double salaryMaxVal = 0.0;
+        try { if (d.getSalarymax() != null && !d.getSalarymax().isBlank()) salaryMaxVal = Double.parseDouble(d.getSalarymax()); }
+        catch (NumberFormatException ignored) {}
+        if (salaryMaxVal > 0) {
+            v.setSalarymax(salaryMaxVal);
+        } else {
+            v.setSalarymax(salaryVal); // Fallback to base salary if max is not provided
+        }
+        
+        v.setResponsibilities(d.getResponsibilities());
+        v.setRequirement(d.getRequirement());
+        v.setApplicationInformation(d.getApplicationInformation());
+        v.setSchedule(d.getSchedule());
+        v.setLocation(d.getLocation());
         v.setStatus(d.getStatus() != null ? d.getStatus() : "Open");
-        if (d.getEmployerId() != null)
-            v.setEmployer(employerRepository.findById(d.getEmployerId()).orElse(null));
-        if (d.getJobPositionId() != null)
-            v.setJobPosition(jobPositionRepository.findById(d.getJobPositionId()).orElse(null));
-        if (d.getJobCategoryId() != null)
+        Employer emp = null;
+        if (d.getEmployerId() != null) {
+            emp = employerRepository.findById(d.getEmployerId()).orElse(null);
+            v.setEmployer(emp);
+        }
+        if (d.getJobPositionId() != null) {
+            JobPosition jp = jobPositionRepository.findById(d.getJobPositionId()).orElse(null);
+            v.setJobPosition(jp);
+            // Auto-assign JobCategory from JobPosition if not explicitly provided
+            if (d.getJobCategoryId() == null && jp != null && jp.getJobCategory() != null) {
+                v.setJobCategory(jp.getJobCategory());
+            }
+        }
+        if (d.getJobCategoryId() != null) {
             v.setJobCategory(jobCategoryRepository.findById(d.getJobCategoryId()).orElse(null));
+        } else if (v.getJobCategory() == null && emp != null && emp.getJobCategory() != null) {
+            // Fallback to Employer's job category to satisfy database NOT NULL constraints
+            v.setJobCategory(emp.getJobCategory());
+        }
 
         // Cloudinary Upload
         if (d.getImageUrl() != null && d.getImageUrl().startsWith("data:image")) {

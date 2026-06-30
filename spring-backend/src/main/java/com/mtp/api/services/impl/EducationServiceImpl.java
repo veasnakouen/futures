@@ -119,6 +119,10 @@ public class EducationServiceImpl implements EducationService {
         d.setId(e.getId());
         d.setCurrentLevel(e.getLevel());
         d.setSchoolName(e.getSchoolName());
+        d.setGrade(e.getGrade());
+        d.setSubject(e.getSubject());
+        d.setYear(e.getYear());
+        d.setDescription(e.getDescription());
         // Entity doesn't have status, startDate, endDate - leave as null or handle if needed
         if (e.getClient() != null) {
             d.setClientId(e.getClient().getId());
@@ -131,7 +135,14 @@ public class EducationServiceImpl implements EducationService {
         Education e = d.getId() != null ? educationRepository.findById(d.getId()).orElse(new Education()) : new Education();
         e.setLevel(d.getCurrentLevel());
         e.setSchoolName(d.getSchoolName());
-        if (d.getClientId() != null) e.setClient(clientRepository.findById(d.getClientId()).orElse(null));
+        e.setGrade(d.getGrade());
+        e.setSubject(d.getSubject());
+        e.setYear(d.getYear());
+        e.setDescription(d.getDescription());
+        if (d.getClientId() != null) {
+            e.setClientId(d.getClientId());
+            e.setClient(clientRepository.findById(d.getClientId()).orElse(null));
+        }
         return e;
     }
 

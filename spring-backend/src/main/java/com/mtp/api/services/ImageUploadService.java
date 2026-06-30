@@ -78,4 +78,25 @@ public class ImageUploadService {
         }
         return null;
     }
+    public String uploadBase64File(String base64Data, String folder) throws IOException {
+        if (base64Data == null || !base64Data.contains(",")) return null;
+        
+        String rawBase64 = base64Data.split(",")[1];
+        byte[] bytes = java.util.Base64.getDecoder().decode(rawBase64);
+        
+        int attempt = 0;
+        while (attempt < MAX_RETRIES) {
+            try {
+                // Use resource_type = auto to handle both images and PDFs/Docs
+                Map<?, ?> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.asMap("folder", folder, "resource_type", "auto"));
+                return uploadResult.get("secure_url").toString();
+            } catch (IOException e) {
+                attempt++;
+                log.warn("Base64 file upload attempt {} failed for folder {}. Retrying...", attempt, folder);
+                if (attempt >= MAX_RETRIES) throw e;
+                try { Thread.sleep(1000L * attempt); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+            }
+        }
+        return null;
+    }
 }

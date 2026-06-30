@@ -1,0 +1,61 @@
+.next/types/validator.ts(51,39): error TS2307: Cannot find module '../../src/app/(protected)/billing/page.js' or its corresponding type declarations.
+.next/types/validator.ts(96,39): error TS2307: Cannot find module '../../src/app/(protected)/clinic/page.js' or its corresponding type declarations.
+src/features/billing/components/InvoiceList.tsx(38,29): error TS2339: Property 'patientId' does not exist on type 'InvoiceDto'.
+src/features/billing/components/InvoiceList.tsx(39,55): error TS2339: Property 'status' does not exist on type 'InvoiceDto'.
+src/features/billing/components/InvoiceList.tsx(104,95): error TS2339: Property 'patientId' does not exist on type 'InvoiceDto'.
+src/features/billing/components/InvoiceList.tsx(105,94): error TS2339: Property 'amount' does not exist on type 'InvoiceDto'.
+src/features/billing/components/InvoiceList.tsx(106,53): error TS2339: Property 'dateIssued' does not exist on type 'InvoiceDto'.
+src/features/billing/components/InvoiceList.tsx(107,53): error TS2339: Property 'dueDate' does not exist on type 'InvoiceDto'.
+src/features/billing/components/InvoiceList.tsx(110,30): error TS2339: Property 'status' does not exist on type 'InvoiceDto'.
+src/features/billing/components/InvoiceList.tsx(111,30): error TS2339: Property 'status' does not exist on type 'InvoiceDto'.
+src/features/billing/components/InvoiceList.tsx(114,31): error TS2339: Property 'status' does not exist on type 'InvoiceDto'.
+src/features/billing/components/PaymentFormModal.tsx(35,5): error TS2322: Type 'Resolver<{ amount: unknown; submitDate: string; status: string; adjudicatedAmount: unknown; }, any, { amount: number; submitDate: string; status: string; adjudicatedAmount: number; }>' is not assignable to type 'Resolver<{ amount: number; submitDate: string; status: string; adjudicatedAmount: number; }, any, { amount: number; submitDate: string; status: string; adjudicatedAmount: number; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ amount: number; submitDate: string; status: string; adjudicatedAmount: number; }>' is not assignable to type 'ResolverOptions<{ amount: unknown; submitDate: string; status: string; adjudicatedAmount: unknown; }>'.
+      Type 'unknown' is not assignable to type 'number'.
+src/features/billing/components/PaymentFormModal.tsx(68,36): error TS2345: Argument of type '(data: FormValues) => void' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ amount: number; submitDate: string; status: string; adjudicatedAmount: number; }'.
+      Type 'FieldValues' is missing the following properties from type '{ amount: number; submitDate: string; status: string; adjudicatedAmount: number; }': amount, submitDate, status, adjudicatedAmount
+src/features/billing/components/PaymentList.tsx(38,29): error TS2339: Property 'invoiceId' does not exist on type 'PaymentDto'.
+src/features/billing/components/PaymentList.tsx(39,55): error TS2339: Property 'paymentMethod' does not exist on type 'PaymentDto'.
+src/features/billing/components/PaymentList.tsx(103,95): error TS2339: Property 'invoiceId' does not exist on type 'PaymentDto'.
+src/features/billing/components/PaymentList.tsx(105,53): error TS2339: Property 'paymentDate' does not exist on type 'PaymentDto'.
+src/features/billing/components/PaymentList.tsx(106,53): error TS2339: Property 'paymentMethod' does not exist on type 'PaymentDto'.
+src/features/hotel/components/BookingFormModal.tsx(35,5): error TS2322: Type 'Resolver<{ guestId: string; roomId: string; checkInDate: string; checkOutDate: string; status: string; totalAmount: unknown; }, any, { guestId: string; roomId: string; checkInDate: string; checkOutDate: string; status: string; totalAmount: number; }>' is not assignable to type 'Resolver<{ guestId: string; roomId: string; checkInDate: string; checkOutDate: string; status: string; totalAmount: number; }, any, { guestId: string; roomId: string; checkInDate: string; checkOutDate: string; status: string; totalAmount: number; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ guestId: string; roomId: string; checkInDate: string; checkOutDate: string; status: string; totalAmount: number; }>' is not assignable to type 'ResolverOptions<{ guestId: string; roomId: string; checkInDate: string; checkOutDate: string; status: string; totalAmount: unknown; }>'.
+      Type 'unknown' is not assignable to type 'number'.
+src/features/hotel/components/BookingFormModal.tsx(66,36): error TS2345: Argument of type '(data: FormValues) => void' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ guestId: string; roomId: string; checkInDate: string; checkOutDate: string; status: string; totalAmount: number; }'.
+      Type 'FieldValues' is missing the following properties from type '{ guestId: string; roomId: string; checkInDate: string; checkOutDate: string; status: string; totalAmount: number; }': guestId, roomId, checkInDate, checkOutDate, and 2 more.
+src/features/hotel/components/GuestFormModal.tsx(49,51): error TS2345: Argument of type '{ firstName: string; lastName: string; email?: string | undefined; phoneNumber?: string | undefined; }' is not assignable to parameter of type 'Omit<GuestDto, "id">'.
+  Types of property 'email' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/features/hotel/components/GuestFormModal.tsx(50,36): error TS2345: Argument of type '{ firstName: string; lastName: string; email?: string | undefined; phoneNumber?: string | undefined; }' is not assignable to parameter of type 'Omit<GuestDto, "id">'.
+  Types of property 'email' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/features/hotel/components/GuestList.tsx(27,46): error TS2339: Property 'deleteGuest' does not exist on type '{ getBookings: (page?: number, size?: number) => Promise<AxiosResponse<any, any, {}>>; getBookingById: (id: string) => Promise<AxiosResponse<any, any, {}>>; ... 14 more ...; updateHousekeepingTask: (id: string, data: Omit<...>) => Promise<...>; }'.
+src/features/hotel/components/HousekeepingTaskFormModal.tsx(51,62): error TS2345: Argument of type '{ roomId: string; staffId: string; taskDate: string; status: string; notes?: string | undefined; }' is not assignable to parameter of type 'Omit<HousekeepingTaskDto, "id">'.
+  Types of property 'notes' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/features/hotel/components/HousekeepingTaskFormModal.tsx(52,47): error TS2345: Argument of type '{ roomId: string; staffId: string; taskDate: string; status: string; notes?: string | undefined; }' is not assignable to parameter of type 'Omit<HousekeepingTaskDto, "id">'.
+  Types of property 'notes' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/features/hotel/components/HousekeepingTaskList.tsx(28,46): error TS2551: Property 'deleteHousekeepingTask' does not exist on type '{ getBookings: (page?: number, size?: number) => Promise<AxiosResponse<any, any, {}>>; getBookingById: (id: string) => Promise<AxiosResponse<any, any, {}>>; ... 14 more ...; updateHousekeepingTask: (id: string, data: Omit<...>) => Promise<...>; }'. Did you mean 'getHousekeepingTasks'?
+src/features/hotel/components/RoomFormModal.tsx(33,5): error TS2322: Type 'Resolver<{ roomNumber: string; roomType: string; status: string; pricePerNight: unknown; }, any, { roomNumber: string; roomType: string; status: string; pricePerNight: number; }>' is not assignable to type 'Resolver<{ roomNumber: string; roomType: string; status: string; pricePerNight: number; }, any, { roomNumber: string; roomType: string; status: string; pricePerNight: number; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ roomNumber: string; roomType: string; status: string; pricePerNight: number; }>' is not assignable to type 'ResolverOptions<{ roomNumber: string; roomType: string; status: string; pricePerNight: unknown; }>'.
+      Type 'unknown' is not assignable to type 'number'.
+src/features/hotel/components/RoomFormModal.tsx(64,36): error TS2345: Argument of type '(data: FormValues) => void' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ roomNumber: string; roomType: string; status: string; pricePerNight: number; }'.
+      Type 'FieldValues' is missing the following properties from type '{ roomNumber: string; roomType: string; status: string; pricePerNight: number; }': roomNumber, roomType, status, pricePerNight
+src/features/hotel/components/RoomList.tsx(28,46): error TS2339: Property 'deleteRoom' does not exist on type '{ getBookings: (page?: number, size?: number) => Promise<AxiosResponse<any, any, {}>>; getBookingById: (id: string) => Promise<AxiosResponse<any, any, {}>>; ... 14 more ...; updateHousekeepingTask: (id: string, data: Omit<...>) => Promise<...>; }'.
+src/features/hotel/components/RoomList.tsx(39,29): error TS2339: Property 'type' does not exist on type 'RoomDto'.
+src/features/hotel/components/RoomList.tsx(106,53): error TS2339: Property 'type' does not exist on type 'RoomDto'.

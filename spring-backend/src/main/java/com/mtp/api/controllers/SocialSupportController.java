@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/social-supports")
-
+@CrossOrigin(origins = "*")
 public class SocialSupportController {
     @Autowired
     private SocialSupportRepository repository;

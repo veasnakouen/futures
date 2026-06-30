@@ -1,0 +1,20 @@
+{
+  "welcome": "សូមស្វាគមន៍ត្រឡប់មកវិញ អ្នកគ្រប់គ្រង",
+  "clients": "អតិថិជន",
+  "dashboard": "ផ្ទាំងគ្រប់គ្រង",
+  "reports": "របាយការណ៍",
+  "settings": "ការកំណត់",
+  "employers": "និយោជក",
+  "vacancies": "កន្លែងទំនេរ",
+  "open_portal": "បើកផតថល",
+  "edit_record": "កែប្រែកំណត់ត្រា",
+  "decommission": "បិទការប្រើប្រាស់",
+  "view_details": "មើលព័ត៌មានលម្អិត",
+  "update_details": "ធ្វើបច្ចុប្បន្នភាពព័ត៌មានលម្អិត",
+  "terminate": "បញ្ចប់",
+  "purge_record": "លុបកំណត់ត្រា",
+  "stock_movement": "ចលនាស្ដុក",
+  "movement": "ចលនា",
+  "audit_details": "ព័ត៌មានលម្អិតសវនកម្ម",
+  "audit_node": "សវនកម្ម"
+}

@@ -40,6 +40,9 @@ public class CaseController {
     @Autowired
     private com.mtp.api.repositories.ClientRepository clientRepository;
 
+    @Autowired
+    private com.mtp.api.repositories.CaseWorkerRepository caseWorkerRepository;
+
     @PostMapping
     public Case create(@RequestBody CaseDTO dto) {
         Case kase = new Case();
@@ -54,6 +57,9 @@ public class CaseController {
             clientRepository.findById(Integer.parseInt(dto.getClientId())).ifPresent(kase::setClient);
         }
 
+        // Assign a default Case Worker to satisfy database constraints
+        caseWorkerRepository.findAll().stream().findFirst().ifPresent(kase::setCaseWorker);
+
         return repository.save(kase);
     }
 
@@ -67,6 +73,10 @@ public class CaseController {
 
             if (dto.getClientId() != null && !dto.getClientId().isEmpty()) {
                 clientRepository.findById(Integer.parseInt(dto.getClientId())).ifPresent(kase::setClient);
+            }
+
+            if (kase.getCaseWorker() == null) {
+                caseWorkerRepository.findAll().stream().findFirst().ifPresent(kase::setCaseWorker);
             }
 
             return ResponseEntity.ok(repository.save(kase));

@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface CacheState {
   cache: Record<string, { data: any; expiry: number }>;
@@ -9,14 +9,15 @@ interface CacheState {
 
 export const useCacheStore = create<CacheState>((set, get) => ({
   cache: {},
-  
-  setCache: (key, data, ttl = 300000) => { // Default 5 mins
+
+  setCache: (key, data, ttl = 300000) => {
+    // Default 5 mins
     const expiry = Date.now() + ttl;
     set((state) => ({
-      cache: { ...state.cache, [key]: { data, expiry } }
+      cache: { ...state.cache, [key]: { data, expiry } },
     }));
   },
-  
+
   getCache: (key) => {
     const entry = get().cache[key];
     if (!entry) return null;
@@ -29,7 +30,7 @@ export const useCacheStore = create<CacheState>((set, get) => ({
     }
     return entry.data;
   },
-  
+
   clearCache: (pattern) => {
     if (!pattern) {
       set({ cache: {} });
@@ -42,5 +43,5 @@ export const useCacheStore = create<CacheState>((set, get) => ({
       });
       set({ cache: newCache });
     }
-  }
+  },
 }));

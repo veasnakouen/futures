@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -96,7 +97,7 @@ public class PlacementController {
     }
 
     @PostMapping
-    public Placement createPlacement(@RequestBody Placement placement) {
+    public Placement createPlacement(@Valid @RequestBody Placement placement) {
         Placement saved = repository.save(placement);
 
         // Update client placement flag
@@ -111,14 +112,17 @@ public class PlacementController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Placement> updatePlacement(@PathVariable Integer id, @RequestBody Placement details) {
+    public ResponseEntity<Placement> updatePlacement(@PathVariable Integer id, @Valid @RequestBody Placement details) {
         return repository.findById(id).map(p -> {
             p.setCompanyName(details.getCompanyName());
             p.setSalary(details.getSalary());
             p.setStatus(details.getStatus());
             p.setPlacementDate(details.getPlacementDate());
             p.setPlacementType(details.getPlacementType());
-            p.setCountedTime(details.getCountedTime());
+            p.setImageUrl(details.getImageUrl());
+            if (details.getCountedTime() != null) {
+                p.setCountedTime(details.getCountedTime());
+            }
             return ResponseEntity.ok(repository.save(p));
         }).orElse(ResponseEntity.notFound().build());
     }

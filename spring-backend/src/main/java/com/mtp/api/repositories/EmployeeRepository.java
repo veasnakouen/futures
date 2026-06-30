@@ -15,6 +15,16 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     Optional<Employee> findByIdNo(String idNo);
 
+    Optional<Employee> findByEmailIgnoreCase(String email);
+
+    List<Employee> findByManagerIgnoreCase(String manager);
+
+    @Query("SELECT e FROM Employee e WHERE CONCAT(e.firstNameEnglish, ' ', e.lastNameEnglish) = :fullName")
+    Optional<Employee> findByFullNameIgnoreCase(@Param("fullName") String fullName);
+
+    @Query("SELECT COALESCE(MAX(e.id), 0) FROM Employee e")
+    Integer findMaxId();
+
     /**
      * Lightweight projection query for the employee list view.
      *
@@ -37,8 +47,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
             "e.status as status, " +
             "e.contractType as contractType, " +
             "e.joinDate as joinDate, " +
-            "e.department as department, " +
-            "e.position as position, " +
+            "e.department.name as departmentName, " +
+            "e.position.name as positionName, " +
             "e.basicSalary as basicSalary, " +
             "e.bankName as bankName, " +
             "e.bankAccountNumber as bankAccountNumber, " +
@@ -64,7 +74,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
             "e.identityCardNumber as identityCardNumber, " +
             "e.identityCardType as identityCardType, " +
             "e.note as note, " +
-            "e.photo as photo " +
+            "e.photo as photo, " +
+            "e.biometricStatus as biometricStatus, " +
+            "e.biometricId as biometricId " +
             "FROM Employee e " +
             "WHERE (:search IS NULL OR e.firstNameEnglish LIKE %:search% OR e.lastNameEnglish LIKE %:search% OR e.idNo LIKE %:search%) " +
             "AND (:dept IS NULL OR :dept = '' OR e.department.name = :dept) " +
@@ -100,9 +112,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
         java.time.LocalDate getJoinDate();
 
-        Object getDepartment(); // returns the Department entity
+        String getDepartmentName();
 
-        Object getPosition(); // returns the Position entity
+        String getPositionName();
 
         Double getBasicSalary();
 
@@ -135,5 +147,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
         String getIdentityCardNumber();
         String getIdentityCardType();
         String getNote();
+        String getBiometricStatus();
+        String getBiometricId();
     }
 }

@@ -1,6 +1,7 @@
 package com.mtp.api.config;
 
 import com.mtp.api.models.ChatMessage;
+import com.mtp.api.models.LocationMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,6 +23,9 @@ public class WebSocketEventListener {
 
     // Track online users
     private static final Set<String> onlineUsers = ConcurrentHashMap.newKeySet();
+    
+    // Track online locations
+    private static final Map<String, LocationMessage> onlineLocations = new ConcurrentHashMap<>();
 
     @Autowired
     public WebSocketEventListener(SimpMessageSendingOperations messagingTemplate) {
@@ -53,6 +58,7 @@ public class WebSocketEventListener {
         if (username != null) {
             log.info("User Disconnected: " + username);
             onlineUsers.remove(username);
+            onlineLocations.remove(username); // Clean up location on disconnect
 
             ChatMessage chatMessage = ChatMessage.builder()
                     .type(ChatMessage.MessageType.LEAVE)
@@ -61,6 +67,7 @@ public class WebSocketEventListener {
 
             messagingTemplate.convertAndSend("/topic/public", chatMessage);
             broadcastOnlineUsers();
+            broadcastOnlineLocations();
         }
     }
 
@@ -69,11 +76,25 @@ public class WebSocketEventListener {
         broadcastOnlineUsers();
     }
 
+    public void updateLocation(String username, LocationMessage location) {
+        location.setUsername(username);
+        onlineLocations.put(username, location);
+        broadcastOnlineLocations();
+    }
+
     private void broadcastOnlineUsers() {
         messagingTemplate.convertAndSend("/topic/onlineUsers", onlineUsers);
+    }
+    
+    private void broadcastOnlineLocations() {
+        messagingTemplate.convertAndSend("/topic/locations", onlineLocations);
     }
 
     public static Set<String> getOnlineUsers() {
         return onlineUsers;
+    }
+    
+    public static Map<String, LocationMessage> getOnlineLocations() {
+        return onlineLocations;
     }
 }

@@ -1,0 +1,12 @@
+src/features/school/components/CourseList.tsx(189,9): error TS2322: Type '{ isOpen: boolean; onClose: () => void; onConfirm: () => void; title: string; message: string; confirmText: string; type: "danger"; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ConfirmModalProps'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ConfirmModalProps'.
+src/features/school/components/EnrollmentList.tsx(195,9): error TS2322: Type '{ isOpen: boolean; onClose: () => void; onConfirm: () => void; title: string; message: string; confirmText: string; type: "danger"; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ConfirmModalProps'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ConfirmModalProps'.
+src/features/school/components/ExtracurricularList.tsx(178,9): error TS2322: Type '{ isOpen: boolean; onClose: () => void; onConfirm: () => void; title: string; message: string; confirmText: string; type: "danger"; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ConfirmModalProps'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ConfirmModalProps'.
+src/features/school/components/ParentList.tsx(180,9): error TS2322: Type '{ isOpen: boolean; onClose: () => void; onConfirm: () => void; title: string; message: string; confirmText: string; type: "danger"; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ConfirmModalProps'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ConfirmModalProps'.
+src/features/school/components/StudentList.tsx(192,9): error TS2322: Type '{ isOpen: boolean; onClose: () => void; onConfirm: () => void; title: string; message: string; confirmText: string; type: "danger"; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ConfirmModalProps'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ConfirmModalProps'.
+src/features/school/components/TeacherList.tsx(189,9): error TS2322: Type '{ isOpen: boolean; onClose: () => void; onConfirm: () => void; title: string; message: string; confirmText: string; type: "danger"; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ConfirmModalProps'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ConfirmModalProps'.

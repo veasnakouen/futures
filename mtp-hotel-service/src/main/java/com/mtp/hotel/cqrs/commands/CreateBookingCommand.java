@@ -1,0 +1,16 @@
+package com.mtp.hotel.cqrs.commands;
+
+import jakarta.validation.constraints.*;
+import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Data
+public class CreateBookingCommand {
+    @NotNull(message = "Guest ID is required") private Integer guestId;
+    @NotNull(message = "Room ID is required") private Integer roomId;
+    @NotNull(message = "Check in date is required") private LocalDate checkInDate;
+    @NotNull(message = "Check out date is required") private LocalDate checkOutDate;
+    private BigDecimal totalPrice;
+    private String status = "CONFIRMED";
+}

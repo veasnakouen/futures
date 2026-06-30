@@ -9,7 +9,11 @@ import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Employers")
+@Table(name = "Employers", indexes = {
+    @Index(name = "idx_employer_name", columnList = "name"),
+    @Index(name = "idx_employer_status", columnList = "status"),
+    @Index(name = "idx_employer_category", columnList = "JobCategoryId")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

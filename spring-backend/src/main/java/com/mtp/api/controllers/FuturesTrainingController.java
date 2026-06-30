@@ -22,5 +22,10 @@ public class FuturesTrainingController {
     public FuturesTrainingDto create(@RequestBody FuturesTrainingDto training) {
         return educationService.saveTraining(training);
     }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id) {
+        educationService.deleteTraining(id);
+    }
 }
 

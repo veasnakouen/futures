@@ -21,6 +21,11 @@ public class PayrollController {
     @Autowired
     private PayrollRecordRepository payrollRecordRepository;
 
+    @GetMapping
+    public List<PayrollRecord> getAll() {
+        return payrollRecordRepository.findAll();
+    }
+
     @PostMapping("/process")
     public ResponseEntity<?> processPayroll() {
         List<Employee> employees = employeeRepository.findAll();

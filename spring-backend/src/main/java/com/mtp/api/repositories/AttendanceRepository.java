@@ -11,4 +11,6 @@ import java.time.LocalDateTime;
 public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
     List<Attendance> findByEmployeeId(Integer employeeId);
     Optional<Attendance> findTopByEmployeeIdAndClockOutIsNullOrderByClockInDesc(Integer employeeId);
+    List<Attendance> findByClockOutIsNull();
+    List<Attendance> findByClockInBetween(LocalDateTime start, LocalDateTime end);
 }
