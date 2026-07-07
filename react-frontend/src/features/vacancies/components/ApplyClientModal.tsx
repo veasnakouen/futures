@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  ModalBody,
-  Button,
-  Label,
-  TextInput,
-  Select,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Button, Label, TextInput, Select} from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import { format } from "date-fns";
 import CustomModalHeader from "@/components/common/CustomModalHeader";
@@ -98,7 +91,7 @@ const ApplyClientModal: React.FC<ApplyClientModalProps> = ({
               />
             </div>
 
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800 flex items-start gap-3">
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border-blue-100 dark:border-blue-800 flex items-start gap-3">
               <div className="p-2 bg-white dark:bg-gray-800 rounded-md shadow-sm text-blue-600">
                 <UserPlus size={18} />
               </div>

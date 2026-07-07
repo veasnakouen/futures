@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Select, Label, TextInput } from "@/lib/flowbite-compat";
+import {Button, Select, Label, TextInput} from "@/lib/flowbite-compat";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
 import api from "../../../../services/api";
 import DataSourceManagerModal from "./DataSourceManagerModal";
@@ -291,14 +291,14 @@ export default function ReportDesigner({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+      <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-bold mb-4 text-gray-800">Report Designer</h2>
 
         {error && <div className="text-red-500 mb-4 p-3 bg-red-50 rounded">{error}</div>}
 
         {/* Load Saved Report */}
         {savedReports.length > 0 && (
-          <div className="mb-6 bg-blue-50 p-4 rounded border border-blue-100">
+          <div className="mb-6 bg-blue-50 p-4 rounded border-blue-100">
             <Label className="mb-2 block font-bold text-blue-800">📂 Load Saved Report</Label>
             <Select value={loadedReportId} onChange={handleLoadReport}>
               <option value="">-- Start from Scratch --</option>
@@ -341,7 +341,7 @@ export default function ReportDesigner({
             <Label className="mb-2 block font-bold text-gray-700">2. Select Fields</Label>
             <div className="flex flex-wrap gap-3">
               {metadata[source].map((field) => (
-                <label key={field} className="flex items-center space-x-2 cursor-pointer bg-gray-50 p-2 rounded border border-gray-200 hover:bg-gray-100">
+                <label key={field} className="flex items-center space-x-2 cursor-pointer bg-gray-50 p-2 rounded hover:bg-gray-100">
                   <input
                     type="checkbox"
                     className="rounded text-blue-600 focus:ring-blue-500"
@@ -386,7 +386,7 @@ export default function ReportDesigner({
         {source && (
           <div className="mb-6">
             <Label className="mb-2 block font-bold text-gray-700">4. Grouping & Aggregations (Optional)</Label>
-            <div className="flex flex-col gap-4 bg-gray-50 p-4 rounded border border-gray-200">
+            <div className="flex flex-col gap-4 bg-gray-50 p-4 rounded">
               <div>
                 <Label className="block mb-1 text-sm font-semibold">Group By Field</Label>
                 <Select sizing="sm" value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
@@ -432,7 +432,7 @@ export default function ReportDesigner({
               </Button>
             </div>
             {customFields.map((cf, idx) => (
-              <div key={idx} className="flex flex-wrap gap-2 mb-2 items-center bg-gray-50 p-2 rounded border border-gray-200">
+              <div key={idx} className="flex flex-wrap gap-2 mb-2 items-center bg-gray-50 p-2 rounded">
                 <TextInput
                   sizing="sm"
                   placeholder="Field Name"
@@ -467,7 +467,7 @@ export default function ReportDesigner({
         {source && (
           <div className="mb-6">
             <Label className="mb-2 block font-bold text-gray-700">5. Report Aesthetics & Branding</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded border border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded">
               <div>
                 <Label className="block mb-1 text-sm font-semibold">Report Title</Label>
                 <TextInput value={customTitle || ""} onChange={(e) => setCustomTitle && setCustomTitle(e.target.value)} placeholder="e.g. Employee Summary" />
@@ -539,7 +539,7 @@ export default function ReportDesigner({
 
       {/* Preview Section */}
       {previewData.length > 0 && (
-        <div className="bg-white p-8 rounded-lg shadow border border-gray-200 overflow-x-auto print:p-0">
+        <div className="bg-white p-8 rounded-lg shadow overflow-x-auto print:p-0">
           <div className="flex justify-end mb-4 print:hidden gap-2 border-b pb-4">
             <Button size="sm" color="success" onClick={exportCSV}>Export CSV</Button>
             <Button size="sm" color="dark" onClick={() => window.print()}>Print Report</Button>
@@ -551,27 +551,17 @@ export default function ReportDesigner({
           <div className="text-center mb-6 border-b-2 border-black pb-4 relative min-h-[100px]">
             {customLogoUrl && (
               <div
-                className={`absolute top-0 ${!customLogoLocation || customLogoLocation === "top-left"
-                  ? "left-0"
-                  : customLogoLocation === "top-right"
-                    ? "right-0"
-                    : "left-1/2 -translate-x-1/2"
-                  }`}
+                className={`absolute top-0 ${!customLogoLocation || customLogoLocation ==="top-left"?"left-0": customLogoLocation ==="top-right"?"right-0":"left-1/2 -translate-x-1/2"}`}
               >
                 <img
                   src={customLogoUrl}
                   alt="Report Logo"
-                  className={`h-16 object-contain ${customLogoShape === "circle"
-                    ? "rounded-full aspect-square object-cover"
-                    : customLogoShape === "rounded"
-                      ? "rounded-2xl"
-                      : ""
-                    }`}
+                  className={`h-16 object-contain ${customLogoShape ==="circle"?"rounded-full aspect-square object-cover": customLogoShape ==="rounded"?"rounded-2xl":"" }`}
                 />
               </div>
             )}
             <div
-              className={`flex flex-col items-center justify-center w-full ${customLogoUrl && customLogoLocation === "top-center" ? "pt-20" : "pt-4"}`}
+              className={`flex flex-col items-center justify-center w-full ${customLogoUrl && customLogoLocation ==="top-center"?"pt-20":"pt-4"}`}
             >
               <h1 className="text-2xl font-bold uppercase">
                 {customTitle || "Custom Report"}
@@ -588,7 +578,7 @@ export default function ReportDesigner({
           </div>
 
           {viewMode === "table" ? (
-            <table className="w-full text-left border-collapse border border-gray-300 text-xs mt-8">
+            <table className="w-full text-left border-collapse text-xs mt-8">
               {(() => {
                 const isGrandTotal = aggregations.length > 0 && !groupBy;
                 const aggKeys = isGrandTotal ? aggregations.map(a => `${a.field}_${a.function}`.toLowerCase()) : [];
@@ -608,7 +598,7 @@ export default function ReportDesigner({
                     <thead>
                       <tr className="bg-gray-100 uppercase">
                         {displayColumns.map((field) => (
-                          <th key={field} className="border border-gray-300 p-2">{field}</th>
+                          <th key={field} className="p-2">{field}</th>
                         ))}
                       </tr>
                     </thead>
@@ -618,7 +608,7 @@ export default function ReportDesigner({
                           {displayColumns.map((field) => (
                             <td
                               key={field}
-                              className="border border-gray-300 p-2 outline-none focus:bg-blue-50 cursor-text"
+                              className="p-2 outline-none focus:bg-blue-50 cursor-text"
                               contentEditable={true}
                               suppressContentEditableWarning={true}
                               onBlur={(e) => {
@@ -637,7 +627,7 @@ export default function ReportDesigner({
                       ))}
                     </tbody>
                     {isGrandTotal && (
-                      <tfoot className="bg-gray-200 font-bold border-t-2 border-gray-400">
+                      <tfoot className="bg-gray-200 font-bold border-t-2">
                         <tr>
                           {(() => {
                             const cells: React.ReactNode[] = [];
@@ -647,7 +637,7 @@ export default function ReportDesigner({
 
                               if (aggs.length > 0) {
                                 cells.push(
-                                  <td key={field} className="border border-gray-300 p-2">
+                                  <td key={field} className="p-2">
                                     <div className="flex flex-col gap-1">
                                       {aggs.map(agg => {
                                         const aggKey = rawKeys.find(k => k.toLowerCase() === `${agg.field}_${agg.function}`.toLowerCase());
@@ -684,7 +674,7 @@ export default function ReportDesigner({
                                   </td>
                                 );
                               } else {
-                                cells.push(<td key={field} className="border border-gray-300 p-2"></td>);
+                                cells.push(<td key={field} className="p-2"></td>);
                               }
                             }
                             return cells;
@@ -726,7 +716,7 @@ export default function ReportDesigner({
           )}
 
           {customFooterText && (
-            <div className="mt-8 text-center text-[10px] text-gray-500 font-sans border-t border-gray-300 pt-4 whitespace-pre-wrap print:mt-auto">
+            <div className="mt-8 text-center text-[10px] text-gray-500 font-sans border-t pt-4 whitespace-pre-wrap print:mt-auto">
               {customFooterText}
             </div>
           )}

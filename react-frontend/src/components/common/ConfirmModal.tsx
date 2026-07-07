@@ -1,6 +1,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
-import { Alert, Button } from '@/lib/flowbite-compat';
+import {Alert, Button} from '@/lib/flowbite-compat';
 import { Trash2, AlertTriangle, Info } from "lucide-react";
 
 interface ConfirmModalProps {
@@ -40,21 +40,21 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       {/* Centered card */}
       <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
         <div
-          className="w-full max-w-md bg-white dark:bg-gray-800 rounded-md shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700"
+          className="w-full max-w-md bg-white dark:bg-gray-800 rounded-md shadow-2xl overflow-hidden"
           style={{ animation: "popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)" }}
         >
           <div className="px-8 py-2">
-            <div className={`w-full h-14 rounded flex items-center justify-center shadow-inner ${type === "danger" ? " text-red-600 dark:text-red-400" : type === "warning" ? "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400" : "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"}`}>
+            <div className={`w-full h-14 rounded flex items-center justify-center shadow-inner ${type ==="danger"?"text-red-600 dark:text-red-400": type ==="warning"?"bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400":"bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"}`}>
               <div><Icon size={20} /></div>
               <h3 className="text-lg ps-2 text-gray-900 dark:text-gray-200">{title}</h3>
             </div>
             <p className="text-gray-500 text-center dark:text-gray-300 text-base leading-relaxed">{message}</p>
           </div>
 
-          <div className="px-8 py-5 bg-gray-50 dark:bg-gray-800/50 flex justify-between gap-3 border-t border-gray-100 dark:border-gray-700">
+          <div className="px-8 py-5 bg-gray-50 dark:bg-gray-800/50 flex justify-between gap-3 border-t">
             <button
               onClick={onClose}
-              className="px-5 py-1 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800 transition-all active:scale-95"
+              className="px-5 py-1 text-sm font-semibold text-gray-700 bg-white rounded hover:bg-gray-50 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800 transition-all active:scale-95"
             >
               Cancel
             </button>
@@ -64,12 +64,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 onConfirm();
                 if (!isLoading) onClose();
               }}
-              className={`px-5 py-2 text-sm font-semibold text-white rounded focus:ring-4 focus:outline-none transition-all active:scale-95 shadow-md flex items-center justify-center min-w-[6rem] ${type === "danger"
-                ? "bg-red-600 hover:bg-red-700 focus:ring-red-200 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 shadow-red-600/20"
-                : type === "warning"
-                  ? "bg-amber-600 hover:bg-amber-700 focus:ring-amber-200 dark:bg-amber-600 dark:hover:bg-amber-700 dark:focus:ring-amber-900 shadow-amber-600/20"
-                  : "bg-blue-600 hover:bg-blue-700 focus:ring-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900 shadow-blue-600/20"
-                }`}
+              className={`px-5 py-2 text-sm font-semibold text-white rounded focus:ring-4 focus:outline-none transition-all active:scale-95 shadow-md flex items-center justify-center min-w-[6rem] ${type ==="danger"?"bg-red-600 hover:bg-red-700 focus:ring-red-200 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 shadow-red-600/20": type ==="warning"?"bg-amber-600 hover:bg-amber-700 focus:ring-amber-200 dark:bg-amber-600 dark:hover:bg-amber-700 dark:focus:ring-amber-900 shadow-amber-600/20":"bg-blue-600 hover:bg-blue-700 focus:ring-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900 shadow-blue-600/20"}`}
             >
               {isLoading ? (
                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

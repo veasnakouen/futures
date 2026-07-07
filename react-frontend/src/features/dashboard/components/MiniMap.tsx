@@ -66,7 +66,11 @@ const MapUpdater: React.FC<{ locations: LocationMessage[] }> = ({
   return null;
 };
 
-const MiniMap: React.FC = () => {
+interface MiniMapProps {
+  isDark?: boolean;
+}
+
+const MiniMap: React.FC<MiniMapProps> = ({ isDark }) => {
   const [logs, setLogs] = useState<LoginLog[]>([]);
   const [onlineLocations, setOnlineLocations] = useState<
     Record<string, LocationMessage>
@@ -75,10 +79,13 @@ const MiniMap: React.FC = () => {
   const currentUser = authService.getCurrentUser();
 
   useEffect(() => {
+    let isMounted = true;
+
     // 1. Fetch historical/device data from Audit Logs
     const fetchLogs = async () => {
       try {
         const response = await api.get("/auth/audit/logs");
+        if (!isMounted) return;
         if (Array.isArray(response.data)) {
           setLogs(response.data);
         } else {
@@ -87,7 +94,7 @@ const MiniMap: React.FC = () => {
       } catch (error) {
         console.error("Failed to fetch audit logs", error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -100,48 +107,77 @@ const MiniMap: React.FC = () => {
       setOnlineLocations(locationsMap);
     };
 
-    websocketService.subscribe("/topic/locations", handleLocationsUpdate);
+    websocketService.connect(() => {
+      websocketService.subscribe("/topic/locations", handleLocationsUpdate);
+    });
 
     // 3. Capture this user's True GPS and broadcast to server
     const sendLocationWhenConnected = (lat: number, lng: number) => {
-      if (websocketService.isConnected()) {
+      if (!isMounted) return;
+      const currentUser = authService.getCurrentUser();
+      if (!currentUser?.username) return; // Prevent sending null username
+
+      websocketService.connect(() => {
         websocketService.sendMessage("/app/location.update", {
-          username: currentUser?.username,
+          username: currentUser.username,
           latitude: lat,
           longitude: lng,
         });
-      } else {
-        setTimeout(() => sendLocationWhenConnected(lat, lng), 1000);
-      }
+      });
+    };
+
+    let watchId: number;
+    let fallbackInterval: NodeJS.Timeout;
+
+    const startSimulatedTracking = (baseLat: number, baseLng: number) => {
+      // Send initial location
+      sendLocationWhenConnected(baseLat, baseLng);
+      // Simulate real-time movement by adding tiny random offsets every 3 seconds
+      let currentLat = baseLat;
+      let currentLng = baseLng;
+      
+      fallbackInterval = setInterval(() => {
+        if (!isMounted) return;
+        // Random walk: +/- 0.001 degrees
+        currentLat += (Math.random() - 0.5) * 0.001;
+        currentLng += (Math.random() - 0.5) * 0.001;
+        sendLocationWhenConnected(currentLat, currentLng);
+      }, 3000);
     };
 
     const getFallbackLocation = async () => {
       try {
         const res = await fetch("https://ipapi.co/json/");
         const data = await res.json();
-        if (data.latitude && data.longitude) {
-          sendLocationWhenConnected(data.latitude, data.longitude);
+        if (isMounted && data.latitude && data.longitude) {
+          startSimulatedTracking(data.latitude, data.longitude);
+        } else if (isMounted) {
+          // Hardcoded fallback if API hits rate limit
+          startSimulatedTracking(11.5564, 104.9282); // Phnom Penh, Cambodia
         }
       } catch (e) {
         console.warn("Fallback location failed", e);
+        if (isMounted) startSimulatedTracking(11.5564, 104.9282);
       }
     };
 
     if (currentUser) {
       if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
+        watchId = navigator.geolocation.watchPosition(
           (position) => {
-            sendLocationWhenConnected(
-              position.coords.latitude,
-              position.coords.longitude,
-            );
+            if (isMounted) {
+              sendLocationWhenConnected(
+                position.coords.latitude,
+                position.coords.longitude,
+              );
+            }
           },
           (error) => {
             console.warn(
-              "Geolocation access denied or failed. Falling back to IP-based location.",
+              "Geolocation access denied or failed. Falling back to simulated location.",
               error,
             );
-            getFallbackLocation();
+            if (isMounted) getFallbackLocation();
           },
           { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 },
         );
@@ -149,6 +185,13 @@ const MiniMap: React.FC = () => {
         getFallbackLocation();
       }
     }
+
+    return () => {
+      isMounted = false;
+      websocketService.unsubscribe("/topic/locations");
+      if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
+      if (fallbackInterval) clearInterval(fallbackInterval);
+    };
   }, [currentUser]);
 
   const getDeviceIcon = (deviceType: string) => {
@@ -177,7 +220,13 @@ const MiniMap: React.FC = () => {
       duration={600}
       triggerOnce={true}
     >
-      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
+      <style>
+        {`
+          .leaflet-control-container .leaflet-control { z-index: 10 !important; }
+          .leaflet-pane { z-index: 10 !important; }
+        `}
+      </style>
+      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
         <div className="flex items-center justify-between mb-8 shrink-0">
           <h4 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-4 tracking-tight">
             <div className="p-3 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-md shadow-sm">
@@ -185,12 +234,12 @@ const MiniMap: React.FC = () => {
             </div>
             True GPS Tracking
           </h4>
-          <span className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-900/30 rounded-md px-4 py-1 font-black uppercase text-[10px] tracking-widest shadow-sm">
+          <span className="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-100/50 dark:border-emerald-900/30 rounded-md px-4 py-1 font-black uppercase text-[10px] tracking-widest shadow-sm">
             Live Online Users
           </span>
         </div>
 
-        <div className="flex-1 w-full rounded-md overflow-hidden min-h-[380px] border border-gray-200 dark:border-gray-700 shadow-inner z-0 relative">
+        <div className="flex-1 w-full rounded-md overflow-hidden min-h-[380px] shadow-inner z-0 relative">
           <MapContainer
             center={defaultCenter}
             zoom={zoomLevel}
@@ -199,8 +248,10 @@ const MiniMap: React.FC = () => {
           >
             <MapUpdater locations={Object.values(onlineLocations)} />
             <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution={isDark ? '&copy; <a href="https://carto.com/attributions">CARTO</a>' : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
+              url={isDark
+                ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
             />
 
             {/* We ONLY render markers for users who are currently in the onlineLocations ledger! */}

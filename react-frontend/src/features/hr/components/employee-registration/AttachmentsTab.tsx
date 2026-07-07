@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Modal, ModalBody, ModalHeader, Spinner } from '@/lib/flowbite-compat';
+import {Button, Modal, ModalBody, ModalHeader, Spinner} from '@/lib/flowbite-compat';
 import {
   Eye,
   Download,
@@ -64,9 +64,9 @@ const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
     if (url) {
       return (
         <div
-          className={`flex flex-col items-center justify-center py-6 px-4 rounded-xl border border-green-500 dark:border-green-500 bg-green-50/10 dark:bg-[#252b3b] relative group transition-all duration-300`}
+          className={`flex flex-col items-center justify-center py-6 px-4 rounded-xl border-green-500 dark:border-green-500 bg-green-50/10 dark:bg-[#252b3b] relative group transition-all duration-300`}
         >
-          <div className="flex items-center gap-1 absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-gray-800 p-1 rounded-lg shadow-md border dark:border-gray-700">
+          <div className="flex items-center gap-1 absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-gray-800 p-1 rounded-lg shadow-md">
             <button
               type="button"
               onClick={(e) => {
@@ -150,7 +150,7 @@ const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
         />
         <label
           htmlFor={`upload-${id}`}
-          className={`flex flex-col items-center justify-center py-8 px-4 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#252b3b] hover:bg-gray-50 dark:hover:bg-[#2d3345] transition-colors cursor-pointer group`}
+          className={`flex flex-col items-center justify-center py-8 px-4 rounded-xl  bg-white dark:bg-[#252b3b] hover:bg-gray-50 dark:hover:bg-[#2d3345] transition-colors cursor-pointer group`}
         >
           <div
             className={`p-4 rounded-xl mb-4 transition-colors bg-gray-100 dark:bg-[#2d3345] group-hover:bg-gray-200 dark:group-hover:bg-[#363d52] text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400`}

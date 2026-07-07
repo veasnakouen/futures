@@ -23,22 +23,7 @@ import {
   List,
   X,
 } from "lucide-react";
-import {
-  Card,
-  Button,
-  Badge,
-  Avatar,
-  Select,
-  TextInput,
-  Checkbox,
-  Label,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Avatar, Select, TextInput, Checkbox, Label, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell} from '@/lib/flowbite-compat';
 import {
   AreaChart,
   Area,
@@ -78,6 +63,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
   const [unmappedOnly, setUnmappedOnly] = useState(false);
   const [isHolidayModalOpen, setIsHolidayModalOpen] = React.useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [itemsPerRow, setItemsPerRow] = useState("4");
 
   // Real-time Analytics Calculations
   const onPremisesCount = React.useMemo(() => {
@@ -95,16 +81,12 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
     <div className="space-y-8 animate-fade-in">
       {/* Premium Sub-Navigation Tabs */}
       <div className="flex justify-center">
-        <div className="bg-gray-100/80 dark:bg-gray-900/60 p-1.5 rounded-md flex items-center gap-1.5 border border-gray-200/50 dark:border-gray-800/50 shadow-inner w-full sm:w-max overflow-x-auto whitespace-nowrap no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-nowrap shrink-0">
+        <div className="bg-gray-100/80 dark:bg-gray-900/60 p-1.5 rounded-md flex items-center gap-1.5 /50 shadow-inner w-full sm:w-max overflow-x-auto whitespace-nowrap no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-nowrap shrink-0">
           {(["MATRIX", "SCHEDULE", "REPORTS"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setSubTab(tab)}
-              className={`shrink-0 px-8 py-2.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${
-                subTab === tab
-                  ? "bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100"
-                  : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 scale-95 hover:scale-100"
-              }`}
+              className={`shrink-0 px-8 py-2.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${subTab === tab ?"bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 scale-95 hover:scale-100"}`}
             >
               {tab}
             </button>
@@ -246,7 +228,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
           </div>
 
           <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white">
-            <div className="p-8 border-b dark:border-gray-700 space-y-6 bg-gray-50/50 dark:bg-gray-700/20">
+            <div className="p-8 border-b space-y-6 bg-gray-50/50 dark:bg-gray-700/20">
               <div className="flex justify-between items-center">
                 <h4 className="font-black text-xl dark:text-white">
                   Attendance Matrix
@@ -269,19 +251,34 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                       Absent
                     </Badge>
                   </div>
-                  <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
-                    <button
-                      onClick={() => setViewMode("grid")}
-                      className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
-                    >
-                      <LayoutGrid size={18} />
-                    </button>
-                    <button
-                      onClick={() => setViewMode("list")}
-                      className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
-                    >
-                      <List size={18} />
-                    </button>
+                  <div className="flex items-center gap-3">
+                    {viewMode === "grid" && (
+                      <div className="flex-shrink-0">
+                        <select
+                          className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                          value={itemsPerRow}
+                          onChange={(e) => setItemsPerRow(e.target.value)}
+                        >
+                          <option value="3">3 per row</option>
+                          <option value="4">4 per row</option>
+                          <option value="5">5 per row</option>
+                        </select>
+                      </div>
+                    )}
+                    <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
+                      <button
+                        onClick={() => setViewMode("grid")}
+                        className={`p-1.5 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                      >
+                        <LayoutGrid size={16} />
+                      </button>
+                      <button
+                        onClick={() => setViewMode("list")}
+                        className={`p-1.5 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                      >
+                        <List size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -294,7 +291,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                   <input
                     type="text"
                     placeholder="Search personnel or ID..."
-                    className="w-full h-10 pl-10 pr-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-xs font-semibold shadow-sm"
+                    className="w-full h-10 pl-10 pr-8 bg-white dark:bg-gray-800 rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-xs font-semibold shadow-sm"
                     value={matrixSearch}
                     onChange={(e) => setMatrixSearch(e.target.value)}
                   />
@@ -309,7 +306,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                   )}
                 </div>
                 <div className="flex gap-4 items-center h-10">
-                  <div className="flex items-center gap-2 px-3 h-full bg-gray-50 dark:bg-gray-700/30 rounded-md border dark:border-gray-600">
+                  <div className="flex items-center gap-2 px-3 h-full bg-gray-50 dark:bg-gray-700/30 rounded-md">
                     <Checkbox
                       id="unmapped-only"
                       checked={unmappedOnly}
@@ -418,7 +415,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                   </TableBody>
                 </Table>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-6 bg-gray-50/30 dark:bg-gray-900/10">
+                <div className={`grid gap-4 p-6 bg-gray-50/30 dark:bg-gray-900/10 ${itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
                   {(globalAttendance || [])
                     .filter((log) => {
                       const fullName = log.employee
@@ -437,7 +434,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                     .map((log, i) => (
                       <div
                         key={i}
-                        className="border-none shadow-sm hover:shadow-lg transition-all dark:bg-gray-800 p-0 overflow-hidden rounded-md border border-gray-100 dark:border-gray-700/50 bg-white"
+                        className="border-none shadow-sm hover:shadow-lg transition-all dark:bg-gray-800 p-0 overflow-hidden rounded-md bg-white"
                       >
                         <div className="p-4 space-y-4">
                           <div className="flex justify-between items-start">
@@ -476,7 +473,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                               {log.location}
                             </div>
                           </div>
-                          <div className="pt-2 border-t dark:border-gray-700 flex items-center gap-2 text-emerald-500">
+                          <div className="pt-2 border-t flex items-center gap-2 text-emerald-500">
                             <Zap size={10} fill="currentColor" />
                             <span className="text-[8px] font-black uppercase tracking-widest">
                               Biometric Verified
@@ -524,7 +521,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
             ].map((shift, i) => (
               <div
                 key={i}
-                className={`p-6 bg-white rounded-md dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all group`}
+                className={`p-6 bg-white rounded-md dark:bg-gray-800  shadow-sm hover:shadow-lg transition-all group`}
               >
                 <div className="flex justify-between items-start">
                   <div
@@ -545,7 +542,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">
                   {shift.time}
                 </p>
-                <div className="mt-4 pt-4 border-t dark:border-gray-700 flex justify-between items-center">
+                <div className="mt-4 pt-4 border-t flex justify-between items-center">
                   <span className="text-[10px] font-black text-gray-400 uppercase">
                     Personnel
                   </span>
@@ -591,7 +588,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                           {[1, 2, 3].map((id) => (
                             <div
                               key={id}
-                              className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-900/40 border border-white dark:border-gray-800 -ml-2 first:ml-0 flex items-center justify-center text-[8px] font-black text-blue-600"
+                              className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-900/40 border-white -ml-2 first:ml-0 flex items-center justify-center text-[8px] font-black text-blue-600"
                             >
                               {id}
                             </div>
@@ -684,7 +681,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
         <div className="space-y-8 animate-fade-in pb-12">
           {/* KPI Row */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-8 bg-white dark:bg-gray-800 rounded-md shadow-sm border dark:border-gray-700">
+            <div className="p-8 bg-white dark:bg-gray-800 rounded-md shadow-sm">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                 Overall Punctuality
               </p>
@@ -696,7 +693,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 </span>
               </div>
             </div>
-            <div className="p-8 bg-white dark:bg-gray-800 rounded-md shadow-sm border dark:border-gray-700">
+            <div className="p-8 bg-white dark:bg-gray-800 rounded-md shadow-sm">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                 Average Delay
               </p>
@@ -708,7 +705,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 </span>
               </div>
             </div>
-            <div className="p-8 bg-white dark:bg-gray-800 rounded-md shadow-sm border dark:border-gray-700">
+            <div className="p-8 bg-white dark:bg-gray-800 rounded-md shadow-sm">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
                 Unauthorized Absence
               </p>
@@ -870,7 +867,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
 
           {/* Intelligence Audit Table */}
           <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white">
-            <div className="p-8 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-700/20">
+            <div className="p-8 border-b flex justify-between items-center bg-gray-50/50 dark:bg-gray-700/20">
               <h4 className="font-black text-xs text-gray-400 uppercase tracking-widest">
                 Anomalous Attendance Audit
               </h4>
@@ -883,7 +880,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 hoverable
                 className="border-none w-full min-w-[800px] relative"
               >
-                <TableHead className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/90 dark:bg-gray-700/90 backdrop-blur-md sticky top-0 z-20 shadow-sm border-b dark:border-gray-700">
+                <TableHead className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/90 dark:bg-gray-700/90 backdrop-blur-md sticky top-0 z-20 shadow-sm border-b">
                   <TableHeadCell className="px-8 py-5">Personnel</TableHeadCell>
                   <TableHeadCell className="px-8 py-5">
                     Anomaly Type
@@ -974,9 +971,9 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                           ? format(new Date(a.clockIn), "yyyy-MM-dd HH:mm:ss")
                           : a.timestamp
                             ? format(
-                                new Date(a.timestamp),
-                                "yyyy-MM-dd HH:mm:ss",
-                              )
+                              new Date(a.timestamp),
+                              "yyyy-MM-dd HH:mm:ss",
+                            )
                             : "N/A",
                         Status: a.status,
                       })),
@@ -1007,9 +1004,9 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                           ? format(new Date(a.clockIn), "yyyy-MM-dd HH:mm:ss")
                           : a.timestamp
                             ? format(
-                                new Date(a.timestamp),
-                                "yyyy-MM-dd HH:mm:ss",
-                              )
+                              new Date(a.timestamp),
+                              "yyyy-MM-dd HH:mm:ss",
+                            )
                             : "N/A",
                         a.status,
                       ]),
@@ -1028,7 +1025,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 hoverable
                 className="border-none w-full min-w-[800px] relative"
               >
-                <TableHead className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/90 dark:bg-gray-700/90 backdrop-blur-md sticky top-0 z-20 shadow-sm border-b dark:border-gray-700">
+                <TableHead className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/90 dark:bg-gray-700/90 backdrop-blur-md sticky top-0 z-20 shadow-sm border-b">
                   <TableHeadCell className="px-8 py-5">Personnel</TableHeadCell>
                   <TableHeadCell className="px-8 py-5">Method</TableHeadCell>
                   <TableHeadCell className="px-8 py-5">
@@ -1083,14 +1080,14 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                         <TableCell className="px-8 py-6 font-bold dark:text-gray-400 text-xs">
                           {log.clockIn
                             ? format(
-                                new Date(log.clockIn),
-                                "MMM dd, yyyy • HH:mm:ss",
-                              )
+                              new Date(log.clockIn),
+                              "MMM dd, yyyy • HH:mm:ss",
+                            )
                             : log.timestamp
                               ? format(
-                                  new Date(log.timestamp),
-                                  "MMM dd, yyyy • HH:mm:ss",
-                                )
+                                new Date(log.timestamp),
+                                "MMM dd, yyyy • HH:mm:ss",
+                              )
                               : "N/A"}
                         </TableCell>
                         <TableCell className="px-8 py-6">

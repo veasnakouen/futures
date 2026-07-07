@@ -13,6 +13,20 @@ i18n
     fallbackLng: "en",
     debug: true,
     interpolation: { escapeValue: false },
+    parseMissingKeyHandler: (key) => {
+      if (!key) return "";
+      // Convert camelCase, snake_case, or dot.notation to normal readable words
+      const readable = key
+        .replace(/([A-Z])/g, " $1") // Add space before uppercase (camelCase)
+        .replace(/[_\.-]/g, " ") // Replace separators with space
+        .trim();
+      
+      // Capitalize first letter of each word
+      return readable
+        .split(/\s+/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
+    },
     resources: {
       en: {
         translation: enTranslation,

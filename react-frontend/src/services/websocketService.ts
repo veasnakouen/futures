@@ -64,6 +64,13 @@ class WebSocketService {
     this.subscriptions.set(topic, sub);
   }
 
+  unsubscribe(topic: string) {
+    if (this.subscriptions.has(topic)) {
+      this.subscriptions.get(topic).unsubscribe();
+      this.subscriptions.delete(topic);
+    }
+  }
+
   sendMessage(destination: string, body: any) {
     if (this.client && this.client.connected) {
       this.client.publish({

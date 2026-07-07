@@ -18,4 +18,6 @@ public class Dormitory {
     private String tenantId;
 
     private String name;
+
+    // private Boolean isActive = true;
 }

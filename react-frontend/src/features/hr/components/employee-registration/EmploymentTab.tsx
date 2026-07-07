@@ -1,16 +1,13 @@
 import React, { useState } from "react";
-import {
-  Label,
-  TextInput,
-  Select,
-  Textarea,
-  Button,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Label, TextInput, Select, Textarea, Button, Spinner} from '@/lib/flowbite-compat';
 import { type UseFormReturn } from "react-hook-form";
 import { type EmployeeFormData } from '../../../../schemas/employeeSchema';
 import DatePickerField from "./DatePickerField";
-import { useHRStore } from '../../../../store/hrStore';
+import { 
+  useLookups, 
+  useCreateDepartment, 
+  useCreatePosition 
+} from "../../../../hooks/useHR";
 import { Check, X, Wand2 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from '../../../../services/api';
@@ -27,12 +24,11 @@ const EmploymentTab: React.FC<EmploymentTabProps> = ({ formMethods }) => {
     setValue,
     formState: { errors },
   } = formMethods;
-  const {
-    globalPositions,
-    globalDepartments,
-    createDepartment,
-    createPosition,
-  } = useHRStore();
+  const { data: globalDepartments = [] } = useLookups("departments");
+  const { data: globalPositions = [] } = useLookups("positions");
+  
+  const { mutateAsync: createDepartment } = useCreateDepartment();
+  const { mutateAsync: createPosition } = useCreatePosition();
 
   const [generatingId, setGeneratingId] = useState(false);
 

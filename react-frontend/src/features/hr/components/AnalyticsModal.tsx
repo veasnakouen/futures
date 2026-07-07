@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Card,
-  Badge,
-  Button,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalHeader, ModalBody, Badge, Button} from '@/lib/flowbite-compat';
 import {
   TrendingUp,
   Users,
@@ -83,7 +76,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose }) => {
             ].map((kpi, i) => (
               <div
                 key={i}
-                className="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-md border dark:border-gray-700"
+                className="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-md"
               >
                 <div className="flex justify-between items-start mb-3">
                   <div className={`text-${kpi.color}-600`}>{kpi.icon}</div>
@@ -106,7 +99,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose }) => {
 
           {/* Charts Preview Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-6 border-none bg-gray-50 dark:bg-gray-700/30">
+            <div className="p-6 border-none bg-gray-50 dark:bg-gray-700/30">
               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">
                 Staff Growth Curve
               </h4>
@@ -134,9 +127,9 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose }) => {
                 <span>SEP</span>
                 <span>NOV</span>
               </div>
-            </Card>
+            </div>
 
-            <Card className="p-6 border-none bg-gray-50 dark:bg-gray-700/30">
+            <div className="p-6 border-none bg-gray-50 dark:bg-gray-700/30">
               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">
                 Department Load
               </h4>
@@ -160,7 +153,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 ))}
               </div>
-            </Card>
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

@@ -1,29 +1,5 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  TextInput,
-  Label,
-  Avatar,
-  Tooltip,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  AvatarGroup,
-  AvatarGroupCounter,
-  Spinner,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, TextInput, Label, Avatar, Tooltip, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Modal, ModalHeader, ModalBody, ModalFooter, AvatarGroup, AvatarGroupCounter, Spinner, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
 import ModernPagination from '@/components/common/ModernPagination';
 import {
   X,
@@ -94,6 +70,7 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [itemsPerRow, setItemsPerRow] = useState("4");
 
   const safePayroll = Array.isArray(globalPayroll) ? globalPayroll : [];
   const safeEmployees = Array.isArray(employees) ? employees : [];
@@ -229,16 +206,16 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="flex bg-gray-100/80 dark:bg-gray-900/60 p-1.5 rounded-md border border-gray-200/50 dark:border-gray-800/50 shadow-inner w-full sm:w-max overflow-x-auto whitespace-nowrap no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-nowrap shrink-0 gap-1.5">
+        <div className="flex bg-gray-100/80 dark:bg-gray-900/60 p-1.5 rounded-md /50 shadow-inner w-full sm:w-max overflow-x-auto whitespace-nowrap no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-nowrap shrink-0 gap-1.5">
           <button
             onClick={() => setSubView("DISBURSEMENTS")}
-            className={`shrink-0 px-8 py-2.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${subView === "DISBURSEMENTS" ? "bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
+            className={`shrink-0 px-8 py-2.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${subView ==="DISBURSEMENTS"?"bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
           >
             <CreditCard size={14} /> Disbursements
           </button>
           <button
             onClick={() => setSubView("SALARIES")}
-            className={`shrink-0 px-8 py-2.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${subView === "SALARIES" ? "bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
+            className={`shrink-0 px-8 py-2.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${subView ==="SALARIES"?"bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
           >
             <List size={14} /> Salary Matrix
           </button>
@@ -296,7 +273,7 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
         <>
           {/* Financial Command Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm flex flex-col justify-between border-l-4 border-l-emerald-500 bg-white/50 backdrop-blur-xl">
+            <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm flex flex-col justify-between border-l-4 border-l-emerald-500 bg-white/50 backdrop-blur-xl">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
                   Total Monthly Payroll
@@ -308,8 +285,8 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
               <div className="mt-4 flex items-center gap-2 text-emerald-500 font-black uppercase text-[9px] tracking-widest">
                 <TrendingUp size={14} /> Efficiency: +4.2%
               </div>
-            </Card>
-            <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm border-l-4 border-l-blue-500">
+            </div>
+            <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm border-l-4 border-l-blue-500">
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
                 Active Payees
               </p>
@@ -326,8 +303,8 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                   )}
                 </AvatarGroup>
               </div>
-            </Card>
-            <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm bg-gradient-to-br from-gray-800 to-gray-900 text-white">
+            </div>
+            <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm bg-gradient-to-br from-gray-800 to-gray-900 text-white">
               <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">
                 Next Run Cycle
               </p>
@@ -338,12 +315,12 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                   Settlement Node: Active
                 </span>
               </div>
-            </Card>
+            </div>
           </div>
 
           {/* Payroll Ledger */}
-          <Card className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden">
-            <div className="p-8 border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20 flex justify-between items-center">
+          <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden">
+            <div className="p-8 border-b bg-gray-50/50 dark:bg-gray-700/20 flex justify-between items-center">
               <div>
                 <h4 className="text-xl font-black dark:text-white uppercase tracking-tight">
                   Disbursement Ledger
@@ -352,19 +329,32 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                   Audit-ready historical payroll data
                 </p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                {viewMode === "grid" && (
+                  <div className="flex-shrink-0">
+                    <select
+                      className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                      value={itemsPerRow}
+                      onChange={(e) => setItemsPerRow(e.target.value)}
+                    >
+                      <option value="3">3 per row</option>
+                      <option value="4">4 per row</option>
+                      <option value="5">5 per row</option>
+                    </select>
+                  </div>
+                )}
                 <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                    className={`p-1.5 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                   >
-                    <LayoutGrid size={18} />
+                    <LayoutGrid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                    className={`p-1.5 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                   >
-                    <List size={18} />
+                    <List size={16} />
                   </button>
                 </div>
               </div>
@@ -464,11 +454,11 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                 </TableBody>
               </Table>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-gray-50/30 dark:bg-gray-900/10">
+              <div className={`grid gap-4 p-6 bg-gray-50/30 dark:bg-gray-900/10 ${ itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
                 {paginatedData.map((row, i) => (
-                  <Card
+                  <div
                     key={row.id || i}
-                    className="border-none shadow-sm hover:shadow-lg transition-all dark:bg-gray-800 p-0 overflow-hidden rounded-md border border-gray-100 dark:border-gray-700/50"
+                    className="border-none shadow-sm hover:shadow-lg transition-all dark:bg-gray-800 p-0 overflow-hidden rounded-md"
                   >
                     <div className="p-4 space-y-4">
                       <div className="flex justify-between items-start">
@@ -519,19 +509,19 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                           </Badge>
                         </div>
                       </div>
-                      <div className="pt-2 border-t dark:border-gray-700">
+                      <div className="pt-2 border-t">
                         <span className="text-xl font-black dark:text-white">
                           ${row.totalAmount?.toLocaleString()}
                         </span>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             )}
 
             {totalPages > 1 && (
-              <div className="p-4 border-t dark:border-gray-700">
+              <div className="p-4 border-t">
                 <ModernPagination
                   currentPage={currentPage}
                   totalPages={totalPages}
@@ -542,11 +532,11 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                 />
               </div>
             )}
-          </Card>
+          </div>
         </>
       ) : (
-        <Card className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden">
-          <div className="p-4 border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20 flex justify-between items-center">
+        <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden">
+          <div className="p-4 border-b bg-gray-50/50 dark:bg-gray-700/20 flex justify-between items-center">
             <div>
               <h4 className="text-xl font-black dark:text-white uppercase tracking-tight">
                 Salary Matrix
@@ -559,13 +549,13 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
               <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`p-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                 >
                   <LayoutGrid size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`p-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                 >
                   <List size={18} />
                 </button>
@@ -649,11 +639,11 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
               </TableBody>
             </Table>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-gray-50/30 dark:bg-gray-900/10">
+            <div className={`grid gap-4 p-4 bg-gray-50/30 dark:bg-gray-900/10 ${ itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
               {paginatedData.map((e, i) => (
-                <Card
+                <div
                   key={e.id || i}
-                  className="border-none shadow-sm hover:shadow-lg transition-all dark:bg-gray-800 p-0 overflow-hidden rounded-md border border-gray-100 dark:border-gray-700/50"
+                  className="border-none shadow-sm hover:shadow-lg transition-all dark:bg-gray-800 p-0 overflow-hidden rounded-md"
                 >
                   <div className="p-4 space-y-4">
                     <div className="flex justify-between items-start">
@@ -691,7 +681,7 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                         {e.department?.name || "Unassigned"}
                       </Badge>
                     </div>
-                    <div className="pt-2 border-t dark:border-gray-700 flex justify-between items-end">
+                    <div className="pt-2 border-t flex justify-between items-end">
                       <div className="flex flex-col">
                         <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
                           Basic Salary
@@ -702,13 +692,13 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
           )}
 
           {totalPages > 1 && (
-            <div className="p-4 border-t dark:border-gray-700">
+            <div className="p-4 border-t">
               <ModernPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -719,7 +709,7 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
               />
             </div>
           )}
-        </Card>
+        </div>
       )}
 
       {/* Modify Salary Modal */}
@@ -732,7 +722,7 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
           <button
             type="button"
             onClick={() => setIsEditModalOpen(false)}
-            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm"
           >
             <X size={20} />
           </button>

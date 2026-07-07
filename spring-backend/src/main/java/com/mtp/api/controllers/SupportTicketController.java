@@ -23,36 +23,7 @@ public class SupportTicketController {
 
     @GetMapping
     public List<SupportTicket> getAll() {
-        List<SupportTicket> tickets = ticketRepository.findAll();
-        boolean changed = false;
-        User defaultUser = userRepository.findAll().stream()
-            .filter(u -> "admin@mtp.com".equalsIgnoreCase(u.getEmail()))
-            .findFirst()
-            .orElseGet(() -> userRepository.findAll().stream()
-                .filter(u -> u.getEmail() != null && u.getEmail().contains("admin"))
-                .findFirst()
-                .orElse(userRepository.findAll().stream().findFirst().orElse(null)));
-        
-        for (SupportTicket t : tickets) {
-            // Fix tickets that were previously assigned to futuresoffice incorrectly
-            if ((t.getReporter() == null || (t.getReporter().getUserName() != null && t.getReporter().getUserName().contains("futuresoffice"))) && defaultUser != null) {
-                t.setReporter(defaultUser);
-                changed = true;
-            }
-            if (t.getAssignees().isEmpty()) {
-                User assignee = t.getReporter() != null ? t.getReporter() : defaultUser;
-                if (assignee != null) {
-                    t.getAssignees().add(assignee);
-                    t.setAssignedBy(assignee);
-                    t.setAssignedDate(t.getCreatedAt() != null ? t.getCreatedAt() : LocalDateTime.now());
-                    changed = true;
-                }
-            }
-        }
-        if (changed) {
-            ticketRepository.saveAll(tickets);
-        }
-        return tickets;
+        return ticketRepository.findAll();
     }
 
     @GetMapping("/{id}")

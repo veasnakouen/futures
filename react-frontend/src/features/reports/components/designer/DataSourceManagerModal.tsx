@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, ModalHeader, ModalBody, Button, TextInput, Select, Label, FileInput } from "@/lib/flowbite-compat";
+import {Modal, ModalHeader, ModalBody, Button, TextInput, Select, Label, FileInput} from "@/lib/flowbite-compat";
 import api from "../../../../services/api";
 
 interface Props {
@@ -134,13 +134,13 @@ export default function DataSourceManagerModal({ show, onClose, onSourceAdded }:
       <ModalBody>
         <div className="flex space-x-4 mb-4 border-b pb-2">
           <button
-            className={`font-bold ${activeTab === "csv" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500"}`}
+            className={`font-bold ${activeTab ==="csv"?"text-blue-600 border-b-2 border-blue-600":"text-gray-500"}`}
             onClick={() => setActiveTab("csv")}
           >
             Upload CSV/Excel
           </button>
           <button
-            className={`font-bold ${activeTab === "jdbc" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500"}`}
+            className={`font-bold ${activeTab ==="jdbc"?"text-blue-600 border-b-2 border-blue-600":"text-gray-500"}`}
             onClick={() => setActiveTab("jdbc")}
           >
             Connect External Database
@@ -216,11 +216,11 @@ export default function DataSourceManagerModal({ show, onClose, onSourceAdded }:
                 </Button>
               </div>
               {fetchedColumns.length > 0 ? (
-                <div className="max-h-40 overflow-y-auto border border-gray-300 rounded p-3 bg-white flex flex-col gap-2">
+                <div className="max-h-40 overflow-y-auto rounded p-3 bg-white flex flex-col gap-2">
                   <label className="flex items-center gap-2 text-sm font-semibold border-b pb-2 mb-1">
                     <input 
                       type="checkbox" 
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 rounded"
                       checked={selectedColumns.length === fetchedColumns.length}
                       onChange={(e) => setSelectedColumns(e.target.checked ? [...fetchedColumns] : [])}
                     />
@@ -230,7 +230,7 @@ export default function DataSourceManagerModal({ show, onClose, onSourceAdded }:
                     <label key={col} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
                       <input 
                         type="checkbox" 
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 rounded"
                         checked={selectedColumns.includes(col)}
                         onChange={(e) => {
                           if (e.target.checked) setSelectedColumns([...selectedColumns, col]);

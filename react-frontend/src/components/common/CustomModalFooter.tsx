@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Button } from "@/lib/flowbite-compat";
+import {Button} from "@/lib/flowbite-compat";
 interface CustomModalFooterProps {
   onClose: () => void;
   isEditMode?: boolean;
@@ -26,7 +26,7 @@ const CustomModalFooter: React.FC<CustomModalFooterProps> = ({
   const defaultSubmitText = isEditMode ? "Update Record" : "Save Record";
   return (
     <div
-      className={`flex justify-end gap-4 w-full px-6 py-4 bg-white dark:bg-gray-800 rounded-b-lg ${hideBorder ? "" : "border-t dark:border-gray-700"}`}
+      className={`flex justify-end gap-4 w-full px-6 py-4 bg-white dark:bg-gray-800 rounded-b-lg ${hideBorder ?"" :"border-t "}`}
     >
       {" "}
       <Button

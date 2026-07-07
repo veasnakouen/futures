@@ -10,4 +10,7 @@ public class CourseQueryResultDto {
     private String description;
     private Integer credits;
     private String teacherId;
+    private String teacherFirstName;
+    private String teacherLastName;
+    private String imageUrl;
 }

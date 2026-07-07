@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Avatar,
-  TextInput,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Avatar, TextInput, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
 import {
   CheckCircle,
   XCircle,
@@ -43,6 +34,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
     const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).getItem("leavesViewMode");
     return saved === "list" || saved === "grid" ? saved : "grid";
   });
+  const [itemsPerRow, setItemsPerRow] = useState("4");
 
   React.useEffect(() => {
     (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).setItem("leavesViewMode", viewMode);
@@ -141,7 +133,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
                 color="light"
                 size="xs"
                 onClick={() => onUpdateStatus(l.id, "REJECTED")}
-                className="rounded-md font-black uppercase text-[9px] h-8 border border-gray-200"
+                className="rounded-md font-black uppercase text-[9px] h-8"
               >
                 Decline
               </Button>
@@ -185,31 +177,31 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
     <div className="space-y-8 animate-fade-in pb-12">
       {/* KPI Summary Bar */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm border-l-4 border-l-amber-500">
+        <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm border-l-4 border-l-amber-500">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
             Pending Approval
           </p>
           <h4 className="text-3xl font-black dark:text-white">
             {pendingCount}
           </h4>
-        </Card>
-        <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm border-l-4 border-l-emerald-500">
+        </div>
+        <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm border-l-4 border-l-emerald-500">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
             Approved This Month
           </p>
           <h4 className="text-3xl font-black dark:text-white">
             {approvedCount}
           </h4>
-        </Card>
-        <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm">
+        </div>
+        <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
             Total Sick Leave
           </p>
           <h4 className="text-3xl font-black text-red-500">
             {sickDaysTotal} Days
           </h4>
-        </Card>
-        <Card className="p-6 rounded-md bg-blue-600 text-white border-none shadow-lg shadow-blue-500/20">
+        </div>
+        <div className="p-6 rounded-md bg-blue-600 text-white border-none shadow-lg shadow-blue-500/20">
           <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">
             Capacity Impact
           </p>
@@ -217,32 +209,45 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
           <p className="text-[9px] font-bold mt-2 opacity-70">
             Current workforce presence
           </p>
-        </Card>
+        </div>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm border border-gray-100 dark:border-gray-700/50">
-        <div className="flex bg-gray-100/80 dark:bg-gray-900/60 p-1.5 rounded-md border border-gray-200/50 dark:border-gray-800/50 shadow-inner w-full sm:w-max overflow-x-auto whitespace-nowrap no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-nowrap shrink-0 gap-1.5">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm">
+        <div className="flex bg-gray-100/80 dark:bg-gray-900/60 p-1.5 rounded-md /50 shadow-inner w-full sm:w-max overflow-x-auto whitespace-nowrap no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex-nowrap shrink-0 gap-1.5">
           {(["PENDING", "APPROVED", "ALL"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setFilter(t)}
-              className={`shrink-0 px-4 py-1.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${filter === t ? "bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
+              className={`shrink-0 px-4 py-1.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${filter === t ?"bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
             >
               {t}
             </button>
           ))}
         </div>
         <div className="flex items-center gap-4 w-full md:w-auto">
+          {viewMode === "grid" && (
+            <div className="flex-shrink-0">
+              <select
+                className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                value={itemsPerRow}
+                onChange={(e) => setItemsPerRow(e.target.value)}
+              >
+                <option value="3">3 per row</option>
+                <option value="4">4 per row</option>
+                <option value="5">5 per row</option>
+              </select>
+            </div>
+          )}
           <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md shrink-0">
             <button
               onClick={() => setViewMode("grid")}
-              className={`py-1.5 px-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+              className={`py-1.5 px-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
             >
               <LayoutGrid size={16} />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`py-1.5 px-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+              className={`py-1.5 px-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
             >
               <List size={16} />
             </button>
@@ -270,7 +275,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
       </div>
 
       {filteredLeaves.length === 0 ? (
-        <div className="py-32 text-center border border-dashed dark:border-gray-700 rounded-md bg-white/30 dark:bg-gray-800/20 backdrop-blur-sm mt-8">
+        <div className="py-32 text-center rounded-md bg-white/30 dark:bg-gray-800/20 backdrop-blur-sm mt-8">
           <Calendar size={64} className="mx-auto text-gray-300 mb-6" />
           <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">
             No Leave Requests
@@ -280,7 +285,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
           </p>
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+        <div className={`grid gap-6 mt-8 ${ itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
           {filteredLeaves.map((l) => (
             <AppCard
               key={l.id}
@@ -355,7 +360,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
                 </div>
               </div>
 
-              <div className="bg-gray-50/50 dark:bg-gray-700/30 p-4 rounded-sm border dark:border-gray-700/50 mt-auto">
+              <div className="bg-gray-50/50 dark:bg-gray-700/30 p-4 rounded-sm mt-auto">
                 <div className="flex flex-col gap-4">
                   <div>
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">

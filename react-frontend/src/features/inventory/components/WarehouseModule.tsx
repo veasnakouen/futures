@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-   Card, Badge, Button, TextInput, Label, Avatar, Tooltip,
-   Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow,
-   Modal, ModalHeader, ModalBody, ModalFooter,
-   Spinner, Dropdown, DropdownItem, DropdownHeader, DropdownDivider
-} from '@/lib/flowbite-compat';
+import {Badge, Button, TextInput, Label, Avatar, Tooltip, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Modal, ModalHeader, ModalBody, ModalFooter, Spinner, Dropdown, DropdownItem, DropdownHeader, DropdownDivider} from '@/lib/flowbite-compat';
 import ModernPagination from '@/components/common/ModernPagination';
 import {
    Package, Plus, Search, Download, Edit3, Trash2, Box,
@@ -27,6 +22,7 @@ interface StockModuleProps {
 
 const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, onDelete, loading, onRefresh }) => {
    const [viewMode, setViewMode] = useState<'GRID' | 'TABLE'>('TABLE');
+   const [itemsPerRow, setItemsPerRow] = useState("4");
    const [searchQuery, setSearchQuery] = useState('');
    const [categoryFilter, setCategoryFilter] = useState('ALL');
 
@@ -170,57 +166,72 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
       <div className="space-y-8 animate-fade-in pb-12">
          {/* Warehouse Analytics */}
          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="p-8 rounded-xl dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-blue-600 bg-white/50 backdrop-blur-xl">
+            <div className="p-8 rounded-xl dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-blue-600 bg-white/50 backdrop-blur-xl">
                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Unique SKUs</p>
                <h4 className="text-4xl font-black dark:text-white text-blue-600">{safeItems.length}</h4>
-            </Card>
-            <Card className="p-8 rounded-xl dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-emerald-500 bg-white/50 backdrop-blur-xl">
+            </div>
+            <div className="p-8 rounded-xl dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-emerald-500 bg-white/50 backdrop-blur-xl">
                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Total Units</p>
                <h4 className="text-4xl font-black dark:text-white text-emerald-600">
                   {safeItems.reduce((sum, item) => sum + (item.quantity || 0), 0)}
                </h4>
-            </Card>
-            <Card className="p-8 rounded-xl dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-amber-500 bg-white/50 backdrop-blur-xl">
+            </div>
+            <div className="p-8 rounded-xl dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-amber-500 bg-white/50 backdrop-blur-xl">
                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Low Stock Alerts</p>
                <h4 className="text-4xl font-black dark:text-white text-amber-500">
                   {safeItems.filter(item => (item.quantity || 0) <= (item.minQuantity || 5)).length}
                </h4>
-            </Card>
-            <Card className="p-8 rounded-xl bg-gradient-to-br from-indigo-800 to-blue-900 text-white border-none shadow-xl flex flex-col justify-center">
+            </div>
+            <div className="p-8 rounded-xl bg-gradient-to-br from-indigo-800 to-blue-900 text-white border-none shadow-xl flex flex-col justify-center">
                <div className="flex items-center gap-2 mb-2">
                   <Activity size={16} className="text-cyan-400" />
                   <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Inventory Health</p>
                </div>
                <h4 className="text-2xl font-black">Stable</h4>
                <p className="text-[9px] font-bold mt-1 opacity-60 uppercase tracking-tighter">Nodes Synced with ERP</p>
-            </Card>
+            </div>
          </div>
 
          {/* Navigation & Filters */}
-         <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-white/50 dark:bg-gray-800/50 p-4 rounded-xl border dark:border-gray-700/50 shadow-sm">
-            <div className="relative flex shrink-0 bg-gray-100/80 dark:bg-gray-900/60 p-1 rounded-xl w-24 border border-gray-200/50 dark:border-gray-800/50 shadow-inner overflow-hidden">
-               {/* Sliding Pill */}
-               <div
-                  className="absolute top-1 bottom-1 left-1 rounded-lg bg-white dark:bg-gray-800 shadow-md border dark:border-gray-700/50 transition-all duration-300 ease-out pointer-events-none"
-                  style={{
-                     width: 'calc(50% - 4px)',
-                     transform: `translateX(${viewMode === 'TABLE' ? '0' : '100%'})`
-                  }}
-               />
-               <button
-                  onClick={() => setViewMode('TABLE')}
-                  title="List View"
-                  className={`relative z-10 flex-1 py-1.5 transition-all duration-300 flex items-center justify-center rounded-lg focus:outline-none ${viewMode === 'TABLE' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-               >
-                  <List size={16} className={`transition-transform duration-300 ${viewMode === 'TABLE' ? 'scale-110' : ''}`} />
-               </button>
-               <button
-                  onClick={() => setViewMode('GRID')}
-                  title="Grid View"
-                  className={`relative z-10 flex-1 py-1.5 transition-all duration-300 flex items-center justify-center rounded-lg focus:outline-none ${viewMode === 'GRID' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-               >
-                  <LayoutGrid size={16} className={`transition-transform duration-300 ${viewMode === 'GRID' ? 'scale-110' : ''}`} />
-               </button>
+         <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-white/50 dark:bg-gray-800/50 p-4 rounded-xl shadow-sm">
+            <div className="flex items-center gap-2">
+               {viewMode === 'GRID' && (
+                 <div className="flex-shrink-0">
+                   <select
+                     className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                     value={itemsPerRow}
+                     onChange={(e) => setItemsPerRow(e.target.value)}
+                   >
+                     <option value="3">3 per row</option>
+                     <option value="4">4 per row</option>
+                     <option value="5">5 per row</option>
+                   </select>
+                 </div>
+               )}
+               <div className="relative flex shrink-0 bg-gray-100/80 dark:bg-gray-900/60 p-1 rounded-xl w-24 /50 shadow-inner overflow-hidden h-[34px]">
+                  {/* Sliding Pill */}
+                  <div
+                     className="absolute top-1 bottom-1 left-1 rounded-lg bg-white dark:bg-gray-800 shadow-md transition-all duration-300 ease-out pointer-events-none"
+                     style={{
+                        width: 'calc(50% - 4px)',
+                        transform: `translateX(${viewMode === 'TABLE' ? '0' : '100%'})`
+                     }}
+                  />
+                  <button
+                     onClick={() => setViewMode('TABLE')}
+                     title="List View"
+                     className={`relative z-10 flex-1 py-1 transition-all duration-300 flex items-center justify-center rounded-lg focus:outline-none ${viewMode ==='TABLE'?'text-blue-600 dark:text-blue-400':'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                  >
+                     <List size={16} className={`transition-transform duration-300 ${viewMode ==='TABLE'?'scale-110':''}`} />
+                  </button>
+                  <button
+                     onClick={() => setViewMode('GRID')}
+                     title="Grid View"
+                     className={`relative z-10 flex-1 py-1 transition-all duration-300 flex items-center justify-center rounded-lg focus:outline-none ${viewMode ==='GRID'?'text-blue-600 dark:text-blue-400':'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                  >
+                     <LayoutGrid size={16} className={`transition-transform duration-300 ${viewMode ==='GRID'?'scale-110':''}`} />
+                  </button>
+               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 lg:flex-none justify-end">
@@ -228,7 +239,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                   <select
                      value={categoryFilter}
                      onChange={(e) => setCategoryFilter(e.target.value)}
-                     className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-500 shadow-sm py-1.5 h-[34px] focus:ring-1 focus:ring-blue-500 px-3 w-[110px] flex-1 sm:flex-none"
+                     className="bg-white dark:bg-gray-800 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-500 shadow-sm py-1.5 h-[34px] focus:ring-1 focus:ring-blue-500 px-3 w-[110px] flex-1 sm:flex-none"
                   >
                      {categories.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -266,8 +277,8 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                <p className="mt-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] animate-pulse">Syncing Warehouse Ledger...</p>
             </div>
          ) : viewMode === 'TABLE' ? (
-            <Card className="border-none shadow-sm dark:bg-gray-800 rounded-xl overflow-visible bg-white/50 backdrop-blur-xl">
-               <div className="p-8 border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20 flex justify-between items-center">
+            <div className="border-none shadow-sm dark:bg-gray-800 rounded-xl overflow-visible bg-white/50 backdrop-blur-xl">
+               <div className="p-8 border-b bg-gray-50/50 dark:bg-gray-700/20 flex justify-between items-center">
                   <div>
                      <h4 className="text-xl font-black dark:text-white uppercase tracking-tight">Enterprise Warehouse Ledger</h4>
                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Real-time stock auditing across all nodes</p>
@@ -279,7 +290,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
 
                <div className="w-full overflow-visible">
                   <Table hoverable className="border-none w-full min-w-[800px] relative">
-                     <TableHead className="bg-gray-50/90 dark:bg-gray-800/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-[1] backdrop-blur-md shadow-sm border-b dark:border-gray-600">
+                     <TableHead className="bg-gray-50/90 dark:bg-gray-800/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-[1] backdrop-blur-md shadow-sm border-b">
                         <TableHeadCell className="px-8 py-6">Item Specification</TableHeadCell>
                         <TableHeadCell className="px-8 py-6">SKU / ID</TableHeadCell>
                         <TableHeadCell className="px-8 py-6">Category</TableHeadCell>
@@ -292,7 +303,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                            <TableRow key={item.id} className="relative bg-white dark:bg-gray-800 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:z-[2] focus-within:z-[2]">
                               <TableCell className="px-8 py-6">
                                  <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-sm border dark:border-gray-600 overflow-hidden shrink-0">
+                                    <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-sm overflow-hidden shrink-0">
                                        {item.imageUrl ? (
                                           <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                                        ) : (
@@ -315,7 +326,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                               </TableCell>
                               <TableCell className="px-8 py-6">
                                  <div className="flex items-center gap-2">
-                                    <span className={`text-lg font-black ${item.quantity <= item.minQuantity ? 'text-red-500' : 'text-gray-700 dark:text-white'}`}>
+                                    <span className={`text-lg font-black ${item.quantity <= item.minQuantity ?'text-red-500':'text-gray-700 dark:text-white'}`}>
                                        {item.quantity}
                                     </span>
                                     <span className="text-[9px] font-bold text-gray-400 uppercase">{item.unit || 'pcs'}</span>
@@ -377,11 +388,11 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                      </TableBody>
                   </Table>
                </div>
-            </Card>
+            </div>
          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className={`grid gap-8 ${ itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 sm:grid-cols-3 lg:grid-cols-5":"grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
                {paginatedItems.map((item) => (
-                  <Card key={item.id} className="group relative border-none shadow-sm hover:shadow-2xl hover:z-20 transition-all duration-500 dark:bg-gray-800 rounded-[2rem] bg-white/40 backdrop-blur-2xl border border-white/20 dark:border-gray-700/50 p-0 overflow-hidden">
+                  <div key={item.id} className="group relative border-none shadow-sm hover:shadow-2xl hover:z-20 transition-all duration-500 dark:bg-gray-800 rounded-[2rem] bg-white/40 backdrop-blur-2xl border-white/20 p-0 overflow-hidden">
                      <div className="h-32 bg-gradient-to-br from-blue-600/10 to-indigo-600/5 relative overflow-hidden">
                         {item.imageUrl ? (
                            <img src={item.imageUrl} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -449,17 +460,17 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                            <Layers size={10} className="text-blue-500" /> {item.category || 'Standard Node'}
                         </p>
 
-                        <div className="grid grid-cols-2 gap-4 my-8 p-6 bg-gray-50/50 dark:bg-gray-700/30 rounded-xl border border-dashed dark:border-gray-600 transition-all group-hover:border-blue-500/30 group-hover:bg-blue-500/5">
+                        <div className="grid grid-cols-2 gap-4 my-8 p-6 bg-gray-50/50 dark:bg-gray-700/30 rounded-xl transition-all group-hover:border-blue-500/30 group-hover:bg-blue-500/5">
                            <div>
                               <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Inventory Node</p>
                               <div className="flex items-baseline gap-1">
-                                 <p className={`text-3xl font-black ${item.quantity <= item.minQuantity ? 'text-rose-500 animate-pulse' : 'dark:text-white text-gray-900'}`}>
+                                 <p className={`text-3xl font-black ${item.quantity <= item.minQuantity ?'text-rose-500 animate-pulse':'dark:text-white text-gray-900'}`}>
                                     {item.quantity}
                                  </p>
                                  <span className="text-[10px] font-black text-gray-400 uppercase">{item.unit}</span>
                               </div>
                            </div>
-                           <div className="border-l dark:border-gray-700 pl-4 flex flex-col justify-center">
+                           <div className="border-l pl-4 flex flex-col justify-center">
                               <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Valuation</p>
                               <p className="text-2xl font-black text-blue-600 dark:text-blue-400 tabular-nums">${item.unitPrice}</p>
                            </div>
@@ -478,7 +489,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                            )}
                         </div>
                      </div>
-                  </Card>
+                  </div>
                ))}
             </div>
          )}
@@ -498,27 +509,27 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
 
          {/* Stock Item Modal */}
          <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="lg">
-            <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+            <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   {isEditMode ? 'Modify Stock Record' : 'Register New Inventory Node'}
                </h3>
-               <button type="button" onClick={() => setIsModalOpen(false)} className="text-red-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 p-1.5 rounded-md shadow-sm border border-red-500">
+               <button type="button" onClick={() => setIsModalOpen(false)} className="text-red-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 p-1.5 rounded-md shadow-sm border-red-500">
                   <X size={16} />
                </button>
             </div>
             <ModalBody className="p-0">
                {/* Stepper UI */}
-               <div className="flex items-center justify-between px-8 py-4 bg-gray-50 dark:bg-gray-800/80 border dark:border-gray-700 rounded-full mx-6 mt-6 mb-2">
+               <div className="flex items-center justify-between px-8 py-4 bg-gray-50 dark:bg-gray-800/80 rounded-full mx-6 mt-6 mb-2">
                   {[
                      { step: 1, title: 'Item Identity', icon: Box },
                      { step: 2, title: 'Logistics', icon: Package },
                      { step: 3, title: 'Compliance', icon: Upload }
                   ].map((s) => (
                      <div key={s.step} className="flex flex-col items-center gap-2 relative z-10 flex-1">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-colors ${currentStep >= s.step ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-colors ${currentStep >= s.step ?'bg-blue-600 text-white shadow-md shadow-blue-500/20':'bg-gray-200 dark:bg-gray-700 text-gray-500'}`}>
                            {s.step}
                         </div>
-                        <p className={`text-[9px] font-black uppercase tracking-widest ${currentStep >= s.step ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}`}>
+                        <p className={`text-[9px] font-black uppercase tracking-widest ${currentStep >= s.step ?'text-blue-600 dark:text-blue-400':'text-gray-400'}`}>
                            {s.title}
                         </p>
                      </div>
@@ -549,7 +560,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                         <div>
                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Category</Label>
                            <select
-                              className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
+                              className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
                               value={formData.category}
                               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                            >
@@ -576,8 +587,8 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                         </div>
                         <div className="col-span-full">
                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Visual Reference</Label>
-                           <div className="flex items-center gap-5 p-5 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700 shadow-inner group">
-                              <div className="w-20 h-20 rounded-xl bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md shrink-0 group-hover:scale-105 transition-transform duration-300">
+                           <div className="flex items-center gap-5 p-5 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/80 rounded-xl shadow-inner group">
+                              <div className="w-20 h-20 rounded-xl bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden shadow-md shrink-0 group-hover:scale-105 transition-transform duration-300">
                                  {formData.imageUrl ? (
                                     <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                                  ) : (
@@ -594,7 +605,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                                        onChange={handleImageChange}
                                        className="hidden"
                                     />
-                                    <label htmlFor="stock-image-upload" className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm">
+                                    <label htmlFor="stock-image-upload" className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm">
                                        <Upload size={14} className="mr-2" /> Upload Image
                                     </label>
                                     {formData.imageUrl && (
@@ -680,7 +691,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                         <div>
                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Acquisition Source</Label>
                            <select
-                              className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
+                              className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
                               value={formData.acquisitionType}
                               onChange={(e) => setFormData({ ...formData, acquisitionType: e.target.value })}
                            >
@@ -730,23 +741,23 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                            </div>
                         </div>
 
-                        <div className="col-span-full p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <div className="col-span-full p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 block">Asset Flags</Label>
                            <div className="grid grid-cols-2 gap-4">
                               <label className="flex items-center gap-2 cursor-pointer">
-                                 <input type="checkbox" checked={formData.isReturnable} onChange={(e) => setFormData({ ...formData, isReturnable: e.target.checked })} className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700" />
+                                 <input type="checkbox" checked={formData.isReturnable} onChange={(e) => setFormData({ ...formData, isReturnable: e.target.checked })} className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700" />
                                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Requires Return (Offboarding)</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
-                                 <input type="checkbox" checked={formData.isIntangible} onChange={(e) => setFormData({ ...formData, isIntangible: e.target.checked })} className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700" />
+                                 <input type="checkbox" checked={formData.isIntangible} onChange={(e) => setFormData({ ...formData, isIntangible: e.target.checked })} className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700" />
                                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Intangible (Software/License)</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
-                                 <input type="checkbox" checked={formData.isKit} onChange={(e) => setFormData({ ...formData, isKit: e.target.checked })} className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700" />
+                                 <input type="checkbox" checked={formData.isKit} onChange={(e) => setFormData({ ...formData, isKit: e.target.checked })} className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700" />
                                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Kit / Bundle (e.g. Onboarding Kit)</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
-                                 <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })} className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700" />
+                                 <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })} className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700" />
                                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Active Status</span>
                               </label>
                            </div>
@@ -755,7 +766,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                   )}
                </div>
             </ModalBody>
-            <ModalFooter className="flex justify-between border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 p-5 rounded-b-md">
+            <ModalFooter className="flex justify-between border-t bg-gray-50 dark:bg-gray-800/80 p-5 rounded-b-md">
                <Button outline size="sm" color="light" onClick={() => setIsModalOpen(false)} className="font-black uppercase text-[10px] tracking-widest shadow-sm">
                   Discard
                </Button>
@@ -780,17 +791,17 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
 
          {/* Stock Details Modal */}
          <Modal show={isDetailsModalOpen} onClose={() => setIsDetailsModalOpen(false)} size="lg">
-            <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+            <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Stock Item Inspector</h3>
-               <button type="button" onClick={() => setIsDetailsModalOpen(false)} className="text-red-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 p-1.5 rounded-md shadow-sm border border-red-500">
+               <button type="button" onClick={() => setIsDetailsModalOpen(false)} className="text-red-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 p-1.5 rounded-md shadow-sm border-red-500">
                   <X size={16} />
                </button>
             </div>
             <ModalBody>
                {viewingItem && (
                   <div className="space-y-8">
-                     <div className="flex items-center gap-6 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border dark:border-gray-700/50">
-                        <div className="w-20 h-20 rounded-xl bg-white dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-xl border dark:border-gray-600 overflow-hidden shrink-0">
+                     <div className="flex items-center gap-6 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                        <div className="w-20 h-20 rounded-xl bg-white dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-xl overflow-hidden shrink-0">
                            {viewingItem.imageUrl ? (
                               <img src={viewingItem.imageUrl} alt={viewingItem.name} className="w-full h-full object-cover" />
                            ) : (
@@ -807,23 +818,23 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                      </div>
 
                      <div className="grid grid-cols-3 gap-4">
-                        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border dark:border-gray-700 text-center">
+                        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm text-center">
                            <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Stock Level</p>
-                           <p className={`font-black text-lg ${viewingItem.quantity <= viewingItem.minQuantity ? 'text-red-500' : 'dark:text-white'}`}>
+                           <p className={`font-black text-lg ${viewingItem.quantity <= viewingItem.minQuantity ?'text-red-500':'dark:text-white'}`}>
                               {viewingItem.quantity} {viewingItem.unit}
                            </p>
                         </div>
-                        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border dark:border-gray-700 text-center">
+                        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm text-center">
                            <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Unit Value</p>
                            <p className="font-black text-lg text-blue-600 dark:text-blue-400">${viewingItem.unitPrice}</p>
                         </div>
-                        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border dark:border-gray-700 text-center">
+                        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm text-center">
                            <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Category</p>
                            <p className="font-black text-[10px] dark:text-white uppercase mt-1">{viewingItem.category || 'General'}</p>
                         </div>
                      </div>
 
-                     <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 space-y-4">
+                     <div className="p-6 bg-white dark:bg-gray-800 rounded-xl space-y-4">
                         <h5 className="text-[10px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-2 mb-4">
                            <MapPin size={12} className="text-blue-500" /> Logistics Context
                         </h5>
@@ -859,7 +870,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                               </div>
                            )}
                            {viewingItem.expirationDate && (
-                              <div className="col-span-2 mt-2 p-3 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 rounded-lg">
+                              <div className="col-span-2 mt-2 p-3 bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50 rounded-lg">
                                  <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest mb-1">Expiration Warning</p>
                                  <p className="font-black text-rose-600 dark:text-rose-400">{viewingItem.expirationDate}</p>
                               </div>
@@ -867,7 +878,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                         </div>
                      </div>
 
-                     <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700">
+                     <div className="p-6 bg-white dark:bg-gray-800 rounded-xl">
                         <h5 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                            <LayoutGrid size={12} className="text-purple-500" /> HR & Internal Controls
                         </h5>
@@ -904,7 +915,7 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                      </div>
 
                      {viewingItem.description && (
-                        <div className="p-6 bg-gray-50 dark:bg-gray-800/20 rounded-xl border border-dashed dark:border-gray-700">
+                        <div className="p-6 bg-gray-50 dark:bg-gray-800/20 rounded-xl">
                            <p className="text-[9px] font-black text-gray-400 uppercase mb-2">Item Narrative</p>
                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed font-bold">
                               {viewingItem.description}

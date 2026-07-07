@@ -1,0 +1,16 @@
+syntax = "proto3";
+package com.mtp.grpc.inventory;
+option java_multiple_files = true;
+
+message CheckInventoryRequest {
+    string item_id = 1;
+}
+
+message CheckInventoryResponse {
+    bool available = 1;
+    int32 quantity = 2;
+}
+
+service InventoryService {
+    rpc checkStock (CheckInventoryRequest) returns (CheckInventoryResponse);
+}

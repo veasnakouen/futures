@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  ModalBody,
-  Button,
-  Label,
-  TextInput,
-  Select,
-  Textarea,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Button, Label, TextInput, Select, Textarea} from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import { format } from "date-fns";
 import { useForm, Controller } from "react-hook-form";

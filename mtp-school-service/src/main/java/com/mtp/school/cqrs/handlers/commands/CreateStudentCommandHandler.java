@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import com.mtp.school.models.StudentParent;
 import com.mtp.school.cqrs.commands.StudentParentCommandDto;
 import com.mtp.school.models.Parent;
-import java.util.List;
+import com.mtp.school.repositories.BranchRepository;
+import com.mtp.school.repositories.ClassroomRepository;
+import com.mtp.school.repositories.DormitoryRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +26,25 @@ public class CreateStudentCommandHandler {
     private final StudentRepository studentRepository;
     private final ParentRepository parentRepository;
     private final ExtracurricularRepository extracurricularRepository;
+    private final BranchRepository branchRepository;
+    private final ClassroomRepository classroomRepository;
+    private final DormitoryRepository dormitoryRepository;
     private final StudentMapper studentMapper;
 
     @Transactional
     public StudentQueryResultDto handle(CreateStudentCommand command) {
         Student entity = studentMapper.toEntity(command);
         
+        if (command.getBranchId() != null && !command.getBranchId().isEmpty()) {
+            branchRepository.findById(command.getBranchId()).ifPresent(entity::setBranch);
+        }
+        if (command.getClassroomId() != null && !command.getClassroomId().isEmpty()) {
+            classroomRepository.findById(command.getClassroomId()).ifPresent(entity::setClassroom);
+        }
+        if (command.getDormitoryId() != null && !command.getDormitoryId().isEmpty()) {
+            dormitoryRepository.findById(command.getDormitoryId()).ifPresent(entity::setDormitory);
+        }
+
         if (command.getParentRelationships() != null && !command.getParentRelationships().isEmpty()) {
             for (StudentParentCommandDto spDto : command.getParentRelationships()) {
                 Parent parent = parentRepository.findById(spDto.getParentId()).orElse(null);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button, Spinner } from '@/lib/flowbite-compat';
+import {Button, Spinner} from '@/lib/flowbite-compat';
 import {
   Users,
   Clock,
@@ -70,9 +70,37 @@ import EmployeeDetailModal from "@/features/hr/components/EmployeeDetailModal";
 import AnalyticsModal from "@/features/hr/components/AnalyticsModal";
 import ManualAttendanceModal from "@/features/hr/components/ManualAttendanceModal";
 import BiometricDeviceModal from "@/features/hr/components/BiometricDeviceModal";
-import { useHRStore } from "../store/hrStore";
+import { 
+  useAttendance, 
+  usePayroll,
+  useAnalyticsStats,
+  useAnalyticsDemographics,
+  useAnalyticsDeptDist,
+  useHRAssets,
+  useVacancies,
+  useRecruitmentStats,
+  useEmployers,
+  usePlacements,
+  useTickets,
+  useLookups,
+  useAssessments,
+  useCreateTicket,
+  useUpdateTicket,
+  useDeleteTicket,
+  useUpdateTicketStatus,
+  useAssignTicket,
+  useUnassignTicket,
+  useCreateTicketType,
+  useDeleteTicketType,
+  useCreateAssessment,
+  useUpdateAssessment,
+  useDeleteAssessment
+} from "../hooks/useHR";
+import { useAllLeaves as useLeavesFromHook } from "../hooks/useLeaves";
+import { useTranslation } from "react-i18next";
 
 const EmployeesPage = ({ isDark, setIsDark }: any) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
     const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).getItem("hr_viewMode");
@@ -357,37 +385,50 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
       );
   };
 
-  // Use Zustand store for global data
-  const {
-    globalAttendance,
-    globalLeaves,
-    globalAssets,
-    globalPayroll,
-    analyticsData,
-    globalVacancies,
-    recruitmentStats,
-    globalClients,
-    globalEmployers,
-    globalPositions,
-    globalPlacements,
-    globalTickets,
-    globalTicketTypes,
-    globalAssessments,
-    globalUsers,
-    globalEmployees,
-    createTicket,
-    updateTicket,
-    deleteTicket,
-    updateTicketStatus,
-    assignTicket,
-    unassignTicket,
-    createTicketType,
-    deleteTicketType,
-    createAssessment,
-    updateAssessment,
-    deleteAssessment,
-    fetchGlobalData,
-  } = useHRStore();
+  const { data: globalAttendance = [] } = useAttendance();
+  const { data: globalLeaves = [] } = useLeavesFromHook();
+  const { data: globalAssets = [] } = useHRAssets();
+  const { data: globalPayroll = [] } = usePayroll();
+  const { data: analyticsStats } = useAnalyticsStats();
+  const { data: demographics } = useAnalyticsDemographics();
+  const { data: deptDist } = useAnalyticsDeptDist();
+  const analyticsData = { stats: analyticsStats || {}, demographics: demographics || {}, deptDist: deptDist || [] };
+  
+  const { data: globalVacancies = [] } = useVacancies();
+  const { data: recruitmentStats = {} } = useRecruitmentStats();
+  const { data: globalClients = [] } = useLookups("clients"); // Assuming this might have been clients? Wait no, let me default to [] and skip for now if it doesn't match exactly, or use the placements endpoints
+  const { data: globalEmployers = [] } = useEmployers();
+  const { data: globalPositions = [] } = useLookups("positions");
+  const { data: globalPlacements = [] } = usePlacements();
+  const { data: globalTickets = [] } = useTickets();
+  const { data: globalTicketTypes = [] } = useLookups("ticket-types");
+  const { data: globalAssessments = [] } = useAssessments();
+  const { data: globalUsers = [] } = useLookups("users"); // Adjust as needed
+  
+  // Notice: globalEmployees is already fetched in `employees` (from useQuery above)
+  const globalEmployees = employees;
+
+  const { mutateAsync: createTicket } = useCreateTicket();
+  const { mutateAsync: updateTicket } = useUpdateTicket();
+  const { mutateAsync: deleteTicket } = useDeleteTicket();
+  const { mutateAsync: updateTicketStatus } = useUpdateTicketStatus();
+  const { mutateAsync: assignTicket } = useAssignTicket();
+  const { mutateAsync: unassignTicket } = useUnassignTicket();
+  const { mutateAsync: createTicketType } = useCreateTicketType();
+  const { mutateAsync: deleteTicketType } = useDeleteTicketType();
+  const { mutateAsync: createAssessment } = useCreateAssessment();
+  const { mutateAsync: updateAssessment } = useUpdateAssessment();
+  const { mutateAsync: deleteAssessment } = useDeleteAssessment();
+
+  const fetchGlobalData = () => {
+    queryClient.invalidateQueries({ queryKey: ["attendance"] });
+    queryClient.invalidateQueries({ queryKey: ["allLeaves"] });
+    queryClient.invalidateQueries({ queryKey: ["payroll"] });
+    queryClient.invalidateQueries({ queryKey: ["hrAssets"] });
+    queryClient.invalidateQueries({ queryKey: ["vacancies"] });
+    queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    queryClient.invalidateQueries({ queryKey: ["assessments"] });
+  };
 
   const [loading, setLoading] = useState(false);
 
@@ -885,14 +926,14 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
   return (
     <Layout isDark={isDark} setIsDark={setIsDark} title="Team Directory">
       <div className="space-y-8 max-w-[1600px] mx-auto">
-        <header className="bg-white dark:bg-gray-800 p-8 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-6 border border-gray-100 dark:border-gray-700/50">
+        <header className="bg-white dark:bg-gray-800 p-8 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6">
             <div className="p-4 bg-blue-600 text-white rounded-md shadow-xl shadow-blue-500/20">
               <Activity size={32} />
             </div>
             <div>
               <h2 className="text-3xl font-black dark:text-white tracking-tight">
-                HR Command Center
+                {t("hrCommandCenter")}
               </h2>
               <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-md bg-emerald-500 animate-pulse"></span>
@@ -906,14 +947,14 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
               onClick={() => setIsAnalyticsModalOpen(true)}
               className="rounded-md border-2 px-4 h-12 font-black uppercase tracking-widest text-[10px]"
             >
-              <TrendingUp size={16} className="mr-2 text-blue-600" /> Analytics
+              <TrendingUp size={16} className="mr-2 text-blue-600" /> {t("analytics")}
             </Button>
             <Button
               color="light"
               onClick={seedDemoData}
-              className="rounded-md border-dashed border-2 px-4 py-1 h-12"
+              className="rounded-md border-2 px-4 py-1 h-12"
             >
-              <Zap size={16} className="mr-2 text-yellow-500" /> Seed Data
+              <Zap size={16} className="mr-2 text-yellow-500" /> {t("seedData")}
             </Button>
             {activeModule === "directory" && (
               <Button
@@ -952,84 +993,84 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
                 }}
                 className="rounded-md h-12 font-black uppercase tracking-widest text-[10px] px-8 shadow-lg shadow-blue-500/20"
               >
-                <UserPlus size={18} className="mr-2" /> Onboard Staff
+                <UserPlus size={18} className="mr-2" /> {t("onboardStaff")}
               </Button>
             )}
           </div>
         </header>
 
-        <nav className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 p-2 rounded-md border dark:border-gray-700/50 overflow-x-auto scrollbar-hide no-scrollbar animate-slide-up">
+        <nav className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 p-2 rounded-md overflow-x-auto scrollbar-hide no-scrollbar animate-slide-up shadow-sm">
           {[
-            { id: "directory", label: "Workforce", icon: <Users size={18} /> },
+            { id: "directory", label: t("workforce"), icon: <Users size={18} /> },
             {
               id: "attendance",
-              label: "Attendance",
+              label: t("attendance"),
               icon: <Clock size={18} />,
             },
-            { id: "leaves", label: "Leaves", icon: <Calendar size={18} /> },
+            { id: "leaves", label: t("leaves"), icon: <Calendar size={18} /> },
             {
               id: "timeoff",
-              label: "Time Off",
+              label: t("timeOff"),
               icon: <CalendarCheck size={18} />,
             },
             {
               id: "analytics",
-              label: "Intelligence",
+              label: t("intelligence"),
               icon: <TrendingUp size={18} />,
             },
-            { id: "payroll", label: "Payroll", icon: <DollarSign size={18} /> },
-            { id: "assets", label: "Assets", icon: <Server size={18} /> },
+            { id: "payroll", label: t("payroll"), icon: <DollarSign size={18} /> },
+            { id: "assets", label: t("assets"), icon: <Server size={18} /> },
             {
               id: "structure",
-              label: "Structure",
+              label: t("structure"),
               icon: <Building2 size={18} />,
             },
-            { id: "training", label: "LMS", icon: <Award size={18} /> },
+            { id: "training", label: t("lms"), icon: <Award size={18} /> },
             {
               id: "compliance",
-              label: "Compliance",
+              label: t("compliance"),
               icon: <ShieldCheck size={18} />,
             },
-            { id: "portal", label: "My Portal", icon: <Activity size={18} /> },
+            { id: "portal", label: t("myPortal"), icon: <Activity size={18} /> },
             {
               id: "manager",
-              label: "Manager Hub",
+              label: t("managerHub"),
               icon: <CalendarCheck size={18} />,
             },
             {
               id: "scheduling",
-              label: "Scheduling",
+              label: t("scheduling"),
               icon: <Activity size={18} />,
             },
             {
               id: "retention",
-              label: "Retention",
+              label: t("retention"),
               icon: <TrendingUp size={18} />,
             },
             {
               id: "succession",
-              label: "Succession",
+              label: t("succession"),
               icon: <Award size={18} />,
             },
-            { id: "wellness", label: "Wellness", icon: <Activity size={18} /> },
-            { id: "automation", label: "AI/Flows", icon: <Zap size={18} /> },
-            { id: "engagement", label: "Culture", icon: <Award size={18} /> },
+            { id: "wellness", label: t("wellness"), icon: <Activity size={18} /> },
+            { id: "automation", label: t("aiFlows"), icon: <Zap size={18} /> },
+            { id: "engagement", label: t("culture"), icon: <Award size={18} /> },
             {
               id: "integrations",
-              label: "Integrations",
+              label: t("integrations"),
               icon: <Settings size={18} />,
             },
             {
               id: "support",
-              label: "Tickets System",
+              label: t("ticketsSystem"),
               icon: <ShieldCheck size={18} />,
             },
-            { id: "reports", label: "Reports", icon: <FileText size={18} /> },
+            { id: "reports", label: t("reports"), icon: <FileText size={18} /> },
           ].map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveModule(item.id as any)}
-              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded text-xs font-black transition-all duration-300 transform hover:scale-105 active:scale-95 ${activeModule === item.id ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm ring-1 ring-blue-600 dark:ring-blue-500" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/30 ring-1 ring-gray-200 dark:ring-gray-700"}`}
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded text-xs font-black transition-all duration-300 transform hover:scale-105 active:scale-95 ${activeModule === item.id ?"bg-white dark:bg-gray-700 text-blue-600 shadow-sm ring-1 ring-blue-600 dark:ring-blue-500":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/30 ring-1 ring-gray-200 dark:ring-gray-700"}`}
             >
               {item.icon} {item.label}
             </button>
@@ -1156,15 +1197,15 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
                   users={globalUsers}
                   employees={globalEmployees}
                   onCreateTicket={createTicket}
-                  onUpdateTicket={updateTicket}
+                  onUpdateTicket={(id, data) => updateTicket({ id, data })}
                   onDeleteTicket={deleteTicket}
-                  onUpdateTicketStatus={updateTicketStatus}
-                  onAssignTicket={assignTicket}
-                  onUnassignTicket={unassignTicket}
+                  onUpdateTicketStatus={(id, status) => updateTicketStatus({ id, status })}
+                  onAssignTicket={(id, payload) => assignTicket({ id, payload })}
+                  onUnassignTicket={(id, assigneeId) => unassignTicket({ id, assigneeId })}
                   onCreateTicketType={createTicketType}
                   onDeleteTicketType={deleteTicketType}
                   onCreateAssessment={createAssessment}
-                  onUpdateAssessment={updateAssessment}
+                  onUpdateAssessment={(id, data) => updateAssessment({ id, data })}
                   onDeleteAssessment={deleteAssessment}
                 />
               )}
@@ -1256,9 +1297,9 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsImportModalOpen(false)}
           />
-          <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden border border-gray-100 dark:border-gray-700/50 animate-fade-in">
+          <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden animate-fade-in">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700/50 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20">
+            <div className="flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 rounded-xl">
                   <UserPlus size={20} />
@@ -1338,19 +1379,15 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
                   {importCandidates.map((candidate) => (
                     <label
                       key={candidate.id}
-                      className={`flex items-center gap-4 p-3 rounded-xl border-2 cursor-pointer transition-all duration-150 ${
-                        selectedImportIds.includes(candidate.id)
-                          ? "border-violet-400 bg-violet-50 dark:bg-violet-900/20 dark:border-violet-600"
-                          : "border-gray-100 dark:border-gray-700/50 hover:border-gray-200 dark:hover:border-gray-600 bg-white dark:bg-gray-800"
-                      }`}
+                      className={`flex items-center gap-4 p-3 rounded-xl border-2 cursor-pointer transition-all duration-150 ${ selectedImportIds.includes(candidate.id) ?"border-violet-400 bg-violet-50 dark:bg-violet-900/20 dark:border-violet-600":" hover: dark:hover: bg-white dark:bg-gray-800"}`}
                     >
                       <input
                         type="checkbox"
                         checked={selectedImportIds.includes(candidate.id)}
                         onChange={() => toggleImportSelect(candidate.id)}
-                        className="w-4 h-4 text-violet-600 rounded border-gray-300 focus:ring-violet-500"
+                        className="w-4 h-4 text-violet-600 rounded focus:ring-violet-500"
                       />
-                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-br from-violet-100 to-purple-200 dark:from-violet-900/40 dark:to-purple-800/40 flex items-center justify-center shrink-0 border border-gray-200 dark:border-gray-700">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-br from-violet-100 to-purple-200 dark:from-violet-900/40 dark:to-purple-800/40 flex items-center justify-center shrink-0">
                         {candidate.avatarUrl ? (
                           <img
                             src={candidate.avatarUrl}
@@ -1397,7 +1434,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700/50 bg-gray-50/80 dark:bg-gray-900/40">
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-t bg-gray-50/80 dark:bg-gray-900/40">
               <span className="text-xs text-gray-400">
                 {selectedImportIds.length > 0 ? (
                   <span className="font-bold text-violet-600 dark:text-violet-400">

@@ -1,18 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Spinner,
-  TextInput,
-  Select,
-  Modal,
-  Label,
-  Textarea,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Spinner, TextInput, Select, Modal, Label, Textarea, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
 import {
   X,
   LifeBuoy,
@@ -37,6 +24,7 @@ import { format } from "date-fns";
 import toast from "react-hot-toast";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import { DataTable, type DataTableColumn } from "../components/ui/DataTable";
+import ModernPagination from "@/components/common/ModernPagination";
 
 const SupportPage = ({ isDark, setIsDark }: any) => {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -49,6 +37,9 @@ const SupportPage = ({ isDark, setIsDark }: any) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -339,7 +330,10 @@ const SupportPage = ({ isDark, setIsDark }: any) => {
                 type="text"
                 placeholder="Search by title or ticket ID..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="w-full"
                 sizing="md"
               />
@@ -347,7 +341,10 @@ const SupportPage = ({ isDark, setIsDark }: any) => {
             <div className="w-1/3">
               <Select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="rounded"
               >
                 <option value="">All Statuses</option>
@@ -363,7 +360,7 @@ const SupportPage = ({ isDark, setIsDark }: any) => {
         {/* Tickets List */}
         <DataTable
           columns={columns}
-          data={filteredTickets}
+          data={filteredTickets.slice((currentPage - 1) * pageSize, currentPage * pageSize)}
           loading={loading}
           keyExtractor={(ticket) => ticket.id}
           emptyMessage="No Tickets Found"
@@ -372,6 +369,23 @@ const SupportPage = ({ isDark, setIsDark }: any) => {
             <LifeBuoy size={64} className="mx-auto text-gray-200 mb-4" />
           }
         />
+        
+        {!loading && filteredTickets.length > 0 && (
+          <div className="mt-4">
+            <ModernPagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(filteredTickets.length / pageSize)}
+              onPageChange={setCurrentPage}
+              totalItems={filteredTickets.length}
+              pageSize={pageSize}
+              onPageSizeChange={(size) => {
+                setPageSize(size);
+                setCurrentPage(1);
+              }}
+              showInfo={true}
+            />
+          </div>
+        )}
 
         {/* Create Ticket Modal */}
         <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>

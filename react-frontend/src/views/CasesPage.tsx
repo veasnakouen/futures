@@ -1,16 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Button,
-  Badge,
-  Spinner,
-  Modal,
-  Label,
-  TextInput,
-  Select,
-  Textarea,
-  ModalBody,
-  Card,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Spinner, Modal, Label, TextInput, Select, Textarea, ModalBody} from '@/lib/flowbite-compat';
 import {
   X,
   Plus,
@@ -25,6 +14,7 @@ import {
   Calendar,
 } from "lucide-react";
 import Layout from "@/components/common/Layout";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import toast from "react-hot-toast";
 import ConfirmModal from "@/components/common/ConfirmModal";
@@ -32,6 +22,7 @@ import ModernPagination from "@/components/common/ModernPagination";
 import { format } from "date-fns";
 
 const CasesPage = ({ isDark, setIsDark }: any) => {
+  const { t } = useTranslation();
   const [cases, setCases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -214,11 +205,11 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
       <div className="animate-fade-in pb-10 space-y-6">
         {/* Modern Analytics Header */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-none shadow-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-md">
+          <div className="shadow-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-md p-6">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">
-                  Total Active Cases
+                  {t("totalActiveCases")}
                 </p>
                 <h3 className="text-4xl font-black mt-1">
                   {metrics.total - metrics.closed}
@@ -228,12 +219,12 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                 <Briefcase size={24} />
               </div>
             </div>
-          </Card>
-          <Card className="border-none shadow-xl dark:bg-gray-800 rounded-md">
+          </div>
+          <div className="shadow-xl bg-white dark:bg-gray-800 rounded-md p-6">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                  High Priority Alerts
+                  {t("highPriorityAlerts")}
                 </p>
                 <h3 className="text-4xl font-black mt-1 text-rose-500">
                   {metrics.highPriority}
@@ -243,12 +234,12 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                 <CheckCircle2 size={24} />
               </div>
             </div>
-          </Card>
-          <Card className="border-none shadow-xl dark:bg-gray-800 rounded-md">
+          </div>
+          <div className="shadow-xl bg-white dark:bg-gray-800 rounded-md p-6">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                  Resolved Cases
+                  {t("resolvedCases")}
                 </p>
                 <h3 className="text-4xl font-black mt-1 dark:text-white">
                   {metrics.closed}
@@ -258,16 +249,16 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                 <FileText size={24} />
               </div>
             </div>
-          </Card>
+          </div>
         </div>
 
         {/* Master-Detail Split Pane */}
         <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-280px)] min-h-[600px]">
-          {/* Left Pane: Case List */}
-          <div className="w-full lg:w-1/3 flex flex-col gap-4 h-full bg-white dark:bg-gray-800 rounded-md shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="p-4 border-b dark:border-gray-700">
+          {/* Cases List Area */}
+          <div className="w-full lg:w-1/3 flex flex-col gap-4 h-full bg-white dark:bg-gray-800 rounded-md shadow-sm overflow-hidden">
+            <div className="p-4 border-b">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold dark:text-white">Cases</h2>
+                <h2 className="text-xl font-bold dark:text-white">{t("cases")}</h2>
                 <Button
                   size="sm"
                   onClick={() => {
@@ -276,7 +267,7 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                   }}
                   className="rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 border-none shadow-lg shadow-blue-500/30 transition-all hover:scale-105"
                 >
-                  <Plus size={16} className="mr-1" /> New
+                  <Plus size={16} className="mr-1" /> {t("new")}
                 </Button>
               </div>
 
@@ -289,9 +280,9 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                       setStatusFilter(f);
                       setPage(0);
                     }}
-                    className={`flex-1 py-1.5 text-xs font-bold rounded transition-all ${statusFilter === f ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
+                    className={`flex-1 py-1.5 text-xs font-bold rounded transition-all ${statusFilter === f ?"bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400":"text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
                   >
-                    {f}
+                    {t(f.toLowerCase())}
                   </button>
                 ))}
               </div>
@@ -317,7 +308,7 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                   <div
                     key={kase.id}
                     onClick={() => setSelectedCase(kase)}
-                    className={`p-4 rounded-md cursor-pointer transition-all border ${selectedCase?.id === kase.id ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/20 dark:border-blue-500 shadow-sm ring-2 ring-blue-500/20" : "border-gray-100 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:-translate-y-0.5"}`}
+                    className={`p-4 rounded-md cursor-pointer transition-all ${selectedCase?.id === kase.id ?"bg-blue-50/50 dark:bg-blue-900/20 shadow-sm ring-2 ring-blue-500/50":"bg-white dark:bg-gray-800 shadow-sm hover:shadow-md hover:-translate-y-0.5"}`}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-sm font-bold dark:text-white leading-tight truncate pr-2">
@@ -365,10 +356,10 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
           </div>
 
           {/* Right Pane: Detail View */}
-          <div className="w-full lg:w-2/3 h-full bg-white dark:bg-gray-800 rounded-md shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col overflow-hidden relative">
+          <div className="w-full lg:w-2/3 h-full bg-white dark:bg-gray-800 rounded-md shadow-sm flex flex-col overflow-hidden relative">
             {selectedCase ? (
               <div className="flex flex-col h-full animate-fade-in">
-                <div className="p-6 md:p-8 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-gray-900/50">
+                <div className="p-6 md:p-8 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-gray-900/50">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
                       <Badge
@@ -442,7 +433,7 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                         <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">
                           Case Description
                         </h4>
-                        <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-md text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed text-sm border dark:border-gray-700 shadow-sm">
+                        <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-md text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed text-sm shadow-sm ring-1 ring-black/5 dark:ring-white/5">
                           {selectedCase.description ||
                             "No detailed description provided for this case."}
                         </div>
@@ -452,7 +443,7 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                         <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">
                           Intervention Protocol
                         </h4>
-                        <div className="flex items-center gap-4 p-5 border dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 shadow-sm">
+                        <div className="flex items-center gap-4 p-5 rounded-md bg-white dark:bg-gray-800 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
                           <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 shadow-inner">
                             <FileText size={20} />
                           </div>
@@ -474,8 +465,8 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                         <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">
                           Client Profile
                         </h4>
-                        <div className="p-6 border dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-center shadow-sm">
-                          <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-700 mx-auto flex items-center justify-center text-gray-400 mb-4 shadow-inner border border-gray-200 dark:border-gray-600">
+                        <div className="p-6 rounded-md bg-white dark:bg-gray-800 text-center shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+                          <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-700 mx-auto flex items-center justify-center text-gray-400 mb-4 shadow-inner">
                             <User size={32} />
                           </div>
                           <p className="font-black dark:text-white text-base truncate">
@@ -500,7 +491,7 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-gray-50/50 dark:bg-gray-900/20">
-                <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-5 shadow-inner border border-gray-200 dark:border-gray-700">
+                <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-5 shadow-inner">
                   <Briefcase
                     size={40}
                     className="text-gray-300 dark:text-gray-600"
@@ -524,14 +515,14 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
           onClose={() => setIsModalOpen(false)}
           size="md"
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <span className="text-lg font-bold dark:text-white">
               {isEditMode ? "Edit Case Detail" : "Open New Case"}
             </span>
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+              className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm"
             >
               <X size={20} />
             </button>
@@ -609,7 +600,7 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700 mt-6">
+              <div className="flex justify-end gap-3 pt-4 border-t mt-6">
                 <Button
                   outline
                   color="gray"

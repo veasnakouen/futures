@@ -14,7 +14,7 @@ const CustomModalHeader: React.FC<CustomModalHeaderProps> = ({
   icon,
 }) => {
   return (
-    <div className="relative border-b dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4 flex justify-between items-start rounded-t-lg">
+    <div className="relative border-b bg-white dark:bg-gray-800 px-6 py-4 flex justify-between items-start rounded-t-lg">
       {" "}
       <div className="flex flex-col">
         {" "}
@@ -32,7 +32,7 @@ const CustomModalHeader: React.FC<CustomModalHeaderProps> = ({
       <button
         type="button"
         onClick={onClose}
-        className="text-red-500 bg-transparent border border-red-500/50 hover:bg-red-50 hover:text-red-600 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all z-50"
+        className="text-red-500 bg-transparent border-red-500/50 hover:bg-red-50 hover:text-red-600 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all z-50"
       >
         {" "}
         <X size={24} /> <span className="sr-only">Close modal</span>{" "}

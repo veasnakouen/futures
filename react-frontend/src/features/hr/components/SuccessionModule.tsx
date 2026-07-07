@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Spinner} from '@/lib/flowbite-compat';
 import { Award, ShieldAlert, Zap, Target } from "lucide-react";
 import toast from "react-hot-toast";
 import api from '@/services/api';
@@ -103,7 +92,7 @@ const SuccessionModule: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Critical Roles Defined
@@ -118,9 +107,9 @@ const SuccessionModule: React.FC = () => {
           <p className="text-[9px] font-bold text-rose-500 uppercase mt-2">
             Requires active backup mapping
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Uncovered Roles
@@ -144,9 +133,9 @@ const SuccessionModule: React.FC = () => {
               ? "Zero active successors identified"
               : "All critical roles covered"}
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Successors Identified
@@ -161,9 +150,9 @@ const SuccessionModule: React.FC = () => {
           <p className="text-[9px] font-bold text-gray-400 uppercase mt-2">
             Across executive and tech nodes
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Readiness Index
@@ -178,12 +167,12 @@ const SuccessionModule: React.FC = () => {
           <p className="text-[9px] font-bold text-emerald-500 uppercase mt-2">
             Succession health meets threshold
           </p>
-        </Card>
+        </div>
       </div>
 
       {/* Pipeline Ledger */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
             <Target size={20} className="text-blue-600" /> Executive Succession
             Pipeline
@@ -261,10 +250,10 @@ const SuccessionModule: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-        </Card>
+        </div>
 
         {/* Gap Analysis */}
-        <Card className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md flex flex-col justify-between">
+        <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md flex flex-col justify-between">
           <div>
             <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
               <ShieldAlert size={20} className="text-rose-500" /> Vulnerability
@@ -298,7 +287,7 @@ const SuccessionModule: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t dark:border-gray-700">
+          <div className="mt-8 pt-6 border-t">
             <Button
               color="blue"
               size="sm"
@@ -310,7 +299,7 @@ const SuccessionModule: React.FC = () => {
               Launch Successor Auto-Match
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

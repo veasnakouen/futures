@@ -1,17 +1,5 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Button,
-  Avatar,
-  Badge,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  TextInput,
-  Label,
-  Select,
-} from '@/lib/flowbite-compat';
+import {Button, Avatar, Badge, Modal, ModalHeader, ModalBody, ModalFooter, TextInput, Label, Select} from '@/lib/flowbite-compat';
 import {
   X,
   Building2,
@@ -28,7 +16,13 @@ import {
   Shield,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { useHRStore } from '@/store/hrStore';
+import { 
+  useLookups, 
+  useCreateDepartment, 
+  useDeleteDepartment, 
+  useCreatePosition, 
+  useDeletePosition 
+} from "../../../hooks/useHR";
 
 interface Employee {
   id: number;
@@ -95,15 +89,13 @@ const StructureModule: React.FC<StructureModuleProps> = ({
   const [newNodeName, setNewNodeName] = useState("");
   const [nodeParent, setNodeParent] = useState("");
 
-  // Use Zustand store for dynamic lookups
-  const {
-    globalDepartments,
-    globalPositions,
-    createDepartment,
-    deleteDepartment,
-    createPosition,
-    deletePosition,
-  } = useHRStore();
+  const { data: globalDepartments = [] } = useLookups("departments");
+  const { data: globalPositions = [] } = useLookups("positions");
+  
+  const { mutateAsync: createDepartment } = useCreateDepartment();
+  const { mutateAsync: deleteDepartment } = useDeleteDepartment();
+  const { mutateAsync: createPosition } = useCreatePosition();
+  const { mutateAsync: deletePosition } = useDeletePosition();
 
   // Fallback to local customDepts/customPositions if backend lists are empty
   const deptsList =
@@ -387,7 +379,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       {/* Top Header Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/50 dark:bg-gray-800/50 p-6 rounded-md border dark:border-gray-700/50 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/50 dark:bg-gray-800/50 p-6 rounded-md shadow-sm">
         <div>
           <h3 className="text-2xl font-black dark:text-white uppercase tracking-tight">
             Organization Architecture
@@ -415,12 +407,12 @@ const StructureModule: React.FC<StructureModuleProps> = ({
       </div>
 
       {/* Visual Org Chart Container */}
-      <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-md flex flex-col items-center bg-white/50 backdrop-blur-xl relative overflow-visible">
+      <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-md flex flex-col items-center bg-white/50 backdrop-blur-xl relative overflow-visible">
         <div className="relative w-full flex flex-col items-center">
           {/* 1. Parent Node (Executive Board) */}
           <div className="relative z-10">
             <div className="p-6 bg-gradient-to-br from-indigo-900 via-indigo-950 to-blue-950 text-white rounded-md border-4 border-blue-600 shadow-md flex flex-col items-center w-64 text-center">
-              <div className="w-12 h-12 rounded-md bg-blue-500/20 flex items-center justify-center mb-3 border border-blue-500/30">
+              <div className="w-12 h-12 rounded-md bg-blue-500/20 flex items-center justify-center mb-3 border-blue-500/30">
                 <Shield className="text-blue-400" size={24} />
               </div>
               <h5 className="font-black text-base uppercase tracking-tight">
@@ -437,7 +429,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
 
           {/* 2. Responsive Dynamic Department Nodes */}
           <div
-            className={`grid grid-cols-1 ${gridColsMap[processedDepts.length] || "md:grid-cols-3"} gap-8 md:gap-4 lg:gap-8 w-full relative`}
+            className={`grid grid-cols-1 ${gridColsMap[processedDepts.length] ||"md:grid-cols-3"} gap-8 md:gap-4 lg:gap-8 w-full relative`}
           >
             {processedDepts.map((dept, i) => {
               const isExpanded = expandedDeptId === dept.id;
@@ -450,13 +442,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
                   <div className="hidden md:block absolute top-0 left-0 right-0 h-6">
                     {/* Horizontal connecting line segments */}
                     <div
-                      className={`absolute top-0 h-0.5 bg-gray-200 dark:bg-gray-700 ${
-                        i === 0
-                          ? "left-1/2 right-0"
-                          : i === processedDepts.length - 1
-                            ? "left-0 right-1/2"
-                            : "left-0 right-0"
-                      }`}
+                      className={`absolute top-0 h-0.5 bg-gray-200 dark:bg-gray-700 ${ i === 0 ?"left-1/2 right-0": i === processedDepts.length - 1 ?"left-0 right-1/2":"left-0 right-0"}`}
                     />
                     {/* Vertical drop line segment */}
                     <div className="absolute top-0 left-1/2 -translate-y-0 w-0.5 h-6 bg-gray-200 dark:bg-gray-700" />
@@ -471,7 +457,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
                       onClick={() =>
                         setExpandedDeptId(isExpanded ? null : dept.id)
                       }
-                      className={`p-6 bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 rounded-md hover:bg-white/80 dark:hover:bg-gray-850 hover:border-blue-500/40 hover:shadow-md transition-all duration-300 cursor-pointer w-full max-w-sm text-center group ${isExpanded ? "ring-1 ring-blue-500/40 bg-white/95 dark:bg-gray-800 border-transparent shadow-md" : "scale-98 hover:scale-100"}`}
+                      className={`p-6 bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl /50  rounded-md hover:bg-white/80 dark:hover:bg-gray-850 hover:border-blue-500/40 hover:shadow-md transition-all duration-300 cursor-pointer w-full max-w-sm text-center group ${isExpanded ?"ring-1 ring-blue-500/40 bg-white/95 dark:bg-gray-800 border-transparent shadow-md":"scale-98 hover:scale-100"}`}
                     >
                       <h6 className="font-black dark:text-white text-base tracking-tight uppercase leading-none mb-1.5">
                         {dept.name}
@@ -500,7 +486,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
 
                     {/* Dropdown Employee List inside the Org Tree */}
                     {isExpanded && (
-                      <div className="w-full max-w-sm mt-3 p-4 bg-gray-50/80 dark:bg-gray-900/60 border dark:border-gray-855 rounded-md shadow-inner space-y-2.5 animate-slide-up overflow-y-auto max-h-60 custom-scrollbar relative z-30">
+                      <div className="w-full max-w-sm mt-3 p-4 bg-gray-50/80 dark:bg-gray-900/60 rounded-md shadow-inner space-y-2.5 animate-slide-up overflow-y-auto max-h-60 custom-scrollbar relative z-30">
                         <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1 text-left">
                           Department Roster
                         </p>
@@ -514,7 +500,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
                             {dept.members.map((emp) => (
                               <div
                                 key={emp.id}
-                                className="flex items-center justify-between p-2.5 bg-white dark:bg-gray-800/80 rounded-md border dark:border-gray-700/50 shadow-sm hover:scale-102 transition-all"
+                                className="flex items-center justify-between p-2.5 bg-white dark:bg-gray-800/80 rounded-md shadow-sm hover:scale-102 transition-all"
                               >
                                 <div className="flex items-center gap-3">
                                   <Avatar img={emp.photo} rounded size="sm" />
@@ -547,10 +533,10 @@ const StructureModule: React.FC<StructureModuleProps> = ({
                               .map((cp, idx) => (
                                 <div
                                   key={`vacant-${idx}`}
-                                  className="flex items-center justify-between p-2.5 bg-blue-50/20 dark:bg-blue-950/10 rounded-md border border-dashed border-blue-200/50 dark:border-blue-800/30 shadow-sm hover:scale-102 transition-all"
+                                  className="flex items-center justify-between p-2.5 bg-blue-50/20 dark:bg-blue-950/10 rounded-md border-blue-200/50 dark:border-blue-800/30 shadow-sm hover:scale-102 transition-all"
                                 >
                                   <div className="flex items-center gap-3 text-left">
-                                    <div className="w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-950 flex items-center justify-center border dark:border-blue-900">
+                                    <div className="w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-950 flex items-center justify-center dark:border-blue-900">
                                       <Briefcase
                                         size={12}
                                         className="text-blue-500"
@@ -583,12 +569,12 @@ const StructureModule: React.FC<StructureModuleProps> = ({
             })}
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Bottom Position Management and Reporting Matrix Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
         {/* Position Management */}
-        <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm bg-white/50 backdrop-blur-xl">
+        <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm bg-white/50 backdrop-blur-xl">
           <h4 className="font-black text-lg dark:text-white uppercase tracking-tight mb-6">
             Position Management
           </h4>
@@ -596,7 +582,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
             {activePositions.map((pos, i) => (
               <div
                 key={i}
-                className="p-4 bg-white/40 dark:bg-gray-700/20 border dark:border-gray-700/30 rounded-md flex justify-between items-center hover:scale-101 transition-all"
+                className="p-4 bg-white/40 dark:bg-gray-700/20 rounded-md flex justify-between items-center hover:scale-101 transition-all"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center">
@@ -620,10 +606,10 @@ const StructureModule: React.FC<StructureModuleProps> = ({
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
         {/* Reporting Matrix */}
-        <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm bg-white/50 backdrop-blur-xl flex flex-col justify-between">
+        <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-sm bg-white/50 backdrop-blur-xl flex flex-col justify-between">
           <div>
             <div className="w-10 h-10 rounded-md bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 flex items-center justify-center mb-4">
               <Network size={20} />
@@ -641,11 +627,11 @@ const StructureModule: React.FC<StructureModuleProps> = ({
           <Button
             color="light"
             onClick={() => setIsMatrixOpen(true)}
-            className="rounded-md w-full font-black uppercase text-[10px] tracking-widest py-3 border-gray-200 dark:border-gray-700 shadow-sm"
+            className="rounded-md w-full font-black uppercase text-[10px] tracking-widest py-3 shadow-sm"
           >
             Open Matrix Editor
           </Button>
-        </Card>
+        </div>
       </div>
 
       {/* ======================================================== */}
@@ -662,12 +648,12 @@ const StructureModule: React.FC<StructureModuleProps> = ({
           <button
             type="button"
             onClick={() => setIsManageOpen(false)}
-            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm"
           >
             <X size={20} />
           </button>
         </div>
-        <ModalHeader className="border-b dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-3xl">
+        <ModalHeader className="border-b bg-white dark:bg-gray-800 rounded-t-3xl">
           <div className="flex flex-col">
             <h3 className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
               Manage Departments
@@ -732,7 +718,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
             ))}
           </div>
         </ModalBody>
-        <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 rounded-b-3xl">
+        <ModalFooter className="bg-white dark:bg-gray-800 border-t rounded-b-3xl">
           <div className="flex justify-end w-full">
             <Button
               color="light"
@@ -751,7 +737,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
         onClose={() => setIsAddNodeOpen(false)}
         size="md"
       >
-        <ModalHeader className="border-b dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-3xl">
+        <ModalHeader className="border-b bg-white dark:bg-gray-800 rounded-t-3xl">
           <div className="flex flex-col">
             <h3 className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
               Initialize Hierarchy Node
@@ -817,7 +803,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
             )}
           </form>
         </ModalBody>
-        <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 rounded-b-3xl">
+        <ModalFooter className="bg-white dark:bg-gray-800 border-t rounded-b-3xl">
           <div className="flex justify-end gap-3 w-full">
             <Button
               color="light"
@@ -844,7 +830,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
         onClose={() => setIsMatrixOpen(false)}
         size="xl"
       >
-        <ModalHeader className="border-b dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-3xl">
+        <ModalHeader className="border-b bg-white dark:bg-gray-800 rounded-t-3xl">
           <div className="flex flex-col">
             <h3 className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
               Reporting Matrix Editor
@@ -855,8 +841,8 @@ const StructureModule: React.FC<StructureModuleProps> = ({
           </div>
         </ModalHeader>
         <ModalBody className="bg-white dark:bg-gray-800 p-8 space-y-6">
-          <div className="p-6 bg-gray-50 dark:bg-gray-900/60 rounded-md border border-dashed dark:border-gray-700 text-center space-y-4">
-            <div className="w-16 h-16 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center mx-auto border dark:border-gray-800">
+          <div className="p-6 bg-gray-50 dark:bg-gray-900/60 rounded-md text-center space-y-4">
+            <div className="w-16 h-16 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center mx-auto">
               <Network size={28} />
             </div>
             <h5 className="font-black text-base dark:text-white uppercase tracking-tight">
@@ -874,7 +860,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
               Active reporting nodes
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 bg-white/60 dark:bg-gray-700/20 border dark:border-gray-700/50 rounded-md">
+              <div className="p-4 bg-white/60 dark:bg-gray-700/20 rounded-md">
                 <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">
                   Operational Lead
                 </p>
@@ -885,7 +871,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
                   Top-level root node
                 </p>
               </div>
-              <div className="p-4 bg-white/60 dark:bg-gray-700/20 border dark:border-gray-700/50 rounded-md">
+              <div className="p-4 bg-white/60 dark:bg-gray-700/20 rounded-md">
                 <p className="text-[8px] font-black text-green-500 uppercase tracking-widest">
                   Sub-levels
                 </p>
@@ -899,7 +885,7 @@ const StructureModule: React.FC<StructureModuleProps> = ({
             </div>
           </div>
         </ModalBody>
-        <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 rounded-b-3xl">
+        <ModalFooter className="bg-white dark:bg-gray-800 border-t rounded-b-3xl">
           <div className="flex justify-end w-full">
             <Button
               color="light"

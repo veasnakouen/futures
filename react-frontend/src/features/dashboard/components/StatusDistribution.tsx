@@ -35,12 +35,12 @@ const StatusDistribution: React.FC<StatusDistributionProps> = ({
       duration={600}
       triggerOnce={true}
     >
-      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
+      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
         <div className="flex items-center justify-between mb-8 shrink-0">
           <h4 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
             Client Status
           </h4>
-          <span className="text-xs bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-900/30 px-2.5 py-0.5 rounded-md font-bold">
+          <span className="text-xs bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-100/50 dark:border-blue-900/30 px-2.5 py-0.5 rounded-md font-bold">
             {total} Total
           </span>
         </div>
@@ -87,7 +87,7 @@ const StatusDistribution: React.FC<StatusDistributionProps> = ({
           {data?.map((item: any, idx: number) => (
             <div
               key={idx}
-              className="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-gray-100/50 dark:hover:bg-gray-800/70 border border-gray-50 dark:border-transparent hover:border-gray-100 dark:hover:border-gray-700/50 rounded-md transition-all duration-200 group cursor-pointer"
+              className="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-gray-100/50 dark:hover:bg-gray-800/70 dark:border-transparent hover: dark:hover: /50 rounded-md transition-all duration-200 group cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div
@@ -98,7 +98,7 @@ const StatusDistribution: React.FC<StatusDistributionProps> = ({
                   {item.name}
                 </span>
               </div>
-              <span className="text-sm font-black text-gray-900 dark:text-white bg-white dark:bg-gray-800 px-3 py-1 rounded-md shadow-sm border border-gray-100/50 dark:border-gray-700/50 group-hover:shadow group-hover:border-blue-500/20 transition-all duration-200">
+              <span className="text-sm font-black text-gray-900 dark:text-white bg-white dark:bg-gray-800 px-3 py-1 rounded-md shadow-sm /50 group-hover:shadow group-hover:border-blue-500/20 transition-all duration-200">
                 {item.value}
               </span>
             </div>

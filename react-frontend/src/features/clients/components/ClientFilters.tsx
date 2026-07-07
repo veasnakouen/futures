@@ -8,7 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { Dropdown, DropdownItem } from '@/lib/flowbite-compat';
+import {Dropdown, DropdownItem} from '@/lib/flowbite-compat';
 
 interface ClientFiltersProps {
   filters: { search: string; branch: string; status: string };
@@ -17,10 +17,8 @@ interface ClientFiltersProps {
   setViewMode: (mode: "grid" | "list") => void;
   visibleColumns: string[];
   setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
-  gridDensity: "large" | "medium" | "compact";
-  setGridDensity: React.Dispatch<
-    React.SetStateAction<"large" | "medium" | "compact">
-  >;
+  itemsPerRow: string;
+  setItemsPerRow: (size: string) => void;
 }
 
 const ClientFilters: React.FC<ClientFiltersProps> = ({
@@ -30,13 +28,13 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
   setViewMode,
   visibleColumns,
   setVisibleColumns,
-  gridDensity,
-  setGridDensity,
+  itemsPerRow,
+  setItemsPerRow,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30 mb-4 border border-gray-100 dark:border-gray-700/50 transition-all">
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30 mb-4 transition-all">
       <div className="flex flex-col gap-3">
         {/* Top Row: Search & Toggle */}
         <div className="flex gap-3 items-center w-full">
@@ -52,7 +50,7 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
               onChange={(e) =>
                 setFilters({ ...filters, search: e.target.value })
               }
-              className="w-full pl-12 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-inner"
+              className="w-full pl-12 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-inner"
             />
             {filters.search && (
               <button
@@ -66,7 +64,7 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-md border transition-all text-sm font-bold shadow-sm ${isExpanded ? "bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400" : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-md transition-all text-sm font-bold shadow-sm ${isExpanded ?"bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400":"bg-white dark:bg-gray-800  text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
           >
             <Filter
               size={16}
@@ -83,16 +81,16 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
 
         {/* Accordion Content */}
         <div
-          className={`grid transition-all duration-300 ease-in-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+          className={`grid transition-all duration-300 ease-in-out ${isExpanded ?"grid-rows-[1fr] opacity-100":"grid-rows-[0fr] opacity-0"}`}
         >
           <div className="overflow-hidden">
-            <div className="flex flex-wrap items-center gap-3 pt-3 mt-1 border-t border-gray-100 dark:border-gray-700/50">
+            <div className="flex flex-wrap items-center gap-3 pt-3 mt-1 border-t">
               <select
                 value={filters.branch}
                 onChange={(e) =>
                   setFilters({ ...filters, branch: e.target.value })
                 }
-                className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md px-4 py-2.5 outline-none dark:text-white focus:ring-2 focus:ring-blue-500 transition-all font-bold text-xs uppercase tracking-widest min-w-[140px]"
+                className="bg-gray-50 dark:bg-gray-700/50 rounded-md px-4 py-2.5 outline-none dark:text-white focus:ring-2 focus:ring-blue-500 transition-all font-bold text-xs uppercase tracking-widest min-w-[140px]"
               >
                 <option value="">All Branches</option>
                 <option value="Phnom Penh">Phnom Penh</option>
@@ -105,7 +103,7 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
                 onChange={(e) =>
                   setFilters({ ...filters, status: e.target.value })
                 }
-                className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md px-4 py-2.5 outline-none dark:text-white focus:ring-2 focus:ring-blue-500 transition-all font-bold text-xs uppercase tracking-widest min-w-[140px]"
+                className="bg-gray-50 dark:bg-gray-700/50 rounded-md px-4 py-2.5 outline-none dark:text-white focus:ring-2 focus:ring-blue-500 transition-all font-bold text-xs uppercase tracking-widest min-w-[140px]"
               >
                 <option value="">All Status</option>
                 <option value="Active">Active</option>
@@ -113,12 +111,12 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
                 <option value="Closed">Closed</option>
               </select>
 
-              <div className="flex items-center gap-2 border-l border-gray-200 dark:border-gray-700 pl-3">
+              <div className="flex items-center gap-2 border-l pl-3">
                 {viewMode === "list" && (
                   <Dropdown
                     inline
                     label={
-                      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
                         <Filter size={16} className="text-blue-500" />
                         <span className="font-bold hidden sm:block">
                           Columns
@@ -154,62 +152,30 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
                   </Dropdown>
                 )}
                 {viewMode === "grid" && (
-                  <Dropdown
-                    inline
-                    label={
-                      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
-                        <LayoutGrid size={16} className="text-indigo-500" />
-                        <span className="font-bold hidden sm:block">
-                          Grid Size
-                        </span>
-                      </div>
-                    }
-                    arrowIcon={false}
-                  >
-                    <DropdownItem
-                      onClick={() => setGridDensity("large")}
-                      className={
-                        gridDensity === "large"
-                          ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                          : ""
-                      }
+                  <div className="flex-shrink-0">
+                    <select
+                      className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                      value={itemsPerRow}
+                      onChange={(e) => setItemsPerRow(e.target.value)}
                     >
-                      Large (3 per row)
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() => setGridDensity("medium")}
-                      className={
-                        gridDensity === "medium"
-                          ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                          : ""
-                      }
-                    >
-                      Medium (4 per row)
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() => setGridDensity("compact")}
-                      className={
-                        gridDensity === "compact"
-                          ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                          : ""
-                      }
-                    >
-                      Compact (5 per row)
-                    </DropdownItem>
-                  </Dropdown>
+                      <option value="3">3 per row</option>
+                      <option value="4">4 per row</option>
+                      <option value="5">5 per row</option>
+                    </select>
+                  </div>
                 )}
                 <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-md p-1 shrink-0">
                   <button
                     onClick={() => setViewMode("grid")}
                     title="Grid View"
-                    className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                    className={`p-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                   >
                     <LayoutGrid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
                     title="List View"
-                    className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                    className={`p-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                   >
                     <List size={16} />
                   </button>

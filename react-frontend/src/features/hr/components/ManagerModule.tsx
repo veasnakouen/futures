@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Avatar,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Avatar, Spinner} from '@/lib/flowbite-compat';
 import {
   Users,
   ClipboardCheck,
@@ -96,7 +84,7 @@ const ManagerModule: React.FC = () => {
 
       {/* Manager metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Active Direct Reports
@@ -111,9 +99,9 @@ const ManagerModule: React.FC = () => {
           <p className="text-[9px] font-bold text-gray-400 uppercase mt-2">
             Allocated across operational nodes
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Leave Requests
@@ -128,9 +116,9 @@ const ManagerModule: React.FC = () => {
           <p className="text-[9px] font-bold text-amber-500 uppercase mt-2">
             Immediate approval required
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Team Time On-Clock
@@ -143,9 +131,9 @@ const ManagerModule: React.FC = () => {
           <p className="text-[9px] font-bold text-emerald-500 uppercase mt-2">
             On-time rate above 95% target
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Team LMS Completeness
@@ -158,13 +146,13 @@ const ManagerModule: React.FC = () => {
           <p className="text-[9px] font-bold text-gray-400 uppercase mt-2">
             Average module completion index
           </p>
-        </Card>
+        </div>
       </div>
 
       {/* Leave Approvals & Direct Reports Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Pending Leave Approvals */}
-        <Card className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
             <ClipboardCheck size={20} className="text-amber-500" /> Pending
             Leave Approvals
@@ -247,10 +235,10 @@ const ManagerModule: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-        </Card>
+        </div>
 
         {/* Direct Reports Panel */}
-        <Card className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
             <Users size={20} className="text-blue-600" /> Direct Reports
             Overview
@@ -264,7 +252,7 @@ const ManagerModule: React.FC = () => {
               reports.map((rep) => (
                 <div
                   key={rep.id}
-                  className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md space-y-3 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all cursor-pointer"
+                  className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md space-y-3 border-transparent hover: dark:hover: transition-all cursor-pointer"
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
@@ -298,7 +286,7 @@ const ManagerModule: React.FC = () => {
               ))
             )}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

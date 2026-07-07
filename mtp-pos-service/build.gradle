@@ -19,6 +19,7 @@ java {
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -29,6 +30,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// gRPC Client
+	implementation 'net.devh:grpc-client-spring-boot-starter:3.1.0.RELEASE'
+	implementation 'com.mtp:mtp-grpc-stubs:1.0.1-SNAPSHOT' // Added from mavenLocal()
 
 	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
 

@@ -1,18 +1,5 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  TextInput,
-  Select,
-  Tabs,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, TextInput, Select, Tabs} from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import { format } from "date-fns";
 import {
@@ -50,20 +37,20 @@ interface SupportModuleProps {
   assessments: any[];
   users: any[];
   employees: any[];
-  onCreateTicket: (data: any) => Promise<void>;
-  onUpdateTicket: (id: number, data: any) => Promise<void>;
-  onDeleteTicket: (id: number) => Promise<void>;
-  onUpdateTicketStatus: (id: number, status: string) => Promise<void>;
+  onCreateTicket: (data: any) => Promise<any>;
+  onUpdateTicket: (id: number, data: any) => Promise<any>;
+  onDeleteTicket: (id: number) => Promise<any>;
+  onUpdateTicketStatus: (id: number, status: string) => Promise<any>;
   onAssignTicket: (
     id: number,
     payload: { assigneeId: string; assignNote: string; assignedById: string },
-  ) => Promise<void>;
-  onUnassignTicket: (id: number, assigneeId?: string) => Promise<void>;
-  onCreateTicketType: (name: string) => Promise<void>;
-  onDeleteTicketType: (id: number) => Promise<void>;
-  onCreateAssessment: (data: any) => Promise<void>;
-  onUpdateAssessment: (id: number, data: any) => Promise<void>;
-  onDeleteAssessment: (id: number) => Promise<void>;
+  ) => Promise<any>;
+  onUnassignTicket: (id: number, assigneeId?: string) => Promise<any>;
+  onCreateTicketType: (name: string) => Promise<any>;
+  onDeleteTicketType: (id: number) => Promise<any>;
+  onCreateAssessment: (data: any) => Promise<any>;
+  onUpdateAssessment: (id: number, data: any) => Promise<any>;
+  onDeleteAssessment: (id: number) => Promise<any>;
 }
 
 const SupportModule: React.FC<SupportModuleProps> = ({
@@ -351,9 +338,9 @@ const SupportModule: React.FC<SupportModuleProps> = ({
     color: string;
     actions?: { label: string; status?: string }[];
   }) => (
-    <div className="border dark:border-gray-700 rounded-md overflow-hidden bg-white dark:bg-gray-800 flex flex-col h-64">
+    <div className="rounded-md overflow-hidden bg-white dark:bg-gray-800 flex flex-col h-64">
       <div
-        className={`p-2 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700 flex justify-between items-center text-xs font-bold ${color}`}
+        className={`p-2 bg-gray-50 dark:bg-gray-900 border-b  flex justify-between items-center text-xs font-bold ${color}`}
       >
         <div className="flex items-center gap-1">
           <Icon size={14} /> {title} [Total = {ticketsList.length} ticket(s)]
@@ -416,7 +403,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
               <TableRow
                 key={t.id}
                 onClick={() => setSelectedTicketId(t.id)}
-                className={`cursor-pointer transition-colors ${selectedTicketId === t.id ? "bg-blue-100 dark:bg-blue-900/50" : "hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
+                className={`cursor-pointer transition-colors ${selectedTicketId === t.id ?"bg-blue-100 dark:bg-blue-900/50":"hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
               >
                 <TableCell className="py-2 px-2 font-mono text-blue-600">
                   0{t.id}
@@ -461,7 +448,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
         </Button>
       </div>
 
-      <Card className="rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md overflow-hidden">
+      <div className="rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md overflow-hidden">
         {/* Custom Tab Navigation */}
         <ModernTabs
           tabs={[
@@ -479,7 +466,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
           {activeTab === "new" && (
             <div className="space-y-4 animate-fade-in">
               {/* Action Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b dark:border-gray-700 pb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-4">
                 <div className="flex gap-2">
                   <Button
                     color="blue"
@@ -596,28 +583,28 @@ const SupportModule: React.FC<SupportModuleProps> = ({
               </div>
 
               {/* Ticket Table */}
-              <div className="border dark:border-gray-700 rounded-md overflow-hidden h-[500px] overflow-y-auto bg-gray-50 dark:bg-gray-900/50">
+              <div className="rounded-md overflow-hidden h-[500px] overflow-y-auto bg-gray-50 dark:bg-gray-900/50">
                 <Table hoverable>
                   <TableHead className="bg-white dark:bg-gray-800">
-                    <TableHeadCell className="py-2 text-[10px] text-center border-r dark:border-gray-700 px-2">
+                    <TableHeadCell className="py-2 text-[10px] text-center border-r px-2">
                       Ticket No
                     </TableHeadCell>
-                    <TableHeadCell className="py-2 text-[10px] text-center border-r dark:border-gray-700 px-2">
+                    <TableHeadCell className="py-2 text-[10px] text-center border-r px-2">
                       Ticket Date
                     </TableHeadCell>
-                    <TableHeadCell className="py-2 text-[10px] text-center border-r dark:border-gray-700 px-2">
+                    <TableHeadCell className="py-2 text-[10px] text-center border-r px-2">
                       Ticket Type
                     </TableHeadCell>
-                    <TableHeadCell className="py-2 text-[10px] text-center border-r dark:border-gray-700 px-2">
+                    <TableHeadCell className="py-2 text-[10px] text-center border-r px-2">
                       Priority
                     </TableHeadCell>
-                    <TableHeadCell className="py-2 text-[10px] text-center border-r dark:border-gray-700 px-2">
+                    <TableHeadCell className="py-2 text-[10px] text-center border-r px-2">
                       Subject
                     </TableHeadCell>
-                    <TableHeadCell className="py-2 text-[10px] text-center border-r dark:border-gray-700">
+                    <TableHeadCell className="py-2 text-[10px] text-center border-r">
                       Issue Description
                     </TableHeadCell>
-                    <TableHeadCell className="py-2 text-[10px] text-center border-r dark:border-gray-700 px-2">
+                    <TableHeadCell className="py-2 text-[10px] text-center border-r px-2">
                       Status
                     </TableHeadCell>
                   </TableHead>
@@ -626,7 +613,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                       <TableRow
                         key={tkt.id}
                         onClick={() => setSelectedTicketId(tkt.id)}
-                        className={`cursor-pointer transition-colors ${selectedTicketId === tkt.id ? "bg-blue-100 dark:bg-blue-900/50" : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
+                        className={`cursor-pointer transition-colors ${selectedTicketId === tkt.id ?"bg-blue-100 dark:bg-blue-900/50":"bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
                       >
                         <TableCell className="py-2 px-2 text-center font-mono text-xs text-blue-600 font-bold">
                           0{tkt.id}
@@ -641,7 +628,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                         </TableCell>
                         <TableCell className="py-2 px-2 text-center">
                           <span
-                            className={`text-[10px] font-bold uppercase ${getPriorityColor(tkt.priority) === "failure" ? "text-red-500" : "text-gray-600"}`}
+                            className={`text-[10px] font-bold uppercase ${getPriorityColor(tkt.priority) ==="failure"?"text-red-500":"text-gray-600"}`}
                           >
                             {tkt.priority || "Level 3"}
                           </span>
@@ -662,7 +649,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
               </div>
 
               {/* Status Bar */}
-              <div className="flex justify-between items-center bg-white dark:bg-gray-800 border-t dark:border-gray-700 pt-2 text-[10px] font-bold text-gray-500">
+              <div className="flex justify-between items-center bg-white dark:bg-gray-800 border-t pt-2 text-[10px] font-bold text-gray-500">
                 <div>
                   User Logged: {CURRENT_AGENT} | Audit Date:{" "}
                   {format(new Date(), "dd-MMM-yyyy hh:mm:ss a")}
@@ -685,7 +672,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
 
           {/* TAB 2: MY TICKETS */}
           {activeTab === "my" && (
-            <div className="flex flex-col h-full bg-gray-100 dark:bg-gray-900 p-2 gap-2 rounded-md border dark:border-gray-800 animate-fade-in">
+            <div className="flex flex-col h-full bg-gray-100 dark:bg-gray-900 p-2 gap-2 rounded-md animate-fade-in">
               {/* Top row */}
               <div className="grid grid-cols-2 gap-2">
                 <QuadrantTable
@@ -741,7 +728,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
           {activeTab === "eval" && (
             <div className="flex flex-col gap-4 animate-fade-in">
               {/* Filter Bar */}
-              <div className="bg-white dark:bg-gray-800 border dark:border-gray-700 p-3 rounded-md flex items-center justify-between shadow-sm">
+              <div className="bg-white dark:bg-gray-800 p-3 rounded-md flex items-center justify-between shadow-sm">
                 <div className="text-sm font-bold text-gray-500 uppercase flex items-center gap-2">
                   <AlertCircle size={16} /> Evaluation Period Filter
                 </div>
@@ -789,7 +776,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
 
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Chart side */}
-                <div className="w-full md:w-2/3 border dark:border-gray-700 bg-white dark:bg-gray-800 p-6 rounded-md flex flex-col h-[500px]">
+                <div className="w-full md:w-2/3 bg-white dark:bg-gray-800 p-6 rounded-md flex flex-col h-[500px]">
                   <div className="flex justify-between items-center mb-4">
                     <h4 className="font-bold text-gray-600 dark:text-gray-300 uppercase text-sm">
                       Ticket Distribution by Agent
@@ -842,7 +829,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
 
                 {/* Stats side */}
                 <div className="w-full md:w-1/3 flex flex-col gap-4">
-                  <Card className="shadow-none border dark:border-gray-700 bg-white dark:bg-gray-800">
+                  <div className="shadow-none bg-white dark:bg-gray-800">
                     <h5 className="text-xs font-bold text-gray-500 uppercase border-b pb-2 mb-2">
                       General Ticket Overview
                     </h5>
@@ -873,7 +860,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                           {evalGenResolved}
                         </h3>
                         <div
-                          className={`w-14 h-14 ${evalGenResolved < 4 ? "bg-red-500" : evalGenResolved > 20 ? "bg-green-500" : "bg-blue-600"} rounded-md flex flex-col items-center justify-center text-white text-xs font-black shadow-lg leading-tight text-center`}
+                          className={`w-14 h-14 ${evalGenResolved < 4 ?"bg-red-500": evalGenResolved > 20 ?"bg-green-500":"bg-blue-600"} rounded-md flex flex-col items-center justify-center text-white text-xs font-black shadow-lg leading-tight text-center`}
                         >
                           {evalGenResolved < 4 ? (
                             "BAD"
@@ -889,9 +876,9 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                         </div>
                       </div>
                     </div>
-                  </Card>
+                  </div>
 
-                  <Card className="shadow-none border dark:border-gray-700 bg-white dark:bg-gray-800">
+                  <div className="shadow-none bg-white dark:bg-gray-800">
                     <h5 className="text-xs font-bold text-gray-500 uppercase border-b pb-2 mb-2">
                       My Ticket Overview
                     </h5>
@@ -925,7 +912,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                           {evalAgentResolved}
                         </h3>
                         <div
-                          className={`w-14 h-14 ${evalAgentResolved < 4 ? "bg-red-500" : evalAgentResolved > 20 ? "bg-green-500" : "bg-blue-600"} rounded-md flex flex-col items-center justify-center text-white text-xs font-black shadow-lg leading-tight text-center`}
+                          className={`w-14 h-14 ${evalAgentResolved < 4 ?"bg-red-500": evalAgentResolved > 20 ?"bg-green-500":"bg-blue-600"} rounded-md flex flex-col items-center justify-center text-white text-xs font-black shadow-lg leading-tight text-center`}
                         >
                           {evalAgentResolved < 4 ? (
                             "BAD"
@@ -941,7 +928,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                         </div>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1012,7 +999,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
           }}
           currentUserId={CURRENT_AGENT}
         />
-      </Card>
+      </div>
     </div>
   );
 };

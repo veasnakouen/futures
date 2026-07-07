@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Drawer, Avatar, Spinner } from '@/lib/flowbite-compat';
+import {Drawer, Avatar, Spinner} from '@/lib/flowbite-compat';
 import {
   Users,
   Search,
@@ -84,7 +84,7 @@ const NetworkDrawer: React.FC<NetworkDrawerProps> = ({ isOpen, onClose }) => {
       position="right"
       className="p-0 w-80 dark:bg-gray-800"
     >
-      <div className="p-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800 flex justify-between items-center sticky top-0 z-10">
+      <div className="p-4 border-b bg-white dark:bg-gray-800 flex justify-between items-center sticky top-0 z-10">
         <div>
           <h3 className="font-black text-lg dark:text-white flex items-center gap-2">
             <Users size={20} className="text-indigo-600" /> My Network
@@ -101,7 +101,7 @@ const NetworkDrawer: React.FC<NetworkDrawerProps> = ({ isOpen, onClose }) => {
         </button>
       </div>
 
-      <div className="p-4 border-b dark:border-gray-700">
+      <div className="p-4 border-b">
         <div className="relative">
           <Search
             size={16}
@@ -110,7 +110,7 @@ const NetworkDrawer: React.FC<NetworkDrawerProps> = ({ isOpen, onClose }) => {
           <input
             type="text"
             placeholder="Search connections..."
-            className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+            className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -141,7 +141,7 @@ const NetworkDrawer: React.FC<NetworkDrawerProps> = ({ isOpen, onClose }) => {
                       <img
                         src={conn.targetAvatar}
                         alt=""
-                        className="w-10 h-10 rounded-md object-cover border border-gray-200 dark:border-gray-600"
+                        className="w-10 h-10 rounded-md object-cover"
                       />
                     ) : (
                       <div className="w-10 h-10 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400">
@@ -155,7 +155,7 @@ const NetworkDrawer: React.FC<NetworkDrawerProps> = ({ isOpen, onClose }) => {
                       </div>
                     )}
                     {isOnline && (
-                      <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+                      <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
                     )}
                   </div>
 

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { locationService } from "../../../services/locationService";
 import { Plus, Edit2, Trash2 } from "lucide-react";
@@ -33,6 +34,7 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
   onDelete,
   disabled = false,
 }) => {
+  const { t } = useTranslation();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState("");
@@ -58,16 +60,16 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
 
   if (disabled) {
     return (
-      <div className="flex flex-col h-[600px] border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 opacity-50 p-4">
+      <div className="flex flex-col h-[600px] rounded-lg bg-gray-50 dark:bg-gray-800/50 opacity-50 p-4">
         <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">{title}</h3>
-        <p className="text-sm text-gray-500 italic">Select a parent location first.</p>
+        <p className="text-sm text-gray-500 italic">{t("selectParentLocationFirst")}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-[600px] border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/80">
+    <div className="flex flex-col h-[600px] rounded-lg bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+      <div className="p-4 border-b flex justify-between items-center bg-gray-50 dark:bg-gray-800/80">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
         <button
           onClick={() => {
@@ -84,24 +86,24 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
 
       <div className="flex-1 overflow-y-auto p-2">
         {isAdding && (
-          <div className="flex flex-col gap-2 mb-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
+          <div className="flex flex-col gap-2 mb-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border-blue-100 dark:border-blue-800">
             <input
               autoFocus
-              className="w-full px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm rounded bg-white text-gray-900 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Name (En)..."
+              placeholder={t("nameEnPlaceholder")}
             />
             <input
-              className="w-full px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm rounded bg-white text-gray-900 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
               value={postcodeValue}
               onChange={(e) => setPostcodeValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSaveAdd()}
-              placeholder="Postcode (optional)..."
+              placeholder={t("postcodeOptionalPlaceholder")}
             />
             <div className="flex justify-end gap-2 mt-1">
-              <button onClick={() => setIsAdding(false)} className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
-              <button onClick={handleSaveAdd} className="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 font-medium">Save</button>
+              <button onClick={() => setIsAdding(false)} className="text-sm text-gray-500 hover:text-gray-700">{t("cancel")}</button>
+              <button onClick={handleSaveAdd} className="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 font-medium">{t("save")}</button>
             </div>
           </div>
         )}
@@ -110,31 +112,28 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
           {items.map((item) => (
             <div
               key={item.id}
-              className={`group flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors ${selectedId === item.id
-                ? "bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-100"
-                : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-                }`}
+              className={`group flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors ${selectedId === item.id ?"bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-100":"hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"}`}
               onClick={() => onSelect(item.id)}
             >
               {editingId === item.id ? (
-                <div className="flex flex-col gap-2 flex-1 p-2 bg-gray-50 dark:bg-gray-800/80 rounded border border-gray-200 dark:border-gray-700" onClick={(e) => e.stopPropagation()}>
+                <div className="flex flex-col gap-2 flex-1 p-2 bg-gray-50 dark:bg-gray-800/80 rounded" onClick={(e) => e.stopPropagation()}>
                   <input
                     autoFocus
-                    className="w-full px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-2 py-1.5 text-sm rounded bg-white text-gray-900 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Name (En)..."
+                    placeholder={t("nameEnPlaceholder")}
                   />
                   <input
-                    className="w-full px-2 py-1.5 text-sm border rounded bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-2 py-1.5 text-sm rounded bg-white text-gray-900 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={postcodeValue}
                     onChange={(e) => setPostcodeValue(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSaveEdit(item.id)}
-                    placeholder="Postcode (optional)..."
+                    placeholder={t("postcodeOptionalPlaceholder")}
                   />
                   <div className="flex justify-end gap-2 mt-1">
-                    <button onClick={() => setEditingId(null)} className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
-                    <button onClick={() => handleSaveEdit(item.id)} className="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 font-medium">Save</button>
+                    <button onClick={() => setEditingId(null)} className="text-sm text-gray-500 hover:text-gray-700">{t("cancel")}</button>
+                    <button onClick={() => handleSaveEdit(item.id)} className="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 font-medium">{t("save")}</button>
                   </div>
                 </div>
               ) : (
@@ -159,7 +158,7 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm(`Delete ${item.nameEn}?`)) onDelete(item.id);
+                        if (confirm(t("confirmDeleteName", { name: item.nameEn }))) onDelete(item.id);
                       }}
                       className="p-1 text-gray-500 hover:text-red-500 transition-colors"
                     >
@@ -171,7 +170,7 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
             </div>
           ))}
           {items.length === 0 && !isAdding && (
-            <div className="text-center p-4 text-sm text-gray-500">No items found.</div>
+            <div className="text-center p-4 text-sm text-gray-500">{t("noItemsFound")}</div>
           )}
         </div>
       </div>
@@ -181,6 +180,7 @@ const LocationColumn: React.FC<LocationColumnProps> = ({
 
 export default function LocationManagement() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const [selectedProvince, setSelectedProvince] = useState<number | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
@@ -216,9 +216,9 @@ export default function LocationManagement() {
     mutationFn: (data: { nameEn: string; postcode?: string }) => locationService.createProvince(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["provinces"] });
-      toast.success("Province added successfully");
+      toast.success(t("provinceAddedSuccess"));
     },
-    onError: (error: any) => toast.error(`Failed to add Province: ${error.message}`),
+    onError: (error: any) => toast.error(t("failedToAddProvince", { error: error.message })),
   });
   const editProvince = useMutation({
     mutationFn: ({ id, ...data }: { id: number; nameEn: string; postcode?: string }) => locationService.updateProvince(id, data),
@@ -237,9 +237,9 @@ export default function LocationManagement() {
     mutationFn: (data: { nameEn: string; postcode?: string }) => locationService.createDistrict({ ...data, provinceId: selectedProvince! }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["districts", selectedProvince] });
-      toast.success("District added successfully");
+      toast.success(t("districtAddedSuccess"));
     },
-    onError: (error: any) => toast.error(`Failed to add District: ${error.message}`),
+    onError: (error: any) => toast.error(t("failedToAddDistrict", { error: error.message })),
   });
   const editDistrict = useMutation({
     mutationFn: ({ id, ...data }: { id: number; nameEn: string; postcode?: string }) => locationService.updateDistrict(id, { ...data, provinceId: selectedProvince! }),
@@ -258,9 +258,9 @@ export default function LocationManagement() {
     mutationFn: (data: { nameEn: string; postcode?: string }) => locationService.createCommune({ ...data, districtId: selectedDistrict! }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communes", selectedDistrict] });
-      toast.success("Commune added successfully");
+      toast.success(t("communeAddedSuccess"));
     },
-    onError: (error: any) => toast.error(`Failed to add Commune: ${error.message}`),
+    onError: (error: any) => toast.error(t("failedToAddCommune", { error: error.message })),
   });
   const editCommune = useMutation({
     mutationFn: ({ id, ...data }: { id: number; nameEn: string; postcode?: string }) => locationService.updateCommune(id, { ...data, districtId: selectedDistrict! }),
@@ -279,9 +279,9 @@ export default function LocationManagement() {
     mutationFn: (data: { nameEn: string; postcode?: string }) => locationService.createVillage({ ...data, communeId: selectedCommune! }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["villages", selectedCommune] });
-      toast.success("Village added successfully");
+      toast.success(t("villageAddedSuccess"));
     },
-    onError: (error: any) => toast.error(`Failed to add Village: ${error.message}`),
+    onError: (error: any) => toast.error(t("failedToAddVillage", { error: error.message })),
   });
   const editVillage = useMutation({
     mutationFn: ({ id, ...data }: { id: number; nameEn: string; postcode?: string }) => locationService.updateVillage(id, { ...data, communeId: selectedCommune! }),
@@ -295,14 +295,14 @@ export default function LocationManagement() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Location Management</h1>
-        <p className="text-gray-500 dark:text-gray-400">Manage provinces, districts, communes, and villages for the entire platform.</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("locationManagement")}</h1>
+        <p className="text-gray-500 dark:text-gray-400">{t("locationManagementDesc")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Provinces */}
         <LocationColumn
-          title="Provinces / Cities"
+          title={t("provincesCities")}
           items={provinces}
           selectedId={selectedProvince}
           onSelect={(id) => {
@@ -317,7 +317,7 @@ export default function LocationManagement() {
 
         {/* Districts */}
         <LocationColumn
-          title="Districts"
+          title={t("districts")}
           items={districts}
           selectedId={selectedDistrict}
           onSelect={(id) => {
@@ -332,7 +332,7 @@ export default function LocationManagement() {
 
         {/* Communes */}
         <LocationColumn
-          title="Communes"
+          title={t("communes")}
           items={communes}
           selectedId={selectedCommune}
           onSelect={setSelectedCommune}
@@ -344,7 +344,7 @@ export default function LocationManagement() {
 
         {/* Villages */}
         <LocationColumn
-          title="Villages"
+          title={t("villages")}
           items={villages}
           selectedId={null}
           onSelect={() => { }}

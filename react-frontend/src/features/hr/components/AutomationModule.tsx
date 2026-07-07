@@ -1,6 +1,7 @@
 import React from "react";
-import { Card, Button, Badge } from '@/lib/flowbite-compat';
+import {Button, Badge} from '@/lib/flowbite-compat';
 import { Zap, Activity, ShieldCheck, ChevronRight } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 const AutomationModule: React.FC = () => {
   return (
@@ -23,7 +24,7 @@ const AutomationModule: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-indigo-600">
+        <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-indigo-600">
           <div className="flex justify-between items-start mb-6">
             <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-md">
               <Activity size={32} />
@@ -36,7 +37,7 @@ const AutomationModule: React.FC = () => {
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">
             Trigger: Submission → Manager → HR
           </p>
-          <div className="mt-8 pt-8 border-t dark:border-gray-700">
+          <div className="mt-8 pt-8 border-t">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-md bg-emerald-500 text-white flex items-center justify-center font-black text-[8px]">
                 1
@@ -61,9 +62,9 @@ const AutomationModule: React.FC = () => {
           >
             Edit Workflow
           </Button>
-        </Card>
+        </div>
 
-        <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-blue-600">
+        <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-blue-600">
           <div className="flex justify-between items-start mb-6">
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-md">
               <Zap size={32} />
@@ -92,9 +93,9 @@ const AutomationModule: React.FC = () => {
           >
             Manage Triggers
           </Button>
-        </Card>
+        </div>
 
-        <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-emerald-500 relative overflow-hidden group cursor-pointer hover:shadow-emerald-500/20 transition-all">
+        <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-emerald-500 relative overflow-hidden group cursor-pointer hover:shadow-emerald-500/20 transition-all">
           <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 rounded-md w-fit mb-6">
             <Activity size={32} />
           </div>
@@ -109,14 +110,16 @@ const AutomationModule: React.FC = () => {
               <p className="text-[9px] font-black text-emerald-600 uppercase">
                 System Status
               </p>
-              <p className="font-black dark:text-white">Optimizing Data...</p>
+              <div className="absolute inset-0 bg-white/50 dark:bg-gray-800/50 flex flex-col justify-center items-center rounded-xl z-50 backdrop-blur-sm">
+                <Spinner size="xl" className="text-emerald-500" />
+                <p className="mt-4 font-black text-gray-500 tracking-widest text-sm">RUNNING AUTOMATION...</p>
+              </div>
             </div>
-            <div className="w-12 h-12 rounded-md border-4 border-emerald-500 border-t-transparent animate-spin"></div>
           </div>
           <div className="absolute top-10 right-10 group-hover:translate-x-2 transition-transform">
             <ChevronRight size={32} className="text-gray-200" />
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

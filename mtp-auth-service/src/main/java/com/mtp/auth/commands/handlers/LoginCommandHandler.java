@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mtp.auth.repositories.TenantRepository;
+import com.mtp.auth.repositories.UserRepository;
 import com.mtp.auth.models.Tenant;
 
 @Service
@@ -30,15 +31,17 @@ public class LoginCommandHandler implements CommandHandler<LoginCommand, AuthRes
     private final RefreshTokenService refreshTokenService;
     private final LoginHistoryService loginHistoryService;
     private final TenantRepository tenantRepository;
+    private final UserRepository userRepository;
 
     public LoginCommandHandler(AuthenticationManager authenticationManager, JwtUtils jwtUtils,
                                RefreshTokenService refreshTokenService, LoginHistoryService loginHistoryService,
-                               TenantRepository tenantRepository) {
+                               TenantRepository tenantRepository, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
         this.loginHistoryService = loginHistoryService;
         this.tenantRepository = tenantRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -51,6 +54,14 @@ public class LoginCommandHandler implements CommandHandler<LoginCommand, AuthRes
                     new UsernamePasswordAuthenticationToken(username, password));
 
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+            com.mtp.auth.models.User user = userPrincipal.getUser();
+            if (user.getAccessFailedCount() > 0 || user.getLockoutEnd() != null) {
+                user.setAccessFailedCount(0);
+                user.setLockoutEnd(null);
+                userRepository.save(user);
+            }
+
             String jwt = jwtUtils.generateToken(userPrincipal);
 
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userPrincipal.getId().toString());
@@ -76,9 +87,34 @@ public class LoginCommandHandler implements CommandHandler<LoginCommand, AuthRes
             return new AuthResponseDto(jwt, refreshToken.getToken(),
                     userPrincipal.getUsername(), userPrincipal.getEmail(), roles, tenantType, allowedModules);
 
+        } catch (org.springframework.security.authentication.LockedException le) {
+            loginHistoryService.recordEvent(username, "Failed (Locked)", "Light", command.getServletRequest());
+            throw new ResponseStatusException(HttpStatus.LOCKED, "Account is temporarily locked. Please try again later.");
         } catch (Exception e) {
             // Record failed login audit log
             loginHistoryService.recordEvent(username, "Failed", "Light (1.5MB)", command.getServletRequest());
+
+            java.util.Optional<com.mtp.auth.models.User> optUser = userRepository.findByUserName(username);
+            if (optUser.isEmpty()) {
+                optUser = userRepository.findByEmail(username);
+            }
+
+            if (optUser.isPresent()) {
+                com.mtp.auth.models.User user = optUser.get();
+                if (user.isLockoutEnabled()) {
+                    user.setAccessFailedCount(user.getAccessFailedCount() + 1);
+                    int remaining = 5 - user.getAccessFailedCount();
+                    if (remaining <= 0) {
+                        user.setLockoutEnd(java.time.Instant.now().plus(15, java.time.temporal.ChronoUnit.MINUTES));
+                        userRepository.save(user);
+                        throw new ResponseStatusException(HttpStatus.LOCKED, "Account locked due to too many failed attempts. Try again in 15 minutes.");
+                    } else {
+                        userRepository.save(user);
+                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials. " + remaining + " attempts remaining.");
+                    }
+                }
+            }
+
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed: Invalid credentials");
         }
     }

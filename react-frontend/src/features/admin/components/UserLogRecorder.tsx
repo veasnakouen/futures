@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  TextInput,
-  Select,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import { useTranslation } from "react-i18next";
+import {Button, Badge, TextInput, Select, Spinner} from '@/lib/flowbite-compat';
 import {
   FileText,
   Search,
@@ -19,12 +13,16 @@ import {
 import api from '@/services/api';
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import ModernPagination from '@/components/common/ModernPagination';
 
 const UserLogRecorder: React.FC = () => {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchLogs();
@@ -37,7 +35,7 @@ const UserLogRecorder: React.FC = () => {
       setLogs(res.data || []);
     } catch (err: any) {
       console.error("Failed to load audit logs", err);
-      toast.error("Failed to load user log recorder logs");
+      toast.error(t("failedToLoadUserLogs"));
     } finally {
       setLoading(false);
     }
@@ -67,43 +65,54 @@ const UserLogRecorder: React.FC = () => {
     return matchesSearch && matchesType;
   });
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedType]);
+
+  const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedLogs = filteredLogs.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div className="space-y-8 animate-fade-in max-w-5xl mx-auto">
       {/* Header and Controls */}
-      <Card className="p-6 rounded-md dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-850 shadow-md">
+      <div className="p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-purple-100/50 dark:shadow-black/40 border border-white/20 dark:border-gray-700/50">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
-          <div>
-            <h3 className="text-lg font-black dark:text-white flex items-center gap-3">
-              <FileText className="text-blue-600 dark:text-blue-400" />
-              User Log Recorder (Audit Trail)
-            </h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-1">
-              Real-time immutable log of administrative actions, user role
-              modifications, and system triggers.
-            </p>
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-xl shadow-lg shadow-purple-200 dark:shadow-purple-900/30">
+              <FileText size={24} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent flex items-center gap-3">
+                {t("userLogRecorder")}
+              </h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-1">
+                {t("userLogRecorderDesc")}
+              </p>
+            </div>
           </div>
 
           <Button
             color="light"
-            size="xs"
+            size="sm"
             onClick={fetchLogs}
             disabled={loading}
-            className="rounded-md font-black uppercase text-[10px]"
+            className="rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 active:scale-95 font-bold uppercase tracking-wide text-xs"
           >
             <RefreshCw
               size={12}
-              className={`mr-1.5 ${loading ? "animate-spin" : ""}`}
+              className={`mr-1.5 ${loading ?"animate-spin":""}`}
             />{" "}
-            Refresh Logs
+            {t("refreshLogs")}
           </Button>
         </div>
 
         {/* Filter Toolbar */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t dark:border-gray-700/40 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 dark:border-gray-700/50 pt-6">
           <div className="relative">
             <TextInput
               type="text"
-              placeholder="Search user, action, target..."
+              placeholder={t("searchUserActionTarget")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               icon={Search}
@@ -118,50 +127,50 @@ const UserLogRecorder: React.FC = () => {
               icon={Filter}
               className="w-full"
             >
-              <option value="all">All Warning Levels</option>
-              <option value="info">Info / Operational</option>
-              <option value="warning">Warning / Errors</option>
-              <option value="critical">Critical / Core Changes</option>
+              <option value="all">{t("allWarningLevels")}</option>
+              <option value="info">{t("infoOperational")}</option>
+              <option value="warning">{t("warningErrors")}</option>
+              <option value="critical">{t("criticalCoreChanges")}</option>
             </Select>
           </div>
 
           <div className="flex items-center justify-end">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-gray-900/30 px-3 py-1.5 rounded-md border border-gray-100 dark:border-gray-700/50">
-              {filteredLogs.length} matching logs
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-gray-900/30 px-3 py-1.5 rounded-md">
+              {filteredLogs.length} {t("matchingLogs")}
             </span>
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Audit Logs List Card */}
-      <Card className="p-6 rounded-md dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-850 shadow-md">
+      <div className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-black/40 border border-white/20 dark:border-gray-700/50">
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 no-scrollbar">
           {loading ? (
             <div className="flex justify-center py-16">
               <Spinner size="lg" />
             </div>
           ) : filteredLogs.length === 0 ? (
-            <div className="py-16 text-center border border-dashed dark:border-gray-700/80 rounded-md text-gray-400 dark:text-gray-500 font-bold text-xs uppercase tracking-widest">
-              No matching audit logs found in database.
+            <div className="py-16 text-center rounded-md text-gray-400 dark:text-gray-500 font-bold text-xs uppercase tracking-widest">
+              {t("noMatchingLogsFound")}
             </div>
           ) : (
-            filteredLogs.map((logItem, index) => (
+            paginatedLogs.map((logItem, index) => (
               <div
                 key={index}
-                className="p-4 bg-gray-50/50 dark:bg-gray-800/25 border border-gray-50 dark:border-gray-800 hover:border-gray-100 dark:hover:border-gray-700 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-200"
+                className="p-4 bg-gray-50/80 dark:bg-gray-800/50 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group"
               >
                 <div className="flex items-start gap-4">
                   <div className="mt-0.5">
                     {logItem.type === "critical" ? (
-                      <div className="p-2 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-md shadow-sm border border-red-100/50 dark:border-red-900/20">
+                      <div className="p-2 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-md shadow-sm border-red-100/50 dark:border-red-900/20">
                         <ShieldAlert size={16} />
                       </div>
                     ) : logItem.type === "warning" ? (
-                      <div className="p-2 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-md shadow-sm border border-amber-100/50 dark:border-amber-900/20">
+                      <div className="p-2 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-md shadow-sm border-amber-100/50 dark:border-amber-900/20">
                         <AlertTriangle size={16} />
                       </div>
                     ) : (
-                      <div className="p-2 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-md shadow-sm border border-blue-100/50 dark:border-blue-900/20">
+                      <div className="p-2 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-md shadow-sm border-blue-100/50 dark:border-blue-900/20">
                         <Info size={16} />
                       </div>
                     )}
@@ -171,7 +180,7 @@ const UserLogRecorder: React.FC = () => {
                       {logItem.action}
                     </h4>
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
-                      Target:{" "}
+                      {t("target")}{" "}
                       <span className="text-gray-600 dark:text-gray-300 normal-case select-all">
                         {logItem.target}
                       </span>
@@ -179,7 +188,7 @@ const UserLogRecorder: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-row md:flex-col items-start md:items-end justify-between w-full md:w-auto border-t md:border-t-0 border-gray-100 dark:border-gray-750/30 pt-3 md:pt-0">
+                <div className="flex flex-row md:flex-col items-start md:items-end justify-between w-full md:w-auto border-t md:border-t-0 pt-3 md:pt-0">
                   <Badge
                     color={
                       logItem.type === "critical"
@@ -190,7 +199,7 @@ const UserLogRecorder: React.FC = () => {
                     }
                     className="rounded-md px-2.5 font-bold uppercase text-[9px]"
                   >
-                    {logItem.loggedUser || "System"}
+                    {logItem.loggedUser || t("system")}
                   </Badge>
                   <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 mt-1 select-none font-mono uppercase">
                     {formatTimeSafely(logItem.timestamp)}
@@ -200,7 +209,19 @@ const UserLogRecorder: React.FC = () => {
             ))
           )}
         </div>
-      </Card>
+      </div>
+      
+      {totalPages > 1 && (
+        <div className="mt-2 flex justify-center">
+          <ModernPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            totalItems={filteredLogs.length}
+            pageSize={itemsPerPage}
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -31,9 +31,10 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
       }
 
       const options = {
-        maxSizeMB: maxSizeMB, // Dynamically configured by Admin
-        maxWidthOrHeight: 1920, // Scale down super-high resolution photos
+        maxSizeMB: maxSizeMB > 0 ? Math.min(maxSizeMB, 0.2) : 0.2, // Heavily compress to max 200KB
+        maxWidthOrHeight: 800, // Scale down to max 800px width/height
         useWebWorker: true, // Speed up compression
+        initialQuality: 0.6, // Start with lower quality for faster, smaller compression
       };
       fileToUpload = (await imageCompression(file, options)) as File;
     } catch (error) {
@@ -66,7 +67,14 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
     }
 
     const data = await response.json();
-    return data.secure_url;
+    let url = data.secure_url;
+    
+    // Auto-apply format and quality optimization if not already present
+    if (url && url.includes("/upload/")) {
+      url = url.replace("/upload/", "/upload/f_auto,q_auto/");
+    }
+    
+    return url;
   } catch (error) {
     console.error("Error uploading to Cloudinary:", error);
     throw error;
@@ -85,8 +93,11 @@ export const getFaceFocusedUrl = (
     // Don't modify if it already has explicit crop/gravity transformations
     if (!url.includes("/c_") && !url.includes("/g_")) {
       return url.replace(
+        "/upload/f_auto,q_auto/",
+        `/upload/c_fill,g_face,w_${size},h_${size},f_auto,q_auto/`,
+      ).replace(
         "/upload/",
-        `/upload/c_fill,g_face,w_${size},h_${size}/`,
+        `/upload/c_fill,g_face,w_${size},h_${size},f_auto,q_auto/`,
       );
     }
   }

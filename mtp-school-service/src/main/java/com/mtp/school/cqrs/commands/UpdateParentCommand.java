@@ -12,4 +12,5 @@ public class UpdateParentCommand {
     private String email;
     private com.mtp.school.models.Gender gender;
     private com.mtp.school.cqrs.dto.AddressDto address;
+    private String imageUrl;
 }

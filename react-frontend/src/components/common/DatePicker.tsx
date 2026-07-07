@@ -100,9 +100,9 @@ export default function DatePicker({
   const calendarDays = buildCalendarDays();
 
   const popupContent = (
-    <div className="bg-white/95 backdrop-blur-xl dark:bg-gray-800/95 border border-gray-200/60 dark:border-gray-700/60 rounded-xl shadow-xl shadow-blue-500/10 overflow-hidden w-full min-w-[290px] max-h-[85vh] sm:max-h-[none] overflow-y-auto custom-scrollbar flex flex-col">
+    <div className="bg-white/95 backdrop-blur-xl dark:bg-gray-800/95 /60 rounded-xl shadow-xl shadow-blue-500/10 overflow-hidden w-full min-w-[290px] max-h-[85vh] sm:max-h-[none] overflow-y-auto custom-scrollbar flex flex-col">
       {/* Header */}
-      <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-100/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/30">
+      <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b /50 bg-gray-50/50 dark:bg-gray-900/30">
         <button
           type="button"
           onClick={() => setViewDate(subMonths(viewDate, 1))}
@@ -158,10 +158,7 @@ export default function DatePicker({
                 setViewDate(new Date(viewDate.getFullYear(), i, 1));
                 setShowMonthPicker(false);
               }}
-              className={`px-2 py-2 text-xs font-semibold rounded-xl transition-all duration-200 ${i === viewDate.getMonth()
-                ? "bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-md shadow-blue-500/30"
-                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+              className={`px-2 py-2 text-xs font-semibold rounded-xl transition-all duration-200 ${i === viewDate.getMonth() ?"bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-md shadow-blue-500/30":"text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
             >
               {m.slice(0, 3)}
             </button>
@@ -173,7 +170,7 @@ export default function DatePicker({
       {showYearPicker && (
         <div
           ref={yearContainerRef}
-          className="p-3 grid grid-cols-3 gap-1.5 max-h-[260px] overflow-y-auto custom-scrollbar"
+          className="p-3 grid grid-cols-3 gap-1.5 max-h-[260px] flex-1 min-h-0 overflow-y-auto custom-scrollbar"
         >
           {yearRange.map((y) => {
             const isActive = y === viewDate.getFullYear();
@@ -186,10 +183,7 @@ export default function DatePicker({
                   setViewDate(new Date(y, viewDate.getMonth(), 1));
                   setShowYearPicker(false);
                 }}
-                className={`px-2 py-2 text-xs font-semibold rounded-xl transition-all duration-200 ${isActive
-                  ? "bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-md shadow-blue-500/30"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
+                className={`px-2 py-2 text-xs font-semibold rounded-xl transition-all duration-200 ${isActive ?"bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-md shadow-blue-500/30":"text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
               >
                 {y}
               </button>
@@ -221,17 +215,7 @@ export default function DatePicker({
                   key={idx}
                   type="button"
                   onClick={() => handleDayClick(day)}
-                  className={`
-                    h-9 w-9 mx-auto flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200 hover:scale-110 active:scale-95
-                    ${isSelected
-                      ? "bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold shadow-md shadow-blue-500/30"
-                      : isCurrentDay && isCurrentMonth
-                        ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-700/50"
-                        : isCurrentMonth
-                          ? "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                          : "text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/30"
-                    }
-                  `}
+                  className={`h-9 w-9 mx-auto flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200 hover:scale-110 active:scale-95 ${isSelected ?"bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold shadow-md shadow-blue-500/30": isCurrentDay && isCurrentMonth ?"bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold border-blue-200 dark:border-blue-700/50": isCurrentMonth ?"text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700":"text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/30"}`}
                 >
                   {format(day, "d")}
                 </button>
@@ -264,7 +248,7 @@ export default function DatePicker({
   );
 
   return (
-    <div className={`relative w-full ${className ?? ""}`}>
+    <div className={`relative w-full ${className ??""}`}>
       {label && (
         <label className="mb-1 block text-[10px] uppercase font-black text-gray-400">
           {label}
@@ -276,30 +260,20 @@ export default function DatePicker({
           <button
             type="button"
             disabled={disabled}
-            className={`
-              flex items-center gap-2 w-full px-3 py-2.5 
-              bg-white dark:bg-gray-800 
-              border rounded-xl cursor-pointer select-none 
-              transition-all duration-200 ease-out
-              ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/5"}
-              ${open
-                ? "border-blue-500 ring-4 ring-blue-500/10 dark:border-blue-500"
-                : "border-gray-200 dark:border-gray-700"
-              }
-            `}
+            className={`flex items-center gap-2 w-full px-3 py-2.5 bg-white dark:bg-gray-800 rounded-xl cursor-pointer select-none transition-all duration-200 ease-out ${disabled ?"opacity-50 cursor-not-allowed":"hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/5"} ${open ?"border-blue-500 ring-4 ring-blue-500/10 dark:border-blue-500":""}`}
           >
             <Calendar
               size={16}
-              className={`shrink-0 transition-colors ${open ? "text-blue-500" : "text-gray-400"}`}
+              className={`shrink-0 transition-colors ${open ?"text-blue-500":"text-gray-400"}`}
             />
             <span
-              className={`text-sm flex-1 whitespace-nowrap truncate text-left ${value ? "text-gray-900 dark:text-white font-medium" : "text-gray-400"}`}
+              className={`text-sm flex-1 whitespace-nowrap truncate text-left ${value ?"text-gray-900 dark:text-white font-medium":"text-gray-400"}`}
             >
               {value ? format(value, "MMM dd, yyyy") : placeholder}
             </span>
             <ChevronDown
               size={14}
-              className={`shrink-0 text-gray-400 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+              className={`shrink-0 text-gray-400 transition-transform duration-150 ${open ?"rotate-180":""}`}
             />
           </button>
         </PopoverTrigger>

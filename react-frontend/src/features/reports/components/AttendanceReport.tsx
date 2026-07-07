@@ -27,32 +27,20 @@ const AttendanceReport = ({
   return (
     <div className="p-12 bg-white text-gray-900 font-serif min-h-[297mm]">
       {/* Report Header */}
-      <div className="text-center mb-10 border-b-4 border-double border-gray-900 pb-6 relative min-h-[100px]">
+      <div className="text-center mb-10 border-b-4 border-double pb-6 relative min-h-[100px]">
         {customLogoUrl && (
           <div
-            className={`absolute top-0 ${
-              !customLogoLocation || customLogoLocation === "top-left"
-                ? "left-0"
-                : customLogoLocation === "top-right"
-                  ? "right-0"
-                  : "left-1/2 -translate-x-1/2"
-            }`}
+            className={`absolute top-0 ${ !customLogoLocation || customLogoLocation ==="top-left"?"left-0": customLogoLocation ==="top-right"?"right-0":"left-1/2 -translate-x-1/2"}`}
           >
             <img
               src={customLogoUrl}
               alt="Report Logo"
-              className={`h-16 object-contain ${
-                customLogoShape === "circle"
-                  ? "rounded-full aspect-square object-cover"
-                  : customLogoShape === "rounded"
-                    ? "rounded-2xl"
-                    : ""
-              }`}
+              className={`h-16 object-contain ${ customLogoShape ==="circle"?"rounded-full aspect-square object-cover": customLogoShape ==="rounded"?"rounded-2xl":"" }`}
             />
           </div>
         )}
         <div
-          className={`flex flex-col items-center justify-center w-full ${customLogoUrl && customLogoLocation === "top-center" ? "pt-20" : "pt-4"}`}
+          className={`flex flex-col items-center justify-center w-full ${customLogoUrl && customLogoLocation ==="top-center"?"pt-20":"pt-4"}`}
         >
           <h1 className="text-3xl font-black uppercase tracking-tighter mb-2">
             {customTitle || "Staff Attendance Audit"}
@@ -76,23 +64,23 @@ const AttendanceReport = ({
         </div>
       </div>
 
-      <table className="w-full text-xs border-collapse border border-gray-900">
+      <table className="w-full text-xs border-collapse">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-900 px-3 py-2 text-left">
+            <th className="px-3 py-2 text-left">
               Staff Name
             </th>
-            <th className="border border-gray-900 px-3 py-2 text-left">Date</th>
-            <th className="border border-gray-900 px-3 py-2 text-center">
+            <th className="px-3 py-2 text-left">Date</th>
+            <th className="px-3 py-2 text-center">
               Clock In
             </th>
-            <th className="border border-gray-900 px-3 py-2 text-center">
+            <th className="px-3 py-2 text-center">
               Clock Out
             </th>
-            <th className="border border-gray-900 px-3 py-2 text-center">
+            <th className="px-3 py-2 text-center">
               Hours
             </th>
-            <th className="border border-gray-900 px-3 py-2 text-center">
+            <th className="px-3 py-2 text-center">
               Status
             </th>
           </tr>
@@ -124,23 +112,23 @@ const AttendanceReport = ({
 
             return (
               <tr key={i}>
-                <td className="border border-gray-900 px-3 py-2 font-bold">
+                <td className="px-3 py-2 font-bold">
                   {log.employee?.firstNameEnglish}{" "}
                   {log.employee?.lastNameEnglish}
                 </td>
-                <td className="border border-gray-900 px-3 py-2">
+                <td className="px-3 py-2">
                   {start ? format(start, "yyyy-MM-dd") : "N/A"}
                 </td>
-                <td className="border border-gray-900 px-3 py-2 text-center">
+                <td className="px-3 py-2 text-center">
                   {start ? format(start, "HH:mm") : "--:--"}
                 </td>
-                <td className="border border-gray-900 px-3 py-2 text-center">
+                <td className="px-3 py-2 text-center">
                   {end ? format(end, "HH:mm") : "--:--"}
                 </td>
-                <td className="border border-gray-900 px-3 py-2 text-center">
+                <td className="px-3 py-2 text-center">
                   {diff.toFixed(2)} hrs
                 </td>
-                <td className="border border-gray-900 px-3 py-2 text-center font-bold uppercase">
+                <td className="px-3 py-2 text-center font-bold uppercase">
                   {log.status}
                 </td>
               </tr>
@@ -161,18 +149,18 @@ const AttendanceReport = ({
         {customSignatures ? (
           customSignatures.split(",").map((sig, idx) => (
             <div key={idx} className="text-center">
-              <div className="w-48 border-b border-gray-900 mb-2"></div>
+              <div className="w-48 border-b mb-2"></div>
               <p className="text-[10px] font-bold uppercase">{sig.trim()}</p>
             </div>
           ))
         ) : (
           <>
             <div className="text-center">
-              <div className="w-48 border-b border-gray-900 mb-2"></div>
+              <div className="w-48 border-b mb-2"></div>
               <p className="text-[10px] font-bold uppercase">Prepared By (Admin)</p>
             </div>
             <div className="text-center">
-              <div className="w-48 border-b border-gray-900 mb-2"></div>
+              <div className="w-48 border-b mb-2"></div>
               <p className="text-[10px] font-bold uppercase">
                 Verified By (HR Manager)
               </p>
@@ -183,7 +171,7 @@ const AttendanceReport = ({
 
       {/* Footer */}
       {customFooterText && (
-        <div className="mt-8 text-center text-[10px] text-gray-500 font-sans border-t border-gray-300 pt-4 whitespace-pre-wrap">
+        <div className="mt-8 text-center text-[10px] text-gray-500 font-sans border-t pt-4 whitespace-pre-wrap">
           {customFooterText}
         </div>
       )}

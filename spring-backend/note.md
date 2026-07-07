@@ -128,3 +128,8 @@ Username: sa
 Password: [PASSWORD]
 URL: jdbc:firebase://localhost:5000/futures
 ```   
+
+### KPI
+```
+KPI stands for Key Performance Indicator. It is a quantifiable metric used by organizations to evaluate success, track progress toward specific goals, and guide data-driven decision-making. Essentially, it measures how effectively a company, team, or individual is achieving their primary objectives.
+```

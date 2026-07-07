@@ -1,6 +1,6 @@
 server:
   port: 8087
-
+  max-http-request-header-size: 8MB
 spring:
   cloud:
     compatibility-verifier:
@@ -29,3 +29,9 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     preferIpAddress: true
+
+logging:
+  level:
+    org.apache.coyote.http11: TRACE
+    org.apache.tomcat.util.http: TRACE
+    org.springframework.web: DEBUG

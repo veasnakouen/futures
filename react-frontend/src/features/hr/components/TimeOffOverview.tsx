@@ -1,19 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Select,
-  TextInput,
-  Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-  Avatar,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Select, TextInput, Spinner, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Avatar} from '@/lib/flowbite-compat';
 import {
   Calendar,
   Search,
@@ -119,7 +105,7 @@ const TimeOffOverview: React.FC = () => {
     <div className="space-y-8 animate-fade-in">
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-lg border-l-4 border-l-amber-500">
+        <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-lg border-l-4 border-l-amber-500">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">
@@ -133,8 +119,8 @@ const TimeOffOverview: React.FC = () => {
               <Clock size={28} />
             </div>
           </div>
-        </Card>
-        <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-lg border-l-4 border-l-emerald-500">
+        </div>
+        <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-lg border-l-4 border-l-emerald-500">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
@@ -148,8 +134,8 @@ const TimeOffOverview: React.FC = () => {
               <CheckCircle size={28} />
             </div>
           </div>
-        </Card>
-        <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-lg border-l-4 border-l-rose-500">
+        </div>
+        <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-lg border-l-4 border-l-rose-500">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">
@@ -163,11 +149,11 @@ const TimeOffOverview: React.FC = () => {
               <XCircle size={28} />
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Filter Bar */}
-      <Card className="p-6 rounded-md dark:bg-gray-800 border-none shadow-md">
+      <div className="p-6 rounded-md dark:bg-gray-800 border-none shadow-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <h3 className="text-lg font-black dark:text-white flex items-center gap-3">
             <Calendar className="text-blue-600 dark:text-blue-400" />
@@ -182,13 +168,13 @@ const TimeOffOverview: React.FC = () => {
           >
             <RefreshCw
               size={12}
-              className={`mr-1.5 ${loading ? "animate-spin" : ""}`}
+              className={`mr-1.5 ${loading ?"animate-spin":""}`}
             />{" "}
             Refresh
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t dark:border-gray-700/40">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t">
           <div className="relative">
             <TextInput
               type="text"
@@ -213,15 +199,15 @@ const TimeOffOverview: React.FC = () => {
             </Select>
           </div>
           <div className="flex items-center justify-end">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-gray-900/30 px-3 py-1.5 rounded-md border border-gray-100 dark:border-gray-700/50">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-gray-900/30 px-3 py-1.5 rounded-md">
               {filteredLeaves.length} records
             </span>
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Leave Requests Table */}
-      <Card className="border-none shadow-md dark:bg-gray-800 rounded-md overflow-hidden">
+      <div className="border-none shadow-md dark:bg-gray-800 rounded-md overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-20">
             <Spinner size="xl" />
@@ -356,7 +342,7 @@ const TimeOffOverview: React.FC = () => {
             </TableBody>
           </Table>
         )}
-      </Card>
+      </div>
     </div>
   );
 };

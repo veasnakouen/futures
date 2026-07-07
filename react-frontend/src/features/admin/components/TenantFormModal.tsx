@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Modal, Button, Label, TextInput, Select, ToggleSwitch, Alert, Spinner } from '@/lib/flowbite-compat';
+import { useTranslation } from 'react-i18next';
+import {Modal, Button, Label, TextInput, Select, ToggleSwitch, Alert, Spinner, Datepicker} from '@/lib/flowbite-compat';
 import { CreateTenantCommand, TenantDto, tenantService } from '@/services/tenantService';
 import { X } from 'lucide-react';
 
@@ -11,6 +12,7 @@ interface TenantFormModalProps {
 }
 
 const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFormModalProps) => {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -72,7 +74,7 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
             onSuccess();
             onClose();
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to save tenant');
+            setError(err.response?.data?.message || t("failedToSaveTenant"));
         } finally {
             setLoading(false);
         }
@@ -80,10 +82,10 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
 
     return (
         <Modal show={isOpen} onClose={onClose} size="md">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col max-h-[90vh]">
-                <div className="flex justify-between items-center p-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 shrink-0">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div className="flex justify-between items-center p-5 border-b bg-gray-50 dark:bg-gray-800/50 shrink-0">
                     <h3 className="text-lg font-black text-gray-900 dark:text-white">
-                        {tenantToEdit ? 'Edit Organization' : 'Create Organization'}
+                        {tenantToEdit ? t("editOrganization") : t("createOrganization")}
                     </h3>
                     <button
                         onClick={onClose}
@@ -102,7 +104,7 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <Label htmlFor="id">Tenant ID (Unique Key)</Label>
+                            <Label htmlFor="id">{t("tenantIdUniqueKey")}</Label>
                             <TextInput
                                 id="id"
                                 name="id"
@@ -114,7 +116,7 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
                             />
                         </div>
                         <div>
-                            <Label htmlFor="name">Organization Name</Label>
+                            <Label htmlFor="name">{t("organizationName")}</Label>
                             <TextInput
                                 id="name"
                                 name="name"
@@ -125,7 +127,7 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
                             />
                         </div>
                         <div>
-                            <Label htmlFor="managerEmail">Manager Email</Label>
+                            <Label htmlFor="managerEmail">{t("managerEmail")}</Label>
                             <TextInput
                                 id="managerEmail"
                                 name="managerEmail"
@@ -137,8 +139,8 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
                         </div>
                         <div className="flex justify-between items-center pt-2">
                             <div>
-                                <Label className="text-gray-900 dark:text-white font-bold">Status</Label>
-                                <p className="text-xs text-gray-500">Enable or suspend tenant access</p>
+                                <Label className="text-gray-900 dark:text-white font-bold">{t("status")}</Label>
+                                <p className="text-xs text-gray-500">{t("enableSuspendTenantAccess")}</p>
                             </div>
                             <ToggleSwitch
                                 checked={formData.isActive}
@@ -146,17 +148,16 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
                             />
                         </div>
                         <div>
-                            <Label htmlFor="subscriptionEndDate">Subscription End Date</Label>
-                            <TextInput
+                            <Label htmlFor="subscriptionEndDate">{t("subscriptionEndDate")}</Label>
+                            <Datepicker
                                 id="subscriptionEndDate"
                                 name="subscriptionEndDate"
-                                type="date"
                                 value={formData.subscriptionEndDate || ''}
                                 onChange={handleChange}
                             />
                         </div>
                         <div>
-                            <Label htmlFor="maxDevices">Max Allowed Devices</Label>
+                            <Label htmlFor="maxDevices">{t("maxAllowedDevices")}</Label>
                             <TextInput
                                 id="maxDevices"
                                 name="maxDevices"
@@ -169,22 +170,22 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
                         </div>
 
                         <div className="pt-2">
-                            <Label className="text-gray-900 dark:text-white font-bold mb-2 block">Module Permissions</Label>
-                            <div className="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+                            <Label className="text-gray-900 dark:text-white font-bold mb-2 block">{t("modulePermissions")}</Label>
+                            <div className="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
                                 {[
-                                    { id: 'CLINIC', label: 'Clinic Management' },
-                                    { id: 'SCHOOL', label: 'School Management' },
-                                    { id: 'HOTEL', label: 'Hotel & Hospitality' },
-                                    { id: 'BILLING', label: 'Billing & Finance' },
-                                    { id: 'HR', label: 'Human Resources' },
-                                    { id: 'STOCK', label: 'Stock & Inventory' },
-                                    { id: 'POS', label: 'POS System' }
+                                    { id: 'CLINIC', label: t("clinicManagement") },
+                                    { id: 'SCHOOL', label: t("schoolManagement") },
+                                    { id: 'HOTEL', label: t("hotelHospitality") },
+                                    { id: 'BILLING', label: t("billingFinance") },
+                                    { id: 'HR', label: t("humanResources") },
+                                    { id: 'STOCK', label: t("stockInventory") },
+                                    { id: 'POS', label: t("posSystem") }
                                 ].map(mod => (
                                     <div key={mod.id} className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
                                             id={`mod-${mod.id}`}
-                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                            className="w-4 h-4 text-blue-600 bg-gray-100 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700"
                                             checked={formData.allowedModules.includes(mod.id)}
                                             onChange={(e) => {
                                                 const newModules = e.target.checked
@@ -201,14 +202,14 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
                             </div>
                         </div>
 
-                        <div className="flex gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
+                        <div className="flex gap-3 pt-4 border-t mt-6">
                             <Button
                                 type="button"
                                 color="light"
                                 className="flex-1"
                                 onClick={onClose}
                             >
-                                Cancel
+                                {t("cancel")}
                             </Button>
                             <Button
                                 type="submit"
@@ -217,7 +218,7 @@ const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFor
                                 disabled={loading}
                             >
                                 {loading ? <Spinner size="sm" className="mr-2" /> : null}
-                                {tenantToEdit ? 'Save Changes' : 'Create Tenant'}
+                                {tenantToEdit ? t("saveChanges") : t("createTenant")}
                             </Button>
                         </div>
                     </form>

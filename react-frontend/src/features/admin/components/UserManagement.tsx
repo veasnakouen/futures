@@ -1,23 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from '@/services/api';
-import {
-  Table,
-  TableHead,
-  TableHeadCell,
-  TableBody,
-  TableRow,
-  TableCell,
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  Badge,
-  TextInput,
-  Checkbox,
-  Card,
-} from '@/lib/flowbite-compat';
+import {Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Badge, TextInput, Checkbox} from '@/lib/flowbite-compat';
 import ModernPagination from '@/components/common/ModernPagination';
 import {
   X,
@@ -38,17 +22,7 @@ import {
   SlidersHorizontal,
   MoreVertical,
 } from "lucide-react";
-import {
-  Avatar,
-  FileInput,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-  Accordion,
-  AccordionPanel,
-  AccordionTitle,
-  AccordionContent,
-} from '@/lib/flowbite-compat';
+import {Avatar, FileInput, Dropdown, DropdownItem, DropdownDivider, Accordion, AccordionPanel, AccordionTitle, AccordionContent} from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 import authService from '../../../services/authService';
@@ -67,6 +41,7 @@ interface User {
 }
 
 const UserManagement = () => {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -181,7 +156,7 @@ const UserManagement = () => {
       setRoles(r.data);
     } catch (e) {
       console.error("FETCH ERROR:", e);
-      toast.error("Failed to load user data");
+      toast.error(t("failedToLoadUserData"));
     } finally {
       setLoading(false);
     }
@@ -209,11 +184,11 @@ const UserManagement = () => {
     if (!selectedUser) return;
     try {
       await api.put(`/admin/users/${selectedUser.id}/roles`, selectedRoles);
-      toast.success(`Roles updated for ${selectedUser.userName}`);
+      toast.success(`${t("rolesUpdatedFor")} ${selectedUser.userName}`);
       setShowRoleModal(false);
       fetchData();
     } catch (e) {
-      toast.error("Failed to update roles");
+      toast.error(t("failedToUpdateRoles"));
     }
   };
 
@@ -247,7 +222,7 @@ const UserManagement = () => {
     try {
       if (isEditMode && editingId) {
         await api.put(`/admin/users/${editingId}`, selectedUser);
-        toast.success("User updated successfully");
+        toast.success(t("userUpdatedSuccessfully"));
       } else {
         const response = await api.post("/admin/users", newUser);
         if (selectedNewUserRoles.length > 0 && response.data?.id) {
@@ -256,7 +231,7 @@ const UserManagement = () => {
             selectedNewUserRoles,
           );
         }
-        toast.success("User created successfully");
+        toast.success(t("userCreatedSuccessfully"));
       }
       setShowCreateModal(false);
       setIsEditMode(false);
@@ -273,7 +248,7 @@ const UserManagement = () => {
       setShowRolesGrid(false);
       fetchData();
     } catch (e: any) {
-      toast.error(e.response?.data || "Failed to process user");
+      toast.error(e.response?.data || t("failedToProcessUser"));
     }
   };
 
@@ -283,21 +258,21 @@ const UserManagement = () => {
       await api.post(`/admin/users/${selectedUser.id}/reset-password`, {
         newPassword: resetPassword,
       });
-      toast.success(`Password reset for ${selectedUser.userName}`);
+      toast.success(`${t("passwordResetFor")} ${selectedUser.userName}`);
       setShowResetModal(false);
       fetchData();
     } catch (e) {
-      toast.error("Failed to reset password");
+      toast.error(t("failedToResetPassword"));
     }
   };
 
   const toggleUserStatus = async (id: string) => {
     try {
       await api.patch(`/admin/users/${id}/toggle-status`);
-      toast.success("User status updated");
+      toast.success(t("userStatusUpdated"));
       fetchData();
     } catch (e) {
-      toast.error("Failed to update status");
+      toast.error(t("failedToUpdateStatus"));
     }
   };
 
@@ -312,19 +287,23 @@ const UserManagement = () => {
   }, [searchTerm]);
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <h2 className="text-xl font-bold dark:text-white flex items-center gap-2">
-            <UserCog className="w-5 h-5 text-blue-600" />
-            User Management
-          </h2>
-          <div className="flex items-center gap-2 w-full md:w-auto">
+    <div className="space-y-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-indigo-100/50 dark:shadow-black/40 p-6 border border-white/20 dark:border-gray-700/50 animate-fade-in">
+      <div>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl shadow-lg shadow-blue-200 dark:shadow-blue-900/30">
+              <UserCog size={24} />
+            </div>
+            <h2 className="text-2xl font-black bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              {t("userManagement")}
+            </h2>
+          </div>
+          <div className="flex items-center gap-3 w-full md:w-auto">
             <TextInput
               id="user-search"
               type="text"
               icon={Search}
-              placeholder="Search..."
+              placeholder={t("search")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full md:w-64"
@@ -338,7 +317,7 @@ const UserManagement = () => {
                 className="flex items-center"
               >
                 <SlidersHorizontal className="w-4 h-4 mr-2" />
-                Columns
+                {t("columns")}
               </Button>
               {showColumnDropdown && (
                 <>
@@ -346,9 +325,9 @@ const UserManagement = () => {
                     className="fixed inset-0 z-10"
                     onClick={() => setShowColumnDropdown(false)}
                   ></div>
-                  <div className="absolute right-0 mt-2 w-56 rounded-md shadow-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 z-20 space-y-3 transform origin-top-right transition-all">
+                  <div className="absolute right-0 mt-2 w-56 rounded-md shadow-xl bg-white dark:bg-gray-800 p-4 z-20 space-y-3 transform origin-top-right transition-all">
                     <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                      Display Columns
+                      {t("displayColumns")}
                     </h3>
 
                     <label className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors">
@@ -357,7 +336,7 @@ const UserManagement = () => {
                         onChange={() => toggleColumn("profile")}
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                        User Profile
+                        {t("userProfile")}
                       </span>
                     </label>
 
@@ -367,7 +346,7 @@ const UserManagement = () => {
                         onChange={() => toggleColumn("contact")}
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                        Contact Info
+                        {t("contactInfo")}
                       </span>
                     </label>
 
@@ -378,7 +357,7 @@ const UserManagement = () => {
                           onChange={() => toggleColumn("credentials")}
                         />
                         <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                          Credentials
+                          {t("credentials")}
                         </span>
                       </label>
                     )}
@@ -389,7 +368,7 @@ const UserManagement = () => {
                         onChange={() => toggleColumn("roles")}
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                        Security Roles
+                        {t("securityRoles")}
                       </span>
                     </label>
 
@@ -399,7 +378,7 @@ const UserManagement = () => {
                         onChange={() => toggleColumn("status")}
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                        Account Status
+                        {t("accountStatus")}
                       </span>
                     </label>
 
@@ -409,7 +388,7 @@ const UserManagement = () => {
                         onChange={() => toggleColumn("governance")}
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                        Action
+                        {t("action")}
                       </span>
                     </label>
                   </div>
@@ -424,9 +403,10 @@ const UserManagement = () => {
                 setEditingId(null);
                 setShowCreateModal(true);
               }}
+              className="rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
             >
               <UserPlus className="w-4 h-4 mr-2" />
-              New User
+              {t("newUser")}
             </Button>
             <Button
               color="gray"
@@ -434,57 +414,57 @@ const UserManagement = () => {
                 fetchData(currentPage - 1, itemsPerPage, searchTerm)
               }
               disabled={loading}
+              className="rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
             >
               <RefreshCw
-                className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                className={`w-4 h-4 ${loading ?"animate-spin":""}`}
               />
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
 
-      <div className="shadow-lg rounded-md border dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800">
-        <div className="overflow-x-auto">
-          <Table hoverable className="w-full text-left text-sm">
-            <TableHead className="bg-gray-50 dark:bg-gray-700/50">
+      <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm bg-white dark:bg-gray-800">
+          <Table hoverable className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+            <TableHead className="bg-gray-50/80 dark:bg-gray-800/80 backdrop-blur-sm text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider">
               {visibleColumns.profile && (
-                <TableHeadCell>User Profile</TableHeadCell>
+                <TableHeadCell>{t("userProfile")}</TableHeadCell>
               )}
-              {visibleColumns.contact && <TableHeadCell>Contact</TableHeadCell>}
+              {visibleColumns.contact && <TableHeadCell>{t("contact")}</TableHeadCell>}
               {isSuperAdmin && visibleColumns.credentials && (
-                <TableHeadCell>Credentials</TableHeadCell>
+                <TableHeadCell>{t("credentials")}</TableHeadCell>
               )}
               {visibleColumns.roles && (
-                <TableHeadCell>Security Roles</TableHeadCell>
+                <TableHeadCell>{t("securityRoles")}</TableHeadCell>
               )}
               {visibleColumns.status && (
-                <TableHeadCell>Account Status</TableHeadCell>
+                <TableHeadCell>{t("accountStatus")}</TableHeadCell>
               )}
               {visibleColumns.governance && (
-                <TableHeadCell className="text-right">Action</TableHeadCell>
+                <TableHeadCell className="text-right">{t("action")}</TableHeadCell>
               )}
             </TableHead>
-            <TableBody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
               {users.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={getVisibleColumnsCount()}
                     className="text-center py-8 text-gray-500"
                   >
-                    No personnel records found in the security node.
+                    {t("noPersonnelRecordsFound")}
                   </TableCell>
                 </TableRow>
               ) : (
                 users.map((u) => (
                   <TableRow
                     key={u.id}
-                    className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    className="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors duration-200 group"
                   >
                     {/* User Profile */}
                     {visibleColumns.profile && (
                       <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                         <div className="flex items-center gap-3 py-1">
-                          <div className="relative h-8 w-8 min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem] shrink-0 aspect-square rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center shadow-sm">
+                          <div className="relative h-8 w-8 min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem] shrink-0 aspect-square rounded-full overflow-hidden border-2 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center shadow-sm">
                             {u.avatarUrl ? (
                               <img
                                 src={u.avatarUrl}
@@ -524,7 +504,7 @@ const UserManagement = () => {
                         <div className="flex items-center gap-2">
                           <span className="font-mono text-[10px] text-gray-400">
                             {visiblePasswords[u.id]
-                              ? u.passwordText || "[Unrecorded]"
+                              ? u.passwordText || t("unrecorded")
                               : "********"}
                           </span>
                           <button
@@ -587,13 +567,13 @@ const UserManagement = () => {
                             placement="left-start"
                           >
                             <DropdownItem onClick={() => handleEditUser(u)}>
-                              <Edit size={14} className="mr-2" /> Edit
+                              <Edit size={14} className="mr-2" /> {t("edit")}
                             </DropdownItem>
                             <DropdownItem onClick={() => openRoleModal(u)}>
-                              <Shield size={14} className="mr-2" /> Roles
+                              <Shield size={14} className="mr-2" /> {t("roles")}
                             </DropdownItem>
                             <DropdownItem onClick={() => openResetModal(u)}>
-                              <Key size={14} className="mr-2" /> Password
+                              <Key size={14} className="mr-2" /> {t("password")}
                             </DropdownItem>
                             <DropdownDivider />
                             <DropdownItem
@@ -603,7 +583,7 @@ const UserManagement = () => {
                               }
                             >
                               <RefreshCw size={14} className="mr-2" />{" "}
-                              {u.isActive ? "Disable User" : "Enable User"}
+                              {u.isActive ? t("disableUser") : t("enableUser")}
                             </DropdownItem>
                           </Dropdown>
                         </div>
@@ -612,12 +592,11 @@ const UserManagement = () => {
                   </TableRow>
                 ))
               )}
-            </TableBody>
+            </tbody>
           </Table>
-        </div>
 
         {totalPages > 1 && (
-          <div className="p-4 bg-gray-50/30 dark:bg-gray-800/30 border-t dark:border-gray-700">
+          <div className="p-4 bg-gray-50/30 dark:bg-gray-800/30 border-t">
             <ModernPagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -636,17 +615,17 @@ const UserManagement = () => {
         size="xl"
       >
         <CustomModalHeader
-          title={isEditMode ? "Update User Account" : "New User Account"}
-          subtitle="Security Management"
+          title={isEditMode ? t("updateUserAccount") : t("newUserAccount")}
+          subtitle={t("securityManagement")}
           onClose={() => setShowCreateModal(false)}
         />
         <ModalBody>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>First Name</Label>
+                <Label>{t("firstName")}</Label>
                 <TextInput
-                  placeholder="First"
+                  placeholder={t("firstPlaceholder")}
                   value={
                     isEditMode ? selectedUser?.firstName : newUser.firstName
                   }
@@ -662,9 +641,9 @@ const UserManagement = () => {
                 />
               </div>
               <div>
-                <Label>Last Name</Label>
+                <Label>{t("lastName")}</Label>
                 <TextInput
-                  placeholder="Last"
+                  placeholder={t("lastPlaceholder")}
                   value={isEditMode ? selectedUser?.lastName : newUser.lastName}
                   onChange={(e) =>
                     isEditMode
@@ -679,9 +658,9 @@ const UserManagement = () => {
               </div>
             </div>
             <div>
-              <Label>Username</Label>
+              <Label>{t("username")}</Label>
               <TextInput
-                placeholder="Username"
+                placeholder={t("username")}
                 value={isEditMode ? selectedUser?.userName : newUser.userName}
                 onChange={(e) =>
                   isEditMode
@@ -695,9 +674,9 @@ const UserManagement = () => {
               />
             </div>
             <div>
-              <Label>Email</Label>
+              <Label>{t("email")}</Label>
               <TextInput
-                placeholder="Email"
+                placeholder={t("email")}
                 value={isEditMode ? selectedUser?.email : newUser.email}
                 onChange={(e) =>
                   isEditMode
@@ -712,7 +691,7 @@ const UserManagement = () => {
             </div>
             {!isEditMode && (
               <div className="relative">
-                <Label>Password</Label>
+                <Label>{t("password")}</Label>
                 <TextInput
                   type={showPassword ? "text" : "password"}
                   value={newUser.passwordHash}
@@ -733,9 +712,9 @@ const UserManagement = () => {
               </div>
             )}
             <div>
-              <Label>Profile Picture</Label>
+              <Label>{t("profilePicture")}</Label>
               <div className="mt-2 flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-700 border-2 border-dashed border-gray-200 dark:border-gray-600 flex items-center justify-center overflow-hidden">
+                <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-700 border-2 flex items-center justify-center overflow-hidden">
                   {(
                     isEditMode ? selectedUser?.avatarUrl : newUser.avatarUrl
                   ) ? (
@@ -759,9 +738,9 @@ const UserManagement = () => {
                   />
                   <Label
                     htmlFor="user-avatar"
-                    className="inline-block px-4 py-2 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md text-xs font-bold cursor-pointer hover:bg-gray-50 transition-colors shadow-sm"
+                    className="inline-block px-4 py-2 bg-white dark:bg-gray-700 rounded-md text-xs font-bold cursor-pointer hover:bg-gray-50 transition-colors shadow-sm"
                   >
-                    Select Image
+                    {t("selectImage")}
                   </Label>
                 </div>
               </div>
@@ -772,12 +751,12 @@ const UserManagement = () => {
                 <button
                   type="button"
                   onClick={() => setShowRolesGrid(!showRolesGrid)}
-                  className="flex items-center justify-between w-full p-3 text-sm font-medium text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors rounded-md border border-gray-200 dark:border-gray-600 focus:outline-none"
+                  className="flex items-center justify-between w-full p-3 text-sm font-medium text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors rounded-md focus:outline-none"
                 >
-                  <span>Initial Security Roles</span>
+                  <span>{t("initialSecurityRoles")}</span>
                   <svg
                     data-accordion-icon
-                    className={`w-4 h-4 shrink-0 transition-transform ${showRolesGrid ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 shrink-0 transition-transform ${showRolesGrid ?"rotate-180":""}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                     xmlns="http://www.w3.org/2000/svg"
@@ -790,12 +769,12 @@ const UserManagement = () => {
                   </svg>
                 </button>
                 {showRolesGrid && (
-                  <div className="p-3 mt-2 border border-gray-100 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800">
+                  <div className="p-3 mt-2 rounded-md bg-gray-50 dark:bg-gray-800">
                     <div className="grid grid-cols-2 gap-3 max-h-[200px] overflow-y-auto pr-2">
                       {roles?.map((r) => (
                         <label
                           key={r.id}
-                          className="flex flex-row items-center justify-start gap-3 p-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-md shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-colors"
+                          className="flex flex-row items-center justify-start gap-3 p-3 bg-white dark:bg-gray-900 rounded-md shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-colors"
                         >
                           <Checkbox
                             id={`newuser-role-${r.id}`}
@@ -820,13 +799,13 @@ const UserManagement = () => {
             )}
           </div>
         </ModalBody>
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t dark:border-gray-700">
+        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t">
           <CustomModalFooter
             onClose={() => setShowCreateModal(false)}
             isEditMode={isEditMode}
-            submitText={isEditMode ? "Update User" : "Create User"}
+            submitText={isEditMode ? t("updateUser") : t("createUser")}
             onSubmit={handleCreateUser}
-            cancelText="Cancel"
+            cancelText={t("cancel")}
             hideBorder
           />
         </div>
@@ -839,20 +818,20 @@ const UserManagement = () => {
         size="md"
       >
         <CustomModalHeader
-          title="Reset Password"
-          subtitle="Security Management"
+          title={t("resetPassword")}
+          subtitle={t("securityManagement")}
           onClose={() => setShowResetModal(false)}
         />
         <ModalBody>
           <div className="space-y-4">
             <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-md text-sm">
-              User:{" "}
+              {t("userLabel")}{" "}
               <span className="font-bold text-blue-600">
                 {selectedUser?.userName}
               </span>
             </div>
             <div>
-              <Label>New Secure Password</Label>
+              <Label>{t("newSecurePassword")}</Label>
               <TextInput
                 type={showPassword ? "text" : "password"}
                 value={resetPassword}
@@ -861,13 +840,13 @@ const UserManagement = () => {
             </div>
           </div>
         </ModalBody>
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t dark:border-gray-700">
+        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t">
           <CustomModalFooter
             onClose={() => setShowResetModal(false)}
             isEditMode={false}
-            submitText="Save Changes"
+            submitText={t("saveChanges")}
             onSubmit={handleResetPassword}
-            cancelText="Cancel"
+            cancelText={t("cancel")}
             hideBorder
           />
         </div>
@@ -880,8 +859,8 @@ const UserManagement = () => {
         size="md"
       >
         <CustomModalHeader
-          title="Assign Security Roles"
-          subtitle="Security Management"
+          title={t("assignSecurityRoles")}
+          subtitle={t("securityManagement")}
           onClose={() => setShowRoleModal(false)}
         />
         <ModalBody>
@@ -889,7 +868,7 @@ const UserManagement = () => {
             {roles?.map((r) => (
               <label
                 key={r.id}
-                className="flex flex-row items-center justify-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                className="flex flex-row items-center justify-start gap-3 p-3 bg-white dark:bg-gray-800 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <Checkbox
                   id={`role-${r.id}`}
@@ -909,13 +888,13 @@ const UserManagement = () => {
             ))}
           </div>
         </ModalBody>
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t dark:border-gray-700">
+        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg border-t">
           <CustomModalFooter
             onClose={() => setShowRoleModal(false)}
             isEditMode={false}
-            submitText="Update Roles"
+            submitText={t("updateRoles")}
             onSubmit={saveRoles}
-            cancelText="Cancel"
+            cancelText={t("cancel")}
             hideBorder
           />
         </div>

@@ -17,7 +17,14 @@ public class GetAllStudentsQueryHandler {
     private final StudentMapper studentMapper;
 
     public Page<StudentQueryResultDto> handle(GetAllStudentsQuery query) {
-        return studentRepository.findAll(PageRequest.of(query.getPage(), query.getSize()))
+        PageRequest pageRequest = PageRequest.of(query.getPage(), query.getSize());
+        
+        if (query.getOutreachWorkerName() != null && !query.getOutreachWorkerName().trim().isEmpty()) {
+            return studentRepository.findByOutreachWorkerNameContainingIgnoreCase(query.getOutreachWorkerName(), pageRequest)
+                    .map(studentMapper::toDto);
+        }
+        
+        return studentRepository.findAll(pageRequest)
                 .map(studentMapper::toDto);
     }
 }

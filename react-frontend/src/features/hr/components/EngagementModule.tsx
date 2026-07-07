@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Award, Activity, Zap, TrendingUp, MessageCircle } from "lucide-react";
-import { Button, Card, Avatar, Badge, Spinner } from '@/lib/flowbite-compat';
+import {Button, Avatar, Badge, Spinner} from '@/lib/flowbite-compat';
 import { ResponsiveContainer, LineChart, Line, Tooltip } from "recharts";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
@@ -74,7 +74,7 @@ const EngagementModule: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm">
+        <div className="lg:col-span-2 p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm">
           <h4 className="font-black text-xl dark:text-white mb-8 flex items-center gap-2 uppercase tracking-tight">
             <Award className="text-blue-600" /> Wall of Recognition
           </h4>
@@ -82,7 +82,7 @@ const EngagementModule: React.FC = () => {
             {recognitions.map((rec, i) => (
               <div
                 key={rec.id || i}
-                className="p-8 bg-gray-50 dark:bg-gray-700/50 rounded-md flex gap-6 items-start border border-transparent hover:border-blue-600/30 transition-all shadow-sm cursor-pointer"
+                className="p-8 bg-gray-50 dark:bg-gray-700/50 rounded-md flex gap-6 items-start border-transparent hover:border-blue-600/30 transition-all shadow-sm cursor-pointer"
               >
                 <Avatar rounded size="md" />
                 <div className="flex-1">
@@ -118,10 +118,10 @@ const EngagementModule: React.FC = () => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
         <div className="space-y-8">
-          <Card className="p-10 rounded-md border-none shadow-lg bg-gradient-to-br from-indigo-600 to-blue-700 text-white relative overflow-hidden h-[400px]">
+          <div className="p-10 rounded-md border-none shadow-lg bg-gradient-to-br from-indigo-600 to-blue-700 text-white relative overflow-hidden h-[400px]">
             <Activity
               size={100}
               className="absolute -right-6 -bottom-6 opacity-10 rotate-12"
@@ -176,9 +176,9 @@ const EngagementModule: React.FC = () => {
                 ></div>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+          <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
             <h4 className="font-black text-lg dark:text-white mb-6 uppercase tracking-tight flex items-center gap-2">
               <Zap className="text-amber-500" /> Wellness Track
             </h4>
@@ -186,7 +186,7 @@ const EngagementModule: React.FC = () => {
               {metrics.wellnessTrack.map((item: any, i: number) => (
                 <div
                   key={i}
-                  className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-transparent hover:border-amber-500/30 transition-colors"
+                  className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md border-transparent hover:border-amber-500/30 transition-colors"
                 >
                   <span className="text-gray-400">{item.label}</span>
                   <span className="text-amber-500 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-md">
@@ -195,7 +195,7 @@ const EngagementModule: React.FC = () => {
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

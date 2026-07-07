@@ -1,32 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from '@/lib/react-router-compat';
-import {
-  Card,
-  Button,
-  Badge,
-  Spinner,
-  Avatar,
-  Alert,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  TextInput,
-  Textarea,
-  Select,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-  ToggleSwitch,
-  Checkbox,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Spinner, Avatar, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Label, TextInput, Textarea, Select, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Dropdown, DropdownItem, DropdownDivider, ToggleSwitch, Checkbox, Datepicker} from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import ModernPagination from '@/components/common/ModernPagination';
 import ModernTabs from "@/components/common/ModernTabs";
@@ -1552,9 +1526,9 @@ export default function ClientAdvancedFeatures({
                 </Button>
               </div>
 
-              <div className="overflow-x-auto border dark:border-gray-700 rounded">
+              <div className="overflow-x-auto rounded">
                 <Table hoverable>
-                  <TableHead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
+                  <TableHead className="bg-gray-50 dark:bg-gray-800 border-b">
                     <TableHeadCell className="font-bold text-gray-600 dark:text-gray-300">
                       ID
                     </TableHeadCell>
@@ -1588,7 +1562,7 @@ export default function ClientAdvancedFeatures({
                       futuresTrainings.map((t: any) => (
                         <TableRow
                           key={t.id}
-                          className="bg-white dark:bg-gray-900 border-b dark:border-gray-700"
+                          className="bg-white dark:bg-gray-900 border-b"
                         >
                           <TableCell>{t.id}</TableCell>
                           <TableCell className="font-bold text-gray-900 dark:text-white">
@@ -1660,8 +1634,8 @@ export default function ClientAdvancedFeatures({
 
           {activeTab === "Further Education" && (
             <div className="pt-3 space-y-8 animate-fade-in">
-              <div className="border rounded-md dark:border-gray-700">
-                <div className="bg-gray-100 dark:bg-gray-800 p-3 font-semibold text-gray-700 dark:text-gray-200 border-b dark:border-gray-700">
+              <div className="rounded-md">
+                <div className="bg-gray-100 dark:bg-gray-800 p-3 font-semibold text-gray-700 dark:text-gray-200 border-b">
                   Education Type
                 </div>
                 <div className="p-6 bg-white dark:bg-gray-900 space-y-6">
@@ -1804,8 +1778,8 @@ export default function ClientAdvancedFeatures({
               </div>
 
               {/* Referral History Section */}
-              <div className="border rounded-md dark:border-gray-700 bg-white dark:bg-gray-900 mt-6 shadow-sm overflow-hidden">
-                <div className="bg-gray-100 dark:bg-gray-800 p-3 font-semibold text-gray-700 dark:text-gray-200 border-b dark:border-gray-700 flex justify-between items-center">
+              <div className="rounded-md bg-white dark:bg-gray-900 mt-6 shadow-sm overflow-hidden">
+                <div className="bg-gray-100 dark:bg-gray-800 p-3 font-semibold text-gray-700 dark:text-gray-200 border-b flex justify-between items-center">
                   <span>Referral History</span>
                   <div className="flex gap-2">
                     <Button
@@ -1875,7 +1849,7 @@ export default function ClientAdvancedFeatures({
                   </div>
                   <div className="overflow-x-auto">
                     <Table hoverable>
-                      <TableHead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
+                      <TableHead className="bg-gray-50 dark:bg-gray-800 border-b">
                         <TableHeadCell className="font-bold text-gray-600 dark:text-gray-300">
                           ID
                         </TableHeadCell>
@@ -1924,7 +1898,7 @@ export default function ClientAdvancedFeatures({
                             .map((ref: any, idx: number) => (
                               <TableRow
                                 key={idx}
-                                className="bg-white dark:bg-gray-900 border-b dark:border-gray-700"
+                                className="bg-white dark:bg-gray-900 border-b"
                               >
                                 <TableCell>{ref.id}</TableCell>
                                 <TableCell>
@@ -2027,14 +2001,14 @@ export default function ClientAdvancedFeatures({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-3">
               {/* Left: Quick Stats & Timeline */}
               <div className="lg:col-span-2 space-y-4">
-                <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                   <h3 className="font-black text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                     <History className="text-blue-600" /> Interaction Timeline
                   </h3>
                   <div className="relative pl-8 space-y-5 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100 dark:before:bg-gray-700">
                     {cases.map((c: any, i: number) => (
                       <div key={i} className="relative">
-                        <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center border-4 border-white dark:border-gray-800 text-blue-600">
+                        <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center border-4 border-white text-blue-600">
                           <ShieldCheck size={10} />
                         </div>
                         <div>
@@ -2054,7 +2028,7 @@ export default function ClientAdvancedFeatures({
                       </div>
                     ))}
                     <div className="relative">
-                      <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-800 text-gray-500">
+                      <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-white text-gray-500">
                         <User size={10} />
                       </div>
                       <div>
@@ -2075,9 +2049,9 @@ export default function ClientAdvancedFeatures({
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
 
-                <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800 overflow-hidden">
+                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800 overflow-hidden">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="font-black text-lg text-gray-900 dark:text-white flex items-center gap-2">
                       <Briefcase className="text-emerald-500" /> Placement
@@ -2107,7 +2081,7 @@ export default function ClientAdvancedFeatures({
                       hoverable
                       className="border-none w-full min-w-[600px] relative"
                     >
-                      <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b dark:border-gray-700 sticky top-0 z-20 backdrop-blur-md shadow-sm">
+                      <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b sticky top-0 z-20 backdrop-blur-md shadow-sm">
                         <TableHeadCell className="px-6 py-4 font-bold">
                           Company
                         </TableHeadCell>
@@ -2138,7 +2112,7 @@ export default function ClientAdvancedFeatures({
                           placements.map((p: any, i: number) => (
                             <TableRow
                               key={i}
-                              className="dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                              className="dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                             >
                               <TableCell className="px-6 py-4 font-bold dark:text-white">
                                 {p.companyName || "N/A"}
@@ -2202,17 +2176,17 @@ export default function ClientAdvancedFeatures({
                       </TableBody>
                     </Table>
                   </div>
-                </Card>
+                </div>
               </div>
 
               {/* Right: Personal Details & Documents */}
               <div className="space-y-4">
-                <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                   <h3 className="font-black text-lg text-gray-900 dark:text-white mb-6">
                     Vital Information
                   </h3>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Gender
                       </span>
@@ -2220,7 +2194,7 @@ export default function ClientAdvancedFeatures({
                         {client.gender}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Marital Status
                       </span>
@@ -2228,7 +2202,7 @@ export default function ClientAdvancedFeatures({
                         {client.maritalStatus || "Single"}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         ID Card
                       </span>
@@ -2236,7 +2210,7 @@ export default function ClientAdvancedFeatures({
                         {client.idCard || "N/A"}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Nationality
                       </span>
@@ -2244,7 +2218,7 @@ export default function ClientAdvancedFeatures({
                         {client.nationality || "Khmer"}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Physical
                       </span>
@@ -2253,9 +2227,9 @@ export default function ClientAdvancedFeatures({
                       </span>
                     </div>
                   </div>
-                </Card>
+                </div>
 
-                <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="font-black text-lg text-gray-900 dark:text-white">
                       Attachments
@@ -2317,10 +2291,7 @@ export default function ClientAdvancedFeatures({
                                   ?.click();
                               }
                             }}
-                            className={`p-4 rounded-lg border flex flex-col items-center gap-2 group cursor-pointer transition-all ${fileUrl
-                                ? "bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400"
-                                : "bg-gray-50 dark:bg-gray-700/50 border-gray-100 dark:border-gray-600 hover:border-blue-400"
-                              }`}
+                            className={`p-4 rounded-lg flex flex-col items-center gap-2 group cursor-pointer transition-all ${fileUrl ?"bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400":"bg-gray-50 dark:bg-gray-700/50  hover:border-blue-400"}`}
                           >
                             {/* Action Buttons Overlay */}
                             {fileUrl && (
@@ -2379,7 +2350,7 @@ export default function ClientAdvancedFeatures({
                                       window.open(fileUrl, "_blank");
                                     }
                                   }}
-                                  className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+                                  className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
                                   title="Download Attachment"
                                 >
                                   <Download size={12} />
@@ -2393,7 +2364,7 @@ export default function ClientAdvancedFeatures({
                                       .getElementById(`upload-${doc.field}`)
                                       ?.click();
                                   }}
-                                  className="p-1 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+                                  className="p-1 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
                                   title="Replace Attachment"
                                 >
                                   <Edit size={12} />
@@ -2405,7 +2376,7 @@ export default function ClientAdvancedFeatures({
                                     e.stopPropagation();
                                     handleRemoveAttachment(doc.field);
                                   }}
-                                  className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+                                  className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
                                   title="Delete Attachment"
                                 >
                                   <Trash2 size={12} />
@@ -2415,10 +2386,7 @@ export default function ClientAdvancedFeatures({
 
                             {/* Icon */}
                             <div
-                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${fileUrl
-                                  ? "bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400"
-                                  : "bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-                                }`}
+                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${fileUrl ?"bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400":"bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
                             >
                               {isCardUploading ? (
                                 <Spinner size="sm" />
@@ -2432,7 +2400,7 @@ export default function ClientAdvancedFeatures({
                               {doc.label}
                             </span>
                             <span
-                              className={`text-[9px] font-bold ${fileUrl ? "text-green-600 dark:text-green-400" : "text-gray-400"}`}
+                              className={`text-[9px] font-bold ${fileUrl ?"text-green-600 dark:text-green-400":"text-gray-400"}`}
                             >
                               {isCardUploading
                                 ? "Uploading..."
@@ -2445,7 +2413,7 @@ export default function ClientAdvancedFeatures({
                       );
                     })}
                   </div>
-                </Card>
+                </div>
               </div>
             </div>
           )}
@@ -2504,13 +2472,13 @@ export default function ClientAdvancedFeatures({
                   </Button>
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
                 <div className="overflow-x-auto overflow-y-auto max-h-[400px] custom-scrollbar">
                   <Table
                     hoverable
                     className="border-none w-full min-w-[850px] relative"
                   >
-                    <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b dark:border-gray-700 sticky top-0 z-20 backdrop-blur-md shadow-sm">
+                    <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b sticky top-0 z-20 backdrop-blur-md shadow-sm">
                       <TableHeadCell className="px-6 py-4 font-bold">
                         ID
                       </TableHeadCell>
@@ -2549,7 +2517,7 @@ export default function ClientAdvancedFeatures({
                           return (
                             <TableRow
                               key={c.id || index}
-                              className="dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                              className="dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                             >
                               <TableCell className="px-6 py-4 font-bold dark:text-white">
                                 {c.id}
@@ -2635,7 +2603,7 @@ export default function ClientAdvancedFeatures({
             <div className="pt-3 space-y-8">
               {/* Section 1: Secondary & High School */}
               <div className="space-y-4">
-                <div className="flex justify-between items-center border-b pb-2 dark:border-gray-700">
+                <div className="flex justify-between items-center border-b pb-2">
                   <h3 className="text-lg font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-tight">
                     Secondary and High School
                   </h3>
@@ -2660,7 +2628,7 @@ export default function ClientAdvancedFeatures({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {educations?.map((edu: any, i: number) => (
-                    <Card
+                    <div
                       key={i}
                       className="rounded-lg border-none shadow-lg dark:bg-gray-800 group relative"
                     >
@@ -2701,10 +2669,10 @@ export default function ClientAdvancedFeatures({
                           </p>
                         </div>
                       </div>
-                    </Card>
+                    </div>
                   ))}
                   {(educations?.length === 0 || !educations) && (
-                    <div className="col-span-full py-10 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                    <div className="col-span-full py-10 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2">
                       <GraduationCap
                         size={36}
                         className="mx-auto text-gray-300 mb-2"
@@ -2719,7 +2687,7 @@ export default function ClientAdvancedFeatures({
 
               {/* Section 2: Computer Skill */}
               <div className="space-y-4 pt-4">
-                <div className="flex justify-between items-center border-b pb-2 dark:border-gray-700">
+                <div className="flex justify-between items-center border-b pb-2">
                   <h3 className="text-lg font-black text-teal-600 dark:text-teal-400 uppercase tracking-tight">
                     Computer Skill
                   </h3>
@@ -2745,7 +2713,7 @@ export default function ClientAdvancedFeatures({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {(computerSkills || []).map((cs: any, i: number) => (
-                    <Card
+                    <div
                       key={i}
                       className="rounded-lg border-none shadow-lg dark:bg-gray-800 group relative"
                     >
@@ -2792,10 +2760,10 @@ export default function ClientAdvancedFeatures({
                           )}
                         </div>
                       </div>
-                    </Card>
+                    </div>
                   ))}
                   {(computerSkills?.length === 0 || !computerSkills) && (
-                    <div className="col-span-full py-10 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                    <div className="col-span-full py-10 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2">
                       <Award size={36} className="mx-auto text-gray-300 mb-2" />
                       <p className="text-gray-500 text-sm font-bold">
                         Computer skills list is empty.
@@ -2807,7 +2775,7 @@ export default function ClientAdvancedFeatures({
 
               {/* Section 3: Languages Skill */}
               <div className="space-y-4 pt-4">
-                <div className="flex justify-between items-center border-b pb-2 dark:border-gray-700">
+                <div className="flex justify-between items-center border-b pb-2">
                   <h3 className="text-lg font-black text-amber-600 dark:text-amber-500 uppercase tracking-tight">
                     Languages Skill
                   </h3>
@@ -2831,7 +2799,7 @@ export default function ClientAdvancedFeatures({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {(languages || []).map((l: any, i: number) => (
-                    <Card
+                    <div
                       key={i}
                       className="rounded-lg border-none shadow-lg dark:bg-gray-800 group relative"
                     >
@@ -2870,10 +2838,10 @@ export default function ClientAdvancedFeatures({
                           </p>
                         </div>
                       </div>
-                    </Card>
+                    </div>
                   ))}
                   {(languages?.length === 0 || !languages) && (
-                    <div className="col-span-full py-10 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                    <div className="col-span-full py-10 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2">
                       <FileText
                         size={36}
                         className="mx-auto text-gray-300 mb-2"
@@ -2888,7 +2856,7 @@ export default function ClientAdvancedFeatures({
 
               {/* Section 4: Personal Profile & Hobbies */}
               <div className="space-y-4 pt-4">
-                <div className="flex justify-between items-center border-b pb-2 dark:border-gray-700">
+                <div className="flex justify-between items-center border-b pb-2">
                   <h3 className="text-lg font-black text-rose-600 dark:text-rose-500 uppercase tracking-tight">
                     Personal Profile & Hobbies
                   </h3>
@@ -2903,7 +2871,7 @@ export default function ClientAdvancedFeatures({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                  <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                         Strengths
@@ -2913,8 +2881,8 @@ export default function ClientAdvancedFeatures({
                           "No strengths recorded."}
                       </p>
                     </div>
-                  </Card>
-                  <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                  </div>
+                  <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                         Weaknesses
@@ -2924,8 +2892,8 @@ export default function ClientAdvancedFeatures({
                           "No weaknesses recorded."}
                       </p>
                     </div>
-                  </Card>
-                  <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                  </div>
+                  <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                         Hobbies & Interests
@@ -2935,7 +2903,7 @@ export default function ClientAdvancedFeatures({
                           "No hobbies recorded."}
                       </p>
                     </div>
-                  </Card>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2967,7 +2935,7 @@ export default function ClientAdvancedFeatures({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {(data.jobExpectations || []).map((je: any, i: number) => (
-                  <Card
+                  <div
                     key={i}
                     className="rounded-lg border-none shadow-lg dark:bg-gray-800 group relative"
                   >
@@ -3011,7 +2979,7 @@ export default function ClientAdvancedFeatures({
                         </p>
                       </div>
                     </div>
-                    <div className="mt-4 space-y-2 border-t dark:border-gray-700 pt-4">
+                    <div className="mt-4 space-y-2 border-t pt-4">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500 font-bold">
                           Expected Salary
@@ -3027,10 +2995,10 @@ export default function ClientAdvancedFeatures({
                         </span>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
                 {(data.jobExpectations || []).length === 0 && (
-                  <div className="col-span-full py-20 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                  <div className="col-span-full py-20 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2">
                     <Briefcase
                       size={48}
                       className="mx-auto text-gray-300 mb-4"
@@ -3068,7 +3036,7 @@ export default function ClientAdvancedFeatures({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {(data.beneficiaries || []).map((b: any, i: number) => (
-                  <Card
+                  <div
                     key={i}
                     className="rounded-lg border-none shadow-lg dark:bg-gray-800 group relative text-center"
                   >
@@ -3106,10 +3074,10 @@ export default function ClientAdvancedFeatures({
                     <p className="text-sm text-gray-500">
                       Age: {b.age || "N/A"}
                     </p>
-                  </Card>
+                  </div>
                 ))}
                 {(data.beneficiaries || []).length === 0 && (
-                  <div className="col-span-full py-20 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                  <div className="col-span-full py-20 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2">
                     <Heart size={48} className="mx-auto text-gray-300 mb-4" />
                     <p className="text-gray-500 font-bold">
                       No dependents recorded for this client.
@@ -3122,7 +3090,7 @@ export default function ClientAdvancedFeatures({
 
           {activeTab === "Other Supports" && (
             <div className="pt-2 space-y-4 animate-fade-in">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <Award className="text-orange-500" size={24} />
@@ -3183,7 +3151,7 @@ export default function ClientAdvancedFeatures({
                           (supportName: string, idx: number) => (
                             <div
                               key={idx}
-                              className="bg-orange-50/50 dark:bg-orange-900/10 p-3 rounded-lg border border-orange-100 dark:border-orange-800/20 flex items-center gap-2"
+                              className="bg-orange-50/50 dark:bg-orange-900/10 p-3 rounded-lg border-orange-100 dark:border-orange-800/20 flex items-center gap-2"
                             >
                               <div className="w-2 h-2 rounded-full bg-orange-500"></div>
                               <h4 className="font-bold text-orange-800 dark:text-orange-400">
@@ -3260,7 +3228,7 @@ export default function ClientAdvancedFeatures({
           {activeTab === "Monitoring" && (
             <div className="pt-2 space-y-3">
               {/* Header bar */}
-              <div className="bg-gray-100 dark:bg-gray-800 p-3 font-semibold text-gray-700 dark:text-gray-200 border dark:border-gray-700 flex flex-wrap justify-between items-center rounded">
+              <div className="bg-gray-100 dark:bg-gray-800 p-3 font-semibold text-gray-700 dark:text-gray-200 flex flex-wrap justify-between items-center rounded">
                 <span>Monitoring Information</span>
                 <div className="flex flex-wrap gap-2 mt-1 sm:mt-0">
                   <button
@@ -3327,7 +3295,7 @@ export default function ClientAdvancedFeatures({
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <span>Show</span>
-                  <select className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm dark:bg-gray-700 dark:text-white">
+                  <select className="rounded px-2 py-1 text-sm dark:bg-gray-700 dark:text-white">
                     <option>10</option>
                     <option>25</option>
                     <option>50</option>
@@ -3342,15 +3310,15 @@ export default function ClientAdvancedFeatures({
                     type="text"
                     value={monitoringSearchTerm}
                     onChange={(e) => setMonitoringSearchTerm(e.target.value)}
-                    className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+                    className="rounded px-2 py-1 text-sm dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-400"
                   />
                 </div>
               </div>
 
               {/* Table */}
-              <div className="overflow-x-auto border dark:border-gray-700 rounded">
+              <div className="overflow-x-auto rounded">
                 <Table hoverable>
-                  <TableHead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
+                  <TableHead className="bg-gray-50 dark:bg-gray-800 border-b">
                     <TableHeadCell>Id</TableHeadCell>
                     <TableHeadCell>Type</TableHeadCell>
                     <TableHeadCell>Monitoring Date</TableHeadCell>
@@ -3507,14 +3475,14 @@ export default function ClientAdvancedFeatures({
             },
           }}
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {isEditMode ? "Update Placement" : "Record New Placement"}
             </h3>
             <button
               type="button"
               onClick={() => setIsPlacementModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -3615,7 +3583,7 @@ export default function ClientAdvancedFeatures({
               </div>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 relative z-40 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t relative z-40 justify-end gap-3 !p-4">
             <Button
               outline
               color="gray"
@@ -3643,14 +3611,14 @@ export default function ClientAdvancedFeatures({
           onClose={() => setIsSupportModalOpen(false)}
           size="lg"
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {isEditMode ? "Update Assessment" : "New Support Entry"}
             </h3>
             <button
               type="button"
               onClick={() => setIsSupportModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -3704,7 +3672,7 @@ export default function ClientAdvancedFeatures({
                     </Select>
                   </div>
                 )}
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent hover: dark:hover:">
                   <ToggleSwitch
                     checked={supportForm.healthProblem}
                     label="Health Problem Detected?"
@@ -3728,7 +3696,7 @@ export default function ClientAdvancedFeatures({
                   />
                 )}
 
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent hover: dark:hover:">
                   <ToggleSwitch
                     checked={supportForm.drugProblem}
                     label="Drug Issue Detected?"
@@ -3754,7 +3722,7 @@ export default function ClientAdvancedFeatures({
               </div>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
             <Button
               outline
               color="gray"
@@ -3783,14 +3751,14 @@ export default function ClientAdvancedFeatures({
           onClose={() => setIsEducationModalOpen(false)}
           size="md"
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {isEditMode ? "Update Education" : "Add Education"}
             </h3>
             <button
               type="button"
               onClick={() => setIsEducationModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -3840,7 +3808,7 @@ export default function ClientAdvancedFeatures({
               </div>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
             <Button
               outline
               size="sm"
@@ -3868,14 +3836,14 @@ export default function ClientAdvancedFeatures({
           onClose={() => setIsCaseWorkerModalOpen(false)}
           size="lg"
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               Manage Case Workers
             </h3>
             <button
               type="button"
               onClick={() => setIsCaseWorkerModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -3883,7 +3851,7 @@ export default function ClientAdvancedFeatures({
           <ModalBody className="p-6 bg-white dark:bg-gray-800 space-y-6">
             <form
               onSubmit={handleSaveWorker}
-              className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4 border dark:border-gray-700"
+              className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4"
             >
               <h4 className="font-bold text-sm dark:text-white">
                 {editingWorkerId ? "Edit Case Worker" : "Add Case Worker"}
@@ -3962,7 +3930,7 @@ export default function ClientAdvancedFeatures({
               <h4 className="font-bold text-sm dark:text-white">
                 Case Workers List
               </h4>
-              <div className="border rounded-md divide-y dark:border-gray-700 dark:divide-gray-700 max-h-60 overflow-y-auto">
+              <div className="rounded-md divide-y dark:divide-gray-700 max-h-60 overflow-y-auto">
                 {caseWorkers.length === 0 ? (
                   <p className="p-4 text-center text-sm text-gray-500 italic">
                     No case workers registered.
@@ -4018,7 +3986,7 @@ export default function ClientAdvancedFeatures({
               </div>
             </div>
           </ModalBody>
-          <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+          <ModalFooter className="bg-white dark:bg-gray-800 border-t">
             <div className="flex justify-end w-full">
               <Button
                 outline
@@ -4054,7 +4022,7 @@ export default function ClientAdvancedFeatures({
             },
           }}
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {editingSsCaseId
                 ? "Edit Social Support Case"
@@ -4063,7 +4031,7 @@ export default function ClientAdvancedFeatures({
             <button
               type="button"
               onClick={() => setIsSocialSupportCaseModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -4146,7 +4114,7 @@ export default function ClientAdvancedFeatures({
                 </div>
 
                 <div className="md:col-span-2 space-y-4">
-                  <Label className="block border-b pb-1 dark:border-gray-700">
+                  <Label className="block border-b pb-1">
                     Problem List
                   </Label>
 
@@ -4415,7 +4383,7 @@ export default function ClientAdvancedFeatures({
               </div>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 relative z-40 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t relative z-40 justify-end gap-3 !p-4">
             <Button
               outline
               color="gray"
@@ -4443,14 +4411,14 @@ export default function ClientAdvancedFeatures({
           onClose={() => setIsManageLevelsOpen(false)}
           size="md"
         >
-          <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-4 border-b rounded-t-md bg-white dark:bg-gray-800">
             <span className="text-lg font-bold dark:text-white">
               Manage Education Levels
             </span>
             <button
               type="button"
               onClick={() => setIsManageLevelsOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -4480,7 +4448,7 @@ export default function ClientAdvancedFeatures({
               </Button>
             </div>
 
-            <div className="border rounded-md divide-y dark:border-gray-700 dark:divide-gray-700 max-h-60 overflow-y-auto">
+            <div className="rounded-md divide-y dark:divide-gray-700 max-h-60 overflow-y-auto">
               {educationLevels.length === 0 ? (
                 <p className="p-4 text-center text-sm text-gray-500 italic">
                   No levels configured.
@@ -4552,7 +4520,7 @@ export default function ClientAdvancedFeatures({
               )}
             </div>
           </ModalBody>
-          <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+          <ModalFooter className="bg-white dark:bg-gray-800 border-t">
             <div className="flex justify-end w-full">
               <Button
                 outline
@@ -4573,14 +4541,14 @@ export default function ClientAdvancedFeatures({
           onClose={() => setIsManageCasesOpen(false)}
           size="lg"
         >
-          <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-4 border-b rounded-t-md bg-white dark:bg-gray-800">
             <span className="text-lg font-bold dark:text-white">
               Manage Client Cases
             </span>
             <button
               type="button"
               onClick={() => setIsManageCasesOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -4589,7 +4557,7 @@ export default function ClientAdvancedFeatures({
             {/* Form to Add or Edit Case */}
             <form
               onSubmit={handleAddCase}
-              className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4 border dark:border-gray-700"
+              className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4"
             >
               <h4 className="font-bold text-sm dark:text-white">
                 {isCaseEditMode ? "Edit Case Info" : "Open a New Case"}
@@ -4601,7 +4569,7 @@ export default function ClientAdvancedFeatures({
                     renderTrigger={() => (
                       <button
                         type="button"
-                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex justify-between items-center p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 outline-none"
+                        className="w-full bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex justify-between items-center p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 outline-none"
                       >
                         <span className="truncate">
                           {caseForm.serviceType || "Select Service"}
@@ -4656,7 +4624,7 @@ export default function ClientAdvancedFeatures({
                     renderTrigger={() => (
                       <button
                         type="button"
-                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex justify-between items-center p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 outline-none"
+                        className="w-full bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex justify-between items-center p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 outline-none"
                       >
                         <span className="truncate">
                           {caseForm.priority || "Select Priority"}
@@ -4753,7 +4721,7 @@ export default function ClientAdvancedFeatures({
               <h4 className="font-bold text-sm dark:text-white">
                 Existing Cases
               </h4>
-              <div className="border rounded-md divide-y dark:border-gray-700 dark:divide-gray-700 max-h-60 overflow-y-auto">
+              <div className="rounded-md divide-y dark:divide-gray-700 max-h-60 overflow-y-auto">
                 {cases.length === 0 ? (
                   <p className="p-4 text-center text-sm text-gray-500 italic">
                     No cases opened for this client yet.
@@ -4814,7 +4782,7 @@ export default function ClientAdvancedFeatures({
               </div>
             </div>
           </ModalBody>
-          <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+          <ModalFooter className="bg-white dark:bg-gray-800 border-t">
             <div className="flex justify-end w-full">
               <Button
                 outline
@@ -4835,14 +4803,14 @@ export default function ClientAdvancedFeatures({
           onClose={() => setIsManagePlacementTypesOpen(false)}
           size="md"
         >
-          <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-4 border-b rounded-t-md bg-white dark:bg-gray-800">
             <span className="text-lg font-bold dark:text-white">
               Manage Placement Types
             </span>
             <button
               type="button"
               onClick={() => setIsManagePlacementTypesOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -4869,7 +4837,7 @@ export default function ClientAdvancedFeatures({
               </Button>
             </div>
 
-            <div className="border dark:border-gray-700 rounded-lg overflow-hidden divide-y dark:divide-gray-700 bg-white dark:bg-gray-800 max-h-[300px] overflow-y-auto">
+            <div className="rounded-lg overflow-hidden divide-y dark:divide-gray-700 bg-white dark:bg-gray-800 max-h-[300px] overflow-y-auto">
               {placementCategories.length === 0 ? (
                 <p className="text-gray-500 text-sm text-center py-4">
                   No placement types available. Add one above.
@@ -4878,7 +4846,7 @@ export default function ClientAdvancedFeatures({
                 placementCategories.map((category: any, index: number) => (
                   <div
                     key={category.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600 group"
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg group"
                   >
                     {editingPlacementTypeIndex === index ? (
                       <div className="flex-1 flex items-center gap-2 mr-2">
@@ -4944,7 +4912,7 @@ export default function ClientAdvancedFeatures({
               )}
             </div>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700 p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800 border-t p-4">
             <div className="flex justify-end w-full">
               <Button
                 outline
@@ -5016,14 +4984,14 @@ export default function ClientAdvancedFeatures({
         onClose={() => setIsJobExpModalOpen(false)}
         size="md"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold dark:text-white">
             {jobExpEditId ? "Update Job Expectation" : "Add Job Expectation"}
           </h3>
           <button
             type="button"
             onClick={() => setIsJobExpModalOpen(false)}
-            className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+            className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
           >
             <X size={16} />
           </button>
@@ -5084,7 +5052,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </form>
         </ModalBody>
-        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
           <Button
             outline
             color="gray"
@@ -5112,14 +5080,14 @@ export default function ClientAdvancedFeatures({
         onClose={() => setIsBeneficiaryModalOpen(false)}
         size="sm"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold dark:text-white">
             {beneficiaryEditId ? "Update Dependent" : "Add Dependent"}
           </h3>
           <button
             type="button"
             onClick={() => setIsBeneficiaryModalOpen(false)}
-            className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+            className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
           >
             <X size={16} />
           </button>
@@ -5159,7 +5127,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </form>
         </ModalBody>
-        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
           <Button
             outline
             color="gray"
@@ -5396,14 +5364,14 @@ export default function ClientAdvancedFeatures({
         onClose={() => setIsMonitoringModalOpen(false)}
         size="md"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold dark:text-white">
             {monitoringEditId ? "Update Monitoring" : "Add Monitoring Record"}
           </h3>
           <button
             type="button"
             onClick={() => setIsMonitoringModalOpen(false)}
-            className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+            className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
           >
             <X size={16} />
           </button>
@@ -5413,11 +5381,11 @@ export default function ClientAdvancedFeatures({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="mb-1 block">Monitoring Date</Label>
-                <TextInput
+                <Datepicker
                   required
                   type="datetime-local"
                   value={monitoringForm.monitoringDate.substring(0, 16)}
-                  onChange={(e) =>
+                  onChange={(e: any) =>
                     setMonitoringForm({
                       ...monitoringForm,
                       monitoringDate: e.target.value,
@@ -5443,14 +5411,14 @@ export default function ClientAdvancedFeatures({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="mb-1 block">Next Monitoring Date</Label>
-                <TextInput
+                <Datepicker
                   type="datetime-local"
                   value={
                     monitoringForm.nextMonitoringDate
                       ? monitoringForm.nextMonitoringDate.substring(0, 16)
                       : ""
                   }
-                  onChange={(e) =>
+                  onChange={(e: any) =>
                     setMonitoringForm({
                       ...monitoringForm,
                       nextMonitoringDate: e.target.value,
@@ -5508,7 +5476,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </form>
         </ModalBody>
-        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
           <Button
             outline
             color="gray"
@@ -5537,14 +5505,14 @@ export default function ClientAdvancedFeatures({
         size="lg"
         popup
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold dark:text-white">
             {editingId ? "Edit Referral" : "Add New Referral"}
           </h3>
           <button
             type="button"
             onClick={() => setIsFurtherEducationReferralModalOpen(false)}
-            className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+            className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
           >
             <X size={16} />
           </button>
@@ -5559,13 +5527,13 @@ export default function ClientAdvancedFeatures({
               <Label className="mb-1 block">
                 Referral On <span className="text-red-500">*</span>
               </Label>
-              <TextInput
+              <Datepicker
                 type="datetime-local"
                 value={furtherEducationReferralForm.referralDate.substring(
                   0,
                   16,
                 )}
-                onChange={(e) =>
+                onChange={(e: any) =>
                   setFurtherEducationReferralForm({
                     ...furtherEducationReferralForm,
                     referralDate: e.target.value + ":00",
@@ -5673,7 +5641,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </form>
         </ModalBody>
-        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
           <Button
             outline
             color="gray"
@@ -5703,12 +5671,12 @@ export default function ClientAdvancedFeatures({
         size="4xl"
         popup
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold dark:text-white">Referral Source</h3>
           <button
             type="button"
             onClick={() => setIsReferralSourceModalOpen(false)}
-            className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+            className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
           >
             <X size={16} />
           </button>
@@ -5759,7 +5727,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </div>
 
-          <div className="border-t dark:border-gray-700 pt-6">
+          <div className="border-t pt-6">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <span>Show</span>
@@ -5783,7 +5751,7 @@ export default function ClientAdvancedFeatures({
             </div>
             <div className="overflow-x-auto">
               <Table hoverable>
-                <TableHead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
+                <TableHead className="bg-gray-50 dark:bg-gray-800 border-b">
                   <TableHeadCell className="font-bold text-gray-600 dark:text-gray-300">
                     ID
                   </TableHeadCell>
@@ -5816,7 +5784,7 @@ export default function ClientAdvancedFeatures({
                     .map((src: any, idx: number) => (
                       <TableRow
                         key={idx}
-                        className="bg-white dark:bg-gray-900 border-b dark:border-gray-700"
+                        className="bg-white dark:bg-gray-900 border-b"
                       >
                         <TableCell>{src.id}</TableCell>
                         <TableCell>{src.referralSource}</TableCell>
@@ -5888,7 +5856,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </div>
         </ModalBody>
-        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-between !p-4">
+        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-between !p-4">
           <div></div>
           <div className="flex gap-3">
             <Button
@@ -5923,7 +5891,7 @@ export default function ClientAdvancedFeatures({
         onClose={() => setIsFuturesTrainingModalOpen(false)}
         size="md"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold dark:text-white">
             {futuresTrainingEditId
               ? "Update Training Enrollment"
@@ -5932,7 +5900,7 @@ export default function ClientAdvancedFeatures({
           <button
             type="button"
             onClick={() => setIsFuturesTrainingModalOpen(false)}
-            className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+            className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
           >
             <X size={16} />
           </button>
@@ -6031,7 +5999,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </form>
         </ModalBody>
-        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
           <Button
             outline
             color="gray"
@@ -6059,14 +6027,14 @@ export default function ClientAdvancedFeatures({
         onClose={() => setIsAddSubjectModalOpen(false)}
         size="sm"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold dark:text-white">
             Create Training Course
           </h3>
           <button
             type="button"
             onClick={() => setIsAddSubjectModalOpen(false)}
-            className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+            className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
           >
             <X size={16} />
           </button>
@@ -6086,7 +6054,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </form>
         </ModalBody>
-        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
           <Button
             outline
             color="gray"
@@ -6114,14 +6082,14 @@ export default function ClientAdvancedFeatures({
         onClose={() => setIsPersonalProfileModalOpen(false)}
         size="md"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold dark:text-white">
             Edit Personal Profile & Hobbies
           </h3>
           <button
             type="button"
             onClick={() => setIsPersonalProfileModalOpen(false)}
-            className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+            className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
           >
             <X size={16} />
           </button>
@@ -6177,7 +6145,7 @@ export default function ClientAdvancedFeatures({
             </div>
           </form>
         </ModalBody>
-        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+        <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
           <Button
             outline
             color="gray"

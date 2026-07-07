@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Modal, ModalBody, Button } from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Button} from '@/lib/flowbite-compat';
 import {
   Printer,
   FileDown,
@@ -132,7 +132,7 @@ const AssessmentPreviewModal: React.FC<AssessmentPreviewModalProps> = ({
 
   return (
     <Modal show={isOpen} onClose={onClose} size="6xl">
-      <div className="bg-gray-100 dark:bg-gray-800 p-2 border-b dark:border-gray-700 flex justify-between items-center rounded-t-lg">
+      <div className="bg-gray-100 dark:bg-gray-800 p-2 border-b flex justify-between items-center rounded-t-lg">
         <div className="flex gap-2">
           <Button
             size="xs"
@@ -273,7 +273,7 @@ const AssessmentPreviewModal: React.FC<AssessmentPreviewModalProps> = ({
           {/* Table */}
           <table className="w-full text-[11px] border-collapse mb-24">
             <thead>
-              <tr className="border-t border-b border-gray-300">
+              <tr className="border-t border-b">
                 <th className="py-2 px-2 text-left font-semibold">
                   <div className="font-khmer">បរិយាយ</div>
                   <div>Description</div>
@@ -294,7 +294,7 @@ const AssessmentPreviewModal: React.FC<AssessmentPreviewModalProps> = ({
             </thead>
             <tbody>
               {(assessment.items || []).map((item: any, idx: number) => (
-                <tr key={idx} className="border-b border-gray-200">
+                <tr key={idx} className="border-b">
                   <td className="py-2 px-2">{item.itemName}</td>
                   <td className="py-2 px-2 text-center">
                     {item.quantity}{" "}
@@ -308,7 +308,7 @@ const AssessmentPreviewModal: React.FC<AssessmentPreviewModalProps> = ({
                   </td>
                 </tr>
               ))}
-              <tr className="border-b border-gray-300">
+              <tr className="border-b">
                 <td colSpan={3}></td>
                 <td className="py-2 px-2 text-right font-bold">
                   ${total.toFixed(2)}

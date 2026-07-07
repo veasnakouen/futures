@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Progress,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Progress, Spinner} from '@/lib/flowbite-compat';
 import {
   User,
   Shield,
@@ -101,7 +89,7 @@ const PortalModule: React.FC = () => {
       {/* Welcome & Profile Header */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-md text-white shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-6">
-          <div className="w-20 h-20 rounded-md bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 overflow-hidden shadow-inner shrink-0">
+          <div className="w-20 h-20 rounded-md bg-white/10 backdrop-blur-md flex items-center justify-center border-white/20 overflow-hidden shadow-inner shrink-0">
             {employee?.photo ? (
               <img
                 src={employee.photo}
@@ -149,7 +137,7 @@ const PortalModule: React.FC = () => {
 
       {/* Personal KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card
+        <div
           className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform"
           onClick={() =>
             import("react-hot-toast").then((m) =>
@@ -171,9 +159,9 @@ const PortalModule: React.FC = () => {
           <p className="text-[9px] font-bold text-emerald-500 uppercase mt-2">
             Perfect compliance target met
           </p>
-        </Card>
+        </div>
 
-        <Card
+        <div
           className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform"
           onClick={() =>
             import("react-hot-toast").then((m) =>
@@ -193,9 +181,9 @@ const PortalModule: React.FC = () => {
           <p className="text-[9px] font-bold text-gray-400 uppercase mt-2">
             Out of 18 days allocated
           </p>
-        </Card>
+        </div>
 
-        <Card
+        <div
           className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform"
           onClick={() =>
             import("react-hot-toast").then((m) =>
@@ -217,9 +205,9 @@ const PortalModule: React.FC = () => {
           <p className="text-[9px] font-bold text-indigo-500 uppercase mt-2">
             All assets synchronized
           </p>
-        </Card>
+        </div>
 
-        <Card
+        <div
           className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform"
           onClick={() =>
             import("react-hot-toast").then((m) =>
@@ -239,12 +227,12 @@ const PortalModule: React.FC = () => {
           <div className="mt-3">
             <Progress progress={82} color="yellow" size="sm" />
           </div>
-        </Card>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Active Assets Table */}
-        <Card className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
             <Laptop size={20} className="text-blue-600" /> Active Assigned
             Hardware
@@ -276,7 +264,7 @@ const PortalModule: React.FC = () => {
                       className="bg-white dark:bg-gray-800 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-700/30"
                     >
                       <TableCell className="font-black dark:text-white text-xs py-4 flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-md bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 overflow-hidden border dark:border-gray-600 shrink-0">
+                        <div className="w-8 h-8 rounded-md bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 overflow-hidden shrink-0">
                           {asset.imageUrl ? (
                             <img
                               src={asset.imageUrl}
@@ -315,10 +303,10 @@ const PortalModule: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-        </Card>
+        </div>
 
         {/* Payslips Ledger */}
-        <Card className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
             <Download size={20} className="text-indigo-600" /> Recent Payslips
           </h4>
@@ -326,7 +314,7 @@ const PortalModule: React.FC = () => {
             {payslips.map((slip, i) => (
               <div
                 key={i}
-                className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md flex justify-between items-center border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all"
+                className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md flex justify-between items-center border-transparent hover: dark:hover: transition-all"
               >
                 <div>
                   <p className="font-black text-xs dark:text-white uppercase tracking-tight">
@@ -363,7 +351,7 @@ const PortalModule: React.FC = () => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

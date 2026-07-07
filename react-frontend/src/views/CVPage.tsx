@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from '@/lib/react-router-compat';
-import { Button, Spinner, Avatar, Badge, Alert } from '@/lib/flowbite-compat';
+import {Button, Spinner, Avatar, Badge, Alert} from '@/lib/flowbite-compat';
 import {
   ArrowLeft,
   Printer,
@@ -230,7 +230,7 @@ const CVPage = ({ isDark, setIsDark }: any) => {
                   {educations.map((ed: any, i: number) => (
                     <div
                       key={i}
-                      className="p-4 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-transparent hover:border-blue-200 transition-all"
+                      className="p-4 rounded-md bg-gray-50 dark:bg-gray-800/50 border-transparent hover:border-blue-200 transition-all"
                     >
                       <h4 className="font-black text-gray-900 dark:text-white text-sm mb-1">
                         {ed.level} in {ed.subject}
@@ -270,7 +270,7 @@ const CVPage = ({ isDark, setIsDark }: any) => {
                 </div>
               </section>
 
-              <div className="mt-20 pt-10 border-t border-gray-100 dark:border-gray-800 text-center">
+              <div className="mt-20 pt-10 border-t text-center">
                 <p className="text-[10px] text-gray-400 uppercase tracking-[0.3em]">
                   References available upon request
                 </p>

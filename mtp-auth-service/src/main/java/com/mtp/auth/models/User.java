@@ -54,6 +54,9 @@ public class User {
     @Column(name = "AccessFailedCount")
     private int accessFailedCount = 0;
 
+    @Column(name = "LockoutEnd")
+    private java.time.Instant lockoutEnd;
+
     private String email;
     private String userName;
     private String passwordHash;
@@ -164,5 +167,29 @@ public class User {
 
     public void setActive(Boolean active) {
         isActive = active;
+    }
+
+    public boolean isLockoutEnabled() {
+        return lockoutEnabled;
+    }
+
+    public void setLockoutEnabled(boolean lockoutEnabled) {
+        this.lockoutEnabled = lockoutEnabled;
+    }
+
+    public int getAccessFailedCount() {
+        return accessFailedCount;
+    }
+
+    public void setAccessFailedCount(int accessFailedCount) {
+        this.accessFailedCount = accessFailedCount;
+    }
+
+    public java.time.Instant getLockoutEnd() {
+        return lockoutEnd;
+    }
+
+    public void setLockoutEnd(java.time.Instant lockoutEnd) {
+        this.lockoutEnd = lockoutEnd;
     }
 }

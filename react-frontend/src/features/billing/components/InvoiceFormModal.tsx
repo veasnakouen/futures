@@ -12,7 +12,7 @@ import { billingService, InvoiceDto, CreateInvoiceCommand, UpdateInvoiceCommand 
 import { toast } from "react-hot-toast";
 import CustomModalHeader from "../../../components/common/CustomModalHeader";
 import CustomModalFooter from "../../../components/common/CustomModalFooter";
-import { Modal, ModalBody } from "@/lib/flowbite-compat";
+import {Modal, ModalBody} from "@/lib/flowbite-compat";
 import DatePicker from "../../../components/common/DatePicker";
 import { format } from "date-fns";
 
@@ -161,7 +161,7 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Source Module</label>
-              <select {...register("sourceModule")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("sourceModule")} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 {modulesData?.map((m: string) => (
                   <option key={m} value={m}>{m}</option>
                 ))}
@@ -170,33 +170,33 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{getRefLabel()}</label>
               {sourceModule === "SCHOOL" ? (
-                <select {...register("referenceId")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <select {...register("referenceId")} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                   <option value="">Select a student...</option>
                   {studentsData?.data?.content?.map((s: any) => (
                     <option key={s.id} value={s.id.toString()}>{s.firstName} {s.lastName} (ID: {s.id})</option>
                   ))}
                 </select>
               ) : sourceModule === "CLINIC" ? (
-                <select {...register("referenceId")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <select {...register("referenceId")} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                   <option value="">Select a patient...</option>
                   {patientsData?.data?.content?.map((p: any) => (
                     <option key={p.id} value={p.id}>{p.firstName} {p.lastName} (ID: {p.id})</option>
                   ))}
                 </select>
               ) : sourceModule === "HOTEL" ? (
-                <select {...register("referenceId")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <select {...register("referenceId")} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                   <option value="">Select a booking...</option>
                   {bookingsData?.data?.content?.map((b: any) => (
                     <option key={b.id} value={b.id}>Booking #{b.id.toString().substring(0, 8)}</option>
                   ))}
                 </select>
               ) : (
-                <input {...register("referenceId")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                <input {...register("referenceId")} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
               )}
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Custom Header (Company Info)</label>
-              <textarea {...register("headerText")} rows={2} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Company Name&#10;123 Business Road"></textarea>
+              <textarea {...register("headerText")} rows={2} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Company Name&#10;123 Business Road"></textarea>
             </div>
           </div>
 
@@ -220,7 +220,7 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-              <select {...register("status")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("status")} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="DRAFT">DRAFT</option>
                 <option value="ISSUED">ISSUED</option>
                 <option value="PARTIALLY_PAID">PARTIALLY PAID</option>
@@ -240,7 +240,7 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
             </div>
             <div className="space-y-3">
               {fields.map((field, index) => (
-                <div key={field.id} className="grid grid-cols-12 gap-3 items-start border border-gray-200 dark:border-gray-700 p-3 rounded-lg">
+                <div key={field.id} className="grid grid-cols-12 gap-3 items-start p-3 rounded-lg">
                   <div className="col-span-3">
                     <label className="block text-xs font-medium text-gray-500 mb-1">{getItemCodeLabel()}</label>
                     {sourceModule === "SCHOOL" ? (
@@ -253,7 +253,7 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
                             }
                           }
                         })}
-                        className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       >
                         <option value="">Select course...</option>
                         {coursesData?.data?.content?.map((c: any) => (
@@ -270,7 +270,7 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
                             }
                           }
                         })}
-                        className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       >
                         <option value="">Select room...</option>
                         {roomsData?.data?.content?.map((r: any) => (
@@ -294,7 +294,7 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
                             }
                           }
                         })}
-                        className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       >
                         <option value="">Select service or item...</option>
                         <optgroup label="Consultations & Services">
@@ -317,22 +317,22 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
                         </optgroup>
                       </select>
                     ) : (
-                      <input {...register(`lineItems.${index}.itemCode`)} placeholder="Code" className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                      <input {...register(`lineItems.${index}.itemCode`)} placeholder="Code" className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                     )}
                     {errors.lineItems?.[index]?.itemCode && <span className="text-red-500 text-xs">{errors.lineItems[index]?.itemCode?.message}</span>}
                   </div>
                   <div className="col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
-                    <input {...register(`lineItems.${index}.description`)} placeholder="Description" className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                    <input {...register(`lineItems.${index}.description`)} placeholder="Description" className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                     {errors.lineItems?.[index]?.description && <span className="text-red-500 text-xs">{errors.lineItems[index]?.description?.message}</span>}
                   </div>
                   <div className="col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Qty</label>
-                    <input type="number" step="0.01" {...register(`lineItems.${index}.quantity`)} className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                    <input type="number" step="0.01" {...register(`lineItems.${index}.quantity`)} className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                   </div>
                   <div className="col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Price</label>
-                    <input type="number" step="0.01" {...register(`lineItems.${index}.unitPrice`)} className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                    <input type="number" step="0.01" {...register(`lineItems.${index}.unitPrice`)} className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                   </div>
                   <div className="col-span-1 pt-6 text-right">
                     <button type="button" onClick={() => remove(index)} className="text-red-500 hover:text-red-700">
@@ -348,11 +348,11 @@ export default function InvoiceFormModal({ isOpen, onClose, itemToEdit }: Props)
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Custom Footer (Terms, Notes)</label>
-              <textarea {...register("footerText")} rows={4} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Terms and conditions..."></textarea>
+              <textarea {...register("footerText")} rows={4} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Terms and conditions..."></textarea>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl flex flex-col justify-end space-y-2 text-right">
               <div className="text-sm text-gray-600 dark:text-gray-400">Subtotal: ${currentTotals.subTotal.toFixed(2)}</div>
-              <div className="text-xl font-bold text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
+              <div className="text-xl font-bold text-gray-900 dark:text-white border-t pt-2 mt-2">
                 Total: ${currentTotals.grandTotal.toFixed(2)}
               </div>
             </div>

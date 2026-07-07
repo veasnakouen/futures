@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import Layout from "@/components/common/Layout";
 import api from "../services/api";
 import { useTranslation } from "react-i18next";
+import { toast } from 'react-hot-toast';
 
 // Modular Components
 import ReportFilterBar from "@/features/reports/components/ReportFilterBar";
@@ -138,12 +139,8 @@ const ReportsPage = ({ isDark, setIsDark }: any) => {
         );
         setCurrentPage((response.data.currentPage || 0) + 1);
       } catch (err: any) {
-        console.error("Error fetching report:", err);
-        setError(
-          err.response?.data?.message ||
-            err.message ||
-            "Failed to generate data matrix.",
-        );
+        toast.error(`Error fetching report: ${err.message || "Unknown error"}`);
+        setError("Failed to load report data");
       } finally {
         setLoading(false);
       }

@@ -1,31 +1,7 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Card,
-  Badge,
-  Button,
-  Progress,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-  TextInput,
-  Avatar,
-  Tooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  Spinner,
-  Pagination,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-  Textarea,
-} from '@/lib/flowbite-compat';
+import {Badge, Button, Progress, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput, Avatar, Tooltip, Modal, ModalHeader, ModalBody, ModalFooter, Label, Spinner, Pagination, Dropdown, DropdownItem, DropdownDivider, Textarea} from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import ModernPagination from '@/components/common/ModernPagination';
 import {
@@ -119,6 +95,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
   onDeleteCandidate,
   onPlaceCandidate,
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<
     "DASHBOARD" | "VACANCIES" | "CANDIDATES" | "PLACEMENTS"
   >("DASHBOARD");
@@ -132,6 +109,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
   const [candidatePage, setCandidatePage] = useState(1);
   const [placementPage, setPlacementPage] = useState(1);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [itemsPerRow, setItemsPerRow] = useState("4");
   const vacanciesPerPage = 9;
   const candidatesPerPage = 10;
   const placementsPerPage = 10;
@@ -439,28 +417,28 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       {/* Module Header & Tabs */}
-      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-white/50 dark:bg-gray-800/50 p-4 rounded-md border dark:border-gray-700/50 shadow-sm">
+      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-white/50 dark:bg-gray-800/50 p-4 rounded-md shadow-sm">
         <div className="flex w-full sm:w-max mx-auto xl:mx-0 overflow-x-auto whitespace-nowrap no-scrollbar flex-nowrap shrink-0">
           <ModernTabs
             tabs={[
               {
                 id: "DASHBOARD",
-                label: "Dashboard",
+                label: t("dashboard"),
                 icon: <TrendingUp size={14} />,
               },
               {
                 id: "VACANCIES",
-                label: "Vacancies",
+                label: t("vacancies"),
                 icon: <Briefcase size={14} />,
               },
               {
                 id: "CANDIDATES",
-                label: "Talent Pool",
+                label: t("talentPool"),
                 icon: <Users size={14} />,
               },
               {
                 id: "PLACEMENTS",
-                label: "Placement Audit",
+                label: t("placementAudit"),
                 icon: <UserCheck size={14} />,
               },
             ]}
@@ -568,7 +546,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <Card className="lg:col-span-2 p-8 rounded-md dark:bg-gray-800 border-none shadow-md">
+              <div className="lg:col-span-2 p-8 rounded-md dark:bg-gray-800 border-none shadow-md">
                 <h4 className="font-black text-xl dark:text-white uppercase tracking-tight mb-8">
                   Hiring Velocity
                 </h4>
@@ -618,9 +596,9 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-              </Card>
+              </div>
 
-              <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-md">
+              <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-md">
                 <h4 className="font-black text-xl dark:text-white uppercase tracking-tight mb-8">
                   Registered Vacancies
                 </h4>
@@ -686,7 +664,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                     </div>
                   ))}
                 </div>
-              </Card>
+              </div>
             </div>
           </motion.div>
         )}
@@ -704,28 +682,43 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
               <h3 className="text-xl font-black dark:text-white uppercase tracking-tight">
                 Active Vacancies
               </h3>
-              <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
-                >
-                  <LayoutGrid size={18} />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
-                >
-                  <List size={18} />
-                </button>
+              <div className="flex items-center gap-3">
+                {viewMode === "grid" && (
+                  <div className="flex-shrink-0">
+                    <select
+                      className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                      value={itemsPerRow}
+                      onChange={(e) => setItemsPerRow(e.target.value)}
+                    >
+                      <option value="3">3 per row</option>
+                      <option value="4">4 per row</option>
+                      <option value="5">5 per row</option>
+                    </select>
+                  </div>
+                )}
+                <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`p-1.5 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                  >
+                    <LayoutGrid size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`p-1.5 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
               </div>
             </div>
 
             {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className={`grid gap-8 ${ itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
                 {paginatedVacancies.map((v) => (
                   <div
                     key={v.id}
-                    className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 rounded-md focus-within:z-30 p-4 relative group hover:shadow-md transition-shadow"
+                    className="shadow-sm bg-white dark:bg-gray-800 rounded-md focus-within:z-30 p-4 relative group hover:shadow-md transition-shadow"
                   >
                     <div className="absolute right-2 top-2">
                       <Dropdown
@@ -737,7 +730,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                         }
                         arrowIcon={false}
                         inline
-                        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm !rounded-md"
+                        className="bg-white dark:bg-gray-800 shadow-sm !rounded-md"
                       >
                         <DropdownItem
                           onClick={() =>
@@ -781,7 +774,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                         </p>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 py-3 border-y dark:border-gray-100 mb-3">
+                    <div className="grid grid-cols-2 gap-4 py-3 border-y mb-3">
                       <div>
                         <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
                           Salary Package
@@ -814,10 +807,10 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                 ))}
               </div>
             ) : (
-              <Card className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden p-0">
+              <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden p-0">
                 <div className="overflow-x-auto overflow-y-auto custom-scrollbar w-full max-h-[65vh]">
                   <Table hoverable className="w-full min-w-[800px] relative">
-                    <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b dark:border-gray-600">
+                    <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b">
                       <TableHeadCell className="font-black uppercase text-[10px] tracking-widest py-4 px-6">
                         Broadcast Identity
                       </TableHeadCell>
@@ -900,7 +893,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                     </TableBody>
                   </Table>
                 </div>
-              </Card>
+              </div>
             )}
             {filteredVacancies.length > vacanciesPerPage && (
               <div className="mt-8">
@@ -932,27 +925,42 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
               <h3 className="text-xl font-black dark:text-white uppercase tracking-tight">
                 Talent Network
               </h3>
-              <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
-                >
-                  <LayoutGrid size={18} />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
-                >
-                  <List size={18} />
-                </button>
+              <div className="flex items-center gap-3">
+                {viewMode === "grid" && (
+                  <div className="flex-shrink-0">
+                    <select
+                      className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                      value={itemsPerRow}
+                      onChange={(e) => setItemsPerRow(e.target.value)}
+                    >
+                      <option value="3">3 per row</option>
+                      <option value="4">4 per row</option>
+                      <option value="5">5 per row</option>
+                    </select>
+                  </div>
+                )}
+                <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`p-1.5 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                  >
+                    <LayoutGrid size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`p-1.5 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
               </div>
             </div>
 
             {viewMode === "list" ? (
-              <Card className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden p-0">
+              <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden p-0">
                 <div className="overflow-x-auto overflow-y-auto custom-scrollbar w-full max-h-[65vh]">
                   <Table hoverable className="w-full min-w-[800px] relative">
-                    <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b dark:border-gray-600">
+                    <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b">
                       <TableHeadCell className="font-black uppercase text-[10px] tracking-widest py-4 px-6">
                         Node Identity
                       </TableHeadCell>
@@ -1011,7 +1019,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                                 }
                                 arrowIcon={false}
                                 inline
-                                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm !rounded-md"
+                                className="bg-white dark:bg-gray-800 shadow-sm !rounded-md"
                               >
                                 <DropdownItem
                                   onClick={() => onDeleteCandidate(c.id)}
@@ -1030,13 +1038,13 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                     </TableBody>
                   </Table>
                 </div>
-              </Card>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
+              <div className={`grid gap-4 p-4 ${ itemsPerRow ==="3"?"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 sm:grid-cols-3 lg:grid-cols-5":"grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
                 {paginatedCandidates.map((c) => (
                   <div
                     key={c.id}
-                    className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 rounded-md focus-within:z-30 p-4 relative group hover:shadow-md transition-shadow"
+                    className="shadow-sm bg-white dark:bg-gray-800 rounded-md focus-within:z-30 p-4 relative group hover:shadow-md transition-shadow"
                   >
                     {/* Top Dropdown Action */}
                     <div className="absolute right-2 top-2">
@@ -1048,7 +1056,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                           </div>
                         }
                         arrowIcon={false}
-                        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm !rounded-md"
+                        className="bg-white dark:bg-gray-800 shadow-sm !rounded-md"
                       >
                         <DropdownItem
                           onClick={() => onDeleteCandidate(c.id)}
@@ -1115,11 +1123,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                               ? "Cancel request"
                               : "Add friend"
                           }
-                          className={`!rounded border transition-all w-9 h-9 flex items-center justify-center !p-0 ${
-                            sentRequests.includes(c.id)
-                              ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                              : "border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"
-                          }`}
+                          className={`!rounded transition-all w-9 h-9 flex items-center justify-center !p-0 ${ sentRequests.includes(c.id) ?"border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100":"border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"}`}
                         >
                           {sentRequests.includes(c.id) ? (
                             <UserPlus size={16} className="hidden" />
@@ -1156,7 +1160,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                             }
                           }}
                           title="Message"
-                          className="!rounded border border-blue-500 bg-white hover:bg-blue-50 text-blue-600 transition-all w-9 h-9 flex items-center justify-center !p-0 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-gray-700"
+                          className="!rounded border-blue-500 bg-white hover:bg-blue-50 text-blue-600 transition-all w-9 h-9 flex items-center justify-center !p-0 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-gray-700"
                         >
                           <MessageSquare size={16} />
                         </Button>
@@ -1192,8 +1196,8 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="space-y-6"
           >
-            <Card className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white/50 backdrop-blur-xl">
-              <div className="p-8 border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20">
+            <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white/50 backdrop-blur-xl">
+              <div className="p-8 border-b bg-gray-50/50 dark:bg-gray-700/20">
                 <h4 className="text-xl font-black dark:text-white uppercase tracking-tight">
                   Placement Audit Ledger
                 </h4>
@@ -1203,7 +1207,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
               </div>
               <div className="overflow-x-auto overflow-y-auto custom-scrollbar w-full max-h-[65vh]">
                 <Table hoverable className="w-full min-w-[800px] relative">
-                  <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b dark:border-gray-600">
+                  <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b">
                     <TableHeadCell className="font-black uppercase text-[10px] tracking-widest py-4 px-6">
                       Candidate
                     </TableHeadCell>
@@ -1259,7 +1263,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                   </TableBody>
                 </Table>
               </div>
-            </Card>
+            </div>
             {filteredPlacements.length > placementsPerPage && (
               <div className="mt-8">
                 <ModernPagination
@@ -1442,7 +1446,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
           <ModalBody>
             {selectedCandidateForPlacement && (
               <div className="space-y-6">
-                <div className="p-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-md flex items-center gap-4 border border-emerald-100 dark:border-emerald-800/50">
+                <div className="p-6 bg-emerald-50 dark:bg-emerald-900/20 rounded-md flex items-center gap-4 border-emerald-100 dark:border-emerald-800/50">
                   <Avatar
                     img={selectedCandidateForPlacement.photo}
                     rounded
@@ -1464,7 +1468,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                       Hiring Company
                     </Label>
                     <select
-                      className={`w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4 ${placementErrors.companyName ? "ring-1 ring-red-500" : ""}`}
+                      className={`w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4 ${placementErrors.companyName ?"ring-1 ring-red-500":""}`}
                       {...regPlacement("companyName")}
                     >
                       <option value="">Select Employer</option>
@@ -1485,7 +1489,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                       Assigned Position
                     </Label>
                     <select
-                      className={`w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4 ${placementErrors.jobPositionId ? "ring-1 ring-red-500" : ""}`}
+                      className={`w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4 ${placementErrors.jobPositionId ?"ring-1 ring-red-500":""}`}
                       {...regPlacement("jobPositionId")}
                     >
                       <option value="">Select Position</option>

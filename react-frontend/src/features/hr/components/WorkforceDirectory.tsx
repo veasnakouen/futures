@@ -1,24 +1,5 @@
 import React from "react";
-import {
-  Card,
-  TextInput,
-  Select,
-  Badge,
-  Spinner,
-  Button,
-  Avatar,
-  Dropdown,
-  DropdownItem,
-  DropdownHeader,
-  DropdownDivider,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Checkbox,
-} from '@/lib/flowbite-compat';
+import {TextInput, Select, Badge, Spinner, Button, Avatar, Dropdown, DropdownItem, DropdownHeader, DropdownDivider, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Checkbox} from '@/lib/flowbite-compat';
 import ModernPagination from '@/components/common/ModernPagination';
 import {
   Search,
@@ -93,9 +74,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [gridDensity, setGridDensity] = React.useState<
-    "large" | "medium" | "compact"
-  >("medium");
+  const [itemsPerRow, setItemsPerRow] = React.useState("4");
   const [visibleColumns, setVisibleColumns] = React.useState<string[]>([
     "id",
     "position",
@@ -106,14 +85,13 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
   ]);
 
   const getGridClass = () => {
-    switch (gridDensity) {
-      case "large":
-        return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8";
-      case "compact":
-        return "grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4";
-      default:
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
-    }
+    return `grid gap-6 ${
+      itemsPerRow === "3"
+        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        : itemsPerRow === "5"
+        ? "grid-cols-1 sm:grid-cols-3 lg:grid-cols-5"
+        : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+    }`;
   };
 
   return (
@@ -127,7 +105,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
             <input
               type="text"
               placeholder="Search by name, ID, position, or email..."
-              className="block w-full text-gray-900 dark:text-white rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm h-12 pl-12 pr-10 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+              className="block w-full text-gray-900 dark:text-white rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm h-12 pl-12 pr-10 bg-white dark:bg-gray-800"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -144,7 +122,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
 
           <div className="flex gap-2 w-full md:w-auto overflow-x-auto scrollbar-hide">
             <select
-              className="bg-transparent text-gray-900 dark:text-white rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm h-12 border border-gray-200 dark:border-gray-700 px-4 min-w-[140px]"
+              className="bg-transparent text-gray-900 dark:text-white rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm h-12 px-4 min-w-[140px]"
               value={deptFilter}
               onChange={(e) => setDeptFilter(e.target.value)}
             >
@@ -166,7 +144,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
             </select>
 
             <select
-              className="bg-transparent text-gray-900 dark:text-white rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm h-12 border border-gray-200 dark:border-gray-700 px-4 min-w-[140px]"
+              className="bg-transparent text-gray-900 dark:text-white rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm h-12 px-4 min-w-[140px]"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
@@ -188,7 +166,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
             </select>
 
             <select
-              className="bg-transparent text-gray-900 dark:text-white rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm h-12 border border-gray-200 dark:border-gray-700 px-4 min-w-[140px]"
+              className="bg-transparent text-gray-900 dark:text-white rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm h-12 px-4 min-w-[140px]"
               value={contractFilter}
               onChange={(e) => setContractFilter(e.target.value)}
             >
@@ -214,7 +192,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                 <Dropdown
                   inline
                   label={
-                    <div className="flex items-center gap-2 px-3 py-1.5 h-10 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer">
+                    <div className="flex items-center gap-2 px-3 py-1.5 h-10 bg-white dark:bg-gray-700 rounded-md text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer">
                       <Filter size={14} className="text-blue-500" />
                       <span className="font-bold hidden sm:block">Columns</span>
                     </div>
@@ -254,60 +232,28 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                 </Dropdown>
               )}
               {viewMode === "grid" && (
-                <Dropdown
-                  inline
-                  label={
-                    <div className="flex items-center gap-2 px-3 py-1.5 h-10 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer">
-                      <LayoutGrid size={14} className="text-indigo-500" />
-                      <span className="font-bold hidden sm:block">
-                        Grid Size
-                      </span>
-                    </div>
-                  }
-                  arrowIcon={false}
-                >
-                  <DropdownItem
-                    onClick={() => setGridDensity("large")}
-                    className={
-                      gridDensity === "large"
-                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                        : ""
-                    }
+                <div className="flex-shrink-0">
+                  <select
+                    className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-10 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                    value={itemsPerRow}
+                    onChange={(e) => setItemsPerRow(e.target.value)}
                   >
-                    Large (3 per row)
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => setGridDensity("medium")}
-                    className={
-                      gridDensity === "medium"
-                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                        : ""
-                    }
-                  >
-                    Medium (4 per row)
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => setGridDensity("compact")}
-                    className={
-                      gridDensity === "compact"
-                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                        : ""
-                    }
-                  >
-                    Compact (5 per row)
-                  </DropdownItem>
-                </Dropdown>
+                    <option value="3" className="dark:bg-gray-800">3 per row</option>
+                    <option value="4" className="dark:bg-gray-800">4 per row</option>
+                    <option value="5" className="dark:bg-gray-800">5 per row</option>
+                  </select>
+                </div>
               )}
               <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-md p-1 h-10">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-1.5 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-500" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
+                  className={`p-1.5 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-500":"text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
                 >
                   <LayoutGrid size={16} />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-500" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
+                  className={`p-1.5 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-500":"text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
                 >
                   <List size={16} />
                 </button>
@@ -317,7 +263,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
             {onImportFromUsers && (
               <button
                 onClick={onImportFromUsers}
-                className="flex items-center gap-2 h-12 px-4 text-sm font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-700/50 rounded-md hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-all duration-200 whitespace-nowrap"
+                className="flex items-center gap-2 h-12 px-4 text-sm font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-700/50 rounded-md hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-all duration-200 whitespace-nowrap"
               >
                 <UserPlus size={16} />
                 Import from Users
@@ -359,7 +305,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
           <Spinner size="xl" />
         </div>
       ) : filteredEmployees.length === 0 ? (
-        <div className="py-32 text-center bg-white dark:bg-gray-800 rounded-md shadow-sm border border-dashed dark:border-gray-700 animate-fade-in">
+        <div className="py-32 text-center bg-white dark:bg-gray-800 rounded-md shadow-sm animate-fade-in">
           <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/20 rounded-md flex items-center justify-center mx-auto mb-6">
             <Users size={40} className="text-blue-600" />
           </div>
@@ -408,7 +354,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                           </div>
                         )}
                         {emp.status === "Active" && (
-                          <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white dark:border-gray-800 rounded-full z-10"></div>
+                          <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full z-10"></div>
                         )}
                       </div>
                     </div>
@@ -458,7 +404,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                           </span>
                         </div>
                       </DropdownItem>
-                      <DropdownDivider className="my-1 border-gray-100 dark:border-gray-700" />
+                      <DropdownDivider className="my-1" />
                       <DropdownItem
                         onClick={() => {
                           setTimeout(() => handleDelete(emp.id), 0);
@@ -498,7 +444,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                       </span>
                     </div>
 
-                    <div className="bg-gray-50/50 dark:bg-gray-700/30 p-4 rounded-sm border dark:border-gray-700/50 mt-4">
+                    <div className="bg-gray-50/50 dark:bg-gray-700/30 p-4 rounded-sm mt-4">
                       <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
                         ID & Dept
                       </p>
@@ -515,13 +461,13 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
               ))}
             </div>
           ) : (
-            <Card className="border-none shadow-sm dark:bg-gray-800 overflow-visible rounded-md p-0 w-full">
+            <div className="border-none shadow-sm dark:bg-gray-800 overflow-visible rounded-md p-0 w-full">
               <div className="w-full overflow-visible">
                 <Table
                   hoverable
                   className="border-none w-full min-w-[800px] relative"
                 >
-                  <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-[1] backdrop-blur-md shadow-sm border-b dark:border-gray-700">
+                  <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-[1] backdrop-blur-md shadow-sm border-b">
                     <TableHeadCell className="px-8 py-5">
                       Personnel
                     </TableHeadCell>
@@ -571,7 +517,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                                 className="transition-all duration-300 group-hover/avatar:scale-110 ring-2 ring-gray-100 dark:ring-gray-700 group-hover/avatar:ring-blue-200 dark:group-hover/avatar:ring-blue-900"
                               />
                               {emp.status === "Active" && (
-                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white dark:border-gray-800 rounded-full z-10"></div>
+                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full z-10"></div>
                               )}
                             </div>
                             <div className="flex flex-col min-w-0">
@@ -700,7 +646,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                                     </span>
                                   </div>
                                 </DropdownItem>
-                                <DropdownDivider className="my-1 border-gray-100 dark:border-gray-700" />
+                                <DropdownDivider className="my-1" />
                                 <DropdownItem
                                   onClick={() => {
                                     setTimeout(() => handleDelete(emp.id), 0);
@@ -725,7 +671,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                   </TableBody>
                 </Table>
               </div>
-            </Card>
+            </div>
           )}
 
           {totalPages > 1 && (

@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Label,
-  TextInput,
-  Select,
-  Textarea,
-  Spinner,
-  Button,
-} from '@/lib/flowbite-compat';
+import {Label, TextInput, Select, Textarea, Spinner, Button} from '@/lib/flowbite-compat';
 import {
   Camera,
   User,
@@ -63,9 +56,9 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = ({
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Profile Image Upload */}
-      <div className="flex flex-col items-center mb-8 bg-gray-50 dark:bg-gray-700/20 p-6 rounded-md border border-dashed border-gray-200 dark:border-gray-600">
+      <div className="flex flex-col items-center mb-8 bg-gray-50 dark:bg-gray-700/20 p-6 rounded-md">
         <div className="relative group">
-          <div className="w-32 h-32 rounded-md bg-gray-200 dark:bg-gray-700 overflow-hidden border-4 border-white dark:border-gray-800 shadow-md">
+          <div className="w-32 h-32 rounded-md bg-gray-200 dark:bg-gray-700 overflow-hidden border-4 border-white shadow-md">
             {formData.photo ? (
               <img
                 src={formData.photo}
@@ -83,7 +76,7 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = ({
               </div>
             )}
           </div>
-          <label className="absolute bottom-0 right-0 p-2.5 bg-blue-600 text-white rounded-md cursor-pointer shadow-lg hover:bg-blue-700 transition-all border border-white dark:border-gray-800">
+          <label className="absolute bottom-0 right-0 p-2.5 bg-blue-600 text-white rounded-md cursor-pointer shadow-lg hover:bg-blue-700 transition-all border-white">
             <Camera size={16} />
             <input
               type="file"
@@ -110,7 +103,7 @@ const PersonalDataTab: React.FC<PersonalDataTabProps> = ({
 
       {/* Admin Auto-Fill Feature */}
       {isAdminOrSuper && employeeId === undefined && (
-        <div className="mb-6 p-5 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/30 transition-all">
+        <div className="mb-6 p-5 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl border-indigo-100 dark:border-indigo-900/30 transition-all">
           <div className="flex items-center justify-between">
             <div>
               <h5 className="text-xs font-black text-indigo-600 dark:text-indigo-400 flex items-center gap-2">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Card, Button, Badge, Progress, Label } from '@/lib/flowbite-compat';
+import {Button, Badge, Progress, Label} from '@/lib/flowbite-compat';
 import {
   Award,
   Play,
@@ -436,7 +436,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Top Header Panel */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm border dark:border-gray-700">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm">
         <div>
           <h3 className="text-2xl font-black dark:text-white tracking-tight">
             LMS & Development Hub
@@ -504,7 +504,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
               const statusText = userEnroll ? userEnroll.status : "Not Started";
 
               return (
-                <Card
+                <div
                   key={course.id}
                   className="group relative overflow-hidden border-none shadow-lg hover:shadow-md hover:scale-[1.01] transition-all duration-300 dark:bg-gray-800 rounded-md p-0 flex flex-col h-full"
                 >
@@ -538,7 +538,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                       {course.description}
                     </p>
 
-                    <div className="flex justify-between items-center text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b dark:border-gray-700/50 pb-4">
+                    <div className="flex justify-between items-center text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b pb-4">
                       <span className="flex items-center gap-1.5">
                         <Clock size={12} /> {course.duration}
                       </span>
@@ -565,7 +565,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                     <Button
                       color={statusText === "Completed" ? "light" : "blue"}
                       onClick={() => handleLaunchLearning(course)}
-                      className="w-full rounded-md font-black uppercase tracking-wider text-[10px] h-12 shadow-sm border-gray-200 dark:border-gray-700"
+                      className="w-full rounded-md font-black uppercase tracking-wider text-[10px] h-12 shadow-sm"
                     >
                       {statusText === "Completed" ? (
                         <>
@@ -585,13 +585,13 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                       )}
                     </Button>
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
 
           {/* Expiring Certification alert */}
-          <div className="p-8 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-200 dark:border-amber-900/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="p-8 bg-amber-50 dark:bg-amber-950/20 rounded-md border-amber-200 dark:border-amber-900/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-md flex items-center justify-center flex-shrink-0">
                 <AlertTriangle size={24} />
@@ -622,7 +622,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
         <div className="space-y-8 animate-fade-in">
           {/* KPI Metric Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700 shadow-sm flex items-center gap-4">
+            <div className="p-6 bg-white dark:bg-gray-800 rounded-md shadow-sm flex items-center gap-4">
               <div className="w-12 h-12 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
                 <BookOpen size={22} />
               </div>
@@ -635,7 +635,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                 </h4>
               </div>
             </div>
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700 shadow-sm flex items-center gap-4">
+            <div className="p-6 bg-white dark:bg-gray-800 rounded-md shadow-sm flex items-center gap-4">
               <div className="w-12 h-12 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
                 <UserCheck size={22} />
               </div>
@@ -648,7 +648,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                 </h4>
               </div>
             </div>
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700 shadow-sm flex items-center gap-4">
+            <div className="p-6 bg-white dark:bg-gray-800 rounded-md shadow-sm flex items-center gap-4">
               <div className="w-12 h-12 rounded-md bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
                 <Award size={22} />
               </div>
@@ -661,7 +661,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                 </h4>
               </div>
             </div>
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700 shadow-sm flex items-center gap-4">
+            <div className="p-6 bg-white dark:bg-gray-800 rounded-md shadow-sm flex items-center gap-4">
               <div className="w-12 h-12 rounded-md bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
                 <Clock size={22} />
               </div>
@@ -677,7 +677,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
           </div>
 
           {/* Admin Tool Actions Row */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm border dark:border-gray-700">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm">
             <div className="relative w-full md:w-96 group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors z-10">
                 <Search size={16} strokeWidth={2.5} />
@@ -695,7 +695,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
               <Button
                 color="light"
                 onClick={() => setIsCreateCourseOpen(true)}
-                className="rounded-md border px-4 h-12 font-black uppercase tracking-wider text-[10px] flex-1 md:flex-none border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="rounded-md px-4 h-12 font-black uppercase tracking-wider text-[10px] flex-1 md:flex-none hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <Plus size={16} className="mr-2 text-indigo-600" /> Create
                 Course
@@ -711,11 +711,11 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
           </div>
 
           {/* Staff Training Matrix Table */}
-          <Card className="border-none shadow-sm dark:bg-gray-800 overflow-hidden rounded-md p-0">
+          <div className="border-none shadow-sm dark:bg-gray-800 overflow-hidden rounded-md p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50/80 dark:bg-gray-700/80 text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 border-b dark:border-gray-700">
+                  <tr className="bg-gray-50/80 dark:bg-gray-700/80 text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 border-b">
                     <th className="px-6 py-4.5">Staff Member</th>
                     <th className="px-6 py-4.5">Course Assigned</th>
                     <th className="px-6 py-4.5">Status</th>
@@ -743,7 +743,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-md bg-blue-50 dark:bg-gray-700 overflow-hidden flex items-center justify-center flex-shrink-0 border border-gray-100 dark:border-gray-700">
+                            <div className="w-8 h-8 rounded-md bg-blue-50 dark:bg-gray-700 overflow-hidden flex items-center justify-center flex-shrink-0">
                               {enroll.employeePhoto ? (
                                 <img
                                   src={enroll.employeePhoto}
@@ -835,7 +835,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                 </tbody>
               </table>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
@@ -843,7 +843,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
       {selectedCourse &&
         createPortal(
           <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto animate-fade-in">
-            <div className="bg-white dark:bg-gray-800 rounded-md shadow-md w-full max-w-3xl overflow-hidden border dark:border-gray-700 animate-scale-up max-h-[90vh] flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-md shadow-md w-full max-w-3xl overflow-hidden animate-scale-up max-h-[90vh] flex flex-col">
               {/* Modal Header */}
               <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-6 text-white flex justify-between items-center">
                 <div>
@@ -863,10 +863,10 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
               </div>
 
               {/* Modal Sub-Tabs */}
-              <div className="flex border-b dark:border-gray-700 px-8 py-2 bg-gray-50/50 dark:bg-gray-800/50">
+              <div className="flex border-b px-8 py-2 bg-gray-50/50 dark:bg-gray-800/50">
                 <button
                   onClick={() => setLearningModalTab("study")}
-                  className={`px-6 py-3 font-black text-[10px] uppercase tracking-wider border-b-2 transition-all ${learningModalTab === "study" ? "border-blue-600 text-blue-600 dark:text-blue-400" : "border-transparent text-gray-400 hover:text-gray-600"}`}
+                  className={`px-6 py-3 font-black text-[10px] uppercase tracking-wider border-b-2 transition-all ${learningModalTab ==="study"?"border-blue-600 text-blue-600 dark:text-blue-400":"border-transparent text-gray-400 hover:text-gray-600"}`}
                 >
                   1. Course Study
                 </button>
@@ -879,7 +879,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                     setLearningModalTab("quiz");
                   }}
                   disabled={activeChaptersProgress < 100}
-                  className={`px-6 py-3 font-black text-[10px] uppercase tracking-wider border-b-2 transition-all disabled:opacity-40 ${learningModalTab === "quiz" ? "border-blue-600 text-blue-600 dark:text-blue-400" : "border-transparent text-gray-400 hover:text-gray-600"}`}
+                  className={`px-6 py-3 font-black text-[10px] uppercase tracking-wider border-b-2 transition-all disabled:opacity-40 ${learningModalTab ==="quiz"?"border-blue-600 text-blue-600 dark:text-blue-400":"border-transparent text-gray-400 hover:text-gray-600"}`}
                 >
                   2. Assessment Quiz
                 </button>
@@ -899,11 +899,11 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                       </p>
                     </div>
 
-                    <div className="space-y-4 pt-4 border-t dark:border-gray-700">
+                    <div className="space-y-4 pt-4 border-t">
                       {selectedCourse.chapters.map((chapter, idx) => (
                         <div
                           key={idx}
-                          className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md flex items-start gap-4 border dark:border-gray-700"
+                          className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md flex items-start gap-4"
                         >
                           <div className="w-8 h-8 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-xs flex-shrink-0">
                             {idx + 1}
@@ -922,7 +922,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                     </div>
 
                     {/* Interactive Learning Progress Slider */}
-                    <div className="p-6 bg-blue-50/50 dark:bg-blue-950/10 rounded-md border border-blue-100 dark:border-blue-900/20 space-y-4">
+                    <div className="p-6 bg-blue-50/50 dark:bg-blue-950/10 rounded-md border-blue-100 dark:border-blue-900/20 space-y-4">
                       <div className="flex justify-between items-center">
                         <h6 className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
                           <Info size={14} /> Slide Simulator
@@ -953,7 +953,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                 {/* TAB B: ASSESSMENT QUIZ */}
                 {learningModalTab === "quiz" && (
                   <div className="space-y-8">
-                    <div className="bg-emerald-50 dark:bg-emerald-950/15 p-4 rounded-md border border-emerald-100 dark:border-emerald-900/30 flex items-start gap-3">
+                    <div className="bg-emerald-50 dark:bg-emerald-950/15 p-4 rounded-md border-emerald-100 dark:border-emerald-900/30 flex items-start gap-3">
                       <CheckCircle
                         size={18}
                         className="text-emerald-500 mt-0.5"
@@ -979,7 +979,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                                 onClick={() =>
                                   handleQuizAnswerSelect(qIdx, oIdx)
                                 }
-                                className={`w-full text-left p-4.5 rounded-md border text-xs font-bold transition-all duration-200 ${isSelected ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/10" : "bg-white dark:bg-gray-700/20 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
+                                className={`w-full text-left p-4.5 rounded-md text-xs font-bold transition-all duration-200 ${isSelected ?"bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/10":"bg-white dark:bg-gray-700/20 dark:text-gray-300  hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
                               >
                                 <span className="inline-block w-6 font-mono text-[10px] font-black uppercase text-gray-400 group-hover:text-blue-500 mr-2">
                                   {String.fromCharCode(65 + oIdx)}.
@@ -996,11 +996,11 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
               </div>
 
               {/* Modal Footer Controls */}
-              <div className="px-8 py-5 border-t dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex justify-end gap-3">
+              <div className="px-8 py-5 border-t bg-gray-50/50 dark:bg-gray-800/50 flex justify-end gap-3">
                 <Button
                   color="light"
                   onClick={() => setSelectedCourse(null)}
-                  className="rounded-md px-6 font-black uppercase text-[10px] tracking-wider h-11 border-gray-200 dark:border-gray-700"
+                  className="rounded-md px-6 font-black uppercase text-[10px] tracking-wider h-11"
                 >
                   Close
                 </Button>
@@ -1031,9 +1031,9 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
       {isCreateCourseOpen &&
         createPortal(
           <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto animate-fade-in">
-            <div className="bg-white dark:bg-gray-800 rounded-md shadow-md w-full max-w-xl overflow-hidden border dark:border-gray-700 animate-scale-up max-h-[90vh] flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-md shadow-md w-full max-w-xl overflow-hidden animate-scale-up max-h-[90vh] flex flex-col">
               {/* Modal Header */}
-              <div className="px-8 py-6 border-b dark:border-gray-700 flex justify-between items-center">
+              <div className="px-8 py-6 border-b flex justify-between items-center">
                 <div>
                   <h4 className="text-lg font-black dark:text-white uppercase tracking-tight">
                     Create Training Course
@@ -1177,11 +1177,11 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                 </div>
 
                 {/* Footer Controls */}
-                <div className="pt-4 border-t dark:border-gray-700 flex justify-end gap-3">
+                <div className="pt-4 border-t flex justify-end gap-3">
                   <Button
                     color="light"
                     onClick={() => setIsCreateCourseOpen(false)}
-                    className="rounded-md px-6 font-black uppercase text-[10px] tracking-wider h-11 border-gray-200 dark:border-gray-700"
+                    className="rounded-md px-6 font-black uppercase text-[10px] tracking-wider h-11"
                   >
                     Cancel
                   </Button>
@@ -1203,9 +1203,9 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
       {isAssignCourseOpen &&
         createPortal(
           <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto animate-fade-in">
-            <div className="bg-white dark:bg-gray-800 rounded-md shadow-md w-full max-w-md overflow-hidden border dark:border-gray-700 animate-scale-up max-h-[90vh] flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-md shadow-md w-full max-w-md overflow-hidden animate-scale-up max-h-[90vh] flex flex-col">
               {/* Modal Header */}
-              <div className="px-8 py-6 border-b dark:border-gray-700 flex justify-between items-center">
+              <div className="px-8 py-6 border-b flex justify-between items-center">
                 <div>
                   <h4 className="text-lg font-black dark:text-white uppercase tracking-tight">
                     Assign Course Enrollment
@@ -1319,11 +1319,11 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                 </div>
 
                 {/* Footer Controls */}
-                <div className="pt-4 border-t dark:border-gray-700 flex justify-end gap-3">
+                <div className="pt-4 border-t flex justify-end gap-3">
                   <Button
                     color="light"
                     onClick={() => setIsAssignCourseOpen(false)}
-                    className="rounded-md px-6 font-black uppercase text-[10px] tracking-wider h-11 border-gray-200 dark:border-gray-700"
+                    className="rounded-md px-6 font-black uppercase text-[10px] tracking-wider h-11"
                   >
                     Cancel
                   </Button>

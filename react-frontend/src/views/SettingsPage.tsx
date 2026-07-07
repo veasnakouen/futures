@@ -1,18 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  Button,
-  Label,
-  TextInput,
-  Select,
-  ToggleSwitch,
-  Alert,
-  Avatar,
-  Spinner,
-  Badge,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Button, Label, TextInput, Select, ToggleSwitch, Alert, Avatar, Spinner, Badge, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
 import {
   User,
   Lock,
@@ -39,8 +26,10 @@ import {
   Briefcase,
   X,
   ChevronDown,
+  MessageSquare,
 } from "lucide-react";
 import Layout from "@/components/common/Layout";
+import ChatbotSettingsTab from '@/features/admin/components/ChatbotSettingsTab';
 import api from "../services/api";
 import { useTranslation } from "react-i18next";
 import ModernPagination from "@/components/common/ModernPagination";
@@ -54,7 +43,7 @@ import { getFaceFocusedUrl } from "../utils/cloudinary";
 import TenantsTab from '@/features/admin/components/TenantsTab';
 
 const SettingsPage = ({ isDark, setIsDark }: any) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -71,6 +60,12 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
 
   const [hrStaffIdFormat, setHrStaffIdFormat] = useState("EMP-{YYYY}-{SEQ}");
   const [maxImageUploadSize, setMaxImageUploadSize] = useState("1");
+  const [enableDdosProtection, setEnableDdosProtection] = useState(false);
+  const [maxRequestsPerMinute, setMaxRequestsPerMinute] = useState("60");
+  const [cloudflareZoneId, setCloudflareZoneId] = useState("");
+  const [cloudflareApiToken, setCloudflareApiToken] = useState("");
+  const [redisHost, setRedisHost] = useState("");
+  const [redisPort, setRedisPort] = useState("6379");
 
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -273,6 +268,30 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
         .get("/settings/APP_LOGO")
         .then((res) => setAppLogo(res.data.value))
         .catch((err) => console.log("Logo not found"));
+
+      api.get("/settings/ENABLE_DDOS_PROTECTION")
+        .then((res) => setEnableDdosProtection(res.data.value === "true"))
+        .catch(() => setEnableDdosProtection(false));
+
+      api.get("/settings/MAX_REQUESTS_PER_MINUTE")
+        .then((res) => setMaxRequestsPerMinute(res.data.value))
+        .catch(() => setMaxRequestsPerMinute("60"));
+
+      api.get("/settings/CLOUDFLARE_ZONE_ID")
+        .then((res) => setCloudflareZoneId(res.data.value))
+        .catch(() => setCloudflareZoneId(""));
+
+      api.get("/settings/CLOUDFLARE_API_TOKEN")
+        .then((res) => setCloudflareApiToken(res.data.value))
+        .catch(() => setCloudflareApiToken(""));
+
+      api.get("/settings/GATEWAY_REDIS_HOST")
+        .then((res) => setRedisHost(res.data.value))
+        .catch(() => setRedisHost(""));
+
+      api.get("/settings/GATEWAY_REDIS_PORT")
+        .then((res) => setRedisPort(res.data.value))
+        .catch(() => setRedisPort("6379"));
     }
   }, [activeTab]);
 
@@ -300,6 +319,30 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
       await api.post("/settings", {
         key: "MAX_IMAGE_UPLOAD_SIZE_MB",
         value: maxImageUploadSize,
+      });
+      await api.post("/settings", {
+        key: "ENABLE_DDOS_PROTECTION",
+        value: enableDdosProtection.toString(),
+      });
+      await api.post("/settings", {
+        key: "MAX_REQUESTS_PER_MINUTE",
+        value: maxRequestsPerMinute,
+      });
+      await api.post("/settings", {
+        key: "CLOUDFLARE_ZONE_ID",
+        value: cloudflareZoneId,
+      });
+      await api.post("/settings", {
+        key: "CLOUDFLARE_API_TOKEN",
+        value: cloudflareApiToken,
+      });
+      await api.post("/settings", {
+        key: "GATEWAY_REDIS_HOST",
+        value: redisHost,
+      });
+      await api.post("/settings", {
+        key: "GATEWAY_REDIS_PORT",
+        value: redisPort,
       });
       if (appLogo) {
         await api.post("/settings", { key: "APP_LOGO", value: appLogo });
@@ -358,7 +401,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
   );
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Settings">
+    <Layout isDark={isDark} setIsDark={setIsDark} title={t("settings")}>
       <div className="max-w-[1600px] mx-auto space-y-6 animate-fade-in">
         {success && (
           <Alert
@@ -380,13 +423,13 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
           </Alert>
         )}
 
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar Navigation (Tabs) */}
-          <div className="w-full md:w-64 space-y-2 shrink-0">
-            <div className="bg-white dark:bg-gray-800 rounded-md shadow-sm p-2">
-              <div className="p-4 flex flex-col items-center text-center gap-3">
+          <div className="w-full md:w-72 space-y-2 shrink-0">
+            <div className="backdrop-blur-xl bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-slate-200/50 dark:border-slate-800/50 p-4">
+              <div className="p-4 flex flex-col items-center text-center gap-4">
                 <div
-                  className="relative group cursor-pointer rounded-full overflow-hidden transition-all duration-300 hover:scale-105 border-4 border-gray-100 dark:border-gray-700 shadow-sm w-24 h-24 flex items-center justify-center"
+                  className="relative group cursor-pointer rounded-full overflow-hidden transition-all duration-300 hover:scale-105 border-4 shadow-sm w-24 h-24 flex items-center justify-center"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <input
@@ -408,54 +451,59 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                         (profileData.lastName?.[0] || "A")}
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Camera className="text-white" size={20} />
+                  <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                    <Camera className="text-white" size={24} />
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-bold dark:text-white">
+                  <h3 className="font-black text-lg text-slate-900 dark:text-white tracking-tight">
                     {profileData.firstName} {profileData.lastName}
                   </h3>
-                  <p className="text-xs text-gray-400">{profileData.email}</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{profileData.email}</p>
                 </div>
               </div>
-              <hr className="my-2 dark:border-gray-700" />
-              <div className="space-y-1">
+              <hr className="my-4 border-slate-200/50 dark:border-slate-700/50" />
+              <div className="space-y-1.5 px-2">
                 {[
                   {
                     id: "profile",
                     icon: <User size={18} />,
-                    label: "Profile Info",
+                    label: t("profileInfo"),
                   },
                   {
                     id: "security",
                     icon: <Lock size={18} />,
-                    label: "Security",
+                    label: t("security"),
                   },
                   {
                     id: "appearance",
                     icon: <Palette size={18} />,
-                    label: "Interface",
+                    label: t("interface"),
                   },
                   {
                     id: "location",
                     icon: <Building2 size={18} />,
-                    label: "Office Location",
+                    label: t("officeLocation"),
                   },
                   {
                     id: "hr",
                     icon: <Briefcase size={18} />,
-                    label: "HR Configuration",
+                    label: t("hrConfiguration"),
                   },
                   {
                     id: "system",
                     icon: <Server size={18} />,
-                    label: "System Config",
+                    label: t("systemConfig"),
                   },
                   {
                     id: "security_logs",
                     icon: <ShieldAlert size={18} />,
-                    label: "Security Logs",
+                    label: t("securityLogs"),
+                  },
+                  {
+                    id: "chatbot",
+                    icon: <MessageSquare size={18} />,
+                    label: t("chatbotDocuments"),
                   },
                   ...((Array.isArray(user?.roles) && user.roles.some((r: any) => {
                     const roleName = (typeof r === "string" ? r : r?.name || "").toUpperCase();
@@ -463,13 +511,13 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                   })) ? [{
                     id: "organizations",
                     icon: <Globe size={18} />,
-                    label: "Organizations",
+                    label: t("organizations"),
                   }] : [])
                 ].map((item) => (
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm transition-all ${activeTab === item.id ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-bold" : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
+                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm transition-all duration-300 ${activeTab === item.id ?"bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 font-bold translate-x-1":"text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 hover:translate-x-1 font-medium"}`}
                   >
                     {item.icon} {item.label}
                   </button>
@@ -481,10 +529,11 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
           {/* Main Content Area */}
           <div className="flex-1 space-y-6 min-w-0">
             {activeTab === "organizations" && <TenantsTab />}
+            {activeTab === "chatbot" && <ChatbotSettingsTab />}
             {activeTab === "profile" && (
-              <div className="bg-white dark:bg-gray-800 rounded-md shadow-sm p-6 animate-fade-in">
-                <h2 className="text-lg font-bold dark:text-white mb-4">
-                  Personal Information
+              <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-xl border border-slate-200/50 dark:border-slate-800/50 p-8 animate-fade-in">
+                <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-6 flex items-center gap-2">
+                  <User size={24} className="text-blue-600" /> Personal Information
                 </h2>
                 <form onSubmit={handleUpdateProfile} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -550,12 +599,11 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                       <option>South Center</option>
                     </Select>
                   </div>
-                  <div className="pt-4 flex justify-between items-center border-t dark:border-gray-700 mt-6 pt-6">
-                    <Button
+                  <div className="pt-4 flex justify-between items-center border-t mt-6 pt-6">
+                    <button
                       type="submit"
-                      color="light"
                       disabled={loading}
-                      className="rounded-sm border-blue-200 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-6 h-12"
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-bold px-8 py-3.5 rounded-xl flex items-center justify-center transition-all duration-300 shadow-xl shadow-blue-500/25 active:scale-[0.98]"
                     >
                       {loading ? (
                         <Spinner size="sm" className="mr-2" />
@@ -563,26 +611,25 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                         <Save size={18} className="mr-2" />
                       )}
                       Save Changes
-                    </Button>
+                    </button>
 
-                    <Button
-                      color="light"
+                    <button
                       type="button"
-                      className="text-red-600 rounded-sm border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/20 font-bold h-12 flex items-center px-4"
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 font-bold px-6 py-3.5 rounded-xl flex items-center transition-colors border border-transparent hover:border-red-200 dark:hover:border-red-800"
                     >
                       <Trash2 size={18} className="mr-2" /> Deactivate Account
-                    </Button>
+                    </button>
                   </div>
                 </form>
               </div>
             )}
 
             {activeTab === "hr" && (
-              <div className="bg-white dark:bg-gray-800 rounded-md shadow-sm p-6 animate-fade-in">
-                <h2 className="text-lg font-bold dark:text-white mb-4">
-                  HR Configuration
+              <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-xl border border-slate-200/50 dark:border-slate-800/50 p-8 animate-fade-in">
+                <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-6 flex items-center gap-2">
+                  <Briefcase size={24} className="text-indigo-600" /> HR Configuration
                 </h2>
-                <form onSubmit={handleSaveHrSettings} className="space-y-4">
+                <form onSubmit={handleSaveHrSettings} className="space-y-6">
                   <div className="max-w-md">
                     <Label htmlFor="staffIdFormat">
                       Official Staff ID Format Pattern
@@ -604,12 +651,11 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                       </code>
                     </p>
                   </div>
-                  <div className="pt-4">
-                    <Button
+                  <div className="pt-6 border-t border-slate-200/50 dark:border-slate-700/50">
+                    <button
                       type="submit"
-                      color="blue"
                       disabled={loading}
-                      className="rounded-md px-6 h-12"
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-bold px-8 py-3.5 rounded-xl flex items-center justify-center transition-all duration-300 shadow-xl shadow-blue-500/25 active:scale-[0.98]"
                     >
                       {loading ? (
                         <Spinner size="sm" className="mr-2" />
@@ -617,22 +663,22 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                         <Save size={18} className="mr-2" />
                       )}
                       Save HR Settings
-                    </Button>
+                    </button>
                   </div>
                 </form>
               </div>
             )}
 
             {activeTab === "system" && (
-              <div className="bg-white dark:bg-gray-800 rounded-md shadow-sm p-6 animate-fade-in">
-                <h2 className="text-lg font-bold dark:text-white mb-4">
-                  System Configuration
+              <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-xl border border-slate-200/50 dark:border-slate-800/50 p-8 animate-fade-in">
+                <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-6 flex items-center gap-2">
+                  <Server size={24} className="text-blue-600" /> System Configuration
                 </h2>
-                <form onSubmit={handleSaveSystemSettings} className="space-y-4">
-                  <div className="mb-6 border-b dark:border-gray-700 pb-6">
+                <form onSubmit={handleSaveSystemSettings} className="space-y-6">
+                  <div className="mb-6 border-b pb-6">
                     <Label>Application Logo</Label>
                     <div className="mt-3 flex items-center gap-6">
-                      <div className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-700/50 shadow-inner">
+                      <div className="w-20 h-20 rounded-xl border-2 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-700/50 shadow-inner">
                         {appLogo ? (
                           <img
                             src={appLogo}
@@ -688,12 +734,94 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                       <strong className="text-blue-500">1</strong> for 1MB.
                     </p>
                   </div>
-                  <div className="pt-4">
-                    <Button
+
+                  <div className="max-w-md pt-4 border-t mt-6">
+                    <h3 className="text-md font-semibold dark:text-white mb-4 flex items-center gap-2">
+                      <ShieldAlert size={18} className="text-red-500" />
+                      Security & DDoS Protection
+                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <Label>Enable Rate Limiting</Label>
+                        <p className="text-xs text-gray-500">
+                          Automatically block IPs that spam requests.
+                        </p>
+                      </div>
+                      <ToggleSwitch
+                        checked={enableDdosProtection}
+                        onChange={(checked) => setEnableDdosProtection(checked)}
+                      />
+                    </div>
+                    {enableDdosProtection && (
+                      <div className="animate-fade-in mt-4">
+                        <Label htmlFor="maxRequestsPerMinute">Max Requests Per Minute</Label>
+                        <TextInput
+                          id="maxRequestsPerMinute"
+                          type="number"
+                          className="mt-1"
+                          value={maxRequestsPerMinute}
+                          onChange={(e) => setMaxRequestsPerMinute(e.target.value)}
+                        />
+                        <p className="text-xs text-gray-500 mt-2 mb-4">
+                          Maximum number of requests an IP can make in 60 seconds before being blocked.
+                        </p>
+
+                        <h4 className="text-sm font-semibold dark:text-white mt-4 mb-2">Cloudflare Configuration</h4>
+                        <div className="space-y-3 mb-4">
+                          <div>
+                            <Label htmlFor="cloudflareZoneId">Zone ID</Label>
+                            <TextInput
+                              id="cloudflareZoneId"
+                              type="text"
+                              placeholder="e.g. 023e105f4ecef8ad9ca31a8372d0c353"
+                              value={cloudflareZoneId}
+                              onChange={(e) => setCloudflareZoneId(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="cloudflareApiToken">API Token</Label>
+                            <TextInput
+                              id="cloudflareApiToken"
+                              type="password"
+                              placeholder="Cloudflare Global API Key or Token"
+                              value={cloudflareApiToken}
+                              onChange={(e) => setCloudflareApiToken(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <h4 className="text-sm font-semibold dark:text-white mt-4 mb-2">Spring Cloud Gateway (Redis)</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="redisHost">Redis Host</Label>
+                            <TextInput
+                              id="redisHost"
+                              type="text"
+                              placeholder="e.g. localhost or redis-server"
+                              value={redisHost}
+                              onChange={(e) => setRedisHost(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="redisPort">Redis Port</Label>
+                            <TextInput
+                              id="redisPort"
+                              type="text"
+                              placeholder="e.g. 6379"
+                              value={redisPort}
+                              onChange={(e) => setRedisPort(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-200/50 dark:border-slate-700/50">
+                    <button
                       type="submit"
-                      color="blue"
                       disabled={loading}
-                      className="rounded-md px-6 h-12"
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-bold px-8 py-3.5 rounded-xl flex items-center justify-center transition-all duration-300 shadow-xl shadow-blue-500/25 active:scale-[0.98]"
                     >
                       {loading ? (
                         <Spinner size="sm" className="mr-2" />
@@ -701,19 +829,20 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                         <Save size={18} className="mr-2" />
                       )}
                       Save System Settings
-                    </Button>
+                    </button>
                   </div>
                 </form>
               </div>
             )}
 
             {activeTab === "security" && (
-              <div className="bg-red-50/50 dark:bg-red-900/10 rounded-md shadow-sm p-6 animate-fade-in">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-md">
-                    <ShieldAlert size={20} />
+              <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-xl border border-slate-200/50 dark:border-slate-800/50 p-8 animate-fade-in relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-rose-500" />
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl">
+                    <ShieldAlert size={24} />
                   </div>
-                  <h2 className="text-lg font-bold dark:text-white">
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
                     Security & Password
                   </h2>
                 </div>
@@ -761,9 +890,9 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
             )}
 
             {activeTab === "appearance" && (
-              <div className="bg-white dark:bg-gray-800 rounded-md shadow-sm p-6 animate-fade-in">
-                <h2 className="text-lg font-bold dark:text-white mb-4">
-                  Application Preferences
+              <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-xl border border-slate-200/50 dark:border-slate-800/50 p-8 animate-fade-in">
+                <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-6 flex items-center gap-2">
+                  <Palette size={24} className="text-blue-600" /> Application Preferences
                 </h2>
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
@@ -787,7 +916,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                     <ToggleSwitch checked={true} onChange={() => { }} />
                   </div>
 
-                  <hr className="border-gray-100 dark:border-gray-700" />
+                  <hr className="" />
 
                   <div className="flex justify-between items-center">
                     <div>
@@ -848,7 +977,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                     </Select>
                   </div>
 
-                  <hr className="border-gray-100 dark:border-gray-700" />
+                  <hr className="" />
 
                   <div className="flex justify-between items-center">
                     <div>
@@ -886,12 +1015,12 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
             )}
 
             {activeTab === "location" && (
-              <div className="bg-white dark:bg-gray-800 rounded-md shadow-sm p-6 animate-fade-in">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-md">
-                    <Building2 size={20} />
+              <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-xl border border-slate-200/50 dark:border-slate-800/50 p-8 animate-fade-in">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
+                    <Building2 size={24} />
                   </div>
-                  <h2 className="text-lg font-bold dark:text-white">
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
                     Office Location Settings
                   </h2>
                 </div>
@@ -936,10 +1065,10 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                       />
                     </div>
                   </div>
-                  <div className="pt-2">
-                    <Button type="submit" color="blue" className="rounded-md">
+                  <div className="pt-6 border-t border-slate-200/50 dark:border-slate-700/50">
+                    <button type="submit" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-8 py-3.5 rounded-xl flex items-center justify-center transition-all duration-300 shadow-xl shadow-blue-500/25 active:scale-[0.98]">
                       <Save size={18} className="mr-2" /> Save Coordinates
-                    </Button>
+                    </button>
                   </div>
                 </form>
               </div>
@@ -991,7 +1120,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                   ].map((stat) => (
                     <div
                       key={stat.label}
-                      className={`${stat.bg} rounded-xl p-4 flex items-center gap-3 border border-white/60 dark:border-gray-700/50 shadow-sm`}
+                      className={`${stat.bg} rounded-xl p-4 flex items-center gap-3 border-white/60  shadow-sm`}
                     >
                       <div
                         className={`p-2 rounded-lg bg-gradient-to-br ${stat.color} text-white shadow-sm`}
@@ -1011,9 +1140,9 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                 </div>
 
                 {/* Main Panel */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700/50 overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                   {/* Panel Header */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-700/50 bg-gray-50/80 dark:bg-gray-900/40">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-4 border-b bg-gray-50/80 dark:bg-gray-900/40">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-lg">
                         <ShieldAlert size={18} />
@@ -1075,7 +1204,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                             ? fetchAccessLogs()
                             : fetchAuditLogs()
                         }
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-400 hover:text-blue-500 transition-all duration-200"
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700/50 rounded-lg hover:border-blue-400 hover:text-blue-500 transition-all duration-200"
                       >
                         <Activity size={12} /> Refresh
                       </button>
@@ -1083,23 +1212,23 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                   </div>
 
                   {/* Sub-Tabs */}
-                  <div className="flex px-5 border-b border-gray-100 dark:border-gray-700/50 bg-white dark:bg-gray-800">
+                  <div className="flex px-5 border-b bg-white dark:bg-gray-800">
                     <button
                       onClick={() => setSecuritySubTab("session")}
-                      className={`px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${securitySubTab === "session" ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400" : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
+                      className={`px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${securitySubTab ==="session"?"border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400":"border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
                     >
                       Session Logs
                     </button>
                     <button
                       onClick={() => setSecuritySubTab("activity")}
-                      className={`px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${securitySubTab === "activity" ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400" : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
+                      className={`px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${securitySubTab ==="activity"?"border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400":"border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
                     >
                       Activity Logs
                     </button>
                   </div>
 
                   {/* Filters Bar */}
-                  <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-700/50 bg-white dark:bg-gray-800 space-y-3">
+                  <div className="px-5 py-3 border-b bg-white dark:bg-gray-800 space-y-3">
                     <div className="flex flex-col md:flex-row gap-3">
                       {/* Search */}
                       <div className="flex-1 relative">
@@ -1113,7 +1242,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                           placeholder="Search by user, IP, location, browser, status…"
                           value={logsSearch}
                           onChange={(e) => setLogsSearch(e.target.value)}
-                          className="w-full pl-9 pr-10 py-2 text-sm bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none dark:text-white dark:placeholder-gray-500 transition-all"
+                          className="w-full pl-9 pr-10 py-2 text-sm bg-gray-50 dark:bg-gray-700/40 rounded-lg focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none dark:text-white dark:placeholder-gray-500 transition-all"
                         />
                         {logsSearch && (
                           <button
@@ -1163,7 +1292,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                           Active filters:
                         </span>
                         {logsSearch && (
-                          <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[11px] font-bold rounded-full border border-blue-200 dark:border-blue-700/50">
+                          <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[11px] font-bold rounded-full border-blue-200 dark:border-blue-700/50">
                             <Search size={10} /> "{logsSearch}"
                             <button
                               onClick={() => setLogsSearch("")}
@@ -1174,7 +1303,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                           </span>
                         )}
                         {logsStartDate && (
-                          <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[11px] font-bold rounded-full border border-violet-200 dark:border-violet-700/50">
+                          <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[11px] font-bold rounded-full border-violet-200 dark:border-violet-700/50">
                             <Calendar size={10} /> From {logsStartDate}
                             <button
                               onClick={() => setLogsStartDate("")}
@@ -1185,7 +1314,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                           </span>
                         )}
                         {logsEndDate && (
-                          <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[11px] font-bold rounded-full border border-violet-200 dark:border-violet-700/50">
+                          <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[11px] font-bold rounded-full border-violet-200 dark:border-violet-700/50">
                             <Calendar size={10} /> To {logsEndDate}
                             <button
                               onClick={() => setLogsEndDate("")}
@@ -1293,14 +1422,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                                 </div>
                                 <div className="shrink-0">
                                   <span
-                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide border ${isCritical
-                                      ? "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-700/50"
-                                      : isWarning
-                                        ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-700/50"
-                                        : isSuccess
-                                          ? "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-700/50"
-                                          : "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-700/50"
-                                      }`}
+                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${isCritical ?"bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-700/50": isWarning ?"bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-700/50": isSuccess ?"bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-700/50":"bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-700/50"}`}
                                   >
                                     {log.type}
                                   </span>
@@ -1396,12 +1518,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                               {/* Data Usage Badge */}
                               <div className="shrink-0">
                                 <span
-                                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide border ${log.dataUsageType?.includes("Heavy")
-                                    ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-700/50"
-                                    : log.dataUsageType?.includes("API")
-                                      ? "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-700/50"
-                                      : "bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50"
-                                    }`}
+                                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${log.dataUsageType?.includes("Heavy") ?"bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-700/50": log.dataUsageType?.includes("API") ?"bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-700/50":"bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50"}`}
                                 >
                                   {log.dataUsageType || "Standard"}
                                 </span>
@@ -1427,7 +1544,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
 
                   {/* Pagination */}
                   {filteredLogs.length > 0 && (
-                    <div className="border-t border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/20 rounded-b-xl">
+                    <div className="border-t bg-gray-50/50 dark:bg-gray-900/20 rounded-b-xl">
                       <ModernPagination
                         currentPage={logsCurrentPage}
                         totalPages={totalPages}

@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Progress,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Progress, Spinner} from '@/lib/flowbite-compat';
 import {
   TrendingUp,
   AlertTriangle,
@@ -106,7 +94,7 @@ const RetentionModule: React.FC = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Average Annual Retention
@@ -121,9 +109,9 @@ const RetentionModule: React.FC = () => {
           <p className="text-[9px] font-bold text-emerald-500 uppercase mt-2">
             Well above industry baseline 85%
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               High Attrition Risk
@@ -138,9 +126,9 @@ const RetentionModule: React.FC = () => {
           <p className="text-[9px] font-bold text-rose-500 uppercase mt-2">
             Requires direct intervention
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Average Tenure Span
@@ -155,9 +143,9 @@ const RetentionModule: React.FC = () => {
           <p className="text-[9px] font-bold text-gray-400 uppercase mt-2">
             Healthy workforce scaling index
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Stability Index
@@ -172,12 +160,12 @@ const RetentionModule: React.FC = () => {
           <p className="text-[9px] font-bold text-indigo-500 uppercase mt-2">
             Systematic retention check
           </p>
-        </Card>
+        </div>
       </div>
 
       {/* Risk Ledger */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
             <UserMinus size={20} className="text-rose-500" /> Retention Risk &
             Action Registry
@@ -277,10 +265,10 @@ const RetentionModule: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-        </Card>
+        </div>
 
         {/* Retention advice card */}
-        <Card className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md flex flex-col justify-between">
+        <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md flex flex-col justify-between">
           <div>
             <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
               <Heart size={20} className="text-indigo-600" /> Retention Advice
@@ -308,7 +296,7 @@ const RetentionModule: React.FC = () => {
               </p>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t dark:border-gray-700">
+          <div className="mt-8 pt-6 border-t">
             <Button
               color="light"
               size="sm"
@@ -322,7 +310,7 @@ const RetentionModule: React.FC = () => {
               Open Career Alignment Planner
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

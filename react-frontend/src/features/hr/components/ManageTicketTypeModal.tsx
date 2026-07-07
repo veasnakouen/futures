@@ -1,16 +1,5 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  ModalBody,
-  Button,
-  Table,
-  TableHead,
-  TableHeadCell,
-  TableBody,
-  TableRow,
-  TableCell,
-  TextInput,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Button, Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, TextInput} from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import { Tag, Plus, Trash2, X, Check } from "lucide-react";
 import toast from "react-hot-toast";
@@ -79,7 +68,7 @@ const ManageTicketTypeModal: React.FC<ManageTicketTypeModalProps> = ({
             </Button>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-md overflow-hidden h-[400px] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-900 rounded-md overflow-hidden h-[400px] overflow-y-auto">
             <Table hoverable>
               <TableHead className="bg-gray-100 dark:bg-gray-700">
                 <TableHeadCell className="py-3 text-xs font-black uppercase text-gray-500">

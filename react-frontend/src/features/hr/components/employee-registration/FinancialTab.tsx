@@ -1,5 +1,5 @@
 import React from "react";
-import { Label, TextInput } from '@/lib/flowbite-compat';
+import {Label, TextInput} from '@/lib/flowbite-compat';
 import { type UseFormReturn } from "react-hook-form";
 import { type EmployeeFormData } from '../../../../schemas/employeeSchema';
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, ModalBody } from '@/lib/flowbite-compat';
+import {Modal, ModalBody} from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 import {
@@ -138,7 +138,7 @@ const EmployeeRegistrationModal: React.FC<EmployeeRegistrationModalProps> = ({
       <ModalBody className="p-0 dark:bg-gray-800 overflow-hidden">
         <div className="flex h-[450px] overflow-hidden">
           {/* Form Sidebar - Sticky to the Modal Body */}
-          <div className="w-64 bg-gray-50 dark:bg-gray-700/30 border-r dark:border-gray-700 p-8 sticky top-0 h-[450px] shrink-0">
+          <div className="w-64 bg-gray-50 dark:bg-gray-700/30 border-r p-8 sticky top-0 h-[450px] shrink-0">
             <nav className="space-y-1">
               {[
                 {
@@ -186,7 +186,7 @@ const EmployeeRegistrationModal: React.FC<EmployeeRegistrationModalProps> = ({
                   key={t.id}
                   type="button"
                   onClick={() => setRegTab(t.id as any)}
-                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${regTab === t.id ? "bg-blue-600 text-white shadow-lg" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${regTab === t.id ?"bg-blue-600 text-white shadow-lg":"text-gray-400 hover:text-gray-600"}`}
                 >
                   <span className="flex items-center gap-3">
                     {t.icon} {t.label}
@@ -249,7 +249,7 @@ const EmployeeRegistrationModal: React.FC<EmployeeRegistrationModalProps> = ({
                 )}
               </form>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700 p-4 shrink-0 w-full">
+            <div className="bg-gray-50 dark:bg-gray-800 border-t p-4 shrink-0 w-full">
               <CustomModalFooter
                 onClose={onClose}
                 isEditMode={isEditMode}

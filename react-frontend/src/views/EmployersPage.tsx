@@ -1,23 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from '@/lib/react-router-compat';
 import { useDebounce } from "../hooks/useDebounce";
-import {
-  Card,
-  Button,
-  Badge,
-  Spinner,
-  TextInput,
-  Label,
-  Modal,
-  Textarea,
-  Select,
-  ModalHeader,
-  ModalBody,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-  ModalFooter,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Spinner, TextInput, Label, Modal, Textarea, Select, ModalHeader, ModalBody, Dropdown, DropdownItem, DropdownDivider, ModalFooter} from '@/lib/flowbite-compat';
 import ModernPagination from "@/components/common/ModernPagination";
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
@@ -69,21 +53,16 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
     "phone",
     "status",
   ]);
-  const [gridDensity, setGridDensity] = useState<
-    "large" | "medium" | "compact"
-  >("medium");
+  const [itemsPerRow, setItemsPerRow] = useState("4");
 
   const getGridClass = () => {
-    switch (gridDensity) {
-      case "large":
-        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
-      case "medium":
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
-      case "compact":
-        return "grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4";
-      default:
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
-    }
+    return `grid gap-6 ${
+      itemsPerRow === "3"
+        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        : itemsPerRow === "5"
+        ? "grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+        : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+    }`;
   };
   const PAGE_SIZE = viewMode === "grid" ? 9 : 10;
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -313,7 +292,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                 placeholder="Search by company name, contact, or industry..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-10 py-3 bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
+                className="w-full pl-12 pr-10 py-3 bg-white dark:bg-gray-700/50 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
               />
               {searchTerm && (
                 <button
@@ -330,7 +309,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                 <Dropdown
                   inline
                   label={
-                    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer">
                       <Filter size={16} className="text-blue-500" />
                       <span className="font-bold hidden sm:block">Columns</span>
                     </div>
@@ -364,62 +343,30 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                 </Dropdown>
               )}
               {viewMode === "grid" && (
-                <Dropdown
-                  inline
-                  label={
-                    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer">
-                      <LayoutGrid size={16} className="text-indigo-500" />
-                      <span className="font-bold hidden sm:block">
-                        Grid Size
-                      </span>
-                    </div>
-                  }
-                  arrowIcon={false}
-                >
-                  <DropdownItem
-                    onClick={() => setGridDensity("large")}
-                    className={
-                      gridDensity === "large"
-                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                        : ""
-                    }
+                <div className="flex-shrink-0">
+                  <select
+                    className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                    value={itemsPerRow}
+                    onChange={(e) => setItemsPerRow(e.target.value)}
                   >
-                    Large (3 per row)
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => setGridDensity("medium")}
-                    className={
-                      gridDensity === "medium"
-                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                        : ""
-                    }
-                  >
-                    Medium (4 per row)
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => setGridDensity("compact")}
-                    className={
-                      gridDensity === "compact"
-                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                        : ""
-                    }
-                  >
-                    Compact (5 per row)
-                  </DropdownItem>
-                </Dropdown>
+                    <option value="3">3 per row</option>
+                    <option value="4">4 per row</option>
+                    <option value="5">5 per row</option>
+                  </select>
+                </div>
               )}
               <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-md p-1">
                 <button
                   onClick={() => setViewMode("grid")}
                   title="Grid View"
-                  className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`p-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                 >
                   <LayoutGrid size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
                   title="List View"
-                  className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`p-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                 >
                   <List size={18} />
                 </button>
@@ -454,7 +401,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                       : "border-amber-500/30 text-amber-600 bg-amber-50 dark:bg-amber-900/10 dark:text-amber-400"
                   }
                   customBadges={
-                    <span className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] px-2 py-0.5 rounded-md font-bold uppercase tracking-widest border border-blue-100 dark:border-blue-800">
+                    <span className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] px-2 py-0.5 rounded-md font-bold uppercase tracking-widest border-blue-100 dark:border-blue-800">
                       {employer.address?.split(",")[0] || "Phnom Penh"}
                     </span>
                   }
@@ -550,15 +497,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                             ? "Remove connection"
                             : "Add to network"
                         }
-                        className={`!rounded border transition-all w-9 h-9 flex items-center justify-center !p-0 ${
-                          connections.some(
-                            (c) =>
-                              c.targetType === "EMPLOYER" &&
-                              c.targetId === String(employer.id),
-                          )
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                            : "border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"
-                        }`}
+                        className={`!rounded transition-all w-9 h-9 flex items-center justify-center !p-0 ${ connections.some( (c) => c.targetType ==="EMPLOYER"&& c.targetId === String(employer.id), ) ?"border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100":"border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"}`}
                       >
                         {connections.some(
                           (c) =>
@@ -599,7 +538,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                           );
                         }}
                         title="Message"
-                        className="!rounded border border-blue-500 bg-white hover:bg-blue-50 text-blue-600 transition-all w-9 h-9 flex items-center justify-center !p-0 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-gray-700"
+                        className="!rounded border-blue-500 bg-white hover:bg-blue-50 text-blue-600 transition-all w-9 h-9 flex items-center justify-center !p-0 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-gray-700"
                       >
                         <MessageSquare size={16} />
                       </Button>
@@ -644,7 +583,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                 <div className="min-w-[800px]">
                   <div className="divide-y divide-gray-100 dark:divide-gray-700">
                     {/* List Header */}
-                    <div className="sticky top-0 z-20 hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50/90 dark:bg-gray-700/90 backdrop-blur-md border-b dark:border-gray-600 shadow-sm">
+                    <div className="sticky top-0 z-20 hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50/90 dark:bg-gray-700/90 backdrop-blur-md border-b shadow-sm">
                       <div
                         className={`${getCompanyColSpanClass()} text-[10px] font-black text-gray-400 uppercase tracking-widest`}
                       >
@@ -683,7 +622,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                         <div
                           className={`${getCompanyColSpanClass()} flex items-center gap-3`}
                         >
-                          <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center overflow-hidden border dark:border-gray-600 shadow-sm shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-sm shrink-0">
                             {employer.logoUrl ? (
                               <img
                                 src={employer.logoUrl}
@@ -731,18 +670,10 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                         {visibleColumns.includes("status") && (
                           <div className="md:col-span-1">
                             <span
-                              className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md ${
-                                employer.status === "Active"
-                                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                  : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                              }`}
+                              className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md ${ employer.status ==="Active"?"bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400":"bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"}`}
                             >
                               <span
-                                className={`w-1.5 h-1.5 rounded-md ${
-                                  employer.status === "Active"
-                                    ? "bg-green-500"
-                                    : "bg-yellow-500"
-                                }`}
+                                className={`w-1.5 h-1.5 rounded-md ${ employer.status ==="Active"?"bg-green-500":"bg-yellow-500"}`}
                               />
                               {employer.status || "Active"}
                             </span>
@@ -869,7 +800,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                                 </span>
                               </div>
                             </DropdownItem>
-                            <DropdownDivider className="my-1 border-gray-100 dark:border-gray-700" />
+                            <DropdownDivider className="my-1" />
                             <DropdownItem
                               onClick={() =>
                                 setTimeout(() => {
@@ -931,9 +862,9 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
             onClose={() => setIsModalOpen(false)}
           />
           <ModalBody className="!p-0 dark:bg-gray-800">
-            <div className="bg-white dark:bg-gray-800 py-6 px-8 border-b dark:border-gray-700 flex justify-end items-center">
+            <div className="bg-white dark:bg-gray-800 py-6 px-8 border-b flex justify-end items-center">
               <div className="relative group">
-                <div className="w-20 h-20 rounded-md bg-gray-50 dark:bg-gray-700/50 border-2 border-dashed border-gray-200 dark:border-gray-600 flex items-center justify-center overflow-hidden transition-all group-hover:border-blue-400">
+                <div className="w-20 h-20 rounded-md bg-gray-50 dark:bg-gray-700/50 border-2 flex items-center justify-center overflow-hidden transition-all group-hover:border-blue-400">
                   {formData.logoUrl ? (
                     <>
                       <img

@@ -32,4 +32,8 @@ public class PrescriptionItem {
     private String duration;
     private String refillsAllowed;
     private String phamacyId;
+
+    // Fields to link to mtp-stock-service for real-time inventory tracking
+    private Long inventoryItemId;
+    private Integer quantityDispensed;
 }

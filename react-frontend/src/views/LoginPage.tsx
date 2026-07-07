@@ -31,31 +31,38 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-md shadow-xl p-8 border dark:border-gray-700">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-black dark:text-white tracking-tight">
-            MTP Systems
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-yellow-900 to-cyan-900 p-4 relative overflow-hidden">
+      {/* Decorative glowing orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/30 rounded blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px]  rounded blur-3xl pointer-events-none"></div>
+
+      <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded shadow-xl border border-white/20 p-10 relative z-10 animate-fade-in">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full hover:scale-110 bg-indigo-600 shadow-lg shadow-indigo-500/30 mb-6">
+            <Lock className="text-white" size={28} />
+          </div>
+          <h1 className="text-3xl font-black text-white tracking-tight">
+            MTP <span className="text-indigo-400">Systems</span>
           </h1>
-          <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest mt-2">
+          <p className="text-indigo-200/70 font-bold uppercase text-[11px] tracking-[0.3em] mt-3">
             Authentication Gateway
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-md text-red-600 text-xs font-bold">
+          <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 backdrop-blur-md rounded text-red-400 text-xs font-bold text-center">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">
+            <label className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-2 block pl-1">
               Username
             </label>
-            <div className="relative">
+            <div className="relative group">
               <User
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300 group-focus-within:text-white transition-colors"
                 size={18}
               />
               <input
@@ -63,19 +70,19 @@ const LoginPage = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-indigo-200/30 rounded focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent outline-none transition-all backdrop-blur-md"
                 placeholder="admin@mtp.org"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">
+            <label className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-2 block pl-1">
               Password
             </label>
-            <div className="relative">
+            <div className="relative group">
               <Lock
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300 group-focus-within:text-white transition-colors"
                 size={18}
               />
               <input
@@ -83,11 +90,12 @@ const LoginPage = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-12 py-3 bg-gray-50 dark:bg-gray-700/50 border dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                className="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 text-white placeholder-indigo-200/30 rounded focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent outline-none transition-all backdrop-blur-md"
+                placeholder="********"
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-indigo-300 hover:text-white transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -98,9 +106,9 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-black uppercase text-[10px] tracking-widest shadow-xl shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50"
+            className="w-full py-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-black text-[16px] tracking-widest shadow-lg shadow-indigo-500/30 transition-all active:scale-95 disabled:opacity-50 hover:shadow-indigo-500/50"
           >
-            {loading ? "Validating..." : "Secure Login"}
+            {loading ? "Validating..." : "Log in"}
           </button>
         </form>
       </div>

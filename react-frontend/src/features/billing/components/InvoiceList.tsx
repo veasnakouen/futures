@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/components/ui/spinner";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { billingService, InvoiceDto } from "../../../services/billingService";
@@ -44,7 +45,7 @@ export default function InvoiceList() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Invoices</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage patient billing and invoices</p>
@@ -57,7 +58,7 @@ export default function InvoiceList() {
               placeholder="Search by Ref ID or CPT..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
             />
           </div>
           <div className="relative">
@@ -65,7 +66,7 @@ export default function InvoiceList() {
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white appearance-none cursor-pointer"
+              className="pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-gray-900/50 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white appearance-none cursor-pointer"
             >
               <option value="ALL">All Modules</option>
               <option value="CLINIC">CLINIC</option>
@@ -83,11 +84,11 @@ export default function InvoiceList() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700">
-              <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+              <tr className="bg-gray-50 dark:bg-gray-900/50 border-b">
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Invoice / Module</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ref ID</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Issue Date</th>
@@ -98,12 +99,12 @@ export default function InvoiceList() {
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">Loading invoices...</td></tr>
+                <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500"><div className="flex justify-center"><Spinner size="lg" /></div></td></tr>
               ) : filteredData.length === 0 ? (
                 <tr><td colSpan={6} className="px-6 py-12 text-center">No invoices found.</td></tr>
               ) : (
                 filteredData.map((item: InvoiceDto) => (
-                  <tr key={item.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                  <tr key={item.id} className="border-b hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
                       <span className="text-sm font-semibold text-gray-900 dark:text-white uppercase">
@@ -121,11 +122,7 @@ export default function InvoiceList() {
                     <span className="text-sm text-gray-600 dark:text-gray-300">{item.issueDate}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
-                      item.status === 'PAID' ? 'bg-green-100 text-green-800' :
-                      item.status === 'ISSUED' ? 'bg-blue-100 text-blue-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${ item.status ==='PAID'?'bg-green-100 text-green-800': item.status ==='ISSUED'?'bg-blue-100 text-blue-800':'bg-gray-100 text-gray-800'}`}>
                       {item.status}
                     </span>
                   </td>
@@ -164,7 +161,7 @@ export default function InvoiceList() {
           </table>
         </div>
         {data?.totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+          <div className="p-4 border-t bg-gray-50/50 dark:bg-gray-800/50">
             <ModernPagination currentPage={page} totalPages={data.totalPages} onPageChange={setPage} />
           </div>
         )}

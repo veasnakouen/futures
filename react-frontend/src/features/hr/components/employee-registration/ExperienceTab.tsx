@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  TextInput,
-  Textarea,
-  Button,
-  Accordion,
-  AccordionPanel,
-  AccordionTitle,
-  AccordionContent,
-} from '@/lib/flowbite-compat';
+import {TextInput, Textarea, Button, Accordion, AccordionPanel, AccordionTitle, AccordionContent} from '@/lib/flowbite-compat';
 import { type UseFormReturn, useFieldArray } from "react-hook-form";
 import { type EmployeeFormData } from '../../../../schemas/employeeSchema';
 import { Plus, Trash2, Briefcase, GraduationCap, Building } from "lucide-react";
@@ -40,7 +32,7 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
   return (
     <div className="space-y-10 animate-fade-in pb-8">
       {/* Summary / Headline */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
         <h4 className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
           <Briefcase size={16} className="text-blue-500" /> Professional Summary
         </h4>
@@ -48,7 +40,7 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
           {...register("legacyPreviousPosition")}
           rows={3}
           placeholder="Brief overview of the most recent position, key skills, and primary responsibilities..."
-          className="w-full text-sm font-medium bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full text-sm font-medium bg-gray-50 dark:bg-gray-900/50 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
 
@@ -79,11 +71,11 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
           {expFields.length > 0 && (
             <Accordion
               collapseAll
-              className="border-gray-200 dark:border-gray-700 divide-y-0 rounded-xl overflow-hidden shadow-sm"
+              className="divide-y-0 rounded-xl overflow-hidden shadow-sm"
             >
               {expFields.map((field, index) => (
                 <AccordionPanel key={field.id}>
-                  <AccordionTitle className="text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-0 py-3 px-5 border-b border-gray-100 dark:border-gray-700">
+                  <AccordionTitle className="text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:ring-0 py-3 px-5 border-b">
                     {watch(`legacyWorkExperience.${index}.company`) ||
                     watch(`legacyWorkExperience.${index}.position`)
                       ? `${watch(`legacyWorkExperience.${index}.position`) || "Role"} at ${watch(`legacyWorkExperience.${index}.company`) || "Company"}`
@@ -93,7 +85,7 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
                     <button
                       type="button"
                       onClick={() => removeExp(index)}
-                      className="absolute top-4 right-4 p-2 bg-white dark:bg-gray-700 text-red-500 rounded-md shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-all border border-gray-200 dark:border-gray-600 z-10"
+                      className="absolute top-4 right-4 p-2 bg-white dark:bg-gray-700 text-red-500 rounded-md shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-all z-10"
                       title="Remove Experience"
                     >
                       <Trash2 size={14} />
@@ -157,7 +149,7 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
           )}
 
           {expFields.length === 0 && (
-            <div className="text-center py-8 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+            <div className="text-center py-8 bg-gray-50 dark:bg-gray-800/30 rounded-xl">
               <Briefcase
                 size={32}
                 className="mx-auto text-gray-300 dark:text-gray-600 mb-3"
@@ -174,7 +166,7 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
       </div>
 
       {/* Dynamic Education */}
-      <div className="pt-4 border-t dark:border-gray-700">
+      <div className="pt-4 border-t">
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
             <GraduationCap size={16} className="text-indigo-500" /> Academic
@@ -194,11 +186,11 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
           {eduFields.length > 0 && (
             <Accordion
               collapseAll
-              className="border-gray-200 dark:border-gray-700 divide-y-0 rounded-xl overflow-hidden shadow-sm"
+              className="divide-y-0 rounded-xl overflow-hidden shadow-sm"
             >
               {eduFields.map((field, index) => (
                 <AccordionPanel key={field.id}>
-                  <AccordionTitle className="text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 focus:ring-0 py-3 px-5 border-b border-gray-100 dark:border-gray-700">
+                  <AccordionTitle className="text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 focus:ring-0 py-3 px-5 border-b">
                     {watch(`legacyEducation.${index}.degree`) ||
                     watch(`legacyEducation.${index}.institution`)
                       ? `${watch(`legacyEducation.${index}.degree`) || "Degree"} at ${watch(`legacyEducation.${index}.institution`) || "Institution"}`
@@ -208,7 +200,7 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
                     <button
                       type="button"
                       onClick={() => removeEdu(index)}
-                      className="absolute top-4 right-4 p-2 bg-white dark:bg-gray-700 text-red-500 rounded-md shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-all border border-gray-200 dark:border-gray-600 z-10"
+                      className="absolute top-4 right-4 p-2 bg-white dark:bg-gray-700 text-red-500 rounded-md shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-all z-10"
                       title="Remove Degree"
                     >
                       <Trash2 size={14} />
@@ -259,7 +251,7 @@ const ExperienceTab: React.FC<ExperienceTabProps> = ({ formMethods }) => {
           )}
 
           {eduFields.length === 0 && (
-            <div className="text-center py-8 bg-indigo-50/20 dark:bg-indigo-900/10 rounded-xl border border-dashed border-indigo-100 dark:border-indigo-900/30">
+            <div className="text-center py-8 bg-indigo-50/20 dark:bg-indigo-900/10 rounded-xl border-indigo-100 dark:border-indigo-900/30">
               <GraduationCap
                 size={32}
                 className="mx-auto text-gray-300 dark:text-gray-600 mb-3"

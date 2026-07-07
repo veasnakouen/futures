@@ -21,6 +21,7 @@ java {
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -30,6 +31,7 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
 	// Core Spring Boot
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -37,6 +39,10 @@ dependencies {
 	// Microservices (Spring Cloud)
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// gRPC Server
+	implementation 'net.devh:grpc-server-spring-boot-starter:3.1.0.RELEASE'
+	implementation 'com.mtp:mtp-grpc-stubs:1.0.0'
 
 	// Database
 	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'

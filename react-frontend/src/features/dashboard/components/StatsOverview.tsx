@@ -63,7 +63,7 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats }) => {
         >
           <div
             onClick={() => item.link && (window.location.href = item.link)}
-            className={`relative overflow-hidden bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 rounded-md p-6 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_30px_-5px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_12px_30px_-5px_rgba(0,0,0,0.3)] hover:-translate-y-1.5 transition-all duration-300 ease-out cursor-pointer group ${item.borderClass}`}
+            className={`relative overflow-hidden bg-white dark:bg-gray-800/40 dark:backdrop-blur-md  rounded-md p-6 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_30px_-5px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_12px_30px_-5px_rgba(0,0,0,0.3)] hover:-translate-y-1.5 transition-all duration-300 ease-out cursor-pointer group ${item.borderClass}`}
           >
             {/* Hover subtle glow effect */}
             <div

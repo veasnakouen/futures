@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { TextInput } from "@/lib/flowbite-compat";
-import { ChevronDown } from "lucide-react";
+import React from "react";
+import ReactSelectCreatable from 'react-select/creatable';
 
 interface CreatableSelectProps {
   options: string[];
@@ -17,79 +16,45 @@ const CreatableSelect: React.FC<CreatableSelectProps> = ({
   placeholder = "Select or type...",
   disabled = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState(value || "");
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setSearch(value || "");
-  }, [value]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const filteredOptions = options.filter((o) =>
-    o.toLowerCase().includes(search.toLowerCase())
-  );
+  const selectOptions = options.map(opt => ({ label: opt, value: opt }));
+  const selectValue = value ? { label: value, value: value } : null;
 
   return (
-    <div className="relative w-full" ref={ref}>
-      <TextInput
-        disabled={disabled}
-        value={search}
-        onChange={(e: any) => {
-          setSearch(e.target.value);
-          onChange(e.target.value);
-          setIsOpen(true);
-        }}
-        onFocus={() => setIsOpen(true)}
-        placeholder={placeholder}
-        className="pr-10 rounded-md"
-      />
-      <div
-        className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-gray-400"
-        onClick={() => {
-          if (!disabled) {
-            setIsOpen(!isOpen);
-            // Optional: clear search to show all when opening via arrow
-            if (!isOpen) setSearch("");
-          }
-        }}
-      >
-        <ChevronDown size={18} />
-      </div>
-
-      {isOpen && !disabled && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((opt, i) => (
-              <div
-                key={i}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 text-sm dark:text-gray-200"
-                onClick={() => {
-                  setSearch(opt);
-                  onChange(opt);
-                  setIsOpen(false);
-                }}
-              >
-                {opt}
-              </div>
-            ))
-          ) : (
-            <div className="px-4 py-2 text-sm text-gray-500 italic bg-gray-50 dark:bg-gray-800">
-              Press Enter or click away to add "{search}"
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    <ReactSelectCreatable
+      unstyled
+      isClearable
+      isDisabled={disabled}
+      options={selectOptions}
+      value={selectValue}
+      onChange={(selected: any) => onChange(selected ? selected.value : '')}
+      placeholder={placeholder}
+      menuPosition="fixed"
+      menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+      classNamePrefix="react-select"
+      classNames={{
+        control: ({ isFocused }) => 
+          `flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors cursor-text ${
+            isFocused ? 'ring-1 ring-ring border-primary outline-none' : 'hover:border-primary/50'
+          } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`,
+        placeholder: () => "text-muted-foreground",
+        input: () => "text-foreground",
+        singleValue: () => "text-foreground",
+        menu: () => "mt-1 rounded-md border bg-popover shadow-md overflow-hidden z-[9999]",
+        menuList: () => "p-1",
+        option: ({ isFocused, isSelected }) =>
+          `relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none transition-colors ${
+            isSelected ? 'bg-primary text-primary-foreground font-medium' : isFocused ? 'bg-accent text-accent-foreground' : 'text-popover-foreground hover:bg-accent/50 hover:text-accent-foreground'
+          }`,
+        noOptionsMessage: () => "p-2 text-sm text-muted-foreground",
+        clearIndicator: () => "text-muted-foreground hover:text-foreground cursor-pointer p-1",
+        dropdownIndicator: () => "text-muted-foreground hover:text-foreground cursor-pointer p-1",
+        indicatorSeparator: () => "bg-border mx-1 my-1",
+        valueContainer: () => "gap-1",
+      }}
+      styles={{
+        menuPortal: base => ({ ...base, zIndex: 9999 })
+      }}
+    />
   );
 };
 

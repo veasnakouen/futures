@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Badge, Spinner } from '@/lib/flowbite-compat';
+import {Button, Badge, Spinner} from '@/lib/flowbite-compat';
 import {
   ShieldCheck,
   FileText,
@@ -87,7 +87,7 @@ const ComplianceModule: React.FC = () => {
     <div className="space-y-8 animate-fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Governance Status */}
-        <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-l-[12px] border-l-emerald-500">
+        <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-l-[12px] border-l-emerald-500">
           {loadingStats ? (
             <div className="flex justify-center py-12">
               <Spinner size="lg" />
@@ -115,7 +115,7 @@ const ComplianceModule: React.FC = () => {
                 </span>
               </p>
 
-              <div className="mt-8 pt-8 border-t dark:border-gray-700 flex justify-between items-center text-[10px] font-black uppercase">
+              <div className="mt-8 pt-8 border-t flex justify-between items-center text-[10px] font-black uppercase">
                 <span className="text-gray-400">GDPR Compliance</span>
                 <span className="text-emerald-500">Active</span>
               </div>
@@ -125,10 +125,10 @@ const ComplianceModule: React.FC = () => {
               </div>
             </>
           )}
-        </Card>
+        </div>
 
         {/* Immutable Audit Trail */}
-        <Card className="lg:col-span-2 p-10 rounded-md dark:bg-gray-800 border-none shadow-md">
+        <div className="lg:col-span-2 p-10 rounded-md dark:bg-gray-800 border-none shadow-md">
           <div className="flex justify-between items-center mb-8">
             <h4 className="font-black text-xl dark:text-white flex items-center gap-3">
               <FileText className="text-blue-600" /> Immutable Audit Trail
@@ -151,18 +151,18 @@ const ComplianceModule: React.FC = () => {
                 <Spinner size="md" />
               </div>
             ) : logs.length === 0 ? (
-              <div className="py-12 text-center border border-dashed dark:border-gray-700 rounded-md text-gray-400">
+              <div className="py-12 text-center rounded-md text-gray-400">
                 No activity audit logs found in the database.
               </div>
             ) : (
               logs.map((log, i) => (
                 <div
                   key={i}
-                  className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md flex justify-between items-center border border-transparent hover:border-gray-200 dark:hover:border-gray-600 transition-all"
+                  className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md flex justify-between items-center border-transparent hover: dark:hover: transition-all"
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-2 h-2 rounded-md ${log.type === "critical" ? "bg-red-500" : log.type === "warning" ? "bg-amber-500" : "bg-blue-500"}`}
+                      className={`w-2 h-2 rounded-md ${log.type ==="critical"?"bg-red-500": log.type ==="warning"?"bg-amber-500":"bg-blue-500"}`}
                     ></div>
                     <div>
                       <p className="text-xs font-black dark:text-white">
@@ -180,12 +180,12 @@ const ComplianceModule: React.FC = () => {
               ))
             )}
           </div>
-        </Card>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* RBAC Control Matrix */}
-        <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-blue-600">
+        <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-blue-600">
           <h4 className="font-black text-xl dark:text-white mb-6">
             RBAC Control Matrix
           </h4>
@@ -208,10 +208,10 @@ const ComplianceModule: React.FC = () => {
               MFA Health Check
             </Button>
           </div>
-        </Card>
+        </div>
 
         {/* Security Fortification */}
-        <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-rose-600">
+        <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-rose-600">
           <h4 className="font-black text-xl dark:text-white mb-6 flex items-center gap-3">
             <ShieldAlert className="text-rose-600" /> Security Fortification
           </h4>
@@ -222,7 +222,7 @@ const ComplianceModule: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-8 bg-rose-50 dark:bg-rose-900/10 p-6 rounded-md border border-rose-100 dark:border-rose-900/20">
+              <div className="flex items-center gap-8 bg-rose-50 dark:bg-rose-900/10 p-6 rounded-md border-rose-100 dark:border-rose-900/20">
                 <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-md flex items-center justify-center text-rose-600 shadow-sm">
                   {stats?.score >= 90 ? (
                     <CheckCircle2 size={32} className="text-emerald-500" />
@@ -259,7 +259,7 @@ const ComplianceModule: React.FC = () => {
               </Button>
             </>
           )}
-        </Card>
+        </div>
       </div>
     </div>
   );

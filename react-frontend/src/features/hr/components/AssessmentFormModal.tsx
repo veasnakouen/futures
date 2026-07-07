@@ -1,18 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalBody,
-  Button,
-  TextInput,
-  Textarea,
-  Table,
-  TableHead,
-  TableHeadCell,
-  TableBody,
-  TableRow,
-  TableCell,
-  Select,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Button, TextInput, Textarea, Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Select} from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import { X, FileText, Save, Plus, Trash2, Printer } from "lucide-react";
 import toast from "react-hot-toast";
@@ -252,7 +239,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
       />
       <ModalBody className="p-0 dark:bg-gray-900 bg-gray-100 flex flex-col md:flex-row h-[750px] overflow-hidden">
         {/* Left Panel - Form */}
-        <div className="w-full md:w-3/5 p-6 border-r dark:border-gray-700 overflow-y-auto">
+        <div className="w-full md:w-3/5 p-6 border-r overflow-y-auto">
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
               <label className="text-xs font-bold text-gray-500 uppercase">
@@ -355,7 +342,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
           </div>
 
           {/* Items Table */}
-          <div className="border dark:border-gray-700 rounded-md overflow-hidden bg-white dark:bg-gray-800">
+          <div className="rounded-md overflow-hidden bg-white dark:bg-gray-800">
             <Table hoverable>
               <TableHead className="bg-blue-200/50 dark:bg-blue-900/30">
                 <TableHeadCell className="py-2 text-xs">
@@ -374,7 +361,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
               </TableHead>
               <TableBody>
                 {items.map((item, idx) => (
-                  <TableRow key={idx} className="border-b dark:border-gray-700">
+                  <TableRow key={idx} className="border-b">
                     <TableCell className="p-1">
                       <TextInput
                         sizing="sm"
@@ -445,7 +432,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
                 ))}
               </TableBody>
             </Table>
-            <div className="p-2 bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700">
+            <div className="p-2 bg-gray-50 dark:bg-gray-800 border-t">
               <Button
                 size="xs"
                 color="light"
@@ -527,7 +514,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
             </Button>
           </div>
 
-          <div className="border dark:border-gray-700 rounded-md overflow-hidden">
+          <div className="rounded-md overflow-hidden">
             <Table hoverable>
               <TableHead className="bg-gray-100 dark:bg-gray-700">
                 <TableHeadCell className="py-2 text-[10px] text-center px-1">
@@ -550,7 +537,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
                 {assessments?.map((a: any, i) => (
                   <TableRow
                     key={a.id || i}
-                    className={`hover:bg-blue-50/50 dark:hover:bg-blue-900/20 cursor-pointer ${selectedAssessmentId === a.id ? "bg-blue-50 dark:bg-blue-900/40 border-l-4 border-blue-500" : ""}`}
+                    className={`hover:bg-blue-50/50 dark:hover:bg-blue-900/20 cursor-pointer ${selectedAssessmentId === a.id ?"bg-blue-50 dark:bg-blue-900/40 border-l-4 border-blue-500":""}`}
                     onClick={() => loadAssessment(a)}
                   >
                     <TableCell className="py-2 px-1 text-center font-mono text-blue-600">

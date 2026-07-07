@@ -1,6 +1,6 @@
 import React from "react";
 import { Search, X, Filter, LayoutGrid, List } from "lucide-react";
-import { Dropdown, DropdownItem } from '@/lib/flowbite-compat';
+import {Dropdown, DropdownItem} from '@/lib/flowbite-compat';
 
 interface VacancyFiltersProps {
   searchTerm: string;
@@ -9,10 +9,8 @@ interface VacancyFiltersProps {
   setViewMode: (mode: "grid" | "list") => void;
   visibleColumns: string[];
   setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
-  gridDensity: "large" | "medium" | "compact";
-  setGridDensity: React.Dispatch<
-    React.SetStateAction<"large" | "medium" | "compact">
-  >;
+  itemsPerRow: string;
+  setItemsPerRow: (size: string) => void;
 }
 
 const VacancyFilters: React.FC<VacancyFiltersProps> = ({
@@ -22,11 +20,11 @@ const VacancyFilters: React.FC<VacancyFiltersProps> = ({
   setViewMode,
   visibleColumns,
   setVisibleColumns,
-  gridDensity,
-  setGridDensity,
+  itemsPerRow,
+  setItemsPerRow,
 }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30 mb-4 border border-gray-100 dark:border-gray-700/50">
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30 mb-4">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1 group">
           <Search
@@ -38,7 +36,7 @@ const VacancyFilters: React.FC<VacancyFiltersProps> = ({
             placeholder="Search vacancies, companies, or positions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-10 py-2.5 bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
+            className="w-full pl-12 pr-10 py-2.5 bg-white dark:bg-gray-700/50 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
           />
           {searchTerm && (
             <button
@@ -56,7 +54,7 @@ const VacancyFilters: React.FC<VacancyFiltersProps> = ({
             <Dropdown
               inline
               label={
-                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
                   <Filter size={16} className="text-blue-500" />
                   <span className="font-bold hidden sm:block">Columns</span>
                 </div>
@@ -88,60 +86,30 @@ const VacancyFilters: React.FC<VacancyFiltersProps> = ({
             </Dropdown>
           )}
           {viewMode === "grid" && (
-            <Dropdown
-              inline
-              label={
-                <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
-                  <LayoutGrid size={16} className="text-indigo-500" />
-                  <span className="font-bold hidden sm:block">Grid Size</span>
-                </div>
-              }
-              arrowIcon={false}
-            >
-              <DropdownItem
-                onClick={() => setGridDensity("large")}
-                className={
-                  gridDensity === "large"
-                    ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                    : ""
-                }
+            <div className="flex-shrink-0">
+              <select
+                className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                value={itemsPerRow}
+                onChange={(e) => setItemsPerRow(e.target.value)}
               >
-                Large (3 per row)
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => setGridDensity("medium")}
-                className={
-                  gridDensity === "medium"
-                    ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                    : ""
-                }
-              >
-                Medium (4 per row)
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => setGridDensity("compact")}
-                className={
-                  gridDensity === "compact"
-                    ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                    : ""
-                }
-              >
-                Compact (5 per row)
-              </DropdownItem>
-            </Dropdown>
+                <option value="3">3 per row</option>
+                <option value="4">4 per row</option>
+                <option value="5">5 per row</option>
+              </select>
+            </div>
           )}
           <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-md p-1 shrink-0">
             <button
               onClick={() => setViewMode("grid")}
               title="Grid View"
-              className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+              className={`p-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
             >
               <LayoutGrid size={16} />
             </button>
             <button
               onClick={() => setViewMode("list")}
               title="List View"
-              className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+              className={`p-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
             >
               <List size={16} />
             </button>

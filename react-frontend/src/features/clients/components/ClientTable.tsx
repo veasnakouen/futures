@@ -1,18 +1,5 @@
 import React from "react";
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Avatar,
-  Button,
-  Pagination,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Avatar, Button, Pagination, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
 import {
   Mail,
   MapPin,
@@ -72,10 +59,10 @@ const ClientTable: React.FC<ClientTableProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-md overflow-hidden shadow-sm border dark:border-gray-700 w-full">
+    <div className="bg-white dark:bg-gray-800 rounded-md overflow-hidden shadow-sm w-full">
       <div className="overflow-x-auto overflow-y-auto custom-scrollbar w-full max-h-[65vh]">
         <Table hoverable className="w-full min-w-[700px] relative">
-          <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b dark:border-gray-600">
+          <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b">
             <TableHeadCell className="font-black uppercase text-[10px] tracking-widest py-4 px-6">
               Client Identity
             </TableHeadCell>
@@ -145,7 +132,7 @@ const ClientTable: React.FC<ClientTableProps> = ({
                   {visibleColumns.includes("clientCode") && (
                     <TableCell className="px-6 py-4 max-w-[150px]">
                       <span
-                        className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-md font-mono text-xs font-black tracking-widest border dark:border-gray-600 shadow-inner truncate block"
+                        className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-md font-mono text-xs font-black tracking-widest shadow-inner truncate block"
                         title={c.clientCode}
                       >
                         {c.clientCode}
@@ -167,10 +154,10 @@ const ClientTable: React.FC<ClientTableProps> = ({
                     <TableCell className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`w-2.5 h-2.5 rounded-md ${c.status === "Active" ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"}`}
+                          className={`w-2.5 h-2.5 rounded-md ${c.status ==="Active"?"bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]":"bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"}`}
                         ></div>
                         <span
-                          className={`text-[10px] font-black uppercase tracking-widest ${c.status === "Active" ? "text-emerald-600" : "text-amber-600"}`}
+                          className={`text-[10px] font-black uppercase tracking-widest ${c.status ==="Active"?"text-emerald-600":"text-amber-600"}`}
                         >
                           {c.status || "Active"}
                         </span>

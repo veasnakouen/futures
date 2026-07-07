@@ -3,7 +3,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Link } from '@/lib/react-router-compat';
 import { Briefcase, MapPin, DollarSign, Search, Building } from "lucide-react";
 import api from "../services/api";
-import { TextInput, Spinner, Button, Badge } from '@/lib/flowbite-compat';
+import {TextInput, Spinner, Button, Badge} from '@/lib/flowbite-compat';
 import ModernPagination from "@/components/common/ModernPagination";
 
 const PublicJobsPage = () => {
@@ -33,7 +33,7 @@ const PublicJobsPage = () => {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header / Search Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center relative overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-indigo-50 dark:bg-indigo-900/10 opacity-50"></div>
         <div className="relative z-10 max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-6 tracking-tight uppercase">
@@ -80,7 +80,7 @@ const PublicJobsPage = () => {
           <Spinner size="xl" color="info" />
         </div>
       ) : vacancies.length === 0 ? (
-        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl">
           <Briefcase
             size={48}
             className="mx-auto text-gray-300 dark:text-gray-600 mb-4"
@@ -97,12 +97,12 @@ const PublicJobsPage = () => {
           {vacancies.map((job: any) => (
             <div
               key={job.id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col h-full group"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col h-full group"
             >
               {/* Job Header */}
               <div className="p-6 pb-0 flex gap-4 items-start relative">
                 {job.imageUrl ? (
-                  <div className="w-16 h-16 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shrink-0 bg-white shadow-sm group-hover:scale-105 transition-transform">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-white shadow-sm group-hover:scale-105 transition-transform">
                     <img
                       src={job.imageUrl}
                       alt="Company"
@@ -110,7 +110,7 @@ const PublicJobsPage = () => {
                     />
                   </div>
                 ) : (
-                  <div className="w-16 h-16 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shrink-0 bg-gray-50 dark:bg-gray-700 flex items-center justify-center text-indigo-500 shadow-sm">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 dark:bg-gray-700 flex items-center justify-center text-indigo-500 shadow-sm">
                     <Building size={24} />
                   </div>
                 )}
@@ -147,7 +147,7 @@ const PublicJobsPage = () => {
               </div>
 
               {/* Action Button */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 mt-auto">
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t mt-auto">
                 <Link to={`/jobs/${job.id}`} className="block w-full">
                   <Button
                     color="blue"

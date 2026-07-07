@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Modal, Spinner } from '@/lib/flowbite-compat';
+import {Modal, Spinner, TextInput, Select} from '@/lib/flowbite-compat';
 import { X, Camera, Image as ImageIcon, Plus } from 'lucide-react';
 import { posService, PosProductDto } from '../../../services/posService';
 import { uploadToCloudinary } from '@/utils/cloudinary';
 import ImageCropperModal from "@/components/common/ImageCropperModal";
 import { toast } from 'react-hot-toast';
-import CreatableSelect from 'react-select/creatable';
 
 interface ProductFormModalProps {
     isOpen: boolean;
@@ -58,6 +57,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
             setBrands(Array.from(new Set([...fallbackBrands, ...brnds.map(b => b.name)])));
         } catch (error) {
             console.error("Failed to load categories/brands", error);
+            toast.error("Failed to load some form options");
             setCategories(fallbackCategories);
             setBrands(fallbackBrands);
         }
@@ -113,7 +113,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
     return (
         <Modal show={isOpen} onClose={onClose} size="md">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                <div className="flex justify-between items-center p-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 shrink-0">
+                <div className="flex justify-between items-center p-5 border-b bg-gray-50 dark:bg-gray-800/50 shrink-0">
                     <h3 className="text-lg font-black text-gray-900 dark:text-white">
                         {productToEdit ? 'Edit Product' : 'Add New Product'}
                     </h3>
@@ -125,7 +125,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                 <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
                     <div className="flex flex-col items-center mb-6">
                         <div className="relative group">
-                            <div className="w-32 h-32 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shadow-inner border border-gray-200 dark:border-gray-600">
+                            <div className="w-32 h-32 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shadow-inner">
                                 {formData.imageUrl ? (
                                     <img
                                         src={formData.imageUrl}
@@ -145,7 +145,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                                     </div>
                                 )}
                             </div>
-                            <label className="absolute -bottom-3 -right-3 p-3 bg-blue-600 text-white rounded-full cursor-pointer shadow-xl hover:bg-blue-700 hover:scale-110 transition-all border-4 border-white dark:border-gray-800">
+                            <label className="absolute -bottom-3 -right-3 p-3 bg-blue-600 text-white rounded-full cursor-pointer shadow-xl hover:bg-blue-700 hover:scale-110 transition-all border-4 border-white">
                                 <Camera size={18} />
                                 <input
                                     type="file"
@@ -158,174 +158,168 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                         </div>
                     </div>
 
-                    <form id="productForm" onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="col-span-2">
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Product Name</label>
-                                <input 
-                                    required
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={e => setFormData({...formData, name: e.target.value})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">SKU</label>
-                                <input 
-                                    required
-                                    type="text"
-                                    value={formData.sku}
-                                    onChange={e => setFormData({...formData, sku: e.target.value})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Barcode</label>
-                                <input 
-                                    type="text"
-                                    value={formData.barcode || ''}
-                                    onChange={e => setFormData({...formData, barcode: e.target.value})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <div className="flex justify-between items-center mb-1">
-                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Category</label>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setAddItemType('category');
-                                            setNewItemData({ name: '', description: '', colorCode: '#3b82f6', logoUrl: '' });
-                                            setIsAddItemModalOpen(true);
-                                        }}
-                                        className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full transition-colors"
-                                    >
-                                        <Plus size={12} /> Add New
-                                    </button>
+                    <form id="productForm" onSubmit={handleSubmit} className="space-y-6">
+                        {/* Section 1: Basic Information */}
+                        <div>
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">Basic Information</h4>
+                            <div className="grid grid-cols-2 gap-5">
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Product Name</label>
+                                    <TextInput 
+                                        required
+                                        value={formData.name}
+                                        onChange={(e: any) => setFormData({...formData, name: e.target.value})}
+                                        placeholder="e.g. Purina Pro Plan"
+                                    />
                                 </div>
-                                <CreatableSelect
-                                    isClearable
-                                    options={categories.map(c => ({ value: c, label: c }))}
-                                    value={formData.category ? { value: formData.category, label: formData.category } : null}
-                                    onChange={(selected) => setFormData({...formData, category: selected ? selected.value : ''})}
-                                    placeholder="Select or create..."
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
-                                    styles={{
-                                        control: (base) => ({
-                                            ...base,
-                                            minHeight: '42px',
-                                            borderRadius: '0.5rem',
-                                            borderColor: '#d1d5db',
-                                            boxShadow: 'none',
-                                            '&:hover': { borderColor: '#3b82f6' }
-                                        })
-                                    }}
-                                />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <div className="flex justify-between items-center mb-1">
-                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Brand</label>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setAddItemType('brand');
-                                            setNewItemData({ name: '', description: '', colorCode: '#3b82f6', logoUrl: '' });
-                                            setIsAddItemModalOpen(true);
-                                        }}
-                                        className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full transition-colors"
-                                    >
-                                        <Plus size={12} /> Add New
-                                    </button>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">SKU</label>
+                                    <TextInput 
+                                        required
+                                        value={formData.sku}
+                                        onChange={(e: any) => setFormData({...formData, sku: e.target.value})}
+                                        placeholder="e.g. PPP-100"
+                                    />
                                 </div>
-                                <CreatableSelect
-                                    isClearable
-                                    options={brands.map(b => ({ value: b, label: b }))}
-                                    value={formData.brand ? { value: formData.brand, label: formData.brand } : null}
-                                    onChange={(selected) => setFormData({...formData, brand: selected ? selected.value : ''})}
-                                    placeholder="Select or create..."
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
-                                    styles={{
-                                        control: (base) => ({
-                                            ...base,
-                                            minHeight: '42px',
-                                            borderRadius: '0.5rem',
-                                            borderColor: '#d1d5db',
-                                            boxShadow: 'none',
-                                            '&:hover': { borderColor: '#3b82f6' }
-                                        })
-                                    }}
-                                />
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Barcode</label>
+                                    <TextInput 
+                                        value={formData.barcode || ''}
+                                        onChange={(e: any) => setFormData({...formData, barcode: e.target.value})}
+                                        placeholder="Scan or type barcode"
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Price ($)</label>
-                                <input 
-                                    required
-                                    type="number"
-                                    step="0.01"
-                                    value={formData.price ?? ''}
-                                    onChange={e => setFormData({...formData, price: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
+                        </div>
+
+                        {/* Section 2: Classification */}
+                        <div>
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">Classification</h4>
+                            <div className="grid grid-cols-2 gap-5">
+                                <div>
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Category</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setAddItemType('category');
+                                                setNewItemData({ name: '', description: '', colorCode: '#3b82f6', logoUrl: '' });
+                                                setIsAddItemModalOpen(true);
+                                            }}
+                                            className="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full transition-colors"
+                                        >
+                                            <Plus size={10} /> Add New
+                                        </button>
+                                    </div>
+                                    <Select
+                                        value={formData.category || ''}
+                                        onChange={(e: any) => setFormData({...formData, category: e.target.value})}
+                                    >
+                                        <option value="" disabled>Select category</option>
+                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </Select>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Brand</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setAddItemType('brand');
+                                                setNewItemData({ name: '', description: '', colorCode: '#3b82f6', logoUrl: '' });
+                                                setIsAddItemModalOpen(true);
+                                            }}
+                                            className="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full transition-colors"
+                                        >
+                                            <Plus size={10} /> Add New
+                                        </button>
+                                    </div>
+                                    <Select
+                                        value={formData.brand || ''}
+                                        onChange={(e: any) => setFormData({...formData, brand: e.target.value})}
+                                    >
+                                        <option value="" disabled>Select brand</option>
+                                        {brands.map(b => <option key={b} value={b}>{b}</option>)}
+                                    </Select>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Cost Price ($)</label>
-                                <input 
-                                    type="number"
-                                    step="0.01"
-                                    value={formData.costPrice ?? ''}
-                                    onChange={e => setFormData({...formData, costPrice: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
+                        </div>
+
+                        {/* Section 3: Pricing & Inventory */}
+                        <div>
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">Pricing & Inventory</h4>
+                            <div className="grid grid-cols-2 gap-5">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Price ($)</label>
+                                    <TextInput 
+                                        required
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.price ?? ''}
+                                        onChange={(e: any) => setFormData({...formData, price: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Cost Price ($)</label>
+                                    <TextInput 
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.costPrice ?? ''}
+                                        onChange={(e: any) => setFormData({...formData, costPrice: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Stock</label>
+                                    <TextInput 
+                                        required
+                                        type="number"
+                                        value={formData.stockQuantity ?? ''}
+                                        onChange={(e: any) => setFormData({...formData, stockQuantity: e.target.value === '' ? 0 : parseInt(e.target.value)})}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Unit</label>
+                                    <Select
+                                        value={formData.unit || ''}
+                                        onChange={(e: any) => setFormData({...formData, unit: e.target.value})}
+                                    >
+                                        <option value="" disabled>Select unit</option>
+                                        {['pcs', 'box', 'kg', 'g', 'ml', 'L', 'pack', 'set'].map(u => <option key={u} value={u}>{u}</option>)}
+                                    </Select>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Stock</label>
-                                <input 
-                                    required
-                                    type="number"
-                                    value={formData.stockQuantity ?? ''}
-                                    onChange={e => setFormData({...formData, stockQuantity: e.target.value === '' ? 0 : parseInt(e.target.value)})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Unit</label>
-                                <input 
-                                    type="text"
-                                    value={formData.unit || ''}
-                                    onChange={e => setFormData({...formData, unit: e.target.value})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Tax Rate (%)</label>
-                                <input 
-                                    type="number"
-                                    step="0.01"
-                                    value={formData.taxRate ?? ''}
-                                    onChange={e => setFormData({...formData, taxRate: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                                <select
-                                    value={formData.status || 'ACTIVE'}
-                                    onChange={e => setFormData({...formData, status: e.target.value})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                >
-                                    <option value="ACTIVE">Active</option>
-                                    <option value="INACTIVE">Inactive</option>
-                                    <option value="OUT_OF_STOCK">Out of Stock</option>
-                                </select>
+                        </div>
+
+                        {/* Section 4: Additional Settings */}
+                        <div>
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">Additional Settings</h4>
+                            <div className="grid grid-cols-2 gap-5">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Tax Rate (%)</label>
+                                    <TextInput 
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.taxRate ?? ''}
+                                        onChange={(e: any) => setFormData({...formData, taxRate: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Status</label>
+                                    <Select
+                                        value={formData.status || 'ACTIVE'}
+                                        onChange={(e: any) => setFormData({...formData, status: e.target.value})}
+                                    >
+                                        <option value="ACTIVE">Active</option>
+                                        <option value="INACTIVE">Inactive</option>
+                                        <option value="OUT_OF_STOCK">Out of Stock</option>
+                                    </Select>
+                                </div>
                             </div>
                         </div>
                     </form>
                 </div>
 
-                <div className="p-5 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3 shrink-0">
+                <div className="p-5 border-t bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3 shrink-0">
                     <button 
                         type="button" 
                         onClick={onClose}
@@ -347,7 +341,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
             {/* Add Item Modal */}
             <Modal show={isAddItemModalOpen} onClose={() => !isSavingItem && setIsAddItemModalOpen(false)} size="md">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
-                    <div className="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-700">
+                    <div className="flex justify-between items-center p-4 border-b">
                         <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                             <Plus size={20} className="text-blue-600"/> Add New {addItemType === 'category' ? 'Category' : 'Brand'}
                         </h3>
@@ -363,7 +357,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                                 value={newItemData.name}
                                 onChange={(e) => setNewItemData({...newItemData, name: e.target.value})}
                                 placeholder={`Enter ${addItemType} name...`}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
                                 autoFocus
                             />
                         </div>
@@ -373,7 +367,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                                 value={newItemData.description}
                                 onChange={(e) => setNewItemData({...newItemData, description: e.target.value})}
                                 placeholder="Short description..."
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
                                 rows={2}
                             />
                         </div>
@@ -386,7 +380,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                                         type="color"
                                         value={newItemData.colorCode}
                                         onChange={(e) => setNewItemData({...newItemData, colorCode: e.target.value})}
-                                        className="h-10 w-20 rounded cursor-pointer border border-gray-300 dark:border-gray-600"
+                                        className="h-10 w-20 rounded cursor-pointer"
                                     />
                                     <span className="text-gray-600 dark:text-gray-400 font-mono text-sm">{newItemData.colorCode}</span>
                                 </div>
@@ -402,7 +396,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                                         value={newItemData.logoUrl}
                                         onChange={(e) => setNewItemData({...newItemData, logoUrl: e.target.value})}
                                         placeholder="Paste image URL or upload..."
-                                        className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
                                     />
                                     <label className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-700 dark:text-gray-300 transition-colors cursor-pointer flex items-center justify-center">
                                         <Camera size={20} />
@@ -418,7 +412,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                             </div>
                         )}
 
-                        <div className="mt-6 flex justify-end gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                        <div className="mt-6 flex justify-end gap-2 pt-2 border-t">
                             <button disabled={isSavingItem} onClick={() => setIsAddItemModalOpen(false)} className="px-4 py-2 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300 transition-colors">
                                 Cancel
                             </button>

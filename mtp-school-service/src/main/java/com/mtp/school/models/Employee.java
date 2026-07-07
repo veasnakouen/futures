@@ -28,6 +28,9 @@ public abstract class Employee {
     @Column(nullable = true)
     private String email;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     private LocalDate hireDate;
     private Boolean isActive = true;
 

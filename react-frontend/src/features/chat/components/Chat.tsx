@@ -9,7 +9,7 @@ import {
   Mic,
   MicOff,
 } from "lucide-react";
-import { Avatar, Badge, Button, TextInput, Modal } from '@/lib/flowbite-compat';
+import {Avatar, Badge, Button, TextInput, Modal} from '@/lib/flowbite-compat';
 import websocketService from '../../../services/websocketService';
 import authService from '../../../services/authService';
 import { format } from "date-fns";
@@ -40,7 +40,7 @@ const Chat: React.FC = () => {
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [showOnlineList, setShowOnlineList] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<string | null>("System Guide (AI)");
   const [unreadCounts, setUnreadCounts] = useState<{ [key: string]: number }>(
     {},
   );
@@ -123,6 +123,21 @@ const Chat: React.FC = () => {
         });
       });
     }
+
+    // Add initial bot greeting if starting on AI Guide
+    setChatMessages((prev) => {
+      if (prev.length === 0) {
+        return [{
+          id: -1,
+          content: "Hello! I am your MTP System Guide. How can I assist you today?",
+          sender: "System Guide (AI)",
+          type: "CHAT",
+          recipient: currentUser.username,
+          timestamp: new Date()
+        }];
+      }
+      return prev;
+    });
 
     return () => {
       stopCall();
@@ -481,9 +496,55 @@ const Chat: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
+      if (selectedUser === "System Guide (AI)") {
+        const chatMsg: Message = {
+          content: message,
+          sender: currentUser.username,
+          type: "CHAT",
+          recipient: selectedUser,
+        };
+        setChatMessages((prev) => [
+          ...prev,
+          { ...chatMsg, timestamp: new Date() },
+        ]);
+        setMessage("");
+
+        // Call the AI Guide backend endpoint
+        try {
+          const res = await axios.post(
+            "/api/chat",
+            { message: chatMsg.content },
+            { headers: { Authorization: `Bearer ${currentUser.token}` } }
+          );
+          const botMsg: Message = {
+            content: res.data.response || "I am currently unable to process your request.",
+            sender: "System Guide (AI)",
+            type: "CHAT",
+            recipient: currentUser.username,
+          };
+          setChatMessages((prev) => [
+            ...prev,
+            { ...botMsg, timestamp: new Date() },
+          ]);
+        } catch (error) {
+          console.error("Chat error:", error);
+          const errorMsg: Message = {
+            content: "Sorry, I am having trouble connecting to the server.",
+            sender: "System Guide (AI)",
+            type: "CHAT",
+            recipient: currentUser.username,
+          };
+          setChatMessages((prev) => [
+            ...prev,
+            { ...errorMsg, timestamp: new Date() },
+          ]);
+        }
+        return;
+      }
+
       const chatMsg: Message = {
         content: message,
         sender: currentUser.username,
@@ -569,7 +630,7 @@ const Chat: React.FC = () => {
             <div className="absolute -top-1 -right-1 z-10">
               <span className="relative flex h-6 w-6">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-6 w-6 bg-red-600 text-white text-[10px] font-black items-center justify-center border-2 border-white dark:border-gray-800">
+                <span className="relative inline-flex rounded-full h-6 w-6 bg-red-600 text-white text-[10px] font-black items-center justify-center border-2 border-white">
                   {totalUnread}
                 </span>
               </span>
@@ -585,10 +646,10 @@ const Chat: React.FC = () => {
       )}
 
       {isOpen && (
-        <div className="mb-4 w-[92vw] sm:w-[24rem] md:w-[26rem] h-[38rem] max-h-[85vh] bg-white dark:bg-gray-800 rounded-md shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-gray-700 flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 duration-500">
+        <div className="mb-4 w-[92vw] sm:w-[24rem] md:w-[26rem] h-[38rem] max-h-[85vh] bg-white dark:bg-gray-800 rounded-md shadow-[0_25px_60px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 duration-500">
           {/* Header */}
           <div
-            className={`p-5 text-white flex justify-between items-center relative overflow-hidden transition-colors duration-500 ${callActive ? "bg-green-600" : isCalling ? "bg-orange-500" : "bg-blue-600"}`}
+            className={`p-5 text-white flex justify-between items-center relative overflow-hidden transition-colors duration-500 ${callActive ?"bg-green-600": isCalling ?"bg-orange-500":"bg-blue-600"}`}
           >
             <div className="flex items-center gap-3 relative z-10">
               <div className="relative">
@@ -601,7 +662,7 @@ const Chat: React.FC = () => {
                   rounded
                 />
                 <div
-                  className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-md border-2 border-white ${websocketService.isConnected() ? "bg-green-500" : "bg-red-500"} animate-pulse`}
+                  className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-md border-2 border-white ${websocketService.isConnected() ?"bg-green-500":"bg-red-500"} animate-pulse`}
                   title={
                     websocketService.isConnected()
                       ? "Connected"
@@ -687,6 +748,27 @@ const Chat: React.FC = () => {
                 </button>
               </div>
               <div className="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
+                {/* AI System Guide */}
+                <div
+                  onClick={() => {
+                    setSelectedUser("System Guide (AI)");
+                    setShowOnlineList(false);
+                  }}
+                  className="flex items-center gap-4 p-3 hover:bg-blue-50 bg-blue-50/50 rounded-md cursor-pointer transition-all border-blue-100"
+                >
+                  <Avatar
+                    placeholderInitials="AI"
+                    rounded
+                    size="sm"
+                  />
+                  <div className="flex-1">
+                    <span className="text-sm font-bold block text-blue-700">MTP System Guide</span>
+                    <span className="text-[10px] text-blue-500 font-bold uppercase">
+                      Always Online
+                    </span>
+                  </div>
+                </div>
+
                 {onlineUsers.map((user, idx) => (
                   <div
                     key={idx}
@@ -727,10 +809,10 @@ const Chat: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in`}
+                  className={`flex ${isMe ?"justify-end":"justify-start"} animate-in fade-in`}
                 >
                   <div
-                    className={`max-w-[85%] ${isMe ? "items-end" : "items-start"} flex flex-col`}
+                    className={`max-w-[85%] ${isMe ?"items-end":"items-start"} flex flex-col`}
                   >
                     <div className="flex items-center gap-2 mb-1 px-1">
                       <span className="text-[10px] font-black">
@@ -743,7 +825,7 @@ const Chat: React.FC = () => {
 
                     {msg.type === "AUDIO" ? (
                       <div
-                        className={`p-2 rounded-md shadow-sm ${isMe ? "bg-blue-600 rounded-tr-none" : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-tl-none"}`}
+                        className={`p-2 rounded-md shadow-sm ${isMe ?"bg-blue-600 rounded-tr-none":"bg-white dark:bg-gray-800  rounded-tl-none"}`}
                       >
                         <audio
                           src={msg.content}
@@ -753,7 +835,7 @@ const Chat: React.FC = () => {
                       </div>
                     ) : (
                       <div
-                        className={`p-4 rounded-md text-sm shadow-sm ${isMe ? "bg-blue-600 text-white rounded-tr-none" : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-tl-none"}`}
+                        className={`p-4 rounded-md text-sm shadow-sm ${isMe ?"bg-blue-600 text-white rounded-tr-none":"bg-white dark:bg-gray-800  rounded-tl-none"}`}
                       >
                         {msg.content}
                       </div>
@@ -775,10 +857,7 @@ const Chat: React.FC = () => {
                 type="button"
                 onClick={isRecording ? stopRecording : startRecording}
                 title={isRecording ? "Stop & Send" : "Record Voice Note"}
-                className={`p-3 rounded-md transition-all flex items-center justify-center ${isRecording
-                  ? "bg-red-600 text-white animate-pulse"
-                  : "bg-gray-100 hover:bg-blue-100 text-gray-500 hover:text-blue-600"
-                  }`}
+                className={`p-3 rounded-md transition-all flex items-center justify-center ${isRecording ?"bg-red-600 text-white animate-pulse":"bg-gray-100 hover:bg-blue-100 text-gray-500 hover:text-blue-600"}`}
               >
                 {isRecording ? <MicOff size={24} /> : <Mic size={24} />}
               </button>

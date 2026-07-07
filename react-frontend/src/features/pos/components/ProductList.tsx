@@ -64,11 +64,11 @@ export default function ProductList() {
                 </button>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-700 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                            <tr className="bg-gray-50 dark:bg-gray-800/50 border-b text-xs uppercase tracking-wider text-gray-500 font-bold">
                                 <th className="p-4">Product Name</th>
                                 <th className="p-4">SKU / Barcode</th>
                                 <th className="p-4">Category</th>
@@ -84,7 +84,7 @@ export default function ProductList() {
                                     <td className="p-4 font-semibold text-gray-900 dark:text-white">
                                         <div className="flex items-center gap-3">
                                             {product.imageUrl && (
-                                                <img src={product.imageUrl} alt={product.name} className="w-10 h-10 rounded object-cover border border-gray-200 dark:border-gray-700" />
+                                                <img src={product.imageUrl} alt={product.name} className="w-10 h-10 rounded object-cover" />
                                             )}
                                             <div>
                                                 <div>{product.name}</div>
@@ -103,12 +103,12 @@ export default function ProductList() {
                                     </td>
                                     <td className="p-4 font-bold text-gray-900 dark:text-white">${product.price?.toFixed(2)}</td>
                                     <td className="p-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${product.stockQuantity > 10 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                        <span className={`px-2 py-1 rounded text-xs font-bold ${product.stockQuantity > 10 ?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}`}>
                                             {product.stockQuantity} {product.unit || 'in stock'}
                                         </span>
                                     </td>
                                     <td className="p-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-semibold ${product.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700' : product.status === 'OUT_OF_STOCK' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>
+                                        <span className={`px-2 py-1 rounded text-xs font-semibold ${product.status ==='ACTIVE'?'bg-blue-100 text-blue-700': product.status ==='OUT_OF_STOCK'?'bg-yellow-100 text-yellow-700':'bg-gray-100 text-gray-700'}`}>
                                             {product.status || 'ACTIVE'}
                                         </span>
                                     </td>

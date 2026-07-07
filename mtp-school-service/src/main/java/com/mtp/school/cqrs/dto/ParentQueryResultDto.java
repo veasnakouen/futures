@@ -10,4 +10,5 @@ public class ParentQueryResultDto {
     private String email;
     private com.mtp.school.models.Gender gender;
     private AddressDto address;
+    private String imageUrl;
 }

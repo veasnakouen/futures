@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, Select, Textarea } from '@/lib/flowbite-compat';
+import {Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, Select, Textarea} from '@/lib/flowbite-compat';
 import CustomModalHeader from '../common/CustomModalHeader';
 import CustomModalFooter from '../common/CustomModalFooter';
 import { X, ShoppingCart, Heart, Send, Plus, Minus, DollarSign, User } from 'lucide-react';
@@ -92,21 +92,21 @@ const StockTransactionModal: React.FC<StockTransactionModalProps> = ({ isOpen, o
             <ModalBody>
                 <div className="space-y-6">
                     {/* Item Target Card */}
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30 flex items-center justify-between shadow-sm">
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border-blue-100 dark:border-blue-800/30 flex items-center justify-between shadow-sm">
                         <div>
                             <p className="text-[10px] font-black uppercase text-blue-500 mb-1 tracking-widest">Target Asset</p>
                             <h4 className="text-lg font-black dark:text-white">{item?.name}</h4>
                         </div>
                         <div className="text-right">
                             <p className="text-[10px] font-black uppercase text-gray-400 mb-1 tracking-widest">Current Stock</p>
-                            <div className="inline-flex items-center justify-center px-3 py-1 bg-white dark:bg-gray-800 rounded-md shadow-sm border border-gray-100 dark:border-gray-700">
+                            <div className="inline-flex items-center justify-center px-3 py-1 bg-white dark:bg-gray-800 rounded-md shadow-sm">
                                 <span className="text-base font-mono font-black text-indigo-600 dark:text-indigo-400">{item?.quantity}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Transaction Details */}
-                    <div className="p-5 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700/50 space-y-5">
+                    <div className="p-5 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl space-y-5">
                         <div>
                             <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest">Action Type</Label>
                             <Select value={type} onChange={(e) => setType(e.target.value)} className="w-full shadow-sm">
@@ -133,7 +133,7 @@ const StockTransactionModal: React.FC<StockTransactionModalProps> = ({ isOpen, o
 
                     {/* Dynamic Reference Fields */}
                     {(type === 'PURCHASE' || type === 'DONATION_IN' || type === 'DONATION_OUT' || type.includes('TRANSFER')) && (
-                        <div className="p-5 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700/50">
+                        <div className="p-5 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl">
                             {type === 'PURCHASE' && (
                                 <div>
                                     <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest flex items-center gap-2"><User size={12} /> Supplier</Label>

@@ -1,5 +1,5 @@
 import React, { type ReactNode } from "react";
-import { Dropdown } from '@/lib/flowbite-compat';
+import {Dropdown} from '@/lib/flowbite-compat';
 import { MoreVertical } from "lucide-react";
 
 export interface DataCardProps {
@@ -43,7 +43,7 @@ const DataCard: React.FC<DataCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`group border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 rounded-md p-4 relative transition-all ${onClick ? "cursor-pointer hover:border-blue-500 dark:hover:border-gray-400 hover:shadow-md" : ""} !overflow-visible h-full flex flex-col`}
+      className={`group  shadow-sm bg-white dark:bg-gray-800 rounded-md p-4 relative transition-all ${onClick ?"cursor-pointer hover:border-blue-500 dark:hover: hover:shadow-md":""} !overflow-visible h-full flex flex-col`}
     >
       {/* Dropdown Menu - absolutely positioned but safely handled by Flowbite if overflow is visible */}
       {dropdownItems && (
@@ -54,7 +54,7 @@ const DataCard: React.FC<DataCardProps> = ({
           <Dropdown
             inline
             label={
-              <div className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-md shadow-sm border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
+              <div className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-md shadow-sm backdrop-blur-sm">
                 <MoreVertical size={16} />
               </div>
             }
@@ -67,7 +67,7 @@ const DataCard: React.FC<DataCardProps> = ({
       )}
 
       <div className="flex flex-col items-center mb-4 pt-4 relative">
-        <div className="w-24 h-24 rounded-full bg-gray-50 dark:bg-gray-800 shadow-md border-4 border-white dark:border-gray-700 flex items-center justify-center relative z-10 group-hover:scale-105 transition-transform duration-300 ring-4 ring-gray-50 dark:ring-gray-700/50">
+        <div className="w-24 h-24 rounded-full bg-gray-50 dark:bg-gray-800 shadow-md border-4 border-white flex items-center justify-center relative z-10 group-hover:scale-105 transition-transform duration-300 ring-4 ring-gray-50 dark:ring-gray-700/50">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -102,7 +102,7 @@ const DataCard: React.FC<DataCardProps> = ({
               <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
             )}
             {department && (
-              <span className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest border border-gray-100 dark:border-gray-700 truncate max-w-[120px]">
+              <span className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest truncate max-w-[120px]">
                 {department}
               </span>
             )}
@@ -118,7 +118,7 @@ const DataCard: React.FC<DataCardProps> = ({
         {statusLabel && (
           <div className="mt-3">
             <span
-              className={`border text-[9px] uppercase font-black tracking-widest px-3 py-1 rounded-md ${statusColorClass || "border-gray-500/30 text-gray-600 bg-gray-50 dark:bg-gray-900/10"}`}
+              className={`text-[9px] uppercase font-black tracking-widest px-3 py-1 rounded-md ${statusColorClass ||"/30 text-gray-600 bg-gray-50 dark:bg-gray-900/10"}`}
             >
               {statusLabel}
             </span>

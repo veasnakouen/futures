@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, Select, Button } from '@/lib/flowbite-compat';
+import {TextInput, Select, Button} from '@/lib/flowbite-compat';
 import { Search, Filter } from "lucide-react";
 
 interface InventoryFiltersProps {
@@ -18,7 +18,7 @@ const InventoryFilters: React.FC<InventoryFiltersProps> = ({
   categories,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-8 border-b dark:border-gray-700 bg-white/50 dark:bg-gray-800/50">
+    <div className="flex flex-col md:flex-row gap-4 p-8 border-b bg-white/50 dark:bg-gray-800/50">
       <div className="relative flex-1">
         <Search
           className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"

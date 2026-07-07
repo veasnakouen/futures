@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Modal, ModalBody } from '@/lib/flowbite-compat';
+import {Modal, ModalBody} from '@/lib/flowbite-compat';
 import { X, Upload, CheckCircle2, AlertCircle } from "lucide-react";
-import { TextInput, Button, Label, Textarea, Spinner } from '@/lib/flowbite-compat';
+import {TextInput, Button, Label, Textarea, Spinner} from '@/lib/flowbite-compat';
 import api from '@/services/api';
 import toast from "react-hot-toast";
 
@@ -87,7 +87,7 @@ const ApplyJobModal = ({
         </ModalBody>
       ) : (
         <>
-          <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-t-2xl">
+          <div className="flex items-center justify-between p-6 border-b bg-gray-50 dark:bg-gray-800/50 rounded-t-2xl">
             <div>
               <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
                 Apply for Position
@@ -98,7 +98,7 @@ const ApplyJobModal = ({
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-white rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -154,7 +154,7 @@ const ApplyJobModal = ({
                 <Label className="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">
                   Upload CV/Resume
                 </Label>
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 transition-colors">
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:hover: dark:hover:bg-gray-600 transition-colors">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                     <Upload className="w-8 h-8 mb-3 text-gray-400" />
                     <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
@@ -179,7 +179,7 @@ const ApplyJobModal = ({
                 )}
               </div>
 
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
+              <div className="pt-4 border-t flex justify-end gap-3">
                 <Button color="gray" onClick={onClose} disabled={isSubmitting}>
                   Cancel
                 </Button>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Button, Badge, Progress } from '@/lib/flowbite-compat';
+import {Button, Badge, Progress} from '@/lib/flowbite-compat';
 import {
   Award,
   Activity,
@@ -82,7 +82,7 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
     <div className="space-y-8 animate-fade-in pb-16">
       {/* Live Intelligence Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm relative overflow-hidden group hover:shadow-md transition-all border-t-4 border-t-blue-600">
+        <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm relative overflow-hidden group hover:shadow-md transition-all border-t-4 border-t-blue-600">
           <Users
             size={80}
             className="absolute -right-4 -bottom-4 opacity-5 text-blue-600"
@@ -99,8 +99,8 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
           >
             Live Sync
           </Badge>
-        </Card>
-        <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm border-t-4 border-t-emerald-600">
+        </div>
+        <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm border-t-4 border-t-emerald-600">
           <Activity
             size={80}
             className="absolute -right-4 -bottom-4 opacity-5 text-emerald-600"
@@ -114,8 +114,8 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
           <div className="flex items-center gap-2 text-emerald-500 font-black text-[10px] uppercase tracking-widest">
             <TrendingUp size={12} /> Operational Stability
           </div>
-        </Card>
-        <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm border-t-4 border-t-amber-600">
+        </div>
+        <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm border-t-4 border-t-amber-600">
           <Calendar
             size={80}
             className="absolute -right-4 -bottom-4 opacity-5 text-amber-600"
@@ -129,8 +129,8 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
           <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
             Growth Velocity: Normal
           </p>
-        </Card>
-        <Card className="p-8 rounded-md bg-gradient-to-br from-indigo-600 to-blue-800 text-white border-none shadow-md shadow-blue-500/20">
+        </div>
+        <div className="p-8 rounded-md bg-gradient-to-br from-indigo-600 to-blue-800 text-white border-none shadow-md shadow-blue-500/20">
           <TrendingUp
             size={80}
             className="absolute -right-4 -bottom-4 opacity-10"
@@ -142,12 +142,12 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
           <div className="h-1.5 bg-white/20 rounded-md overflow-hidden">
             <div className="h-full bg-white w-[5.2%]"></div>
           </div>
-        </Card>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Department Distribution Chart */}
-        <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-sm">
+        <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-sm">
           <div className="flex justify-between items-center mb-10">
             <div>
               <h4 className="text-xl font-black dark:text-white uppercase tracking-tight">
@@ -202,10 +202,10 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
         {/* Age Demographics */}
-        <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-sm">
+        <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-sm">
           <div className="flex justify-between items-center mb-10">
             <div>
               <h4 className="text-xl font-black dark:text-white uppercase tracking-tight">
@@ -246,11 +246,11 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Reporting Command Hub */}
-      <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-indigo-600">
+      <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md border-t-8 border-t-indigo-600">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
           <div>
             <h4 className="text-2xl font-black dark:text-white uppercase tracking-tight">
@@ -299,7 +299,7 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
           ].map((doc, i) => (
             <div
               key={i}
-              className="p-6 bg-gray-50 dark:bg-gray-700/40 rounded-md border dark:border-gray-700 flex items-center gap-4 hover:border-blue-500 transition-all cursor-pointer group"
+              className="p-6 bg-gray-50 dark:bg-gray-700/40 rounded-md flex items-center gap-4 transition-all cursor-pointer group shadow-sm"
             >
               <div className="p-4 bg-white dark:bg-gray-800 rounded-md shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-all">
                 {doc.icon}
@@ -319,7 +319,7 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ data }) => {
             </div>
           ))}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

@@ -23,7 +23,7 @@ public class InventoryController {
     private com.mtp.stock.services.ImageUploadService imageUploadService;
 
     @GetMapping
-    @Cacheable(value = "inventory", key = "#category != null ? #category + '-' + #pageable.pageNumber + '-' + #pageable.pageSize : 'all-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "inventory", key = "#category != null ? #category + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort : 'all-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<InventoryItem> getAll(@RequestParam(required = false) String category, Pageable pageable) {
         if (category != null && !category.isEmpty()) {
             return inventoryRepository.findByCategory(category, pageable);
@@ -35,10 +35,11 @@ public class InventoryController {
     @Cacheable(value = "inventory", key = "'stats'")
     public ResponseEntity<?> getStats() {
         List<InventoryItem> all = inventoryRepository.findAll();
-        double valuation = all.stream().mapToDouble(i -> i.getQuantity() * (i.getUnitPrice() != null ? i.getUnitPrice() : 0)).sum();
+        double valuation = all.stream()
+                .mapToDouble(i -> i.getQuantity() * (i.getUnitPrice() != null ? i.getUnitPrice() : 0)).sum();
         long lowStock = all.stream().filter(i -> i.getQuantity() <= i.getMinQuantity() && i.getQuantity() > 0).count();
         long outOfStock = all.stream().filter(i -> i.getQuantity() <= 0).count();
-        
+
         java.util.Map<String, Object> stats = new java.util.HashMap<>();
         stats.put("valuation", valuation);
         stats.put("lowStock", lowStock);
@@ -73,7 +74,7 @@ public class InventoryController {
     }
 
     @PostMapping
-    @CacheEvict(value = {"dashboardStats", "inventory"}, allEntries = true)
+    @CacheEvict(value = { "dashboardStats", "inventory" }, allEntries = true)
     public InventoryItem create(@jakarta.validation.Valid @RequestBody InventoryItem item) {
         if (item.getImageUrl() != null && item.getImageUrl().startsWith("data:image")) {
             try {
@@ -92,8 +93,9 @@ public class InventoryController {
     }
 
     @PutMapping("/{id}")
-    @CacheEvict(value = {"dashboardStats", "inventory"}, allEntries = true)
-    public ResponseEntity<InventoryItem> update(@PathVariable Long id, @jakarta.validation.Valid @RequestBody InventoryItem itemDetails) {
+    @CacheEvict(value = { "dashboardStats", "inventory" }, allEntries = true)
+    public ResponseEntity<InventoryItem> update(@PathVariable Long id,
+            @jakarta.validation.Valid @RequestBody InventoryItem itemDetails) {
         return inventoryRepository.findById(id).map(item -> {
             item.setName(itemDetails.getName());
             item.setSku(itemDetails.getSku());
@@ -105,7 +107,7 @@ public class InventoryController {
             item.setLocation(itemDetails.getLocation());
             item.setStatus(itemDetails.getStatus());
             item.setDescription(itemDetails.getDescription());
-            
+
             if (itemDetails.getImageUrl() != null && itemDetails.getImageUrl().startsWith("data:image")) {
                 try {
                     String url = imageUploadService.uploadBase64Image(itemDetails.getImageUrl(), "inventory");
@@ -120,13 +122,13 @@ public class InventoryController {
             } else {
                 item.setImageUrl(itemDetails.getImageUrl());
             }
-            
+
             return ResponseEntity.ok(inventoryRepository.save(item));
         }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    @CacheEvict(value = {"dashboardStats", "inventory"}, allEntries = true)
+    @CacheEvict(value = { "dashboardStats", "inventory" }, allEntries = true)
     public ResponseEntity<?> delete(@PathVariable Long id) {
         return inventoryRepository.findById(id).map(item -> {
             inventoryRepository.delete(item);

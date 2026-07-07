@@ -218,7 +218,7 @@ const ProductCarousel: React.FC = () => {
     api
       .get("/stock/hr/assets", {
         params: { page: 0, size: 100 },
-        timeout: 5000,
+        timeout: 15000,
       })
       .then((res) => {
         const items = res.data?.content || res.data || [];
@@ -249,15 +249,12 @@ const ProductCarousel: React.FC = () => {
             return;
           }
         }
-        // Use fallbacks if no valid items returned
-        setProducts(FALLBACK_PRODUCTS);
+        // Avoid showing fake data if no valid items returned
+        setProducts([]);
       })
       .catch((err) => {
-        console.warn(
-          "Using fallback products due to API error or timeout:",
-          err.message,
-        );
-        setProducts(FALLBACK_PRODUCTS);
+        console.warn("Failed to fetch assets for carousel:", err.message);
+        setProducts([]);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -289,7 +286,7 @@ const ProductCarousel: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 rounded-md p-10 h-[300px] flex items-center justify-center">
+      <div className="bg-white dark:bg-gray-800/40 dark:backdrop-blur-md rounded-md p-10 h-[300px] flex items-center justify-center">
         <div className="text-center">
           <div className="mx-auto mb-4">
             <Spinner size="xl" color="info" />
@@ -316,7 +313,7 @@ const ProductCarousel: React.FC = () => {
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="bg-gradient-to-br from-blue-50/30 via-white to-white dark:from-slate-900/30 dark:via-gray-850/40 dark:to-gray-800/20 border border-gray-100 dark:border-gray-800/80 rounded-md p-8 md:p-10 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] relative overflow-hidden group min-h-[340px] flex items-center"
+        className="bg-gradient-to-br from-blue-50/30 via-white to-white dark:from-slate-900/30 dark:via-gray-850/40 dark:to-gray-800/20 rounded-md p-8 md:p-10 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] relative overflow-hidden group min-h-[340px] flex items-center"
       >
         {/* Visual Backdrops */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/5 dark:bg-blue-400/5 rounded-md -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
@@ -325,13 +322,13 @@ const ProductCarousel: React.FC = () => {
         {/* Carousel Navigation Chevrons */}
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-md border border-gray-100 dark:border-gray-700 bg-white/85 dark:bg-gray-850/80 text-gray-650 dark:text-gray-300 shadow-sm backdrop-blur-md opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 transition-all z-20"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-md bg-white/85 dark:bg-gray-850/80 text-gray-650 dark:text-gray-300 shadow-sm backdrop-blur-md opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 transition-all z-20"
         >
           <ChevronLeft size={18} />
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-md border border-gray-100 dark:border-gray-700 bg-white/85 dark:bg-gray-850/80 text-gray-650 dark:text-gray-300 shadow-sm backdrop-blur-md opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 transition-all z-20"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-md bg-white/85 dark:bg-gray-850/80 text-gray-650 dark:text-gray-300 shadow-sm backdrop-blur-md opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 transition-all z-20"
         >
           <ChevronRight size={18} />
         </button>
@@ -341,15 +338,11 @@ const ProductCarousel: React.FC = () => {
           {/* Slide Details */}
           <div className="flex-1 space-y-4 text-left w-full">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 text-[9px] font-black tracking-widest uppercase bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100/50 dark:border-blue-900/30 px-3 py-1 rounded-md shadow-sm">
+              <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 text-[9px] font-black tracking-widest uppercase bg-blue-50/80 dark:bg-blue-950/40 border-blue-100/50 dark:border-blue-900/30 px-3 py-1 rounded-md shadow-sm">
                 <Tag size={10} /> {currentProduct.category}
               </span>
               <span
-                className={`text-[9px] font-black tracking-widest uppercase border px-3 py-1 rounded-md shadow-sm ${
-                  currentProduct.status !== "Available"
-                    ? "bg-amber-50 border-amber-100/50 text-amber-600 dark:bg-amber-950/30 dark:border-amber-900/30 dark:text-amber-450"
-                    : "bg-emerald-50 border-emerald-100/50 text-emerald-600 dark:bg-emerald-950/30 dark:border-emerald-900/30 dark:text-emerald-450"
-                }`}
+                className={`text-[9px] font-black tracking-widest uppercase px-3 py-1 rounded-md shadow-sm ${currentProduct.status !== "Available" ? "bg-amber-50 border-amber-100/50 text-amber-600 dark:bg-amber-950/30 dark:border-amber-900/30 dark:text-amber-450" : "bg-emerald-50 border-emerald-100/50 text-emerald-600 dark:bg-emerald-950/30 dark:border-emerald-900/30 dark:text-emerald-450"}`}
               >
                 {currentProduct.status || "Available"}
               </span>
@@ -367,7 +360,7 @@ const ProductCarousel: React.FC = () => {
 
             {/* Spec Metrics Row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-2">
-              <div className="bg-white/60 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
+              <div className="bg-white/60 dark:bg-gray-800/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
                 <p className="text-[8px] font-black uppercase tracking-widest text-gray-455 mb-0.5">
                   Asset Code
                 </p>
@@ -375,7 +368,7 @@ const ProductCarousel: React.FC = () => {
                   {currentProduct.sku || "N/A"}
                 </p>
               </div>
-              <div className="bg-white/60 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
+              <div className="bg-white/60 dark:bg-gray-800/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
                 <p className="text-[8px] font-black uppercase tracking-widest text-gray-455 mb-0.5">
                   Unit Price
                 </p>
@@ -383,13 +376,13 @@ const ProductCarousel: React.FC = () => {
                   <DollarSign size={10} className="text-gray-400" />
                   {currentProduct.unitPrice > 0
                     ? currentProduct.unitPrice.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
                     : "---"}
                 </p>
               </div>
-              <div className="bg-white/60 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
+              <div className="bg-white/60 dark:bg-gray-800/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
                 <p className="text-[8px] font-black uppercase tracking-widest text-gray-455 mb-0.5">
                   Quantity
                 </p>
@@ -397,7 +390,7 @@ const ProductCarousel: React.FC = () => {
                   {currentProduct.quantity} {currentProduct.unit}
                 </p>
               </div>
-              <div className="bg-white/60 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
+              <div className="bg-white/60 dark:bg-gray-800/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
                 <p className="text-[8px] font-black uppercase tracking-widest text-gray-455 mb-0.5">
                   Node Location
                 </p>
@@ -419,7 +412,7 @@ const ProductCarousel: React.FC = () => {
           </div>
 
           {/* Slide Image Panel */}
-          <div className="w-full md:w-[320px] lg:w-[380px] h-[210px] md:h-[240px] shrink-0 rounded-md overflow-hidden relative shadow-md border border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/30 flex items-center justify-center">
+          <div className="w-full md:w-[320px] lg:w-[380px] h-[210px] md:h-[240px] shrink-0 rounded-md overflow-hidden relative shadow-md bg-gray-50/50 dark:bg-gray-900/30 flex items-center justify-center">
             {currentProduct.imageUrl ? (
               <img
                 src={currentProduct.imageUrl}
@@ -443,11 +436,7 @@ const ProductCarousel: React.FC = () => {
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                idx === currentIndex
-                  ? "w-5 bg-blue-600 dark:bg-blue-500"
-                  : "w-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-450"
-              }`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "w-5 bg-blue-600 dark:bg-blue-500" : "w-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-450"}`}
               title={`Slide ${idx + 1}`}
             />
           ))}

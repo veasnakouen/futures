@@ -86,15 +86,15 @@ export default function AddressFields<T extends FieldValues>({ register, errors,
   };
 
   return (
-    <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+    <div className="border-t pt-4 mt-4">
       <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">Address Information</h4>
       
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
           <input
             {...register(`${prefix}.country` as Path<T>)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
             placeholder="Cambodia"
           />
           {getError('country') && <span className="text-red-500 text-xs mt-1">{getError('country')}</span>}
@@ -104,7 +104,7 @@ export default function AddressFields<T extends FieldValues>({ register, errors,
           <select
             {...register(`${prefix}.city` as Path<T>)}
             onChange={handleProvinceChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Province</option>
             {provinces.map((p) => (
@@ -115,14 +115,14 @@ export default function AddressFields<T extends FieldValues>({ register, errors,
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">District</label>
           <select
             {...register(`${prefix}.district` as Path<T>)}
             onChange={handleDistrictChange}
             disabled={!selectedProvinceId}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           >
             <option value="">Select District</option>
             {districts.map((d) => (
@@ -137,7 +137,7 @@ export default function AddressFields<T extends FieldValues>({ register, errors,
             {...register(`${prefix}.commune` as Path<T>)}
             onChange={handleCommuneChange}
             disabled={!selectedDistrictId}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           >
             <option value="">Select Commune</option>
             {communes.map((c) => (
@@ -151,7 +151,7 @@ export default function AddressFields<T extends FieldValues>({ register, errors,
           <select
             {...register(`${prefix}.village` as Path<T>)}
             disabled={!selectedCommuneId}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           >
             <option value="">Select Village</option>
             {villages.map((v) => (
@@ -162,33 +162,31 @@ export default function AddressFields<T extends FieldValues>({ register, errors,
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Street</label>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Street Address</label>
           <input
             {...register(`${prefix}.street` as Path<T>)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-            placeholder="St. 271"
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g. St. 271, House 123"
           />
           {getError('street') && <span className="text-red-500 text-xs mt-1">{getError('street')}</span>}
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Zip Code</label>
-            <input
-              {...register(`${prefix}.zipCode` as Path<T>)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-            />
-            {getError('zipCode') && <span className="text-red-500 text-xs mt-1">{getError('zipCode')}</span>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
-            <input
-              {...register(`${prefix}.state` as Path<T>)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-            />
-            {getError('state') && <span className="text-red-500 text-xs mt-1">{getError('state')}</span>}
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Zip / Postal Code</label>
+          <input
+            {...register(`${prefix}.zipCode` as Path<T>)}
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+          />
+          {getError('zipCode') && <span className="text-red-500 text-xs mt-1">{getError('zipCode')}</span>}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State / Region</label>
+          <input
+            {...register(`${prefix}.state` as Path<T>)}
+            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+          />
+          {getError('state') && <span className="text-red-500 text-xs mt-1">{getError('state')}</span>}
         </div>
       </div>
     </div>

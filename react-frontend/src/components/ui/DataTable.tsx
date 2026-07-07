@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Spinner} from '@/lib/flowbite-compat';
 import { ArchiveX } from "lucide-react";
 
 export interface DataTableColumn<T> {
@@ -47,13 +39,13 @@ export function DataTable<T>({
     : data.length > 15 ? "max-h-[600px]" : "";
 
   return (
-    <div className={`overflow-x-auto ${data.length > 15 || maxHeight ? 'overflow-y-auto' : ''} ${appliedMaxHeight} rounded-sm shadow-sm border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 relative`}>
+    <div className={`overflow-x-auto ${data.length > 15 || maxHeight ?'overflow-y-auto':''} ${appliedMaxHeight} rounded-sm shadow-sm  bg-white dark:bg-gray-800 relative`}>
       <Table hoverable>
         <TableHead className="bg-gray-50/95 dark:bg-gray-700/95 text-gray-400 sticky top-0 z-10 backdrop-blur-sm shadow-sm">
           {columns.map((col) => (
             <TableHeadCell
               key={col.key}
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${col.align === "center" ? "text-center" : col.align === "right" ? "text-right" : "text-left"} ${col.className || ""}`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${col.align ==="center"?"text-center": col.align ==="right"?"text-right":"text-left"} ${col.className ||""}`}
             >
               {col.label}
             </TableHeadCell>
@@ -63,10 +55,12 @@ export function DataTable<T>({
           {loading ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="py-24 text-center">
-                <Spinner size="xl" />
-                <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">
-                  Loading data...
-                </p>
+                <div className="flex flex-col items-center justify-center text-gray-400">
+                  <Spinner size="xl" />
+                  <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">
+                    Loading data...
+                  </p>
+                </div>
               </TableCell>
             </TableRow>
           ) : data.length === 0 ? (
@@ -89,13 +83,13 @@ export function DataTable<T>({
             data.map((item) => (
               <TableRow
                 key={keyExtractor(item)}
-                className={`bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
+                className={`bg-white dark:bg-gray-800  hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors ${onRowClick ?"cursor-pointer":""}`}
                 onClick={() => onRowClick?.(item)}
               >
                 {columns.map((col) => (
                   <TableCell
                     key={col.key}
-                    className={`whitespace-nowrap px-6 py-4 ${col.align === "center" ? "text-center" : col.align === "right" ? "text-right" : "text-left"} ${col.className || ""}`}
+                    className={`whitespace-nowrap px-6 py-4 ${col.align ==="center"?"text-center": col.align ==="right"?"text-right":"text-left"} ${col.className ||""}`}
                   >
                     {col.render
                       ? col.render(item)

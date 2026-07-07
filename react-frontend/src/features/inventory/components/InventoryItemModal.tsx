@@ -1,17 +1,11 @@
 import React from "react";
-import {
-  Modal,
-  ModalBody,
-  Label,
-  TextInput,
-  Select,
-  Button,
-  FileInput,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Label, TextInput, Select, Button, FileInput} from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 import CreatableSelect from "@/components/common/CreatableSelect";
-import { Image as ImageIcon, X, Search } from "lucide-react";
+import { Image as ImageIcon, X, Search, MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/services/api";
 import {
   type UseFormRegister,
   type FieldErrors,
@@ -25,6 +19,7 @@ interface InventoryItemModalProps {
   onClose: () => void;
   isEditMode: boolean;
   isViewMode?: boolean;
+  itemId?: number | null;
   register: UseFormRegister<InventoryFormData>;
   errors: FieldErrors<InventoryFormData>;
   setValue: UseFormSetValue<InventoryFormData>;
@@ -40,6 +35,7 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
   onClose,
   isEditMode,
   isViewMode,
+  itemId,
   register,
   errors,
   setValue,
@@ -61,6 +57,16 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
       reader.readAsDataURL(file);
     }
   };
+
+  const { data: stockDistribution = [], isLoading: distLoading } = useQuery({
+    queryKey: ["item-stock-distribution", itemId],
+    queryFn: async () => {
+      if (!itemId) return [];
+      const res = await api.get(`/stock/locations/items/${itemId}`);
+      return res.data || [];
+    },
+    enabled: !!itemId && isViewMode,
+  });
 
   return (
     <Modal show={isOpen} onClose={onClose} size="2xl">
@@ -223,8 +229,8 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">
                 Asset Visual Reference
               </Label>
-              <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-gray-200 dark:border-gray-600">
-                <div className="w-16 h-16 rounded-md bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden border dark:border-gray-700 shadow-inner shrink-0">
+              <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                <div className="w-16 h-16 rounded-md bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden shadow-inner shrink-0">
                   {imageUrl ? (
                     <img
                       src={imageUrl}
@@ -246,7 +252,7 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                       />
                       <Label
                         htmlFor="item-image"
-                        className="inline-block px-3 py-1.5 bg-white dark:bg-gray-700 border dark:border-gray-700 rounded text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors shadow-sm"
+                        className="inline-block px-3 py-1.5 bg-white dark:bg-gray-700 rounded text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100 transition-colors shadow-sm"
                       >
                         Upload
                       </Label>
@@ -266,6 +272,48 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
             </div>
           </div>
         </form>
+
+        {isViewMode && itemId && (
+          <div className="mt-8 pt-8 border-t">
+            <h4 className="text-sm font-black dark:text-white uppercase tracking-widest flex items-center gap-2 mb-4">
+              <MapPin size={16} className="text-blue-500" /> Stock Distribution
+            </h4>
+            
+            {distLoading ? (
+              <div className="animate-pulse flex space-x-4">
+                <div className="flex-1 space-y-4 py-1">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                </div>
+              </div>
+            ) : stockDistribution.length === 0 ? (
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">No stock found in any location.</p>
+            ) : (
+              <div className="bg-gray-50 dark:bg-gray-700/30 rounded-md overflow-hidden">
+                <table className="w-full text-left text-[11px] text-gray-500 dark:text-gray-400">
+                  <thead className="bg-white dark:bg-gray-800 text-[9px] uppercase tracking-widest text-gray-400 font-black">
+                    <tr>
+                      <th className="px-4 py-2 border-b">Location</th>
+                      <th className="px-4 py-2 border-b">Type</th>
+                      <th className="px-4 py-2 border-b text-right">Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stockDistribution.map((dist: any) => (
+                      <tr key={dist.id} className="border-b last:border-0 hover:bg-white dark:hover:bg-gray-800 transition-colors">
+                        <td className="px-4 py-2 font-black dark:text-gray-300">{dist.location?.name}</td>
+                        <td className="px-4 py-2 uppercase text-[9px]">{dist.location?.type}</td>
+                        <td className="px-4 py-2 text-right font-mono font-bold text-blue-600 dark:text-blue-400">
+                          {dist.quantity}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </ModalBody>
       <div className="p-4 bg-white dark:bg-gray-800">
         <CustomModalFooter

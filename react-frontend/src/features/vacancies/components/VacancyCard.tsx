@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Card,
-  Badge,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Badge, Button, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
 import {
   Briefcase,
   Building2,
@@ -37,7 +30,7 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
   onDelete,
 }) => {
   return (
-    <div className="h-full flex flex-col border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 rounded-md focus-within:z-30 p-4 relative group hover:shadow-md transition-shadow">
+    <div className="h-full flex flex-col shadow-sm bg-white dark:bg-gray-800 rounded-md focus-within:z-30 p-4 relative group hover:shadow-md transition-shadow">
       {/* Top Dropdown Action */}
       <div className="absolute right-2 top-2">
         <Dropdown
@@ -76,7 +69,7 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
               </span>
             </div>
           </DropdownItem>
-          <DropdownDivider className="my-1 border-gray-100 dark:border-gray-700" />
+          <DropdownDivider className="my-1" />
           <DropdownItem
             onClick={() => onEdit(vacancy)}
             className="rounded-md mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"

@@ -5,6 +5,7 @@ import React, {
   useEffect,
   type ReactNode,
 } from "react";
+import { toast } from "react-hot-toast";
 import websocketService from "../services/websocketService";
 import authService from "../services/authService";
 import api from "../services/api";
@@ -41,12 +42,28 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         .then(res => {
           setNotifications(res.data);
         })
-        .catch(err => console.error("Failed to fetch notifications", err));
+        .catch(err => console.warn("Failed to fetch notifications"));
 
       // 2. Connect to WebSocket and subscribe to personal queue
       websocketService.connect(() => {
         websocketService.subscribe("/user/queue/notifications", (newNotification: Notification) => {
           setNotifications((prev) => [newNotification, ...prev]);
+          toast.success(newNotification.title || "New Notification");
+        });
+
+        // Subscribe to global broadcast topics
+        websocketService.subscribe("/topic/notifications", (event: any) => {
+          const broadcastNotification: Notification = {
+            id: Date.now() + Math.floor(Math.random() * 1000), // Ephemeral ID
+            title: event.type ? event.type.replace(/_/g, ' ') : "System Broadcast",
+            message: event.message,
+            read: false,
+            type: "BROADCAST",
+            createdAt: event.timestamp || new Date().toISOString(),
+            recipientUsername: ""
+          };
+          setNotifications((prev) => [broadcastNotification, ...prev]);
+          toast.success(event.message);
         });
       });
     }

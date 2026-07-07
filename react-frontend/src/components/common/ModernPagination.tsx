@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Dropdown, DropdownItem } from '@/lib/flowbite-compat';
+import {Button, Dropdown, DropdownItem} from '@/lib/flowbite-compat';
 import {
   ChevronLeft,
   ChevronRight,
@@ -68,7 +68,7 @@ const ModernPagination: React.FC<ModernPaginationProps> = ({
 
   return (
     <div
-      className={`flex flex-col lg:flex-row items-center justify-between gap-6 px-6 py-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md rounded-md border border-gray-100 dark:border-gray-700/50 shadow-sm transition-all hover:shadow-md ${className}`}
+      className={`flex flex-col lg:flex-row items-center justify-between gap-6 px-6 py-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md rounded-md  shadow-sm transition-all hover:shadow-md ${className}`}
     >
       {/* Left Side: Info & Page Size */}
       <div className="flex flex-wrap items-center gap-4">
@@ -97,7 +97,7 @@ const ModernPagination: React.FC<ModernPaginationProps> = ({
               placement="top-start"
               className="bg-white dark:bg-gray-800 border-none shadow-2xl rounded-xl p-2 min-w-[150px] z-50"
               label={
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-md text-xs font-bold text-gray-700 dark:text-gray-200 hover:border-blue-400 transition-all">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700/50 rounded-md text-xs font-bold text-gray-700 dark:text-gray-200 hover:border-blue-400 transition-all">
                   {pageSize}
                 </div>
               }
@@ -107,7 +107,7 @@ const ModernPagination: React.FC<ModernPaginationProps> = ({
                 <DropdownItem
                   key={option}
                   onClick={() => onPageSizeChange(option)}
-                  className={`font-bold text-xs rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 ${pageSize === option ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20" : "text-gray-700 dark:text-gray-300"}`}
+                  className={`font-bold text-xs rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 ${pageSize === option ?"text-blue-600 bg-blue-50 dark:bg-blue-900/20":"text-gray-700 dark:text-gray-300"}`}
                 >
                   {option} per page
                 </DropdownItem>
@@ -150,11 +150,7 @@ const ModernPagination: React.FC<ModernPaginationProps> = ({
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className={`min-w-[40px] h-10 rounded-md text-sm font-black transition-all ${
-                  currentPage === pageNum
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105"
-                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:bg-gray-700"
-                }`}
+                className={`min-w-[40px] h-10 rounded-md text-sm font-black transition-all ${ currentPage === pageNum ?"bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105":"text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:bg-gray-700"}`}
               >
                 {pageNum}
               </button>
@@ -191,7 +187,7 @@ const ModernPagination: React.FC<ModernPaginationProps> = ({
           value={goToPage}
           onChange={(e) => setGoToPage(e.target.value)}
           placeholder={String(currentPage)}
-          className="w-16 h-10 px-3 text-center text-sm font-black bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:text-white transition-all"
+          className="w-16 h-10 px-3 text-center text-sm font-black bg-gray-50 dark:bg-gray-700/50 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:text-white transition-all"
         />
         <button
           type="submit"

@@ -1,21 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Spinner,
-  Avatar,
-  TextInput,
-  Select,
-  Modal as FlowbiteModal,
-  Label,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Spinner, Avatar, TextInput, Select, Modal as FlowbiteModal, Label, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell} from '@/lib/flowbite-compat';
 
 const Modal = FlowbiteModal as any;
 import {
@@ -116,7 +100,7 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
 
         {/* Financial Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-none shadow-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-md">
+          <div className="border-none shadow-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-md">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">
@@ -133,9 +117,9 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
             <div className="mt-8 flex items-center gap-2 text-xs font-bold bg-white/10 w-fit px-3 py-1 rounded-md">
               <ArrowUpRight size={14} /> 4.2% from last month
             </div>
-          </Card>
+          </div>
 
-          <Card className="border-none shadow-xl dark:bg-gray-800 rounded-md">
+          <div className="border-none shadow-xl dark:bg-gray-800 rounded-md">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
@@ -170,9 +154,9 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
                 Awaiting disbursement
               </span>
             </div>
-          </Card>
+          </div>
 
-          <Card className="border-none shadow-xl dark:bg-gray-800 rounded-md">
+          <div className="border-none shadow-xl dark:bg-gray-800 rounded-md">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
@@ -189,12 +173,12 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
             <div className="mt-8 flex items-center gap-2 text-xs font-bold text-emerald-600">
               <Clock size={14} /> 3 days remaining
             </div>
-          </Card>
+          </div>
         </div>
 
         {/* Disbursement Table */}
-        <Card className="border-none shadow-xl dark:bg-gray-800 rounded-md overflow-hidden">
-          <div className="p-6 border-b dark:border-gray-700 flex flex-col md:flex-row justify-between gap-4">
+        <div className="border-none shadow-xl dark:bg-gray-800 rounded-md overflow-hidden">
+          <div className="p-6 border-b flex flex-col md:flex-row justify-between gap-4">
             <h4 className="font-black text-xl dark:text-white">
               Staff Compensation Ledger
             </h4>
@@ -207,7 +191,7 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
                 <input
                   type="text"
                   placeholder="Search name..."
-                  className="w-full text-gray-900 dark:text-white rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm h-10 pl-10 pr-8 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                  className="w-full text-gray-900 dark:text-white rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm h-10 pl-10 pr-8 bg-white dark:bg-gray-800"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -231,7 +215,7 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
               hoverable
               className="border-none w-full min-w-[1000px] relative"
             >
-              <TableHead className="text-[10px] text-gray-400 uppercase tracking-[0.1em] bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-700 sticky top-0 z-20 shadow-sm">
+              <TableHead className="text-[10px] text-gray-400 uppercase tracking-[0.1em] bg-gray-50 dark:bg-gray-700 border-b sticky top-0 z-20 shadow-sm">
                 <TableHeadCell className="px-8 py-5 font-black">
                   Employee
                 </TableHeadCell>
@@ -333,7 +317,7 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
             </Table>
           </div>
 
-          <div className="p-6 bg-gray-50/50 dark:bg-gray-700/20 border-t dark:border-gray-700 flex justify-between items-center">
+          <div className="p-6 bg-gray-50/50 dark:bg-gray-700/20 border-t flex justify-between items-center">
             <p className="text-xs font-bold text-gray-500">
               Showing {employees.length} disbursements
             </p>
@@ -346,7 +330,7 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
               </Button>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </Layout>
   );

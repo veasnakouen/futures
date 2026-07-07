@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/components/ui/spinner";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { hotelService, BookingDto } from "../../../services/hotelService";
@@ -43,7 +44,7 @@ export default function BookingList() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Bookings</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage reservations and stays</p>
@@ -56,7 +57,7 @@ export default function BookingList() {
               placeholder="Search Guest or Room ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
             />
           </div>
           <div className="relative">
@@ -64,7 +65,7 @@ export default function BookingList() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white appearance-none cursor-pointer"
+              className="pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-gray-900/50 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white appearance-none cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
               <option value="CONFIRMED">CONFIRMED</option>
@@ -82,7 +83,7 @@ export default function BookingList() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-900/50 dark:text-gray-400">
@@ -97,22 +98,18 @@ export default function BookingList() {
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">Loading bookings...</td></tr>
+                <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500"><div className="flex justify-center"><Spinner size="lg" /></div></td></tr>
               ) : filteredData.length === 0 ? (
                 <tr><td colSpan={6} className="px-6 py-12 text-center">No bookings found.</td></tr>
               ) : (
                 filteredData.map((item: BookingDto) => (
-                  <tr key={item.id} className="bg-white dark:bg-gray-800 border-b border-gray-50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/25 transition-colors">
+                  <tr key={item.id} className="bg-white dark:bg-gray-800 border-b hover:bg-gray-50 dark:hover:bg-gray-700/25 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{item.guestId}</td>
                     <td className="px-6 py-4">{item.roomId}</td>
                     <td className="px-6 py-4">{item.checkInDate}</td>
                     <td className="px-6 py-4">{item.checkOutDate}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 text-xs font-medium rounded-lg ${item.status === 'CHECKED_IN' ? 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
-                        item.status === 'CANCELLED' ? 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
-                          item.status === 'CHECKED_OUT' ? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' :
-                            'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-                        }`}>
+                      <span className={`px-2.5 py-1 text-xs font-medium rounded-lg ${item.status ==='CHECKED_IN'?'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400': item.status ==='CANCELLED'?'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400': item.status ==='CHECKED_OUT'?'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400':'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'}`}>
                         {item.status || "CONFIRMED"}
                       </span>
                     </td>
@@ -129,7 +126,7 @@ export default function BookingList() {
           </table>
         </div>
         {data?.totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+          <div className="p-4 border-t bg-gray-50/50 dark:bg-gray-800/50">
             <ModernPagination currentPage={page} totalPages={data.totalPages} onPageChange={setPage} />
           </div>
         )}

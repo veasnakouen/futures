@@ -1,11 +1,14 @@
 "use client";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { schoolService, TeacherDto } from "../../../services/schoolService";
-import { Plus, Search, Edit2, Trash2 } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Eye } from "lucide-react";
 import ModernPagination from "../../../components/common/ModernPagination";
 import TeacherFormModal from "./TeacherFormModal";
 import ConfirmModal from "../../../components/common/ConfirmModal";
+import HumanPortfolio from "../../../components/common/HumanPortfolio";
+import { Modal, Button } from "@/lib/flowbite-compat";
 import { toast } from "react-hot-toast";
 
 export default function TeacherList() {
@@ -14,8 +17,12 @@ export default function TeacherList() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<TeacherDto | null>(null);
+  
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [viewTeacher, setViewTeacher] = useState<TeacherDto | null>(null);
 
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const { data, isLoading } = useQuery({
     queryKey: ["teachers", page, size],
@@ -23,13 +30,10 @@ export default function TeacherList() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => {
-      // Fake delay
-      return new Promise((resolve) => setTimeout(resolve, 500));
-    },
+    mutationFn: (id: string) => schoolService.deleteTeacher(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teachers"] });
-      toast.success("Teacher deleted successfully");
+      toast.success(t("teacherDeletedSuccess"));
       setIsConfirmOpen(false);
     },
   });
@@ -49,15 +53,20 @@ export default function TeacherList() {
     setIsFormOpen(true);
   };
 
+  const handleView = (teacher: TeacherDto) => {
+    setViewTeacher(teacher);
+    setIsViewOpen(true);
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Teachers
+            {t("teachers")}
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Manage teacher records and assignments
+            {t("manageTeachersDesc")}
           </p>
         </div>
         <button
@@ -65,12 +74,12 @@ export default function TeacherList() {
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-sm shadow-blue-500/20"
         >
           <Plus size={18} />
-          Add Teacher
+          {t("addTeacher")}
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="p-4 border-b flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
           <div className="relative w-64">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -78,8 +87,8 @@ export default function TeacherList() {
             />
             <input
               type="text"
-              placeholder="Search teachers..."
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              placeholder={t("searchTeachers")}
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
         </div>
@@ -88,22 +97,22 @@ export default function TeacherList() {
           <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-900/50 dark:text-gray-400">
               <tr>
-                <th className="px-6 py-4 font-bold">ID</th>
-                <th className="px-6 py-4 font-bold">Name</th>
-                <th className="px-6 py-4 font-bold">Email</th>
-                <th className="px-6 py-4 font-bold">Department</th>
-                <th className="px-6 py-4 font-bold">Hire Date</th>
-                <th className="px-6 py-4 font-bold text-right">Actions</th>
+                <th className="px-6 py-4 font-bold">{t("id")}</th>
+                <th className="px-6 py-4 font-bold">{t("name")}</th>
+                <th className="px-6 py-4 font-bold">{t("email")}</th>
+                <th className="px-6 py-4 font-bold">{t("subject")}</th>
+                <th className="px-6 py-4 font-bold">{t("hireDate")}</th>
+                <th className="px-6 py-4 font-bold text-right">{t("actions")}</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                    Loading teachers...
+                    {t("loadingTeachers")}
                   </td>
                 </tr>
-              ) : data?.content?.length === 0 ? (
+              ) : !data?.content || data.content.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center">
@@ -111,10 +120,10 @@ export default function TeacherList() {
                         <Search className="w-8 h-8 text-gray-400" />
                       </div>
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                        No teachers found
+                        {t("noTeachersFound")}
                       </h3>
                       <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                        Get started by adding your first teacher to the system.
+                        {t("addFirstTeacher")}
                       </p>
                     </div>
                   </td>
@@ -123,7 +132,7 @@ export default function TeacherList() {
                 data?.content?.map((teacher: TeacherDto) => (
                   <tr
                     key={teacher.id}
-                    className="bg-white dark:bg-gray-800 border-b border-gray-50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/25 transition-colors"
+                    className="bg-white dark:bg-gray-800 border-b hover:bg-gray-50 dark:hover:bg-gray-700/25 transition-colors"
                   >
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                       #{teacher.id}
@@ -133,13 +142,19 @@ export default function TeacherList() {
                     </td>
                     <td className="px-6 py-4">{teacher.email}</td>
                     <td className="px-6 py-4">
-                      <span className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-medium rounded-lg border border-indigo-200 dark:border-indigo-800">
-                        {teacher.department}
+                      <span className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-medium rounded-lg border-indigo-200 dark:border-indigo-800">
+                        {teacher.subject}
                       </span>
                     </td>
                     <td className="px-6 py-4">{teacher.hireDate}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => handleView(teacher)}
+                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        >
+                          <Eye size={16} />
+                        </button>
                         <button
                           onClick={() => handleEdit(teacher)}
                           className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -162,7 +177,7 @@ export default function TeacherList() {
         </div>
 
         {data?.totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+          <div className="p-4 border-t bg-gray-50/50 dark:bg-gray-800/50">
             <ModernPagination
               currentPage={page}
               totalPages={data.totalPages}
@@ -178,13 +193,36 @@ export default function TeacherList() {
         teacherToEdit={selectedTeacher}
       />
 
+      <Modal show={isViewOpen} onClose={() => setIsViewOpen(false)} size="3xl" dismissible>
+        <Modal.Body className="p-0 rounded-xl overflow-hidden bg-transparent">
+          {viewTeacher && (
+            <HumanPortfolio
+              entityType="teacher"
+              data={{
+                firstName: viewTeacher.firstName,
+                lastName: viewTeacher.lastName,
+                email: viewTeacher.email,
+                idNumber: viewTeacher.id,
+                joinedDate: viewTeacher.hireDate,
+                department: viewTeacher.subject,
+              }}
+              actions={
+                <Button color="gray" size="sm" onClick={() => setIsViewOpen(false)}>
+                  {t("close")}
+                </Button>
+              }
+            />
+          )}
+        </Modal.Body>
+      </Modal>
+
       <ConfirmModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={() => deleteMutation.mutate(selectedTeacher!.id)}
-        title="Delete Teacher"
-        message={`Are you sure you want to delete ${selectedTeacher?.firstName} ${selectedTeacher?.lastName}? This action cannot be undone.`}
-        confirmText="Delete Teacher"
+        title={t("deleteTeacher")}
+        message={t("confirmDeleteTeacher", { name: `${selectedTeacher?.firstName} ${selectedTeacher?.lastName}` })}
+        confirmText={t("deleteTeacher")}
         type="danger"
         isLoading={deleteMutation.isPending}
       />

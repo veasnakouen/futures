@@ -17,7 +17,7 @@ api.interceptors.request.use(
     }
 
     // Add Tenant ID if it exists in local storage
-    const tenantId = localStorage.getItem("tenantId");
+    const tenantId = typeof window !== 'undefined' ? localStorage.getItem("tenantId") : null;
     if (tenantId) {
       config.headers["X-Tenant-ID"] = tenantId;
     }

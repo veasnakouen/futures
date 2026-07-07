@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Modal,
-  Button,
-  Datepicker,
-  ModalBody,
-  ModalHeader,
-  Popover,
-} from '@/lib/flowbite-compat';
+import {Modal, Button, Datepicker, ModalBody, ModalHeader, Popover} from '@/lib/flowbite-compat';
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 
@@ -66,7 +59,7 @@ export function PlacementModal() {
                 <input
                   type="text"
                   id="companyName"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                  className="block w-full rounded-lg bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                   placeholder="Enter company name"
                   value={formData.companyName}
                   onChange={(e) =>
@@ -87,7 +80,7 @@ export function PlacementModal() {
                   </label>
                   <select
                     id="placementType"
-                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                    className="block w-full rounded-lg bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500"
                     value={formData.placementType}
                     onChange={(e) =>
                       setFormData({
@@ -112,7 +105,7 @@ export function PlacementModal() {
                   <input
                     type="text"
                     id="monthlySalary"
-                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                    className="block w-full rounded-lg bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                     placeholder="e.g. $250"
                     value={formData.monthlySalary}
                     onChange={(e) =>
@@ -135,7 +128,7 @@ export function PlacementModal() {
                 </label>
                 <Popover
                   content={
-                    <div className="p-0 bg-white dark:bg-gray-800 rounded-md shadow-2xl overflow-hidden border dark:border-gray-700">
+                    <div className="p-0 bg-white dark:bg-gray-800 rounded-md shadow-2xl overflow-hidden">
                       <Datepicker
                         inline={true}
                         value={selectedDate}
@@ -150,9 +143,9 @@ export function PlacementModal() {
                   trigger="click"
                 >
                   <div className="group relative cursor-pointer">
-                    <div className="flex items-center justify-between w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 group-hover:border-blue-400 transition-all h-[42px]">
+                    <div className="flex items-center justify-between w-full rounded-lg bg-gray-50 p-2.5 text-sm text-gray-900 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 group-hover:border-blue-400 transition-all h-[42px]">
                       <span
-                        className={`text-sm ${selectedDate ? "text-gray-900 dark:text-white" : "text-gray-400"}`}
+                        className={`text-sm ${selectedDate ?"text-gray-900 dark:text-white":"text-gray-400"}`}
                       >
                         {selectedDate
                           ? format(new Date(selectedDate), "MMM dd, yyyy")
@@ -177,7 +170,7 @@ export function PlacementModal() {
                 </label>
                 <select
                   id="status"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                  className="block w-full rounded-lg bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500"
                   value={formData.status}
                   onChange={(e) =>
                     setFormData({ ...formData, status: e.target.value })

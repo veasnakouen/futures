@@ -1,15 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Spinner,
-  Button,
-  Alert,
-  Card,
-  Badge,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-  Avatar,
-} from '@/lib/flowbite-compat';
+import {Spinner, Button, Alert, Badge, Dropdown, DropdownItem, DropdownDivider, Avatar} from '@/lib/flowbite-compat';
 import {
   Plus,
   AlertCircle,
@@ -36,6 +26,7 @@ import toast from "react-hot-toast";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import ModernPagination from "@/components/common/ModernPagination";
 import { useDebounce } from "../hooks/useDebounce";
+import Layout from "@/components/common/Layout";
 
 // Modular Components
 import ClientFilters from "@/features/clients/components/ClientFilters";
@@ -78,7 +69,7 @@ interface Client {
   idpoorAccountNumber?: string;
 }
 
-const ClientsPage = ({ isDark, setIsDark }: any) => {
+const ClientsPage = ({ isDark, setIsDark, hideLayout = false }: any) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -100,21 +91,16 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
     "branch",
     "status",
   ]);
-  const [gridDensity, setGridDensity] = useState<
-    "large" | "medium" | "compact"
-  >("medium");
+  const [itemsPerRow, setItemsPerRow] = useState("4");
 
   const getGridClass = () => {
-    switch (gridDensity) {
-      case "large":
-        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 items-start";
-      case "medium":
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 items-start";
-      case "compact":
-        return "grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 items-start";
-      default:
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 items-start";
-    }
+    return `grid gap-6 ${
+      itemsPerRow === "3"
+        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        : itemsPerRow === "5"
+        ? "grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+        : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+    }`;
   };
 
   const debouncedFilters = useDebounce(filters, 500);
@@ -415,10 +401,15 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
     });
   };
 
+  const ConditionalLayout = ({ hideLayout, children, ...props }: any) => {
+    if (hideLayout) return <>{children}</>;
+    return <Layout {...props}>{children}</Layout>;
+  };
+
   return (
-    <>
+    <ConditionalLayout hideLayout={hideLayout} isDark={isDark} setIsDark={setIsDark} title="Client Registry">
       <div className="space-y-4 animate-fade-in max-w-[1600px] mx-auto">
-        <header className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 border border-gray-100 dark:border-gray-700/50">
+        <header className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-indigo-600 text-white rounded-md shadow-xl shadow-indigo-500/20">
               <Activity size={24} />
@@ -449,7 +440,7 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
         </header>
 
         <div className="space-y-4">
-          <div className="bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-md shadow-sm overflow-hidden">
             <ClientFilters
               filters={filters}
               setFilters={setFilters}
@@ -457,8 +448,8 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
               setViewMode={setViewMode}
               visibleColumns={visibleColumns}
               setVisibleColumns={setVisibleColumns}
-              gridDensity={gridDensity}
-              setGridDensity={setGridDensity}
+              itemsPerRow={itemsPerRow}
+              setItemsPerRow={setItemsPerRow}
             />
 
             {loading && clients.length === 0 ? (
@@ -535,7 +526,7 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
                     {clients.map((client: Client) => (
                       <div
                         key={client.id}
-                        className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 rounded-md focus-within:z-30 p-4 relative group hover:shadow-md transition-shadow h-full flex flex-col"
+                        className="shadow-sm bg-white dark:bg-gray-800 rounded-md focus-within:z-30 p-4 relative group hover:shadow-md transition-shadow h-full flex flex-col"
                       >
                         {/* Top Dropdown Action */}
                         <div className="absolute right-2 top-2">
@@ -582,7 +573,7 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
                                 </span>
                               </div>
                             </DropdownItem>
-                            <DropdownDivider className="my-1 border-gray-100 dark:border-gray-700" />
+                            <DropdownDivider className="my-1" />
                             <DropdownItem
                               onClick={() =>
                                 setTimeout(() => handleDelete(client.id), 0)
@@ -677,15 +668,7 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
                                   ? "Remove connection"
                                   : "Add to network"
                               }
-                              className={`!rounded border transition-all w-9 h-9 flex items-center justify-center !p-0 ${
-                                connections.some(
-                                  (c) =>
-                                    c.targetType === "CLIENT" &&
-                                    c.targetId === String(client.id),
-                                )
-                                  ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                                  : "border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"
-                              }`}
+                              className={`!rounded transition-all w-9 h-9 flex items-center justify-center !p-0 ${ connections.some( (c) => c.targetType ==="CLIENT"&& c.targetId === String(client.id), ) ?"border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100":"border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"}`}
                             >
                               {connections.some(
                                 (c) =>
@@ -726,7 +709,7 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
                                 );
                               }}
                               title="Message"
-                              className="!rounded border border-blue-500 bg-white hover:bg-blue-50 text-blue-600 transition-all w-9 h-9 flex items-center justify-center !p-0 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-gray-700"
+                              className="!rounded border-blue-500 bg-white hover:bg-blue-50 text-blue-600 transition-all w-9 h-9 flex items-center justify-center !p-0 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-gray-700"
                             >
                               <MessageSquare size={16} />
                             </Button>
@@ -738,7 +721,7 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
                 )}
                 {/*  */}
                 {totalPages > 1 && (
-                  <div className="mt-6 border-t dark:border-gray-700 pt-6">
+                  <div className="mt-6 border-t pt-6">
                     <ModernPagination
                       currentPage={currentPage}
                       totalPages={totalPages}
@@ -772,7 +755,7 @@ const ClientsPage = ({ isDark, setIsDark }: any) => {
           message="Are you sure you want to delete this client? This action is immutable and will remove all associated case data."
         />
       </div>
-    </>
+    </ConditionalLayout>
   );
 };
 

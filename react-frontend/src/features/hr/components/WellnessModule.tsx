@@ -1,16 +1,5 @@
 import React from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Progress,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Progress} from '@/lib/flowbite-compat';
 import { Heart, Activity, Award, ShieldCheck, Flame, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -89,7 +78,7 @@ const WellnessModule: React.FC = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Active Challengers
@@ -102,9 +91,9 @@ const WellnessModule: React.FC = () => {
           <p className="text-[9px] font-bold text-emerald-500 uppercase mt-2">
             Active steps taken: 1.2M steps
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Mental Health Days Taken
@@ -117,9 +106,9 @@ const WellnessModule: React.FC = () => {
           <p className="text-[9px] font-bold text-gray-400 uppercase mt-2">
             Low rate indicates healthy node state
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Gym Subsidy Coverage
@@ -132,9 +121,9 @@ const WellnessModule: React.FC = () => {
           <p className="text-[9px] font-bold text-indigo-500 uppercase mt-2">
             Active corporate memberships
           </p>
-        </Card>
+        </div>
 
-        <Card className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
+        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
               Wellness Index Score
@@ -147,13 +136,13 @@ const WellnessModule: React.FC = () => {
           <p className="text-[9px] font-bold text-emerald-500 uppercase mt-2">
             Excellent health rating
           </p>
-        </Card>
+        </div>
       </div>
 
       {/* Challenges & Subsidy Registry */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Active Challenges */}
-        <Card className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800">
+        <div className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2">
             <Flame size={20} className="text-orange-500" /> Active Wellness
             Challenges
@@ -162,7 +151,7 @@ const WellnessModule: React.FC = () => {
             {mockChallenges.map((chal) => (
               <div
                 key={chal.id}
-                className="p-6 bg-gray-50 dark:bg-gray-700/30 rounded-md space-y-4 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all"
+                className="p-6 bg-gray-50 dark:bg-gray-700/30 rounded-md space-y-4 border-transparent hover: dark:hover: transition-all"
               >
                 <div className="flex justify-between items-center">
                   <div>
@@ -195,10 +184,10 @@ const WellnessModule: React.FC = () => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
         {/* Gym Subsidies Tracker */}
-        <Card className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800">
+        <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2">
             <Award size={20} className="text-indigo-600" /> Subsidy Claims Log
           </h4>
@@ -206,7 +195,7 @@ const WellnessModule: React.FC = () => {
             {mockSubsidies.map((sub, idx) => (
               <div
                 key={idx}
-                className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md flex justify-between items-center border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all"
+                className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md flex justify-between items-center border-transparent hover: dark:hover: transition-all"
               >
                 <div>
                   <p className="font-black text-xs dark:text-white leading-none">
@@ -230,7 +219,7 @@ const WellnessModule: React.FC = () => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

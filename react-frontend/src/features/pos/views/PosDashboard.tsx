@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { posService, PosProductDto } from '../../../services/posService';
 import { ShoppingCart, Plus, Minus, CreditCard, Search } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
+import { toast } from 'react-hot-toast';
 
 export default function PosDashboard() {
     const [products, setProducts] = useState<PosProductDto[]>([]);
@@ -17,8 +18,8 @@ export default function PosDashboard() {
         try {
             const data = await posService.getAllProducts();
             setProducts(data);
-        } catch (error) {
-            console.error("Failed to load products", error);
+        } catch (error: any) {
+            toast.error(`Failed to load products: ${error.message || "Unknown error"}`);
         }
     };
 
@@ -79,45 +80,48 @@ export default function PosDashboard() {
     const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
-        <div className="flex h-[calc(100vh-6rem)] bg-gray-50 dark:bg-gray-900 overflow-hidden">
+        <div className="flex h-[calc(100vh-6rem)] bg-slate-50 dark:bg-slate-900 overflow-hidden">
             {/* Products Section */}
-            <div className="flex-1 flex flex-col p-6 overflow-hidden">
-                <div className="mb-6 flex justify-between items-center">
+            <div className="flex-1 flex flex-col p-6 lg:p-8 overflow-hidden">
+                <div className="mb-8 flex justify-between items-end">
                     <div>
-                        <h1 className="text-2xl font-black text-gray-900 dark:text-white">POS Terminal</h1>
-                        <p className="text-sm text-gray-500">Select items to add to the cart</p>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-1">POS Terminal</h1>
+                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Select items to add to the cart</p>
                     </div>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
                         <input 
                             type="text" 
                             placeholder="Search products..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 w-64"
+                            className="pl-11 pr-4 py-2.5 rounded-full bg-white dark:bg-slate-800 border-none shadow-sm focus:ring-2 focus:ring-blue-500 w-72 transition-all duration-300 text-sm font-medium outline-none"
                         />
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                         {filteredProducts.map(product => (
                             <div 
                                 key={product.id} 
                                 onClick={() => addToCart(product)}
-                                className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow active:scale-95"
+                                className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group flex flex-col"
                             >
-                                <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg mb-3 overflow-hidden flex items-center justify-center text-4xl">
+                                <div className="h-40 bg-slate-100 dark:bg-slate-700 relative flex items-center justify-center text-4xl shrink-0 overflow-hidden">
                                     {product.imageUrl ? (
-                                        <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                                        <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
-                                        "🛒"
+                                        <span className="opacity-30">🛒</span>
                                     )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"/>
                                 </div>
-                                <h3 className="font-bold text-gray-900 dark:text-white truncate">{product.name}</h3>
-                                <p className="text-sm text-gray-500 truncate">{product.category}</p>
-                                <div className="mt-2 text-lg font-black text-blue-600 dark:text-blue-400">
-                                    ${product.price.toFixed(2)}
+                                <div className="p-4 flex flex-col flex-1">
+                                    <h3 className="font-bold text-slate-800 dark:text-slate-100 tracking-tight leading-tight line-clamp-2 mb-1">{product.name}</h3>
+                                    <p className="text-xs font-medium text-slate-400 mb-3 truncate">{product.category}</p>
+                                    <div className="mt-auto text-lg font-black bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                                        ${product.price.toFixed(2)}
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -126,37 +130,39 @@ export default function PosDashboard() {
             </div>
 
             {/* Cart Section */}
-            <div className="w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col">
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                    <h2 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
-                        <ShoppingCart size={20} /> Current Order
+            <div className="w-96 backdrop-blur-2xl bg-white/80 dark:bg-slate-900/80 border-l border-slate-200/50 dark:border-slate-800/50 flex flex-col shadow-2xl relative z-10">
+                <div className="p-6 border-b border-slate-200/50 dark:border-slate-800/50">
+                    <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2 tracking-tight">
+                        <ShoppingCart size={20} className="text-blue-600" /> Current Order
                     </h2>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
                     {cart.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                            <ShoppingCart size={48} className="mb-4 opacity-50" />
-                            <p>Cart is empty</p>
+                        <div className="h-full flex flex-col items-center justify-center text-slate-400">
+                            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                                <ShoppingCart size={32} className="opacity-50" />
+                            </div>
+                            <p className="font-medium text-sm">Your cart is empty</p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {cart.map(item => (
-                                <div key={item.product.id} className="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                                    <div className="flex-1">
-                                        <h4 className="font-bold text-gray-900 dark:text-white text-sm">{item.product.name}</h4>
-                                        <p className="text-xs text-gray-500">${item.product.price.toFixed(2)}</p>
+                                <div key={item.product.id} className="flex justify-between items-center bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+                                    <div className="flex-1 pr-3">
+                                        <h4 className="font-bold text-slate-900 dark:text-white text-sm leading-tight mb-0.5 line-clamp-1">{item.product.name}</h4>
+                                        <p className="text-xs font-medium text-slate-400">${item.product.price.toFixed(2)}</p>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <button onClick={() => removeFromCart(item.product.id)} className="p-1 rounded bg-white dark:bg-gray-600 text-gray-500 shadow-sm hover:text-red-500">
-                                            <Minus size={14} />
+                                    <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-1">
+                                        <button onClick={() => removeFromCart(item.product.id)} className="p-1.5 rounded-md bg-white dark:bg-slate-700 text-slate-500 shadow-sm hover:text-red-500 transition-colors active:scale-95">
+                                            <Minus size={12} strokeWidth={3} />
                                         </button>
-                                        <span className="font-bold w-4 text-center">{item.quantity}</span>
-                                        <button onClick={() => addToCart(item.product)} className="p-1 rounded bg-white dark:bg-gray-600 text-gray-500 shadow-sm hover:text-blue-500">
-                                            <Plus size={14} />
+                                        <span className="font-black text-sm w-4 text-center">{item.quantity}</span>
+                                        <button onClick={() => addToCart(item.product)} className="p-1.5 rounded-md bg-white dark:bg-slate-700 text-slate-500 shadow-sm hover:text-blue-600 transition-colors active:scale-95">
+                                            <Plus size={12} strokeWidth={3} />
                                         </button>
                                     </div>
-                                    <div className="w-16 text-right font-bold text-gray-900 dark:text-white">
+                                    <div className="w-16 text-right font-black text-slate-900 dark:text-white">
                                         ${(item.product.price * item.quantity).toFixed(2)}
                                     </div>
                                 </div>
@@ -165,26 +171,26 @@ export default function PosDashboard() {
                     )}
                 </div>
 
-                <div className="p-6 bg-gray-50 dark:bg-gray-800/80 border-t border-gray-200 dark:border-gray-700">
-                    <div className="space-y-2 mb-4">
-                        <div className="flex justify-between text-gray-500">
+                <div className="p-6 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border-t border-slate-200/50 dark:border-slate-800/50">
+                    <div className="space-y-3 mb-6">
+                        <div className="flex justify-between text-sm font-medium text-slate-500 dark:text-slate-400">
                             <span>Subtotal</span>
-                            <span>${subtotal.toFixed(2)}</span>
+                            <span className="text-slate-900 dark:text-white">${subtotal.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-gray-500">
+                        <div className="flex justify-between text-sm font-medium text-slate-500 dark:text-slate-400">
                             <span>Tax (10%)</span>
-                            <span>${tax.toFixed(2)}</span>
+                            <span className="text-slate-900 dark:text-white">${tax.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-xl font-black text-gray-900 dark:text-white pt-2 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex justify-between text-2xl font-black text-slate-900 dark:text-white pt-4 border-t border-slate-200 dark:border-slate-700/50">
                             <span>Total</span>
-                            <span>${total.toFixed(2)}</span>
+                            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">${total.toFixed(2)}</span>
                         </div>
                     </div>
                     
                     <button 
                         onClick={handleCheckout}
                         disabled={cart.length === 0}
-                        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-blue-500/30"
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-300 disabled:to-slate-400 disabled:dark:from-slate-700 disabled:dark:to-slate-800 disabled:cursor-not-allowed disabled:text-slate-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 shadow-xl shadow-blue-500/25 active:scale-[0.98]"
                     >
                         <CreditCard size={20} /> Checkout
                     </button>

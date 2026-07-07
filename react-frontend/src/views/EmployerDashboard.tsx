@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../services/api";
-import { Spinner, Badge, Button } from '@/lib/flowbite-compat';
+import {Spinner, Badge, Button} from '@/lib/flowbite-compat';
 import {
   Briefcase,
   Users,
@@ -49,7 +49,7 @@ const EmployerDashboard = () => {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8">
         <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
           Employer Dashboard
         </h1>
@@ -58,8 +58,8 @@ const EmployerDashboard = () => {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Users className="text-indigo-500" /> Recent Applications
           </h2>
@@ -101,7 +101,7 @@ const EmployerDashboard = () => {
                   </p>
 
                   {app.coverLetter && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 italic border-l-2 border-gray-200 pl-3 py-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 italic border-l-2 pl-3 py-1">
                       "{app.coverLetter}"
                     </p>
                   )}

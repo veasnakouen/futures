@@ -18,6 +18,11 @@ public class Extracurricular {
     private String tenantId;
 
     private String name;
+    private String description;
+    private String schedule;
+    private String location;
+    private Integer capacity;
+    private Double cost;
 
     // The main teacher leading the activity
     @ManyToOne(fetch = FetchType.LAZY)

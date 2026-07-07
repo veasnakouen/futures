@@ -11,4 +11,5 @@ public class UpdateCourseCommand {
     private String description;
     @NotNull(message = "Credits is required") @Min(value=1, message="Must have at least 1 credit") private Integer credits;
     private String teacherId;
+    private String imageUrl;
 }

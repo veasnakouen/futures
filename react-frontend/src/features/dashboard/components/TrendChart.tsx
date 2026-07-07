@@ -9,7 +9,8 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { HelpCircle, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, RefreshCw, HelpCircle, Activity } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import ScrollReveal from "./ScrollReveal";
 
 interface TrendChartProps {
@@ -57,9 +58,9 @@ const TrendChart: React.FC<TrendChartProps> = ({ data = [] }) => {
       duration={600}
       triggerOnce={true}
     >
-      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
+      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
         {/* Header and Filter Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-50 dark:border-gray-700/40 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b shrink-0">
           <div>
             <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
               Registered Vacancies
@@ -72,13 +73,13 @@ const TrendChart: React.FC<TrendChartProps> = ({ data = [] }) => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 bg-gray-50/50 dark:bg-gray-900/30 p-2 rounded-md border border-gray-100 dark:border-gray-750 w-full sm:w-auto">
+          <div className="flex items-center gap-2 bg-gray-50/50 dark:bg-gray-900/30 p-2 rounded-md w-full sm:w-auto">
             <input
               type="text"
               placeholder="Filter by name..."
               value={nameFilter}
               onChange={(e) => setNameFilter(e.target.value)}
-              className="w-full sm:w-48 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-md px-3 py-1.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+              className="w-full sm:w-48 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-md px-3 py-1.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
             />
           </div>
         </div>
@@ -143,8 +144,8 @@ const TrendChart: React.FC<TrendChartProps> = ({ data = [] }) => {
                 </div>
               )
             ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-md animate-spin"></span>
+              <div className="absolute inset-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm z-10 flex items-center justify-center rounded-xl">
+                <Spinner size="lg" className="text-blue-500" />
               </div>
             )}
           </div>
@@ -155,7 +156,7 @@ const TrendChart: React.FC<TrendChartProps> = ({ data = [] }) => {
               filteredData.map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-gray-150/50 dark:hover:bg-gray-800/70 border border-gray-50 dark:border-transparent hover:border-gray-100 dark:hover:border-gray-700/50 rounded-md transition-all duration-200 group cursor-pointer"
+                  className="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-gray-150/50 dark:hover:bg-gray-800/70 dark:border-transparent hover: dark:hover: /50 rounded-md transition-all duration-200 group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -166,7 +167,7 @@ const TrendChart: React.FC<TrendChartProps> = ({ data = [] }) => {
                       {item.name}
                     </span>
                   </div>
-                  <span className="text-sm font-black text-gray-900 dark:text-white bg-white dark:bg-gray-800 px-3 py-1 rounded-md shadow-sm border border-gray-100/50 dark:border-gray-700/50 group-hover:shadow group-hover:border-blue-500/20 transition-all duration-200">
+                  <span className="text-sm font-black text-gray-900 dark:text-white bg-white dark:bg-gray-800 px-3 py-1 rounded-md shadow-sm /50 group-hover:shadow group-hover:border-blue-500/20 transition-all duration-200">
                     {item.value}
                   </span>
                 </div>

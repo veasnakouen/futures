@@ -14,7 +14,7 @@ public class TenantFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        
+
         HttpServletRequest req = (HttpServletRequest) request;
         String tenantId = req.getHeader(TENANT_HEADER);
 
@@ -23,7 +23,7 @@ public class TenantFilter implements Filter {
         } else {
             TenantContext.setCurrentTenant("default-tenant");
         }
-
+        
         try {
             chain.doFilter(request, response);
         } finally {

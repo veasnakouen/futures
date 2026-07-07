@@ -1,16 +1,6 @@
 import { Plus, X } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Modal,
-  ModalBody,
-  Label,
-  TextInput,
-  Select,
-  Avatar,
-  FileInput,
-  Button,
-  Checkbox,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Label, TextInput, Select, Avatar, FileInput, Button, Checkbox} from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 import {
@@ -184,7 +174,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
 
       <ModalBody className="bg-gray-50 dark:bg-gray-900 px-0 py-0 overflow-hidden flex flex-col">
         {/* Stepper Header */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 md:px-6 py-4 flex justify-between items-center overflow-x-auto custom-scrollbar">
+        <div className="bg-white dark:bg-gray-800 border-b px-4 md:px-6 py-4 flex justify-between items-center overflow-x-auto custom-scrollbar">
           {steps.map((step, idx) => {
             const Icon = step.icon;
             const isCompleted =
@@ -195,7 +185,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
             return (
               <React.Fragment key={step.num}>
                 <div
-                  className={`flex items-center gap-2 transition-all ${isActive ? "opacity-100 scale-105" : isLocked ? "opacity-30" : "opacity-60"} ${!isLocked ? "cursor-pointer hover:opacity-100" : "cursor-not-allowed"}`}
+                  className={`flex items-center gap-2 transition-all ${isActive ?"opacity-100 scale-105": isLocked ?"opacity-30":"opacity-60"} ${!isLocked ?"cursor-pointer hover:opacity-100":"cursor-not-allowed"}`}
                   onClick={() => {
                     if (!isLocked) {
                       if (step.num > 1 && !isStep1Valid()) {
@@ -215,7 +205,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                   }}
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm ${isActive ? "bg-blue-600 text-white shadow-blue-500/30" : isCompleted ? "bg-emerald-500 text-white shadow-emerald-500/30" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm ${isActive ?"bg-blue-600 text-white shadow-blue-500/30": isCompleted ?"bg-emerald-500 text-white shadow-emerald-500/30":"bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
                   >
                     {isCompleted && !isActive ? (
                       <Check size={14} />
@@ -224,13 +214,13 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                     )}
                   </div>
                   <span
-                    className={`text-xs font-bold uppercase tracking-wider hidden sm:block ${isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
+                    className={`text-xs font-bold uppercase tracking-wider hidden sm:block ${isActive ?"text-blue-600 dark:text-blue-400":"text-gray-500 dark:text-gray-400"}`}
                   >
                     {step.title}
                   </span>
                 </div>
                 {idx < steps.length - 1 && (
-                  <div className="flex-1 mx-2 sm:mx-4 max-w-[60px] border-t-2 border-dashed border-gray-200 dark:border-gray-700" />
+                  <div className="flex-1 mx-2 sm:mx-4 max-w-[60px] border-t-2" />
                 )}
               </React.Fragment>
             );
@@ -241,7 +231,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
           <form id="clientForm" onSubmit={handleSubmit} className="space-y-8">
             {currentStep === 1 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700/50">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
                   <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                     <User className="text-blue-500" size={20} /> Basic
                     Information
@@ -249,7 +239,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                   <div className="flex flex-col md:flex-row gap-8">
                     {/* Photo Section */}
                     <div className="flex flex-col items-center justify-start w-full md:w-1/4 pt-2">
-                      <div className="relative group w-32 h-40 mb-4 rounded-xl overflow-hidden shadow-md border-4 border-white dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+                      <div className="relative group w-32 h-40 mb-4 rounded-xl overflow-hidden shadow-md border-4 border-white bg-gray-100 dark:bg-gray-800">
                         {formData.photo ? (
                           <img
                             src={formData.photo}
@@ -272,7 +262,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                       <div className="w-full text-center relative">
                         <Label
                           htmlFor="photo"
-                          className="cursor-pointer bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-4 py-2 rounded-md text-blue-600 dark:text-blue-400 font-bold text-xs uppercase hover:bg-white transition-all inline-block shadow-sm"
+                          className="cursor-pointer bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-md text-blue-600 dark:text-blue-400 font-bold text-xs uppercase hover:bg-white transition-all inline-block shadow-sm"
                         >
                           Upload Media
                         </Label>
@@ -499,7 +489,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4 border-t border-gray-100 dark:border-gray-700 pt-4 mt-2">
+                      <div className="grid grid-cols-3 gap-4 border-t pt-4 mt-2">
                         <div>
                           <Label
                             htmlFor="placeOfBirth"
@@ -612,7 +602,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
 
             {currentStep === 2 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700/50">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
                   <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                     <MapPin className="text-emerald-500" size={20} /> Contact &
                     Location
@@ -732,7 +722,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
 
             {currentStep === 3 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700/50">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
                   <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                     <ClipboardList className="text-purple-500" size={20} />{" "}
                     Assessment & Needs
@@ -778,7 +768,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 p-5 rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <div className="bg-white dark:bg-gray-800 p-5 rounded-md shadow-sm">
                       <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-wider">
                         Expected Support
                       </h4>
@@ -795,7 +785,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                                 furtherEducation: e.target.checked,
                               })
                             }
-                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded border-gray-300"
+                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded"
                           />
                           <Label
                             htmlFor="furtherEducation"
@@ -814,7 +804,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                                 placement: e.target.checked,
                               })
                             }
-                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded border-gray-300"
+                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded"
                           />
                           <Label
                             htmlFor="placement"
@@ -833,7 +823,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                                 trainingFromFutures: e.target.checked,
                               })
                             }
-                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded border-gray-300"
+                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded"
                           />
                           <Label
                             htmlFor="trainingFromFutures"
@@ -852,7 +842,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                                 socialSupportRequired: e.target.checked,
                               })
                             }
-                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded border-gray-300"
+                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded"
                           />
                           <Label
                             htmlFor="socialSupportRequired"
@@ -891,7 +881,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                                         e.target.checked,
                                       )
                                     }
-                                    className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded border-gray-300"
+                                    className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded"
                                   />
                                   <Label
                                     htmlFor={`support-${support.id}`}
@@ -936,7 +926,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                       </div>
 
                       {isAddingSupport ? (
-                        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center gap-2 mt-4 pt-4 border-t">
                           <TextInput
                             sizing="sm"
                             placeholder="New option name..."
@@ -967,7 +957,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                           </button>
                         </div>
                       ) : (
-                        <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                        <div className="mt-4 pt-3 border-t">
                           <button
                             type="button"
                             onClick={() => setIsAddingSupport(true)}
@@ -999,7 +989,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                       />
                     </div>
 
-                    <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-md border border-orange-100 dark:border-orange-800/30">
+                    <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-md border-orange-100 dark:border-orange-800/30">
                       <h4 className="text-sm font-bold text-orange-700 dark:text-orange-400 mb-4 uppercase tracking-wider">
                         ID Poor Information
                       </h4>
@@ -1106,7 +1096,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
         </div>
       </ModalBody>
 
-      <div className="flex justify-between items-center w-full px-6 py-4 bg-white dark:bg-gray-800 rounded-b-lg border-t dark:border-gray-700">
+      <div className="flex justify-between items-center w-full px-6 py-4 bg-white dark:bg-gray-800 rounded-b-lg border-t">
         <div>
           {currentStep > 1 && (
             <Button
@@ -1124,7 +1114,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
             color="light"
             size="sm"
             onClick={onClose}
-            className="font-bold uppercase tracking-wider text-[10px] border-transparent hover:border-gray-200"
+            className="font-bold uppercase tracking-wider text-[10px] border-transparent hover:"
           >
             Cancel
           </Button>

@@ -12,5 +12,6 @@ public interface ExtracurricularMapper {
     @Mapping(target = "id", ignore = true)
     Extracurricular toEntity(CreateExtracurricularCommand command);
 
+    @Mapping(source = "leadTeacher.id", target = "leadTeacherId")
     ExtracurricularQueryResultDto toDto(Extracurricular entity);
 }

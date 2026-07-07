@@ -12,24 +12,44 @@ import ModernTabs from "@/components/common/ModernTabs";
 
 // New HR Recruitment ATS Pipeline Module
 import RecruitmentModule from "@/features/hr/components/RecruitmentModule";
-import { useHRStore } from "../store/hrStore";
+import { 
+  useVacancies, 
+  useRecruitmentStats, 
+  useLookups, 
+  useEmployers, 
+  usePlacements,
+  useCreateVacancy,
+  useUpdateVacancy,
+  useDeleteVacancy,
+  useCreateCandidate,
+  useUpdateCandidate,
+  useDeleteCandidate,
+  useCreatePlacement
+} from "../hooks/useHR";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
+import { motion } from "framer-motion";
+import { Spinner } from "@/components/ui/spinner";
 
 const RecruitmentPage = ({ isDark, setIsDark }: any) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("ats-pipeline");
 
   // State for HR Store (ATS Pipeline)
-  const {
-    globalVacancies,
-    recruitmentStats,
-    globalClients,
-    globalEmployers,
-    globalPositions,
-    globalPlacements,
-    fetchGlobalData,
-  } = useHRStore();
+  const { data: globalVacancies = [], refetch: refetchVacancies } = useVacancies();
+  const { data: recruitmentStats = {}, refetch: refetchStats } = useRecruitmentStats();
+  const { data: globalClients = [], refetch: refetchClients } = useLookups("clients");
+  const { data: globalEmployers = [], refetch: refetchEmployers } = useEmployers();
+  const { data: globalPositions = [] } = useLookups("positions");
+  const { data: globalPlacements = [], refetch: refetchPlacements } = usePlacements();
+
+  const fetchGlobalData = () => {
+    refetchVacancies();
+    refetchStats();
+    refetchClients();
+    refetchEmployers();
+    refetchPlacements();
+  };
 
   const [loading, setLoading] = useState(false);
 
@@ -51,24 +71,31 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
   };
 
   const tabs = [
-    { id: "ats-pipeline", label: "ATS Pipeline", icon: <Activity size={18} /> },
-    { id: "clients", label: "Candidates List", icon: <User size={18} /> },
-    { id: "employers", label: "Employers", icon: <Building2 size={18} /> },
-    { id: "vacancies", label: "Vacancies List", icon: <Briefcase size={18} /> },
+    { id: "ats-pipeline", label: t("atsPipeline"), icon: <Activity size={18} /> },
+    { id: "clients", label: t("candidatesList"), icon: <User size={18} /> },
+    { id: "employers", label: t("employers"), icon: <Building2 size={18} /> },
+    { id: "vacancies", label: t("vacanciesList"), icon: <Briefcase size={18} /> },
     {
       id: "placements",
-      label: "Placements List",
+      label: t("placementsList"),
       icon: <Handshake size={18} />,
     },
   ];
+
+  const { mutateAsync: createVacancy } = useCreateVacancy();
+  const { mutateAsync: updateVacancy } = useUpdateVacancy();
+  const { mutateAsync: deleteVacancy } = useDeleteVacancy();
+  const { mutateAsync: createCandidate } = useCreateCandidate();
+  const { mutateAsync: updateCandidate } = useUpdateCandidate();
+  const { mutateAsync: deleteCandidate } = useDeleteCandidate();
+  const { mutateAsync: createPlacement } = useCreatePlacement();
 
   // Handlers for ATS Pipeline
   const handleCreateVacancy = async (data: any) => {
     try {
       setLoading(true);
-      await api.post("/vacancies", data);
+      await createVacancy(data);
       toast.success("New vacancy published");
-      await fetchGlobalData();
     } catch (err: any) {
       toast.error("Failed to publish vacancy");
     } finally {
@@ -79,9 +106,8 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
   const handleUpdateVacancy = async (id: number, data: any) => {
     try {
       setLoading(true);
-      await api.put(`/vacancies/${id}`, data);
+      await updateVacancy({ id, data });
       toast.success("Vacancy updated");
-      await fetchGlobalData();
     } catch (err: any) {
       toast.error("Failed to update vacancy");
     } finally {
@@ -93,9 +119,8 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
     if (!window.confirm("Delete this vacancy posting?")) return;
     try {
       setLoading(true);
-      await api.delete(`/vacancies/${id}`);
+      await deleteVacancy(id);
       toast.success("Vacancy removed");
-      await fetchGlobalData();
     } catch (err: any) {
       toast.error("Failed to remove vacancy");
     } finally {
@@ -106,9 +131,8 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
   const handleCreateCandidate = async (data: any) => {
     try {
       setLoading(true);
-      await api.post("/clients", data);
+      await createCandidate(data);
       toast.success("Candidate enrolled");
-      await fetchGlobalData();
     } catch (err: any) {
       toast.error("Failed to enroll candidate");
     } finally {
@@ -119,9 +143,8 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
   const handleUpdateCandidate = async (id: number, data: any) => {
     try {
       setLoading(true);
-      await api.put(`/clients/${id}`, data);
+      await updateCandidate({ id, data });
       toast.success("Candidate profile updated");
-      await fetchGlobalData();
     } catch (err: any) {
       toast.error("Failed to update candidate");
     } finally {
@@ -133,9 +156,8 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
     if (!window.confirm("Delete candidate profile?")) return;
     try {
       setLoading(true);
-      await api.delete(`/clients/${id}`);
+      await deleteCandidate(id);
       toast.success("Candidate purged");
-      await fetchGlobalData();
     } catch (err: any) {
       toast.error("Failed to purge candidate");
     } finally {
@@ -146,9 +168,8 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
   const handleCreatePlacement = async (data: any) => {
     try {
       setLoading(true);
-      await api.post("/placements", data);
+      await createPlacement(data);
       toast.success("Placement confirmed! Candidate hired.");
-      await fetchGlobalData();
     } catch (err: any) {
       toast.error("Failed to confirm placement");
     } finally {
@@ -161,22 +182,21 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
       <div className="max-w-[1600px] mx-auto animate-fade-in relative">
         {loading && (
           <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center rounded-xl">
-            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <Spinner size="lg" />
           </div>
         )}
 
         {/* Recruitment Header & Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-t-md shadow-sm border border-gray-100 dark:border-gray-700/50 mb-6">
-          <div className="p-6 border-b border-gray-100 dark:border-gray-700/50">
+        <div className="bg-white dark:bg-gray-800 rounded-t-md shadow-sm mb-6">
+          <div className="p-6 border-b">
             <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
               <div className="p-2.5 bg-blue-600 text-white rounded-md shadow-lg shadow-blue-500/30">
                 <Handshake size={24} />
               </div>
-              Recruitment Pipeline
+              {t("recruitmentPipeline")}
             </h1>
             <p className="text-sm text-gray-500 mt-2 font-medium">
-              Manage candidates, employers, job openings, and successful
-              placements from a single dashboard.
+              {t("recruitmentDescription")}
             </p>
           </div>
 
@@ -217,7 +237,7 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
               activeTab === "clients" ? "block animate-fade-in" : "hidden"
             }
           >
-            <ClientsPage isDark={isDark} setIsDark={setIsDark} />
+            <ClientsPage isDark={isDark} setIsDark={setIsDark} hideLayout={true} />
           </div>
           <div
             className={

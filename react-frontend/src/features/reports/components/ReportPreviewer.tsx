@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Badge, Spinner } from '@/lib/flowbite-compat';
+import {Badge, Spinner} from '@/lib/flowbite-compat';
 import { ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import ClientSummaryReport from "./ClientSummaryReport";
@@ -75,8 +75,8 @@ const ReportPreviewer: React.FC<ReportPreviewerProps> = ({
 
   return (
     <div className="flex-1 flex flex-col min-h-[700px]">
-      <Card className="flex-1 dark:bg-gray-800 border-none shadow-sm overflow-hidden flex flex-col p-0 rounded-md">
-        <div className="p-6 border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/30 flex justify-between items-center">
+      <div className="flex-1 dark:bg-gray-800 border-none shadow-sm overflow-hidden flex flex-col p-0 rounded-md">
+        <div className="p-6 border-b bg-gray-50/50 dark:bg-gray-700/30 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Badge
               color="info"
@@ -110,7 +110,7 @@ const ReportPreviewer: React.FC<ReportPreviewerProps> = ({
                 onBlur={handlePageSubmit}
                 onKeyDown={(e) => e.key === "Enter" && handlePageSubmit()}
                 disabled={loading}
-                className="w-14 h-8 text-center text-xs font-bold rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all"
+                className="w-14 h-8 text-center text-xs font-bold rounded-md dark:bg-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all"
               />
               <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">
                 / {totalPages}
@@ -120,14 +120,14 @@ const ReportPreviewer: React.FC<ReportPreviewerProps> = ({
               <button
                 disabled={currentPage <= 1 || loading}
                 onClick={() => onPageChange(currentPage - 1)}
-                className="p-3 rounded-md border dark:border-gray-600 disabled:opacity-20 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm active:scale-95"
+                className="p-3 rounded-md disabled:opacity-20 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm active:scale-95"
               >
                 <ChevronLeft size={20} className="dark:text-white" />
               </button>
               <button
                 disabled={currentPage >= totalPages || loading}
                 onClick={() => onPageChange(currentPage + 1)}
-                className="p-3 rounded-md border dark:border-gray-600 disabled:opacity-20 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm active:scale-95"
+                className="p-3 rounded-md disabled:opacity-20 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm active:scale-95"
               >
                 <ChevronRight size={20} className="dark:text-white" />
               </button>
@@ -268,30 +268,17 @@ const ReportPreviewer: React.FC<ReportPreviewerProps> = ({
                         <div className="text-center mb-6 border-b-2 border-black pb-4 relative min-h-[100px]">
                           {customLogoUrl && (
                             <div
-                              className={`absolute top-0 ${
-                                !customLogoLocation ||
-                                customLogoLocation === "top-left"
-                                  ? "left-0"
-                                  : customLogoLocation === "top-right"
-                                    ? "right-0"
-                                    : "left-1/2 -translate-x-1/2"
-                              }`}
+                              className={`absolute top-0 ${ !customLogoLocation || customLogoLocation ==="top-left"?"left-0": customLogoLocation ==="top-right"?"right-0":"left-1/2 -translate-x-1/2"}`}
                             >
                               <img
                                 src={customLogoUrl}
                                 alt="Report Logo"
-                                className={`h-16 object-contain ${
-                                  customLogoShape === "circle"
-                                    ? "rounded-full aspect-square object-cover"
-                                    : customLogoShape === "rounded"
-                                      ? "rounded-2xl"
-                                      : ""
-                                }`}
+                                className={`h-16 object-contain ${ customLogoShape ==="circle"?"rounded-full aspect-square object-cover": customLogoShape ==="rounded"?"rounded-2xl":"" }`}
                               />
                             </div>
                           )}
                           <div
-                            className={`flex flex-col items-center justify-center w-full ${customLogoUrl && customLogoLocation === "top-center" ? "pt-20" : "pt-4"}`}
+                            className={`flex flex-col items-center justify-center w-full ${customLogoUrl && customLogoLocation ==="top-center"?"pt-20":"pt-4"}`}
                           >
                             <h1 className="text-2xl font-bold uppercase">
                               {customTitle || "Futures Program"}
@@ -325,19 +312,19 @@ const ReportPreviewer: React.FC<ReportPreviewerProps> = ({
                         {/* Report Table */}
                         <div className="overflow-x-auto">
                           {sortedData.length > 0 && headers.length > 0 ? (
-                            <table className="w-full text-left border-collapse border border-gray-300 text-xs">
+                            <table className="w-full text-left border-collapse text-xs">
                               <thead>
                                 <tr className="bg-gray-100 uppercase">
                                   {headers.map((key) => (
                                     <th
                                       key={key}
                                       onClick={() => handleSort(key)}
-                                      className="border border-gray-300 p-2 whitespace-nowrap cursor-pointer hover:bg-gray-200 select-none group"
+                                      className="p-2 whitespace-nowrap cursor-pointer hover:bg-gray-200 select-none group"
                                     >
                                       <div className="flex items-center gap-2">
                                         {key.replace(/([A-Z])/g, " $1").trim()}
                                         <span
-                                          className={`text-[10px] ${sortConfig?.key === key ? "text-indigo-600" : "text-transparent group-hover:text-gray-400"}`}
+                                          className={`text-[10px] ${sortConfig?.key === key ?"text-indigo-600":"text-transparent group-hover:text-gray-400"}`}
                                         >
                                           {sortConfig?.key === key &&
                                           sortConfig.direction === "desc"
@@ -368,7 +355,7 @@ const ReportPreviewer: React.FC<ReportPreviewerProps> = ({
                                         return (
                                           <td
                                             key={key}
-                                            className="border border-gray-300 p-2 whitespace-nowrap outline-none focus:bg-blue-50 cursor-text"
+                                            className="p-2 whitespace-nowrap outline-none focus:bg-blue-50 cursor-text"
                                             contentEditable={true}
                                             suppressContentEditableWarning={true}
                                             onBlur={(e) => {
@@ -442,13 +429,13 @@ const ReportPreviewer: React.FC<ReportPreviewerProps> = ({
                       key={idx}
                       src={`data:image/png;base64,${img}`}
                       alt={`Node Matrix Page ${idx + 1}`}
-                      className="w-full h-auto bg-white border-b last:border-b-0 shadow-lg dark:border-gray-700"
+                      className="w-full h-auto bg-white border-b last:border-b-0 shadow-lg"
                     />
                   ))}
             </div>
           )}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

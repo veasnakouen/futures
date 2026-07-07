@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Link, useLocation, useNavigate } from '@/lib/react-router-compat';
 import {
@@ -22,6 +23,7 @@ import {
   ChevronDown,
   DollarSign,
   MessageCircle,
+  Inbox,
   Monitor,
   Menu,
   ChevronLeft,
@@ -34,13 +36,9 @@ import {
   CreditCard,
   Receipt,
   Bed,
+  MapPin,
 } from "lucide-react";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownHeader,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Dropdown, DropdownItem, DropdownHeader, DropdownDivider} from '@/lib/flowbite-compat';
 import { useTranslation } from "react-i18next";
 import authService from '../../services/authService';
 import Chat from "../../features/chat/components/Chat";
@@ -77,6 +75,11 @@ const Layout = ({ children, title }: LayoutProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(() => {
     return (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).getItem("isSidebarCollapsed") === "true";
   });
+  const [expandedSections, setExpandedSections] = React.useState<Record<string, boolean>>({});
+
+  const toggleSection = (title: string) => {
+    setExpandedSections(prev => ({ ...prev, [title]: prev[title] === false ? true : false }));
+  };
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed((prev) => {
@@ -192,80 +195,84 @@ const Layout = ({ children, title }: LayoutProps) => {
     }[];
   }[] = [
       {
-        title: "Operations",
+        title: t("operations"),
         links: [
           { to: "/", icon: LayoutDashboard, label: t("dashboard") },
-          { to: "/cases", icon: FolderKanban, label: "Cases" },
-          { to: "/logbook", icon: History, label: "Logbook" },
-          { to: "/inventory", icon: Package, label: "Inventory" },
+          { to: "/cases", icon: FolderKanban, label: t("cases") },
+          { to: "/logbook", icon: History, label: t("logbook") },
+          { to: "/inventory", icon: Package, label: t("inventory") },
         ],
       },
       {
-        title: "Recruitment",
-        links: [{ to: "/recruitment", icon: Handshake, label: "Recruitment" }],
+        title: t("recruitment"),
+        links: [{ to: "/recruitment", icon: Handshake, label: t("recruitment") }],
       },
       {
-        title: "Human Resources",
+        title: t("humanResources"),
         links: [
-          { to: "/employees", icon: Users, label: "Team Directory" },
-          { to: "/leaves", icon: Briefcase, label: "Leave Management" },
-          // { to: "/employees?module=stock", icon: Package, label: "Stock & Inventory" },
+          { to: "/employees", icon: Users, label: t("teamDirectory") },
+          { to: "/leaves", icon: Briefcase, label: t("leaveManagement") },
         ],
       },
         {
-          title: "School Management",
+          title: t("schoolManagement"),
           links: [
-            { to: "/school/students", icon: Users, label: "Students" },
-            { to: "/school/teachers", icon: Briefcase, label: "Teachers" },
-            { to: "/school/courses", icon: BookOpen, label: "Courses" },
-            { to: "/school/enrollments", icon: GraduationCap, label: "Enrollments" },
-            { to: "/school/parents", icon: Users, label: "Parents" },
-            { to: "/school/extracurriculars", icon: Activity, label: "Activities" },
+            { to: "/school/branches", icon: MapPin, label: t("branches") },
+            { to: "/school/students", icon: Users, label: t("students") },
+            { to: "/school/outreach", icon: MapPin, label: t("outreach") },
+            { to: "/school/case-management", icon: Briefcase, label: t("caseManagement") },
+            { to: "/school/departments", icon: Building2, label: t("departments") },
+            { to: "/school/department-inbox", icon: Inbox, label: t("departmentInbox") },
+            { to: "/school/teachers", icon: Briefcase, label: t("teachers") },
+            { to: "/school/courses", icon: BookOpen, label: t("courses") },
+            { to: "/school/enrollments", icon: GraduationCap, label: t("enrollments") },
+            { to: "/school/parents", icon: Users, label: t("parents") },
+            { to: "/school/extracurriculars", icon: Activity, label: t("activities") },
           ],
         },
         {
-          title: "Clinic Management",
+          title: t("clinicManagement"),
           links: [
-            { to: "/clinic/patients", icon: Users, label: "Patients" },
-            { to: "/clinic/appointments", icon: History, label: "Appointments" },
-            { to: "/clinic/doctors", icon: Briefcase, label: "Doctors" },
-            { to: "/clinic/prescriptions", icon: Stethoscope, label: "Prescriptions" },
-            { to: "/clinic/lab-orders", icon: Activity, label: "Lab Orders" },
-            { to: "/clinic/medical-records", icon: BookOpen, label: "Medical Records" },
+            { to: "/clinic/patients", icon: Users, label: t("patients") },
+            { to: "/clinic/appointments", icon: History, label: t("appointments") },
+            { to: "/clinic/doctors", icon: Briefcase, label: t("doctors") },
+            { to: "/clinic/prescriptions", icon: Stethoscope, label: t("prescriptions") },
+            { to: "/clinic/lab-orders", icon: Activity, label: t("labOrders") },
+            { to: "/clinic/medical-records", icon: BookOpen, label: t("medicalRecords") },
           ],
         },
         {
-          title: "Billing & Finance",
+          title: t("billingAndFinance"),
           links: [
-            { to: "/billing/invoices", icon: Receipt, label: "Invoices" },
-            { to: "/billing/payments", icon: CreditCard, label: "Payments" },
+            { to: "/billing/invoices", icon: Receipt, label: t("invoices") },
+            { to: "/billing/payments", icon: CreditCard, label: t("payments") },
           ],
         },
         {
-          title: "Hospitality & Hotel",
+          title: t("hospitalityAndHotel"),
           links: [
-            { to: "/hotel/bookings", icon: History, label: "Bookings" },
-            { to: "/hotel/guests", icon: Users, label: "Guests" },
-            { to: "/hotel/rooms", icon: Bed, label: "Rooms" },
-            { to: "/hotel/housekeeping", icon: Package, label: "Housekeeping" },
+            { to: "/hotel/bookings", icon: History, label: t("bookings") },
+            { to: "/hotel/guests", icon: Users, label: t("guests") },
+            { to: "/hotel/rooms", icon: Bed, label: t("rooms") },
+            { to: "/hotel/housekeeping", icon: Package, label: t("housekeeping") },
           ],
         },
         {
-          title: "Retail & POS",
+          title: t("retailAndPos"),
           links: [
-            { to: "/pos", icon: Monitor, label: "POS Terminal" },
-            { to: "/pos/products", icon: Package, label: "Products" },
-            { to: "/pos/sales", icon: Receipt, label: "Sales History" },
+            { to: "/pos", icon: Monitor, label: t("posTerminal") },
+            { to: "/pos/products", icon: Package, label: t("products") },
+            { to: "/pos/sales", icon: Receipt, label: t("salesHistory") },
           ],
         },
       {
-        title: "System & Core",
+        title: t("systemAndCore"),
         links: [
-          { to: "/support", icon: LifeBuoy, label: "Support Portal" },
+          { to: "/support", icon: LifeBuoy, label: t("supportPortal") },
           { to: "/reports", icon: FileBarChart, label: t("reports") },
-          { to: "/chat", icon: MessageCircle, label: "Live Team Chat" },
+          { to: "/chat", icon: MessageCircle, label: t("liveTeamChat") },
           { to: "/settings", icon: Settings, label: t("settings") },
-          { to: "/settings/locations", icon: Building2, label: "Location Management" },
+          { to: "/settings/locations", icon: Building2, label: t("locationManagement") },
         ],
       },
     ];
@@ -290,13 +297,13 @@ const Layout = ({ children, title }: LayoutProps) => {
     navSections[2].links.push({
       to: "/admin",
       icon: Shield,
-      label: "Administration",
+      label: t("administration"),
     });
   }
 
   return (
     <div
-      className={`flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-hidden ${sidebarPosition === "right" ? "flex-row-reverse" : ""}`}
+      className={`flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-hidden ${sidebarPosition ==="right"?"flex-row-reverse":""}`}
     >
       {/* Mobile Backdrop */}
       {isMenuOpen && (
@@ -308,16 +315,10 @@ const Layout = ({ children, title }: LayoutProps) => {
 
       {/* Sidebar */}
       <aside
-        className={`
-        fixed inset-y-0 ${sidebarPosition === "right" ? "right-0 border-l" : "left-0 border-r"} z-40 ${getSidebarBgClass()} 
-        transform transition-all duration-300 ease-in-out lg:relative lg:translate-x-0
-        ${isMenuOpen ? "translate-x-0" : sidebarPosition === "right" ? "translate-x-full" : "-translate-x-full"}
-        ${isSidebarCollapsed ? "w-20" : "w-64"}
-        flex flex-col
-      `}
+        className={`fixed inset-y-0 ${sidebarPosition ==="right"?"right-0 border-l":"left-0 border-r"} z-40 ${getSidebarBgClass()} transform transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMenuOpen ?"translate-x-0": sidebarPosition ==="right"?"translate-x-full":"-translate-x-full"} ${isSidebarCollapsed ?"w-20":"w-64"} flex flex-col`}
       >
         <div
-          className={`p-6 flex items-center ${isSidebarCollapsed ? "justify-center" : "justify-between"}`}
+          className={`p-6 flex items-center ${isSidebarCollapsed ?"justify-center":"justify-between"}`}
         >
           {!isSidebarCollapsed && (
             <div className="flex items-center gap-3">
@@ -333,7 +334,7 @@ const Layout = ({ children, title }: LayoutProps) => {
                 </div>
               )}
               <span
-                className={`font-bold text-xl tracking-tight ${sidebarTheme === "brand" ? "text-white" : "dark:text-white"}`}
+                className={`font-bold text-xl tracking-tight ${sidebarTheme ==="brand"?"text-white":"dark:text-white"}`}
               >
                 MTP
               </span>
@@ -356,89 +357,101 @@ const Layout = ({ children, title }: LayoutProps) => {
               </div>
             ))}
           <button
-            className={`lg:hidden ${sidebarTheme === "brand" ? "text-white" : "dark:text-white"} ${isSidebarCollapsed ? "hidden" : ""}`}
+            className={`lg:hidden ${sidebarTheme ==="brand"?"text-white":"dark:text-white"} ${isSidebarCollapsed ?"hidden":""}`}
             onClick={() => setIsMenuOpen(false)}
           >
             <LogOut
               size={20}
-              className={sidebarPosition === "right" ? "" : "rotate-180"}
+              className={sidebarPosition === "right"?"" :"rotate-180"}
             />
           </button>
         </div>
 
         <nav
           ref={sidebarRef}
-          className="flex-1 px-4 space-y-6 mt-4 overflow-y-auto custom-scrollbar"
+          className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto custom-scrollbar"
         >
-          {navSections.map((section) => (
-            <div key={section.title} className="space-y-1">
+          {navSections.map((section) => {
+            const isExpanded = expandedSections[section.title] !== false; // Default to expanded
+            return (
+            <div key={section.title} className="space-y-1 mb-2">
               {!isSidebarCollapsed && (
-                <span className="block px-4 text-[9px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500 mb-2 mt-4">
-                  {section.title}
-                </span>
+                <button
+                  onClick={() => toggleSection(section.title)}
+                  className="w-full flex items-center justify-between px-4 mb-2 mt-4 group outline-none cursor-pointer"
+                >
+                  <span className="text-[9px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
+                    {section.title}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={`text-gray-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-transform duration-300 ${
+                      !isExpanded ? "-rotate-90" : ""
+                    }`}
+                  />
+                </button>
               )}
               {isSidebarCollapsed && <div className="h-4"></div>}
-              {section.links.map((link) => {
-                const active = isActive(link.to);
-                return (
-                  <div key={link.to} className="flex flex-col">
-                    <Link
-                      to={link.to}
-                      title={isSidebarCollapsed ? link.label : undefined}
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`relative flex items-center ${isSidebarCollapsed ? "justify-center p-3" : "px-4 py-2.5"} rounded-md transition-colors ${getSidebarLinkClass(active)}`}
-                    >
-                      {active && (
-                        <motion.div
-                          layoutId="active-sidebar-item"
-                          className={`absolute inset-0 rounded-md ${sidebarTheme === "brand"
-                            ? "bg-indigo-800"
-                            : sidebarTheme === "dark"
-                              ? "bg-gray-800"
-                              : "bg-blue-50 dark:bg-blue-900/30"
-                            }`}
-                          initial={false}
-                          transition={{
-                            type: "spring",
-                            stiffness: 300,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-                      <div className={`relative z-10 flex items-center gap-3`}>
-                        <link.icon size={isSidebarCollapsed ? 22 : 18} />
-                        {!isSidebarCollapsed && (
-                          <span className="text-xs font-semibold">
-                            {link.label}
-                          </span>
+              
+              <div className={`space-y-1 overflow-hidden transition-all duration-300 ${!isExpanded && !isSidebarCollapsed ? "max-h-0 opacity-0" : "max-h-[1000px] opacity-100"}`}>
+                {section.links.map((link) => {
+                  const active = isActive(link.to);
+                  return (
+                    <div key={link.to} className="flex flex-col">
+                      <Link
+                        to={link.to}
+                        title={isSidebarCollapsed ? link.label : undefined}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`relative flex items-center ${isSidebarCollapsed ?"justify-center p-3":"px-4 py-2.5"} rounded-md transition-colors ${getSidebarLinkClass(active)}`}
+                      >
+                        {active && (
+                          <motion.div
+                            layoutId="active-sidebar-item"
+                            className={`absolute inset-0 rounded-md ${sidebarTheme ==="brand"?"bg-indigo-800": sidebarTheme ==="dark"?"bg-gray-800":"bg-blue-50 dark:bg-blue-900/30"}`}
+                            initial={false}
+                            transition={{
+                              type: "spring",
+                              stiffness: 300,
+                              damping: 30,
+                            }}
+                          />
                         )}
-                      </div>
-                    </Link>
-                    {link.subLinks && !isSidebarCollapsed && (
-                      <div className="ml-10 mt-1 flex flex-col space-y-1">
-                        {link.subLinks.map((subLink: any) => (
-                          <Link
-                            key={subLink.to}
-                            to={subLink.to}
-                            onClick={() => setIsMenuOpen(false)}
-                            className="text-xs text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 py-1"
-                          >
-                            {subLink.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                        <div className={`relative z-10 flex items-center gap-3`}>
+                          <link.icon size={isSidebarCollapsed ? 22 : 18} />
+                          {!isSidebarCollapsed && (
+                            <span className="text-xs font-semibold">
+                              {link.label}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                      {link.subLinks && !isSidebarCollapsed && (
+                        <div className="ml-10 mt-1 flex flex-col space-y-1">
+                          {link.subLinks.map((subLink: any) => (
+                            <Link
+                              key={subLink.to}
+                              to={subLink.to}
+                              onClick={() => setIsMenuOpen(false)}
+                              className="text-xs text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 py-1"
+                            >
+                              {subLink.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          ))}
+            );
+          })}
         </nav>
 
-        <div className="p-4 border-t dark:border-gray-700 flex flex-col gap-2 shrink-0">
+        <div className="p-4 border-t flex flex-col gap-2 shrink-0">
           <button
             onClick={toggleSidebar}
-            className={`flex items-center hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md transition-all text-gray-500 dark:text-gray-400 ${isSidebarCollapsed ? "justify-center p-2.5" : "gap-3 px-4 py-2.5"}`}
+            className={`flex items-center hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md transition-all text-gray-500 dark:text-gray-400 ${isSidebarCollapsed ?"justify-center p-2.5":"gap-3 px-4 py-2.5"}`}
             title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isSidebarCollapsed ? (
@@ -451,7 +464,7 @@ const Layout = ({ children, title }: LayoutProps) => {
             )}
           </button>
           <div
-            className={`flex items-center ${isSidebarCollapsed ? "justify-center p-2" : "gap-3 px-4 py-2"} bg-gray-50 dark:bg-gray-700/50 rounded-md`}
+            className={`flex items-center ${isSidebarCollapsed ?"justify-center p-2":"gap-3 px-4 py-2"} bg-gray-50 dark:bg-gray-700/50 rounded-md`}
             title={isSidebarCollapsed ? "System Operational" : undefined}
           >
             <div className="w-2 h-2 rounded-md bg-green-500 animate-pulse shrink-0"></div>
@@ -524,7 +537,7 @@ const Layout = ({ children, title }: LayoutProps) => {
                       }}
                     >
                       <div
-                        className={`flex flex-col gap-1 w-full text-left ${!n.read ? "font-bold" : "opacity-75"}`}
+                        className={`flex flex-col gap-1 w-full text-left ${!n.read ?"font-bold":"opacity-75"}`}
                       >
                         <div className="flex justify-between items-start gap-2">
                           <span className="text-xs text-blue-600 dark:text-blue-400 truncate">
@@ -548,8 +561,8 @@ const Layout = ({ children, title }: LayoutProps) => {
               arrowIcon={false}
               inline
               label={
-                <div className="flex items-center gap-2 p-1.5 pr-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full cursor-pointer transition-all  group">
-                  <div className="w-10 h-10 rounded-full shrink-0 bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 border-2 border-white dark:border-gray-700 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2 p-1.5 pr-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full cursor-pointer transition-all group">
+                  <div className="w-10 h-10 rounded-full shrink-0 bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 border-2 border-white shadow-sm overflow-hidden">
                     {user?.photo ? (
                       <img
                         src={getFaceFocusedUrl(user.photo, 80)}
@@ -612,7 +625,7 @@ const Layout = ({ children, title }: LayoutProps) => {
               </div>
               <DropdownItem onClick={() => setTheme("light")}>
                 <div
-                  className={`flex items-center gap-2 ${theme === "light" ? "text-blue-600 font-bold" : ""}`}
+                  className={`flex items-center gap-2 ${theme ==="light"?"text-blue-600 font-bold":""}`}
                 >
                   <Sun size={16} />
                   <span>Light Mode</span>
@@ -620,7 +633,7 @@ const Layout = ({ children, title }: LayoutProps) => {
               </DropdownItem>
               <DropdownItem onClick={() => setTheme("dark")}>
                 <div
-                  className={`flex items-center gap-2 ${theme === "dark" ? "text-blue-600 font-bold" : ""}`}
+                  className={`flex items-center gap-2 ${theme ==="dark"?"text-blue-600 font-bold":""}`}
                 >
                   <Moon size={16} />
                   <span>Dark Mode (Default)</span>
@@ -628,7 +641,7 @@ const Layout = ({ children, title }: LayoutProps) => {
               </DropdownItem>
               <DropdownItem onClick={() => setTheme("antigravity")}>
                 <div
-                  className={`flex items-center gap-2 ${theme === "antigravity" ? "text-blue-600 font-bold" : ""}`}
+                  className={`flex items-center gap-2 ${theme ==="antigravity"?"text-blue-600 font-bold":""}`}
                 >
                   <Monitor size={16} />
                   <span>Antigravity Theme</span>
@@ -644,7 +657,7 @@ const Layout = ({ children, title }: LayoutProps) => {
                         e.stopPropagation();
                         i18n.changeLanguage("en");
                       }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "en" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
+                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language ==="en"?"bg-blue-600 text-white":"bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
                     >
                       EN
                     </div>
@@ -653,7 +666,7 @@ const Layout = ({ children, title }: LayoutProps) => {
                         e.stopPropagation();
                         i18n.changeLanguage("fr");
                       }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "fr" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
+                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language ==="fr"?"bg-blue-600 text-white":"bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
                     >
                       FR
                     </div>
@@ -662,7 +675,7 @@ const Layout = ({ children, title }: LayoutProps) => {
                         e.stopPropagation();
                         i18n.changeLanguage("km");
                       }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "km" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
+                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language ==="km"?"bg-blue-600 text-white":"bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
                     >
                       KM
                     </div>

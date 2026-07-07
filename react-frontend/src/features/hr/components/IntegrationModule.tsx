@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Badge, TextInput, Label, Spinner } from '@/lib/flowbite-compat';
+import {Button, Badge, TextInput, Label, Spinner} from '@/lib/flowbite-compat';
 import {
   Settings,
   Zap,
@@ -80,7 +80,7 @@ const IntegrationModule: React.FC = () => {
     <div className="space-y-8 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* SSO & Identity */}
-        <Card className="p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm border-t-8 border-t-blue-600">
+        <div className="p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm border-t-8 border-t-blue-600">
           <h4 className="font-black text-xl dark:text-white mb-6 flex items-center gap-3 uppercase tracking-tight">
             <ShieldCheck className="text-blue-600" /> Identity & SSO
           </h4>
@@ -88,7 +88,7 @@ const IntegrationModule: React.FC = () => {
             {ssoProviders.map((idp, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-transparent hover:border-blue-600/30 transition-all cursor-pointer"
+                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md border-transparent hover:border-blue-600/30 transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-md bg-white dark:bg-gray-800 flex items-center justify-center font-black text-xs shadow-sm text-blue-600">
@@ -114,10 +114,10 @@ const IntegrationModule: React.FC = () => {
           >
             Configure SAML 2.0
           </Button>
-        </Card>
+        </div>
 
         {/* Third Party Ops */}
-        <Card className="p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm border-t-8 border-t-indigo-600">
+        <div className="p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm border-t-8 border-t-indigo-600">
           <h4 className="font-black text-xl dark:text-white mb-6 flex items-center gap-3 uppercase tracking-tight">
             <Zap className="text-indigo-600" /> Strategic API Links
           </h4>
@@ -130,7 +130,7 @@ const IntegrationModule: React.FC = () => {
             ].map((app, i) => (
               <div
                 key={i}
-                className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-transparent hover:border-indigo-600/30 transition-all group cursor-pointer text-center"
+                className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md border-transparent hover:border-indigo-600/30 transition-all group cursor-pointer text-center"
               >
                 <p className="text-[10px] font-black dark:text-white group-hover:text-indigo-600 transition-colors uppercase tracking-tight">
                   {app.name}
@@ -148,10 +148,10 @@ const IntegrationModule: React.FC = () => {
           >
             Explore App Directory
           </Button>
-        </Card>
+        </div>
 
         {/* Webhook Manager */}
-        <Card className="p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm border-t-8 border-t-emerald-500 flex flex-col">
+        <div className="p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm border-t-8 border-t-emerald-500 flex flex-col">
           <h4 className="font-black text-xl dark:text-white mb-6 flex items-center gap-3 uppercase tracking-tight">
             <Database className="text-emerald-500" /> Webhook Manager
           </h4>
@@ -192,7 +192,7 @@ const IntegrationModule: React.FC = () => {
               ))
             )}
           </div>
-          <div className="space-y-3 pt-6 border-t dark:border-gray-700 mt-auto">
+          <div className="space-y-3 pt-6 border-t mt-auto">
             <Label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
               Register New Endpoint
             </Label>
@@ -211,11 +211,11 @@ const IntegrationModule: React.FC = () => {
               Add Hook
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Custom Schema Builder */}
-      <Card className="p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm">
+      <div className="p-10 rounded-md dark:bg-gray-800 bg-white/50 backdrop-blur-md border-none shadow-sm">
         <div className="flex justify-between items-center mb-10">
           <div>
             <h4 className="font-black text-xl dark:text-white flex items-center gap-3 uppercase tracking-tight">
@@ -238,7 +238,7 @@ const IntegrationModule: React.FC = () => {
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div className="p-8 bg-gray-50 dark:bg-gray-700/30 rounded-md border border-dashed dark:border-gray-600 group hover:border-blue-600/50 transition-all cursor-pointer">
+          <div className="p-8 bg-gray-50 dark:bg-gray-700/30 rounded-md group hover:border-blue-600/50 transition-all cursor-pointer">
             <div className="flex justify-between items-start mb-6">
               <div className="p-4 bg-white dark:bg-gray-800 text-blue-600 rounded-md shadow-sm">
                 <Settings size={24} />
@@ -274,7 +274,7 @@ const IntegrationModule: React.FC = () => {
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

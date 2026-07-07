@@ -80,7 +80,7 @@ const CriticalTasks: React.FC = () => {
       duration={600}
       triggerOnce={true}
     >
-      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
+      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
         <div className="flex items-center justify-between mb-8 shrink-0">
           <h4 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-4 tracking-tight">
             <div className="p-3 bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 rounded-md shadow-sm">
@@ -97,10 +97,10 @@ const CriticalTasks: React.FC = () => {
           {tasks.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between p-5 bg-gray-50/50 dark:bg-gray-800/30 rounded-md border border-gray-100/50 dark:border-gray-700/50 hover:border-purple-200 dark:hover:border-purple-900/50 hover:bg-purple-50/10 dark:hover:bg-purple-950/10 transition-all duration-300 group cursor-pointer"
+              className="flex items-center justify-between p-5 bg-gray-50/50 dark:bg-gray-800/30 rounded-md /50 hover:border-purple-200 dark:hover:border-purple-900/50 hover:bg-purple-50/10 dark:hover:bg-purple-950/10 transition-all duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-4">
-                <div className="p-2.5 rounded-md bg-white dark:bg-gray-800 shadow-sm border border-gray-100/50 dark:border-gray-700/50 group-hover:scale-105 transition-transform duration-200">
+                <div className="p-2.5 rounded-md bg-white dark:bg-gray-800 shadow-sm /50 group-hover:scale-105 transition-transform duration-200">
                   {getIcon(item.status, item.color)}
                 </div>
                 <div>

@@ -102,7 +102,7 @@ export const Badge = ({
   return (
     <SBadge
       variant={variant as any}
-      className={`${customClasses.join(" ")} ${className || ""}`}
+      className={`${customClasses.join("")} ${className || ""}`}
       {...props}
     >
       {" "}
@@ -117,7 +117,7 @@ export const TextInput = React.forwardRef(
     return (
       <div className="w-full">
         {addon && (
-          <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+          <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border-r-0 rounded-l-md dark:bg-gray-600 dark:text-gray-400">
             {addon}
           </span>
         )}
@@ -213,7 +213,7 @@ export const Alert = ({
   return (
     <SAlert
       variant={variant as any}
-      className={`${customClasses.join(" ")} ${className || ""}`}
+      className={`${customClasses.join("")} ${className || ""}`}
       {...props}
     >
       {" "}
@@ -316,7 +316,7 @@ export const Dropdown = ({
   );
 };
 export const DropdownHeader = ({ children, className }: any) => (
-  <div className={`px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b dark:border-gray-700 ${className || ""}`}>
+  <div className={`px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b  ${className || ""}`}>
     {children}
   </div>
 );
@@ -346,31 +346,10 @@ export const TableHead = ({ children, className }: any) => (
 );
 export const TableHeadCell = STableHead;
 // Modal mapping
-export const Modal = ({ show, onClose, size, children, ...props }: any) => {
-  let maxW = "max-w-2xl";
-  if (size === "sm") maxW = "max-w-sm";
-  if (size === "md") maxW = "max-w-md";
-  if (size === "lg") maxW = "max-w-lg";
-  if (size === "xl") maxW = "max-w-xl";
-  if (size === "2xl") maxW = "max-w-2xl";
-  if (size === "3xl") maxW = "max-w-3xl";
-  if (size === "4xl") maxW = "max-w-4xl";
-  return (
-    <SDialog open={show} onOpenChange={onClose}>
-      {" "}
-      <SDialogContent
-        className={`${maxW} p-0 [&>button]:hidden border-none gap-0`}
-      >
-        {" "}
-        {children}{" "}
-      </SDialogContent>{" "}
-    </SDialog>
-  );
-};
 export const ModalHeader = ({ children, className }: any) => (
   <SDialogHeader className={cn("modal-header cursor-move select-none", className)}>
     {" "}
-    <SDialogTitle className="text-xl font-bold px-6 py-4 border-b dark:border-gray-700 bg-white dark:bg-gray-800">
+    <SDialogTitle className="text-xl font-bold px-6 py-4 border-b bg-white dark:bg-gray-800">
       {" "}
       {children}{" "}
     </SDialogTitle>{" "}
@@ -386,11 +365,45 @@ export const ModalBody = ({ children, className }: any) => (
 );
 export const ModalFooter = ({ children, className }: any) => (
   <SDialogFooter
-    className={`p-6 border-t bg-white dark:bg-gray-800 dark:border-gray-700 ${className || ""}`}
+    className={`p-6 border-t bg-white dark:bg-gray-800  ${className || ""}`}
   >
     {" "}
     {children}{" "}
   </SDialogFooter>
+);
+export const Modal = Object.assign(
+  ({ show, onClose, size, children, ...props }: any) => {
+    let maxW = "max-w-2xl";
+    if (size === "sm") maxW = "max-w-sm";
+    if (size === "md") maxW = "max-w-md";
+    if (size === "lg") maxW = "max-w-lg";
+    if (size === "xl") maxW = "max-w-xl";
+    if (size === "2xl") maxW = "max-w-2xl";
+    if (size === "3xl") maxW = "max-w-3xl";
+    if (size === "4xl") maxW = "max-w-4xl";
+    return (
+      <SDialog open={show} onOpenChange={onClose}>
+        {" "}
+        <SDialogContent
+          className={`${maxW} p-0 [&>button]:hidden border-none gap-0`}
+          onInteractOutside={(e) => {
+            const target = e.target as Element;
+            if (target && target.closest && (target.closest('.react-select__menu') || target.closest('[class*="react-select"]'))) {
+              e.preventDefault();
+            }
+          }}
+        >
+          {" "}
+          {children}{" "}
+        </SDialogContent>{" "}
+      </SDialog>
+    );
+  },
+  {
+    Header: ModalHeader,
+    Body: ModalBody,
+    Footer: ModalFooter,
+  }
 );
 export const Progress = ({ progress, size, color, label, className }: any) => {
   return (
@@ -524,9 +537,41 @@ export const AccordionTitle = ({ children, className }: any) => (
 export const AccordionContent = ({ children, className }: any) => (
   <SAccordionContent className={className}>{children}</SAccordionContent>
 );
-export const Datepicker = ({ className, ...props }: any) => (
-  <SInput type="date" className={className} {...props} />
-);
+import CustomDatePicker from "@/components/common/DatePicker";
+
+export const Datepicker = ({ className, value, onChange, placeholder, type, ...props }: any) => {
+  // Try to parse existing string values to Date objects
+  const parsedDate = value ? new Date(value) : null;
+  const isValidDate = parsedDate && !isNaN(parsedDate.getTime());
+  
+  return (
+    <CustomDatePicker
+      value={isValidDate ? parsedDate : null}
+      onChange={(date: Date) => {
+        if (onChange) {
+          try {
+            let formattedDate = '';
+            if (date) {
+              if (type === "datetime-local") {
+                const offset = date.getTimezoneOffset() * 60000;
+                formattedDate = (new Date(date.getTime() - offset)).toISOString().slice(0, 16);
+              } else {
+                formattedDate = date.toISOString().split('T')[0];
+              }
+            }
+            onChange({ target: { value: formattedDate, name: props.name } });
+          } catch(e) {
+            onChange(date);
+          }
+        }
+      }}
+      placeholder={placeholder}
+      className={className}
+      disabled={props.disabled}
+      {...props}
+    />
+  );
+};
 export const AvatarGroup = ({ children, className }: any) => (
   <div className={`flex -space-x-4 ${className || ""}`}>{children}</div>
 );
@@ -541,7 +586,7 @@ export const FloatingLabel = ({ variant, label, ...props }: any) => (
   <div className="relative z-0 w-full group">
     {" "}
     <SInput
-      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer rounded-none h-auto"
+      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer rounded-none h-auto"
       placeholder=" "
       {...props}
     />{" "}

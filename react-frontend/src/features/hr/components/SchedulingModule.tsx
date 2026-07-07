@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Spinner} from '@/lib/flowbite-compat';
 import {
   CalendarCheck,
   ShieldCheck,
@@ -125,7 +114,7 @@ const SchedulingModule: React.FC = () => {
       {/* Weekly Schedule Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Shifts table */}
-        <Card className="lg:col-span-3 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="lg:col-span-3 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
             <CalendarCheck size={20} className="text-blue-600" /> Weekly Shift
             Plan (Mon - Fri)
@@ -210,10 +199,10 @@ const SchedulingModule: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-        </Card>
+        </div>
 
         {/* Coverage stats */}
-        <Card className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+        <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
           <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
             <ShieldCheck size={20} className="text-emerald-500" /> Coverage
             Metrics
@@ -276,7 +265,7 @@ const SchedulingModule: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-6 border-t dark:border-gray-700 space-y-3">
+            <div className="pt-6 border-t space-y-3">
               <p className="text-xs text-gray-400 font-bold leading-relaxed">
                 System coverage is evaluated. Ensure backup nodes are on standby
                 for sudden rotation request adjustments.
@@ -295,7 +284,7 @@ const SchedulingModule: React.FC = () => {
               </Button>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

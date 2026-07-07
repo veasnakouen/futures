@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  Label,
-  Select,
-  TextInput,
-  Button,
-  Popover,
-  Checkbox,
-  Textarea,
-  FileInput,
-} from '@/lib/flowbite-compat';
+import {Label, Select, TextInput, Button, Popover, Checkbox, Textarea, FileInput} from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import {
   Search,
@@ -125,9 +116,9 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 shadow-sm p-4 rounded-sm border border-gray-100 dark:border-gray-700/50">
+      <div className="bg-white dark:bg-gray-800 shadow-sm p-4 rounded-sm">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-end gap-4">
-          <div className="flex-1 ">
+          <div className="flex-1">
             <Label
               htmlFor="report"
               className="mb-2 block text-[10px] uppercase tracking-[0.2em] font-black text-gray-400"
@@ -136,8 +127,8 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
             </Label>
             <Popover
               content={
-                <div className="flex flex-col w-[320px] max-h-[350px] bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200 dark:border-gray-700/50 shadow-2xl rounded-sm custom-scrollbar overflow-hidden">
-                  <div className="p-2 border-b border-gray-100 dark:border-gray-700/50 bg-white/95 dark:bg-gray-800/95 z-10 sticky top-0">
+                <div className="flex flex-col w-[320px] max-h-[350px] bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl shadow-2xl rounded-sm custom-scrollbar overflow-hidden">
+                  <div className="p-2 border-b bg-white/95 dark:bg-gray-800/95 z-10 sticky top-0">
                     <TextInput
                       icon={Search}
                       placeholder="Search reports..."
@@ -154,11 +145,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                         setSearchTerm("");
                         document.getElementById("report-dropdown-trigger")?.click();
                       }}
-                      className={`report-item-btn w-full text-left px-4 py-3 rounded-sm text-sm font-semibold transition-all mb-2 ${
-                        selectedReport === "custom_designer"
-                          ? "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 border border-indigo-200 border-dashed"
-                      }`}
+                      className={`report-item-btn w-full text-left px-4 py-3 rounded-sm text-sm font-semibold transition-all mb-2 ${ selectedReport ==="custom_designer"?"bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400":"text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 border-indigo-200"}`}
                     >
                       ⚡ Build Custom Report
                     </button>
@@ -176,11 +163,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                             .getElementById("report-dropdown-trigger")
                             ?.click();
                         }}
-                        className={`report-item-btn w-full text-left px-4 py-3 rounded-sm text-sm font-semibold transition-all ${
-                          selectedReport === r.key
-                            ? "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400"
-                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50"
-                        }`}
+                        className={`report-item-btn w-full text-left px-4 py-3 rounded-sm text-sm font-semibold transition-all ${ selectedReport === r.key ?"bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400":"text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50"}`}
                       >
                         {r.label}
                       </button>
@@ -247,7 +230,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
               color="light"
               size="sm"
               onClick={() => setIsCustomizeOpen && setIsCustomizeOpen(true)}
-              className="rounded-sm border-gray-200 hover:border-gray-300 dark:border-gray-700 transition-all active:scale-95 font-black uppercase tracking-widest text-[10px]"
+              className="rounded-sm hover: transition-all active:scale-95 font-black uppercase tracking-widest text-[10px]"
             >
               <Settings2 size={16} className="mr-2" />{" "}
               <span className="hidden xl:inline">Customize</span>
@@ -257,7 +240,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
               color="light"
               size="sm"
               onClick={onGenerate}
-              className="flex-1 lg:px-8 rounded-sm border-green-600 hover:border-green-900 dark:border-gray-700 transition-all active:scale-95 font-black uppercase tracking-widest text-[10px]"
+              className="flex-1 lg:px-8 rounded-sm border-green-600 hover:border-green-900 transition-all active:scale-95 font-black uppercase tracking-widest text-[10px]"
             >
               <Search size={16} className="mr-2" /> Generate
             </Button>
@@ -267,7 +250,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                 color="light"
                 size="sm"
                 onClick={onExportToggle}
-                className="rounded-sm border-green-600 hover:border-green-900 dark:border-gray-700 px-6 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"
+                className="rounded-sm border-green-600 hover:border-green-900 px-6 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"
               >
                 <Download size={16} className="lg:mr-2" />{" "}
                 <span className="hidden lg:inline">Extract</span>
@@ -285,8 +268,8 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity"
             onClick={() => setIsCustomizeOpen && setIsCustomizeOpen(false)}
           />
-          <div className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-800 shadow-2xl z-50 border-l border-gray-200 dark:border-gray-700 animate-slide-in-right flex flex-col">
-            <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800">
+          <div className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-800 shadow-2xl z-50 border-l animate-slide-in-right flex flex-col">
+            <div className="p-4 border-b flex justify-between items-center bg-gray-50 dark:bg-gray-800">
               <div className="flex items-center gap-2">
                 <Settings2 className="text-indigo-600" size={20} />
                 <h3 className="font-black text-sm uppercase tracking-widest">
@@ -329,7 +312,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                   <Label className="text-xs mb-1 block">Company Logo</Label>
                   {customLogoUrl ? (
                     <div className="space-y-3">
-                      <div className="relative w-full h-24 border rounded-md flex items-center justify-center bg-gray-50 dark:bg-gray-700/50">
+                      <div className="relative w-full h-24 rounded-md flex items-center justify-center bg-gray-50 dark:bg-gray-700/50">
                         <img
                           src={customLogoUrl}
                           alt="Custom Logo"
@@ -389,7 +372,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                       />
                       <Label
                         htmlFor="logo-upload"
-                        className="w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                        className="w-full h-24 border-2 rounded-md flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                       >
                         <ImageIcon size={24} className="text-gray-400 mb-2" />
                         <span className="text-xs text-gray-500 font-semibold">
@@ -488,7 +471,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                         <div
                           key={col}
                           onClick={() => toggleColumn(col)}
-                          className={`flex items-center justify-between p-3 rounded-md cursor-pointer border transition-all ${isHidden ? "bg-gray-50 border-gray-100 dark:bg-gray-800 dark:border-gray-700 opacity-50" : "bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow-sm hover:border-indigo-300"}`}
+                          className={`flex items-center justify-between p-3 rounded-md cursor-pointer transition-all ${isHidden ?"bg-gray-50 dark:bg-gray-800  opacity-50":"bg-white dark:bg-gray-700  shadow-sm hover:border-indigo-300"}`}
                         >
                           <span className="text-xs font-semibold">
                             {col.replace(/([A-Z])/g, " $1").trim()}
@@ -510,7 +493,7 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
               </div>
             </div>
 
-            <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <div className="p-4 border-t bg-gray-50 dark:bg-gray-800">
               <Button
                 onClick={() => setIsCustomizeOpen && setIsCustomizeOpen(false)}
                 className="w-full bg-indigo-600 hover:bg-indigo-700 font-black uppercase tracking-widest text-[10px]"

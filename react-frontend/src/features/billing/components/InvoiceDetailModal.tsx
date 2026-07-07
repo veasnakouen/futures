@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Modal, ModalBody, ModalHeader } from "@/lib/flowbite-compat";
+import {Modal, ModalBody, ModalHeader} from "@/lib/flowbite-compat";
 import { InvoiceDto } from "../../../services/billingService";
 
 interface Props {
@@ -48,7 +48,7 @@ export default function InvoiceDetailModal({ isOpen, onClose, invoice }: Props) 
       <ModalBody className="p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         
         {/* Header */}
-        <div className="flex justify-between items-start mb-8 border-b border-gray-200 dark:border-gray-700 pb-6">
+        <div className="flex justify-between items-start mb-8 border-b pb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-wider">Invoice</h2>
             {invoice.headerText && (
@@ -65,11 +65,7 @@ export default function InvoiceDetailModal({ isOpen, onClose, invoice }: Props) 
             <div className="text-sm font-medium text-gray-500 mt-2">Due Date</div>
             <div className="font-semibold">{invoice.dueDate}</div>
             <div className="text-sm font-medium text-gray-500 mt-2">Status</div>
-            <div className={`inline-flex px-2 py-0.5 rounded text-xs font-medium mt-1 ${
-              invoice.status === 'PAID' ? 'bg-green-100 text-green-800' :
-              invoice.status === 'ISSUED' ? 'bg-blue-100 text-blue-800' :
-              'bg-gray-100 text-gray-800'
-            }`}>
+            <div className={`inline-flex px-2 py-0.5 rounded text-xs font-medium mt-1 ${ invoice.status ==='PAID'?'bg-green-100 text-green-800': invoice.status ==='ISSUED'?'bg-blue-100 text-blue-800':'bg-gray-100 text-gray-800'}`}>
               {invoice.status}
             </div>
           </div>
@@ -86,7 +82,7 @@ export default function InvoiceDetailModal({ isOpen, onClose, invoice }: Props) 
         <div className="mb-8 overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b-2 border-gray-200 dark:border-gray-700">
+              <tr className="border-b-2">
                 <th className="py-3 font-semibold text-gray-700 dark:text-gray-300">Item</th>
                 <th className="py-3 font-semibold text-gray-700 dark:text-gray-300">Description</th>
                 <th className="py-3 font-semibold text-gray-700 dark:text-gray-300 text-right">Qty</th>
@@ -96,7 +92,7 @@ export default function InvoiceDetailModal({ isOpen, onClose, invoice }: Props) 
             </thead>
             <tbody>
               {invoice.lineItems?.map((item, idx) => (
-                <tr key={idx} className="border-b border-gray-200 dark:border-gray-700">
+                <tr key={idx} className="border-b">
                   <td className="py-3">{item.itemCode}</td>
                   <td className="py-3 text-gray-600 dark:text-gray-400">{item.description}</td>
                   <td className="py-3 text-right">{item.quantity}</td>
@@ -112,7 +108,7 @@ export default function InvoiceDetailModal({ isOpen, onClose, invoice }: Props) 
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-8">
           {/* QR Code */}
           {invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' ? (
-            <div className="flex flex-col items-center bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div className="flex flex-col items-center bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow-sm">
               <div className="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Scan to Pay</div>
               <div className="bg-white p-2 rounded-lg shadow-sm">
                 <QRCodeSVG value={paymentUrl} size={120} />
@@ -140,7 +136,7 @@ export default function InvoiceDetailModal({ isOpen, onClose, invoice }: Props) 
                 </div>
               </>
             )}
-            <div className="flex justify-between text-xl font-bold text-gray-900 dark:text-white pt-2 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between text-xl font-bold text-gray-900 dark:text-white pt-2 border-t">
               <span>Grand Total:</span>
               <span>${invoice.grandTotal?.toFixed(2)}</span>
             </div>
@@ -149,7 +145,7 @@ export default function InvoiceDetailModal({ isOpen, onClose, invoice }: Props) 
 
         {/* Footer */}
         {invoice.footerText && (
-          <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-500 dark:text-gray-400 whitespace-pre-wrap">
+          <div className="mt-12 pt-6 border-t text-center text-sm text-gray-500 dark:text-gray-400 whitespace-pre-wrap">
             {invoice.footerText}
           </div>
         )}

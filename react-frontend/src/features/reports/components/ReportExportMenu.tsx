@@ -13,8 +13,8 @@ const ReportExportMenu: React.FC<ReportExportMenuProps> = ({
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose}></div>
-      <div className="absolute right-0 mt-4 w-64 bg-white dark:bg-gray-800 rounded-md shadow-2xl border dark:border-gray-700 z-50 overflow-hidden animate-slide-in">
-        <div className="p-4 border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/30">
+      <div className="absolute right-0 mt-4 w-64 bg-white dark:bg-gray-800 rounded-md shadow-2xl z-50 overflow-hidden animate-slide-in">
+        <div className="p-4 border-b bg-gray-50/50 dark:bg-gray-700/30">
           <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">
             Data Extraction Nodes
           </span>
@@ -43,7 +43,7 @@ const ReportExportMenu: React.FC<ReportExportMenuProps> = ({
             onDownload("excel");
             onClose();
           }}
-          className="w-full text-left px-6 py-5 text-sm hover:bg-emerald-50 dark:hover:bg-emerald-900/20 flex items-center gap-4 dark:text-white transition-all group border-t dark:border-gray-700"
+          className="w-full text-left px-6 py-5 text-sm hover:bg-emerald-50 dark:hover:bg-emerald-900/20 flex items-center gap-4 dark:text-white transition-all group border-t"
         >
           <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-md text-emerald-600 group-hover:scale-110 transition-transform">
             <FileSpreadsheet size={20} />
@@ -62,7 +62,7 @@ const ReportExportMenu: React.FC<ReportExportMenuProps> = ({
             window.print();
             onClose();
           }}
-          className="w-full text-left px-6 py-5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-4 dark:text-white transition-all group border-t dark:border-gray-700"
+          className="w-full text-left px-6 py-5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-4 dark:text-white transition-all group border-t"
         >
           <div className="p-3 bg-gray-100 dark:bg-gray-900/30 rounded-md text-gray-600 group-hover:scale-110 transition-transform">
             <Printer size={20} />

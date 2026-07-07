@@ -63,6 +63,11 @@ public class JwtUtils {
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(a -> a.getAuthority())
                 .toArray());
+
+        if (userDetails instanceof UserPrincipal) {
+            UserPrincipal principal = (UserPrincipal) userDetails;
+            claims.put("tenantId", principal.getBranch());
+        }
         return createToken(claims, userDetails.getUsername());
     }
 

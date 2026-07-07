@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Layout from "@/components/common/Layout";
-import { useLeaveStore } from "../store/leaveStore";
+import { 
+  useMyLeaves, 
+  useLeaveBalance, 
+  usePendingManagerLeaves, 
+  usePendingChairmanLeaves, 
+  useSubmitLeave, 
+  useManagerApproveLeave, 
+  useChairmanApproveLeave 
+} from "../hooks/useLeaves";
 import { useAuthStore } from "../store/authStore";
-import {
-  Button,
-  Alert,
-  Badge,
-  Spinner,
-  Modal,
-  Label,
-  Select,
-  TextInput,
-  Textarea,
-} from '@/lib/flowbite-compat';
+import {Button, Alert, Badge, Spinner, Modal, Label, Select, TextInput, Textarea} from '@/lib/flowbite-compat';
 import {
   Calendar,
   CheckCircle,
@@ -29,21 +27,6 @@ import api from "../services/api";
 
 const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
   const { user } = useAuthStore();
-  const {
-    myLeaves,
-    myBalance,
-    pendingManager,
-    pendingChairman,
-    fetchMyLeaves,
-    fetchMyBalance,
-    fetchPendingManager,
-    fetchPendingChairman,
-    submitLeave,
-    managerApprove,
-    chairmanApprove,
-    loading,
-  } = useLeaveStore();
-
   const [activeTab, setActiveTab] = useState<
     "my_leaves" | "manager_approvals" | "chairman_approvals"
   >("my_leaves");
@@ -104,13 +87,17 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
     }
   }, [user, isManager, isChairman]);
 
-  useEffect(() => {
-    if (employeeId === null) return;
-    fetchMyLeaves(employeeId);
-    fetchMyBalance(employeeId, new Date().getFullYear());
-    if (isManager) fetchPendingManager(employeeId);
-    if (isChairman) fetchPendingChairman(employeeId);
-  }, [employeeId, isManager, isChairman]);
+  const { data: myLeaves = [], isLoading: isLoadingMyLeaves } = useMyLeaves(employeeId);
+  const { data: myBalance, isLoading: isLoadingMyBalance } = useLeaveBalance(employeeId, new Date().getFullYear());
+  
+  const { data: pendingManager = [], isLoading: isLoadingManager } = usePendingManagerLeaves(isManager ? employeeId : null);
+  const { data: pendingChairman = [], isLoading: isLoadingChairman } = usePendingChairmanLeaves(isChairman ? employeeId : null);
+
+  const { mutateAsync: submitLeaveMutation, isPending: isSubmitting } = useSubmitLeave();
+  const { mutateAsync: managerApproveMutation } = useManagerApproveLeave();
+  const { mutateAsync: chairmanApproveMutation } = useChairmanApproveLeave();
+
+  const loading = isResolvingEmployee || isLoadingMyLeaves || isLoadingMyBalance || isLoadingManager || isLoadingChairman || isSubmitting;
 
   // Request Form State
   const [leaveType, setLeaveType] = useState("Annual");
@@ -124,7 +111,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
     if (!startDate || !endDate) return toast.error("Dates are required");
 
     try {
-      await submitLeave({
+      await submitLeaveMutation({
         employee: { id: employeeId || 1 },
         leaveType,
         duration,
@@ -194,7 +181,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
           <div className="space-y-6 animate-fade-in" key="my_leaves">
             {/* Balances */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
                   <div className="text-sm font-bold text-gray-400 uppercase">
                     Annual Leave
@@ -215,7 +202,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
                   <Calendar size={24} />
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
                   <div className="text-sm font-bold text-gray-400 uppercase">
                     Sick Leave
@@ -233,7 +220,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
                   <Activity size={24} />
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
                   <div className="text-sm font-bold text-gray-400 uppercase">
                     Special Leave
@@ -254,8 +241,8 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
             </div>
 
             {/* History & Request */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
-              <div className="p-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/30">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+              <div className="p-5 border-b flex justify-between items-center bg-gray-50 dark:bg-gray-900/30">
                 <h2 className="font-bold text-lg dark:text-white">
                   Leave History
                 </h2>
@@ -277,7 +264,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
                     {myLeaves.map((leave) => (
                       <tr
                         key={leave.id}
-                        className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        className="border-b hover:bg-gray-50 dark:hover:bg-gray-700/50"
                       >
                         <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                           {leave.leaveType}
@@ -312,10 +299,10 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
         {(activeTab === "manager_approvals" ||
           activeTab === "chairman_approvals") && (
           <div
-            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden animate-fade-in"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden animate-fade-in"
             key={activeTab}
           >
-            <div className="p-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
+            <div className="p-5 border-b bg-gray-50 dark:bg-gray-900/30">
               <h2 className="font-bold text-lg dark:text-white">
                 Pending Requests
               </h2>
@@ -338,7 +325,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
                   ).map((req) => (
                     <tr
                       key={req.id}
-                      className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      className="border-b hover:bg-gray-50 dark:hover:bg-gray-700/50"
                     >
                       <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                         EMP-{(req.employee as any)?.id}
@@ -357,16 +344,16 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
                           color="success"
                           onClick={() =>
                             activeTab === "manager_approvals"
-                              ? managerApprove(
-                                  req.id,
-                                  employeeId as number,
-                                  true,
-                                )
-                              : chairmanApprove(
-                                  req.id,
-                                  employeeId as number,
-                                  true,
-                                )
+                              ? managerApproveMutation({
+                                  id: req.id,
+                                  managerId: employeeId as number,
+                                  approved: true,
+                                })
+                              : chairmanApproveMutation({
+                                  id: req.id,
+                                  chairmanId: employeeId as number,
+                                  approved: true,
+                                })
                           }
                         >
                           Approve
@@ -376,18 +363,18 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
                           color="failure"
                           onClick={() =>
                             activeTab === "manager_approvals"
-                              ? managerApprove(
-                                  req.id,
-                                  employeeId as number,
-                                  false,
-                                  "Rejected",
-                                )
-                              : chairmanApprove(
-                                  req.id,
-                                  employeeId as number,
-                                  false,
-                                  "Rejected",
-                                )
+                              ? managerApproveMutation({
+                                  id: req.id,
+                                  managerId: employeeId as number,
+                                  approved: false,
+                                  comment: "Rejected",
+                                })
+                              : chairmanApproveMutation({
+                                  id: req.id,
+                                  chairmanId: employeeId as number,
+                                  approved: false,
+                                  comment: "Rejected",
+                                })
                           }
                         >
                           Reject
@@ -417,16 +404,16 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
 
       {/* Request Side Panel */}
       <div
-        className={`fixed inset-0 z-50 transition-opacity duration-300 ${showRequestModal ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 z-50 transition-opacity duration-300 ${showRequestModal ?"opacity-100 pointer-events-auto":"opacity-0 pointer-events-none"}`}
       >
         <div
           className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           onClick={() => setShowRequestModal(false)}
         />
         <div
-          className={`absolute top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 transform flex flex-col ${showRequestModal ? "translate-x-0" : "translate-x-full"}`}
+          className={`absolute top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-gray-800 shadow-xl transition-transform duration-300 transform flex flex-col ${showRequestModal ?"translate-x-0":"translate-x-full"}`}
         >
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/30">
+          <div className="p-5 border-b flex justify-between items-center bg-gray-50 dark:bg-gray-900/30">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">
               Request Time Off
             </h3>

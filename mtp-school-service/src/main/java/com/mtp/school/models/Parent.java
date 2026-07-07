@@ -32,6 +32,9 @@ public class Parent {
     @Column(nullable = true)
     private String email;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     private Gender gender;
     private LocalDate dateOfBirth;
     

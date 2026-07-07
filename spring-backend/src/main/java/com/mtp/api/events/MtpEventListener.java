@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class MtpEventListener {
 
-    @Autowired(required = false)  // Optional — graceful if WebSocket not configured
+    @Autowired(required = false) // Optional — graceful if WebSocket not configured
     private SimpMessagingTemplate messagingTemplate;
 
     @EventListener
@@ -76,7 +76,8 @@ public class MtpEventListener {
 
     /**
      * Pushes a notification payload to all subscribed WebSocket clients.
-     * React frontend subscribes via: stompClient.subscribe('/topic/notifications', handler)
+     * React frontend subscribes via: stompClient.subscribe('/topic/notifications',
+     * handler)
      */
     private void pushNotification(String type, String message) {
         if (messagingTemplate != null) {
@@ -84,8 +85,7 @@ public class MtpEventListener {
                 messagingTemplate.convertAndSend("/topic/notifications", Map.of(
                         "type", type,
                         "message", message,
-                        "timestamp", java.time.LocalDateTime.now().toString()
-                ));
+                        "timestamp", java.time.LocalDateTime.now().toString()));
             } catch (Exception e) {
                 log.warn("WebSocket push failed (non-critical): {}", e.getMessage());
             }

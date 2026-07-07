@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { posService, PosSaleDto } from '../../../services/posService';
 import { Receipt, Calendar, ChevronDown, ChevronRight, Package } from 'lucide-react';
 
+import { toast } from 'react-hot-toast';
+
 export default function SalesHistory() {
     const [sales, setSales] = useState<PosSaleDto[]>([]);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -14,8 +16,8 @@ export default function SalesHistory() {
         try {
             const data = await posService.getAllSales();
             setSales(data);
-        } catch (error) {
-            console.error("Failed to load sales", error);
+        } catch (error: any) {
+            toast.error(`Failed to load sales: ${error.message || "Unknown error"}`);
         }
     };
 
@@ -34,11 +36,11 @@ export default function SalesHistory() {
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-700 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                            <tr className="bg-gray-50 dark:bg-gray-800/50 border-b text-xs uppercase tracking-wider text-gray-500 font-bold">
                                 <th className="p-4 w-10"></th>
                                 <th className="p-4">Receipt #</th>
                                 <th className="p-4">Date</th>
@@ -75,14 +77,14 @@ export default function SalesHistory() {
                                     </tr>
                                     {expandedRow === sale.id && (
                                         <tr className="bg-gray-50 dark:bg-gray-800/30">
-                                            <td colSpan={6} className="p-0 border-t border-gray-100 dark:border-gray-700">
+                                            <td colSpan={6} className="p-0 border-t">
                                                 <div className="p-6 ml-10">
                                                     <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                                                         <Package size={16} className="text-gray-400" /> Itemized Receipt
                                                     </h4>
                                                     <table className="w-full max-w-3xl border-collapse">
                                                         <thead>
-                                                            <tr className="text-xs uppercase text-gray-500 border-b border-gray-200 dark:border-gray-600">
+                                                            <tr className="text-xs uppercase text-gray-500 border-b">
                                                                 <th className="pb-2">Product Name</th>
                                                                 <th className="pb-2 text-right">Quantity</th>
                                                                 <th className="pb-2 text-right">Unit Price</th>

@@ -11,11 +11,21 @@ import java.io.StringWriter;
 @ControllerAdvice
 public class DebugExceptionHandler {
 
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<java.util.Map<String, String>> handleResponseStatusException(org.springframework.web.server.ResponseStatusException ex) {
+        java.util.Map<String, String> response = new java.util.HashMap<>();
+        response.put("message", ex.getReason());
+        return new ResponseEntity<>(response, ex.getStatusCode());
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
+    public ResponseEntity<java.util.Map<String, String>> handleException(Exception ex) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
-        return new ResponseEntity<>(sw.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        java.util.Map<String, String> response = new java.util.HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("trace", sw.toString());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

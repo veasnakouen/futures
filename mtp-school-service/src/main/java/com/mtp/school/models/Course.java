@@ -3,6 +3,8 @@ package com.mtp.school.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Data
@@ -19,6 +21,9 @@ public class Course {
 
     private String name;
     private String description;
+
+    @Column(name = "image_url")
+    private String imageUrl;
     private Integer credits;
 
     // The branch where this course is held
@@ -33,9 +38,9 @@ public class Course {
 
     // The list of students enrolled in this course (mapped via Enrollment)
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<Enrollment> enrollments = new java.util.ArrayList<>();
+    private List<Enrollment> enrollments = new ArrayList<>();
 
     // The scheduling sessions for this course
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<CourseSchedule> schedules = new java.util.ArrayList<>();
+    private List<CourseSchedule> schedules = new ArrayList<>();
 }

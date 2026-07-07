@@ -1,13 +1,4 @@
-import {
-  Button,
-  Spinner,
-  Table,
-  Badge,
-  Card,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Button, Spinner, Table, Badge, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
 import {
   Plus,
   Briefcase,
@@ -75,21 +66,16 @@ const VacanciesPage = ({ isDark, setIsDark }: any) => {
     "deadline",
     "status",
   ]);
-  const [gridDensity, setGridDensity] = useState<
-    "large" | "medium" | "compact"
-  >("medium");
+  const [itemsPerRow, setItemsPerRow] = useState("4");
 
   const getGridClass = () => {
-    switch (gridDensity) {
-      case "large":
-        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 items-stretch";
-      case "medium":
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 items-stretch";
-      case "compact":
-        return "grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 items-stretch";
-      default:
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 items-stretch";
-    }
+    return `grid gap-6 ${
+      itemsPerRow === "3"
+        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        : itemsPerRow === "5"
+        ? "grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+        : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+    }`;
   };
 
   useEffect(() => {
@@ -485,7 +471,7 @@ const VacanciesPage = ({ isDark, setIsDark }: any) => {
   return (
     <>
       <div className="space-y-4 animate-fade-in max-w-[1600px] mx-auto pb-6">
-        <header className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 border border-gray-100 dark:border-gray-700/50">
+        <header className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-blue-600 text-white rounded-md shadow-xl shadow-blue-500/20">
               <Briefcase size={24} />
@@ -521,8 +507,8 @@ const VacanciesPage = ({ isDark, setIsDark }: any) => {
           setViewMode={setViewMode}
           visibleColumns={visibleColumns}
           setVisibleColumns={setVisibleColumns}
-          gridDensity={gridDensity}
-          setGridDensity={setGridDensity}
+          itemsPerRow={itemsPerRow}
+          setItemsPerRow={setItemsPerRow}
         />
 
         <div className="space-y-3">
@@ -560,7 +546,7 @@ const VacanciesPage = ({ isDark, setIsDark }: any) => {
               />
             )
           ) : (
-            <div className="py-32 text-center bg-white dark:bg-gray-800 rounded-md shadow-sm border border-dashed border-gray-200 dark:border-gray-700">
+            <div className="py-32 text-center bg-white dark:bg-gray-800 rounded-md shadow-sm">
               <Briefcase
                 size={64}
                 className="mx-auto text-gray-200 mb-6 opacity-20"

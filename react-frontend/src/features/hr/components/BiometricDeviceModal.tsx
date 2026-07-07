@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  Label,
-  TextInput,
-  Badge,
-  Button,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, ModalFooter, Label, TextInput, Badge, Button, Spinner} from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import {
   X,
@@ -27,7 +18,7 @@ import {
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useHRStore } from '@/store/hrStore';
+import { useQueryClient } from "@tanstack/react-query";
 import api from '@/services/api';
 import {
   biometricDeviceSchema,
@@ -56,7 +47,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
   const [devices, setDevices] = useState<BiometricDevice[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { fetchGlobalData } = useHRStore();
+  const queryClient = useQueryClient();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -218,7 +209,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
       const response = await api.post(
         `/hr/attendance/sync-device?ipAddress=${device.ipAddress}`,
       );
-      await fetchGlobalData();
+      await queryClient.invalidateQueries({ queryKey: ["attendance"] });
       toast.success(`Sync complete for ${device.name}`);
       fetchDevices();
     } catch (err: any) {
@@ -251,7 +242,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
       <ModalBody className="dark:bg-gray-800 p-0">
         <div className="flex flex-col md:flex-row h-[500px]">
           {/* Left Side: Device List */}
-          <div className="flex-1 p-8 overflow-y-auto border-r dark:border-gray-700">
+          <div className="flex-1 p-8 overflow-y-auto border-r">
             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
               Active Network Nodes
             </h4>
@@ -270,12 +261,12 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
                 devices.map((device) => (
                   <div
                     key={device.id}
-                    className="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-md border border-transparent hover:border-indigo-500/30 transition-all group"
+                    className="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-md border-transparent hover:border-indigo-500/30 transition-all group"
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`p-2 rounded-md ${device.status === "Online" ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600" : "bg-red-50 dark:bg-red-900/20 text-red-600"}`}
+                          className={`p-2 rounded-md ${device.status ==="Online"?"bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600":"bg-red-50 dark:bg-red-900/20 text-red-600"}`}
                         >
                           <Server size={18} />
                         </div>
@@ -298,7 +289,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
                       </Badge>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="p-3 bg-white dark:bg-gray-700 rounded-md shadow-sm border dark:border-gray-600">
+                      <div className="p-3 bg-white dark:bg-gray-700 rounded-md shadow-sm">
                         <p className="text-[8px] font-black text-gray-400 uppercase">
                           IP Address
                         </p>
@@ -306,7 +297,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
                           {device.ipAddress}:{device.port}
                         </p>
                       </div>
-                      <div className="p-3 bg-white dark:bg-gray-700 rounded-md shadow-sm border dark:border-gray-600">
+                      <div className="p-3 bg-white dark:bg-gray-700 rounded-md shadow-sm">
                         <p className="text-[8px] font-black text-gray-400 uppercase">
                           Last Sync
                         </p>
@@ -394,7 +385,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
             </div>
 
             {deviceUsers.length > 0 && (
-              <div className="mt-8 border-t dark:border-gray-700 pt-8 animate-fade-in">
+              <div className="mt-8 border-t pt-8 animate-fade-in">
                 <div className="flex justify-between items-center mb-6">
                   <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                     Hardware User Registry
@@ -408,7 +399,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
                     Clear View
                   </Button>
                 </div>
-                <div className="divide-y dark:divide-gray-700 border dark:border-gray-700 rounded-md overflow-hidden">
+                <div className="divide-y dark:divide-gray-700 rounded-md overflow-hidden">
                   <div className="grid grid-cols-2 text-[9px] font-black text-gray-400 uppercase bg-gray-50 dark:bg-gray-700/50 px-4 py-2">
                     <span>PIN</span>
                     <span>Device Name</span>
@@ -488,7 +479,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
               )}
             </div>
 
-            <div className="mt-10 p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-md border border-indigo-100 dark:border-indigo-900/20">
+            <div className="mt-10 p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-md border-indigo-100 dark:border-indigo-900/20">
               <div className="flex items-center gap-2 mb-2">
                 <ShieldCheck size={14} className="text-indigo-600" />
                 <p className="text-[9px] font-black text-indigo-600 uppercase">
@@ -503,7 +494,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
           </div>
         </div>
       </ModalBody>
-      <ModalFooter className="bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700">
+      <ModalFooter className="bg-gray-50 dark:bg-gray-800 border-t">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center gap-2">
             <Globe size={14} className="text-gray-400" />

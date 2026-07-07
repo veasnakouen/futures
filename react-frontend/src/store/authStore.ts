@@ -26,15 +26,33 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      login: (userData) => set({ user: userData, isAuthenticated: true }),
+      login: (userData) => {
+        set({ user: userData, isAuthenticated: true });
+        if (typeof window !== "undefined") {
+          const Cookies = require('js-cookie');
+          if (userData.token) Cookies.set("auth-token", userData.token, { path: '/' });
+          if (userData.tenantType) Cookies.set("tenant-type", userData.tenantType, { path: '/' });
+        }
+      },
       logout: () => {
         set({ user: null, isAuthenticated: false });
-        if (typeof window !== "undefined") window.localStorage.removeItem("auth-storage"); // Explicit clear if needed
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem("auth-storage"); // Explicit clear if needed
+          const Cookies = require('js-cookie');
+          Cookies.remove("auth-token", { path: '/' });
+          Cookies.remove("tenant-type", { path: '/' });
+        }
       },
       updateToken: (newToken) =>
-        set((state) => ({
-          user: state.user ? { ...state.user, token: newToken } : null,
-        })),
+        set((state) => {
+          if (typeof window !== "undefined") {
+            const Cookies = require('js-cookie');
+            if (newToken) Cookies.set("auth-token", newToken, { path: '/' });
+          }
+          return {
+            user: state.user ? { ...state.user, token: newToken } : null,
+          };
+        }),
       updateUser: (userData) =>
         set((state) => ({
           user: state.user ? { ...state.user, ...userData } : null,

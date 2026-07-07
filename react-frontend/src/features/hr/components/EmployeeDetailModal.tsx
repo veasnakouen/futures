@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Avatar,
-  Badge,
-  Card,
-  Progress,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalHeader, ModalBody, ModalFooter, Button, Avatar, Badge, Progress, Spinner} from '@/lib/flowbite-compat';
 import {
   Users,
   Clock,
@@ -111,7 +100,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
   return (
     <Modal show={isOpen} onClose={onClose} size="5xl">
-      <div className="flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700 rounded-t-md">
+      <div className="flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-800 border-b rounded-t-md">
         <div className="flex items-center gap-4">
           <div className="relative shrink-0 group/avatar">
             <Avatar
@@ -121,7 +110,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
               className="transition-all duration-300 group-hover/avatar:scale-110 ring-2 ring-gray-100 dark:ring-gray-700 group-hover/avatar:ring-blue-200 dark:group-hover/avatar:ring-blue-900 cursor-pointer"
             />
             {selectedEmployee?.status === "Active" && (
-              <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-gray-50 dark:border-gray-800 rounded-full z-10"></div>
+              <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 rounded-full z-10"></div>
             )}
           </div>
           <div>
@@ -137,14 +126,14 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-600"
+          className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 p-2 rounded-md shadow-sm"
         >
           <X size={20} />
         </button>
       </div>
       <ModalBody className="p-0 dark:bg-gray-800">
         <div className="flex h-[70vh] min-h-[500px] overflow-hidden">
-          <div className="w-64 bg-gray-50 dark:bg-gray-700/30 border-r dark:border-gray-700 flex flex-col justify-between overflow-y-auto">
+          <div className="w-64 bg-gray-50 dark:bg-gray-700/30 border-r flex flex-col justify-between overflow-y-auto">
             <nav className="space-y-1 p-6">
               {[
                 {
@@ -201,13 +190,13 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 <button
                   key={item.id}
                   onClick={() => setPortalTab(item.id as any)}
-                  className={`w-full flex items-center gap-3 px-4 py-3.5 text-xs font-bold transition-all border-b ${portalTab === item.id ? "border-blue-600 text-blue-600 bg-blue-50/50 dark:bg-blue-900/20" : "border-gray-100 dark:border-gray-700/50 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
+                  className={`w-full flex items-center gap-3 px-4 py-3.5 text-xs font-bold transition-all border-b ${portalTab === item.id ?"border-blue-600 text-blue-600 bg-blue-50/50 dark:bg-blue-900/20":" text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
                 >
                   {item.icon} {item.label}
                 </button>
               ))}
             </nav>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 shrink-0">
+            <div className="p-6 border-t shrink-0">
               <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">
                 Confidential Personnel Data • Authorized Access Only
               </p>
@@ -239,7 +228,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                       {/* Large Profile Photo */}
                       <div className="col-span-1">
-                        <div className="aspect-square rounded-md bg-gray-50 dark:bg-gray-700/50 border-4 border-white dark:border-gray-700 shadow-md overflow-hidden group relative">
+                        <div className="aspect-square rounded-md bg-gray-50 dark:bg-gray-700/50 border-4 border-white shadow-md overflow-hidden group relative">
                           {selectedEmployee?.photo ? (
                             <img
                               src={selectedEmployee.photo}
@@ -362,7 +351,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                       Career Roadmap
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm">
+                      <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm">
                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-4">
                           Current Designation
                         </p>
@@ -371,7 +360,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             selectedEmployee?.position ||
                             "Staff"}
                         </p>
-                        <div className="mt-6 pt-6 border-t dark:border-gray-700 flex justify-between items-center">
+                        <div className="mt-6 pt-6 border-t flex justify-between items-center">
                           <div>
                             <p className="text-[8px] font-black text-gray-400 uppercase">
                               Department
@@ -418,9 +407,9 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             </p>
                           </div>
                         </div>
-                      </Card>
+                      </div>
                       <div className="space-y-4">
-                        <div className="p-6 bg-emerald-50 dark:bg-emerald-900/10 rounded-md flex justify-between items-center border border-emerald-100 dark:border-emerald-900/20">
+                        <div className="p-6 bg-emerald-50 dark:bg-emerald-900/10 rounded-md flex justify-between items-center border-emerald-100 dark:border-emerald-900/20">
                           <div>
                             <p className="text-[9px] font-black text-emerald-600 uppercase">
                               Employment Status
@@ -433,7 +422,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             Active
                           </Badge>
                         </div>
-                        <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-md flex justify-between items-center border border-blue-100 dark:border-blue-900/20">
+                        <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-md flex justify-between items-center border-blue-100 dark:border-blue-900/20">
                           <div>
                             <p className="text-[9px] font-black text-blue-600 uppercase">
                               Compensation Tier
@@ -457,7 +446,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                         Organization Attributes
                       </h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="p-4 border border-dashed dark:border-gray-700 rounded-md text-center">
+                        <div className="p-4 rounded-md text-center">
                           <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
                             Marital Status
                           </p>
@@ -465,7 +454,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             {selectedEmployee?.maritalStatus || "Single"}
                           </p>
                         </div>
-                        <div className="p-4 border border-dashed dark:border-gray-700 rounded-md text-center">
+                        <div className="p-4 rounded-md text-center">
                           <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
                             Children
                           </p>
@@ -473,7 +462,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             {selectedEmployee?.children || "0"}
                           </p>
                         </div>
-                        <div className="p-4 border border-dashed dark:border-gray-700 rounded-md text-center">
+                        <div className="p-4 rounded-md text-center">
                           <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
                             {selectedEmployee?.identityCardType ||
                               "National ID"}
@@ -482,7 +471,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             {selectedEmployee?.identityCardNumber || "N/A"}
                           </p>
                         </div>
-                        <div className="p-4 border border-dashed dark:border-gray-700 rounded-md text-center">
+                        <div className="p-4 rounded-md text-center">
                           <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
                             Biometric Status
                           </p>
@@ -491,7 +480,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               "Not Enrolled"}
                           </p>
                         </div>
-                        <div className="p-4 border border-dashed dark:border-gray-700 rounded-md text-center">
+                        <div className="p-4 rounded-md text-center">
                           <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
                             Biometric Hardware ID
                           </p>
@@ -512,7 +501,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               .map((f: any, i: number) => (
                                 <div
                                   key={i}
-                                  className="p-4 border border-dashed dark:border-gray-700 rounded-md text-center"
+                                  className="p-4 rounded-md text-center"
                                 >
                                   <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
                                     {f.key}
@@ -532,7 +521,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                       <div className="w-1.5 h-1.5 rounded-md bg-red-600"></div>{" "}
                       Emergency Protocol
                     </h4>
-                    <div className="p-8 bg-red-50/50 dark:bg-red-900/10 rounded-md border border-red-100 dark:border-red-900/20 flex items-center gap-8">
+                    <div className="p-8 bg-red-50/50 dark:bg-red-900/10 rounded-md border-red-100 dark:border-red-900/20 flex items-center gap-8">
                       <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-md flex items-center justify-center shadow-inner">
                         <ShieldCheck size={32} />
                       </div>
@@ -571,7 +560,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
               {portalTab === "performance" && (
                 <div className="space-y-10 animate-fade-in">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm h-[400px]">
+                    <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm h-[400px]">
                       <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
                         Competency Radar
                       </h5>
@@ -606,9 +595,9 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                           />
                         </RadarChart>
                       </ResponsiveContainer>
-                    </Card>
+                    </div>
                     <div className="space-y-6">
-                      <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm bg-blue-600 text-white">
+                      <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm bg-blue-600 text-white">
                         <h5 className="text-[10px] font-black uppercase tracking-widest mb-4 opacity-60">
                           Strategic Performance Note
                         </h5>
@@ -626,8 +615,8 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             Reviewed by Director of Operations
                           </p>
                         </div>
-                      </Card>
-                      <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm">
+                      </div>
+                      <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm">
                         <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">
                           Quarterly KPI Growth
                         </h5>
@@ -671,7 +660,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             </AreaChart>
                           </ResponsiveContainer>
                         </div>
-                      </Card>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -693,7 +682,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                       <Spinner size="xl" />
                     </div>
                   ) : attendanceData.length === 0 ? (
-                    <div className="py-20 text-center border border-dashed dark:border-gray-700 rounded-md">
+                    <div className="py-20 text-center rounded-md">
                       <Clock className="mx-auto text-gray-400 mb-4" size={40} />
                       <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">
                         No Attendance Records Found
@@ -704,7 +693,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                       {attendanceData.map((log, i) => (
                         <div
                           key={i}
-                          className="flex justify-between items-center p-5 bg-gray-50 dark:bg-gray-700/30 rounded-md border border-transparent hover:border-blue-500/30 transition-all"
+                          className="flex justify-between items-center p-5 bg-gray-50 dark:bg-gray-700/30 rounded-md border-transparent hover:border-blue-500/30 transition-all"
                         >
                           <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center">
@@ -728,7 +717,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                                 : "Active"}
                             </p>
                             <p
-                              className={`text-[8px] font-black uppercase ${log.status === "Present" ? "text-emerald-500" : "text-amber-500"}`}
+                              className={`text-[8px] font-black uppercase ${log.status ==="Present"?"text-emerald-500":"text-amber-500"}`}
                             >
                               {log.status || "Active Session"}
                             </p>
@@ -766,7 +755,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                       </div>
                     ))}
                   </div>
-                  <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm">
+                  <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm">
                     <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
                       Leave Request History
                     </h5>
@@ -776,7 +765,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                         <Spinner size="lg" />
                       </div>
                     ) : leaveData.length === 0 ? (
-                      <div className="py-12 text-center border border-dashed dark:border-gray-700 rounded-md">
+                      <div className="py-12 text-center rounded-md">
                         <Calendar
                           className="mx-auto text-gray-400 mb-3"
                           size={32}
@@ -819,14 +808,14 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                         ))}
                       </div>
                     )}
-                  </Card>
+                  </div>
                 </div>
               )}
 
               {portalTab === "payroll" && (
                 <div className="space-y-8 animate-fade-in">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md bg-gradient-to-br from-gray-900 to-blue-900 text-white">
+                    <div className="p-10 rounded-md dark:bg-gray-800 border-none shadow-md bg-gradient-to-br from-gray-900 to-blue-900 text-white">
                       <div className="flex justify-between items-start mb-8">
                         <div>
                           <p className="text-[10px] font-black uppercase opacity-60">
@@ -839,7 +828,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                         <Badge color="info">Pay Grade E-4</Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 bg-white/10 rounded-md border border-white/10">
+                        <div className="p-4 bg-white/10 rounded-md border-white/10">
                           <p className="text-[8px] font-black uppercase opacity-60">
                             Bank Account
                           </p>
@@ -854,16 +843,16 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               ) || "N/A"}
                           </p>
                         </div>
-                        <div className="p-4 bg-white/10 rounded-md border border-white/10">
+                        <div className="p-4 bg-white/10 rounded-md border-white/10">
                           <p className="text-[8px] font-black uppercase opacity-60">
                             Last Disbursement
                           </p>
                           <p className="text-xs font-black">April 30, 2024</p>
                         </div>
                       </div>
-                    </Card>
+                    </div>
 
-                    <Card className="p-8 rounded-md dark:bg-gray-800 border dark:border-gray-700 shadow-sm">
+                    <div className="p-8 rounded-md dark:bg-gray-800 shadow-sm">
                       <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6 flex justify-between">
                         <span>Detailed Earnings Preview</span>
                         <span className="text-blue-600">Q2 2024</span>
@@ -895,14 +884,14 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               {item.label}
                             </span>
                             <span
-                              className={`font-mono font-black ${item.type === "plus" ? "text-emerald-500" : "text-red-500"}`}
+                              className={`font-mono font-black ${item.type ==="plus"?"text-emerald-500":"text-red-500"}`}
                             >
                               {item.val < 0 ? "-" : "+"}$
                               {Math.abs(item.val).toLocaleString()}
                             </span>
                           </div>
                         ))}
-                        <div className="pt-4 border-t-2 border-dashed dark:border-gray-700 flex justify-between items-center">
+                        <div className="pt-4 border-t-2 flex justify-between items-center">
                           <span className="text-[10px] font-black uppercase dark:text-white">
                             Estimated Net Payable
                           </span>
@@ -916,7 +905,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                           </span>
                         </div>
                       </div>
-                    </Card>
+                    </div>
                   </div>
                 </div>
               )}
@@ -998,11 +987,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                                 window.open(fileUrl, "_blank");
                               }
                             }}
-                            className={`p-4 rounded-lg border flex flex-col items-center gap-2 group cursor-pointer transition-all ${
-                              fileUrl
-                                ? "bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400"
-                                : "bg-gray-50 dark:bg-gray-700/50 border-gray-100 dark:border-gray-600"
-                            }`}
+                            className={`p-4 rounded-lg flex flex-col items-center gap-2 group cursor-pointer transition-all ${ fileUrl ?"bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400":"bg-gray-50 dark:bg-gray-700/50 "}`}
                           >
                             {fileUrl && (
                               <div className="absolute top-2 right-2 flex gap-1 z-10">
@@ -1029,7 +1014,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                                     }
                                     window.open(fileUrl, "_blank");
                                   }}
-                                  className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+                                  className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
                                   title="Download Attachment"
                                 >
                                   <Download size={12} />
@@ -1037,7 +1022,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               </div>
                             )}
                             <div
-                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${fileUrl ? "bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400" : "bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
+                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${fileUrl ?"bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400":"bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
                             >
                               {doc.icon}
                             </div>
@@ -1045,7 +1030,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               {doc.label}
                             </span>
                             <span
-                              className={`text-[9px] font-bold ${fileUrl ? "text-green-600 dark:text-green-400" : "text-gray-400"}`}
+                              className={`text-[9px] font-bold ${fileUrl ?"text-green-600 dark:text-green-400":"text-gray-400"}`}
                             >
                               {fileUrl
                                 ? "Attached (Click to view)"
@@ -1066,7 +1051,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                   )?.value;
                   return (
                     <div className="animate-fade-in space-y-8">
-                      <div className="p-8 bg-gray-50 dark:bg-gray-700/20 rounded-md border dark:border-gray-700">
+                      <div className="p-8 bg-gray-50 dark:bg-gray-700/20 rounded-md">
                         <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
                           Historical Placements
                         </h4>
@@ -1113,7 +1098,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                   }
                   return (
                     <div className="animate-fade-in space-y-8">
-                      <div className="p-8 bg-gray-50 dark:bg-gray-700/20 rounded-md border dark:border-gray-700">
+                      <div className="p-8 bg-gray-50 dark:bg-gray-700/20 rounded-md">
                         <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
                           Academic Background
                         </h4>
@@ -1122,7 +1107,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             {eduList.map((edu, idx) => (
                               <div
                                 key={idx}
-                                className="flex gap-4 items-start pb-6 border-b last:border-b-0 dark:border-gray-700"
+                                className="flex gap-4 items-start pb-6 border-b last:border-b-0"
                               >
                                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md">
                                   <GraduationCap size={20} />
@@ -1183,7 +1168,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                   }
                   return (
                     <div className="animate-fade-in space-y-8">
-                      <div className="p-8 bg-gray-50 dark:bg-gray-700/20 rounded-md border dark:border-gray-700">
+                      <div className="p-8 bg-gray-50 dark:bg-gray-700/20 rounded-md">
                         <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
                           Professional Experience
                         </h4>
@@ -1192,7 +1177,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                             {workList.map((work, idx) => (
                               <div
                                 key={idx}
-                                className="flex gap-4 items-start pb-6 border-b last:border-b-0 dark:border-gray-700"
+                                className="flex gap-4 items-start pb-6 border-b last:border-b-0"
                               >
                                 <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-md">
                                   <Briefcase size={20} />

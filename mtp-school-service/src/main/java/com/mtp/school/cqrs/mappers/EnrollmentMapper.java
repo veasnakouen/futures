@@ -16,5 +16,7 @@ public interface EnrollmentMapper {
 
     @Mapping(source = "student.id", target = "studentId")
     @Mapping(source = "course.id", target = "courseId")
+    @Mapping(target = "studentName", expression = "java(entity.getStudent() != null ? entity.getStudent().getFirstName() + \" \" + entity.getStudent().getLastName() : null)")
+    @Mapping(source = "course.name", target = "courseName")
     EnrollmentQueryResultDto toDto(Enrollment entity);
 }

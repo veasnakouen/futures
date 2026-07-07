@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Spinner } from '@/lib/flowbite-compat';
+import {Spinner} from '@/lib/flowbite-compat';
 import {
   Send,
   Users,
@@ -167,9 +167,9 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
 
   return (
     <Layout isDark={isDark} setIsDark={setIsDark} title="Team Chat">
-      <div className="flex h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 animate-fade-in">
+      <div className="flex h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-gray-900 animate-fade-in">
         {/* Modern Sidebar */}
-        <div className="w-80 bg-gray-50 dark:bg-gray-900/50 flex flex-col border-r border-gray-100 dark:border-gray-800">
+        <div className="w-80 bg-gray-50 dark:bg-gray-900/50 flex flex-col border-r">
           {/* Sidebar Header */}
           <div className="p-6 pb-4">
             <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
@@ -198,13 +198,10 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
               </div>
               <button
                 onClick={() => switchChannel("public")}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeChannel === "public"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                  : "hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
-                  }`}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeChannel ==="public"?"bg-blue-600 text-white shadow-md shadow-blue-500/20":"hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"}`}
               >
                 <div
-                  className={`p-2 rounded-lg ${activeChannel === "public" ? "bg-white/20" : "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"}`}
+                  className={`p-2 rounded-lg ${activeChannel ==="public"?"bg-white/20":"bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"}`}
                 >
                   <Hash size={16} />
                 </div>
@@ -228,20 +225,17 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
                     <button
                       key={idx}
                       onClick={() => switchChannel(onlineUser)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all group ${isActive
-                        ? "bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700"
-                        : "hover:bg-white/50 dark:hover:bg-gray-800/50 border border-transparent"
-                        }`}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all group ${isActive ?"bg-white dark:bg-gray-800 shadow-sm ":"hover:bg-white/50 dark:hover:bg-gray-800/50 border-transparent"}`}
                     >
                       <div className="relative">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-black shadow-inner">
                           {onlineUser?.substring(0, 2).toUpperCase() || "U"}
                         </div>
-                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full shadow-sm"></div>
+                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full shadow-sm"></div>
                       </div>
                       <div className="flex-1 min-w-0 text-left">
                         <p
-                          className={`text-sm truncate ${isActive ? "font-black text-gray-900 dark:text-white" : "font-bold text-gray-700 dark:text-gray-300"}`}
+                          className={`text-sm truncate ${isActive ?"font-black text-gray-900 dark:text-white":"font-bold text-gray-700 dark:text-gray-300"}`}
                         >
                           {onlineUser}
                         </p>
@@ -251,7 +245,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
                       </div>
                       <MessageCircle
                         size={14}
-                        className={`${isActive ? "text-blue-500 opacity-100" : "text-gray-300 opacity-0 group-hover:opacity-100"} transition-opacity`}
+                        className={`${isActive ?"text-blue-500 opacity-100":"text-gray-300 opacity-0 group-hover:opacity-100"} transition-opacity`}
                       />
                     </button>
                   );
@@ -264,13 +258,10 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
         {/* Chat Area */}
         <div className="flex-1 flex flex-col bg-white dark:bg-gray-900 relative">
           {/* Header */}
-          <div className="h-[72px] px-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md absolute top-0 left-0 right-0 z-10">
+          <div className="h-[72px] px-6 border-b flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md absolute top-0 left-0 right-0 z-10">
             <div className="flex items-center gap-4">
               <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-inner ${activeChannel === "public"
-                  ? "bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/40 text-blue-600 dark:text-blue-400"
-                  : "bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 text-purple-600 dark:text-purple-400"
-                  }`}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-inner ${activeChannel ==="public"?"bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/40 text-blue-600 dark:text-blue-400":"bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 text-purple-600 dark:text-purple-400"}`}
               >
                 {activeChannel === "public" ? (
                   <Hash size={24} />
@@ -345,7 +336,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
               return (
                 <div
                   key={idx}
-                  className={`flex gap-3 max-w-[80%] ${isMe ? "ml-auto flex-row-reverse" : ""} group animate-in fade-in slide-in-from-bottom-2 duration-300`}
+                  className={`flex gap-3 max-w-[80%] ${isMe ?"ml-auto flex-row-reverse":""} group animate-in fade-in slide-in-from-bottom-2 duration-300`}
                 >
                   {!isMe && (
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md shrink-0 mt-auto mb-1">
@@ -354,7 +345,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
                   )}
 
                   <div
-                    className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                    className={`flex flex-col ${isMe ?"items-end":"items-start"}`}
                   >
                     {!isMe && (
                       <span className="text-[11px] font-bold text-gray-400 ml-1 mb-1">
@@ -363,16 +354,13 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
                     )}
 
                     <div
-                      className={`relative px-5 py-3 text-[15px] leading-relaxed shadow-sm ${isMe
-                        ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl rounded-br-sm"
-                        : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-gray-700 rounded-2xl rounded-bl-sm"
-                        }`}
+                      className={`relative px-5 py-3 text-[15px] leading-relaxed shadow-sm ${isMe ?"bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl rounded-br-sm":"bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100  rounded-2xl rounded-bl-sm"}`}
                     >
                       {msg.content}
                     </div>
 
                     <div
-                      className={`flex items-center gap-1 mt-1 ${isMe ? "mr-1" : "ml-1"}`}
+                      className={`flex items-center gap-1 mt-1 ${isMe ?"mr-1":"ml-1"}`}
                     >
                       <span className="text-[10px] font-semibold text-gray-400">
                         {msg.timestamp ? format(msg.timestamp, "HH:mm") : "Now"}
@@ -423,7 +411,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
                     ? "Message Public Square..."
                     : `Message ${activeChannel}...`
                 }
-                className="w-full pl-14 pr-16 py-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none dark:text-white shadow-inner transition-all"
+                className="w-full pl-14 pr-16 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl text-sm focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none dark:text-white shadow-inner transition-all"
               />
 
               <button

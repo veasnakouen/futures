@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Label,
-  TextInput,
-  Select,
-  Alert,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import { useTranslation } from "react-i18next";
+import {Button, Label, TextInput, Select, Alert, Spinner} from '@/lib/flowbite-compat';
 import {
   Database,
   Server,
@@ -22,6 +15,7 @@ import api from '@/services/api';
 import toast from "react-hot-toast";
 
 const SwitchDatabase: React.FC = () => {
+  const { t } = useTranslation();
   const [dbInfo, setDbInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [switching, setSwitching] = useState(false);
@@ -58,7 +52,7 @@ const SwitchDatabase: React.FC = () => {
       setBackupSettings(settingsRes.data);
     } catch (err: any) {
       console.error("Failed to fetch database info", err);
-      toast.error("Failed to load active database info");
+      toast.error(t("failedToLoadDbInfo"));
     } finally {
       setLoading(false);
     }
@@ -69,7 +63,7 @@ const SwitchDatabase: React.FC = () => {
     const dbToSwitch = isCustom ? customDb.trim() : selectedDb;
 
     if (!dbToSwitch) {
-      toast.error("Please enter or select a database name");
+      toast.error(t("enterOrSelectDbName"));
       return;
     }
 
@@ -78,14 +72,14 @@ const SwitchDatabase: React.FC = () => {
       const res = await api.post("/admin/database/switch", {
         databaseName: dbToSwitch,
       });
-      toast.success(res.data.message || `Switched database to ${dbToSwitch}`);
+      toast.success(res.data.message || t("switchedDbTo", { name: dbToSwitch }));
       await fetchDatabaseInfo();
       setCustomDb("");
       setIsCustom(false);
     } catch (err: any) {
       console.error("Failed to switch database", err);
       const msg = err.response?.data || err.message || "Switch failed";
-      toast.error(`Database Switch Failed: ${msg}`);
+      toast.error(t("dbSwitchFailed", { msg }));
     } finally {
       setSwitching(false);
     }
@@ -98,14 +92,14 @@ const SwitchDatabase: React.FC = () => {
       const res = await api.post("/admin/database/backup", {
         type: backupType,
       });
-      toast.success(res.data.message || `Database backup successful`);
+      toast.success(res.data.message || t("dbBackupSuccess"));
       if (res.data.file) {
-        toast.success(`Saved to: ${res.data.file}`, { duration: 6000 });
+        toast.success(t("savedTo", { file: res.data.file }), { duration: 6000 });
       }
     } catch (err: any) {
       console.error("Failed to backup database", err);
       const msg = err.response?.data || err.message || "Backup failed";
-      toast.error(`Backup Failed: ${msg}`);
+      toast.error(t("backupFailed", { msg }));
     } finally {
       setBackingUp(false);
     }
@@ -116,10 +110,10 @@ const SwitchDatabase: React.FC = () => {
     try {
       setSavingSettings(true);
       await api.post("/admin/database/backup-settings", backupSettings);
-      toast.success("Backup settings saved successfully!");
+      toast.success(t("backupSettingsSavedSuccess"));
     } catch (err: any) {
       console.error("Failed to save settings", err);
-      toast.error("Failed to save backup settings");
+      toast.error(t("failedToSaveBackupSettings"));
     } finally {
       setSavingSettings(false);
     }
@@ -129,24 +123,27 @@ const SwitchDatabase: React.FC = () => {
     <div className="space-y-8 animate-fade-in max-w-5xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* Current Database Info Card */}
-        <Card className="lg:col-span-2 p-6 rounded-md dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-850 shadow-lg relative overflow-hidden">
+        <div className="lg:col-span-2 p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-blue-100/50 dark:shadow-black/40 border border-white/20 dark:border-gray-700/50 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 dark:bg-blue-400/5 rounded-md blur-2xl pointer-events-none"></div>
 
           <div className="flex justify-between items-center mb-6">
-            <div className="p-3 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-md shadow-sm">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl shadow-lg shadow-blue-200 dark:shadow-blue-900/30 group-hover:scale-110 transition-transform duration-300">
               <Database size={24} />
             </div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-black uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-900/30">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-md animate-pulse"></span>{" "}
-              Active
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>{" "}
+              {t("active")}
             </span>
           </div>
 
           <h3 className="text-lg font-black dark:text-white tracking-tight">
-            Active Connection Node
+            {t("activeConnectionNode")}
           </h3>
           <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-1">
-            Current workspace SQL Server target database
+            {t("currentWorkspaceTargetDb")}
           </p>
 
           {loading ? (
@@ -155,27 +152,27 @@ const SwitchDatabase: React.FC = () => {
             </div>
           ) : (
             <div className="mt-8 space-y-4">
-              <div className="p-3 bg-gray-50 dark:bg-gray-900/40 rounded-md border border-gray-100/50 dark:border-gray-800/40">
+              <div className="p-3 bg-gray-50 dark:bg-gray-900/40 rounded-md /50">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                  Database Name
+                  {t("databaseName")}
                 </p>
                 <p className="text-lg font-black text-gray-900 dark:text-white mt-0.5 select-all">
                   {dbInfo?.currentDb || "unknown"}
                 </p>
               </div>
 
-              <div className="p-3 bg-gray-50 dark:bg-gray-900/40 rounded-md border border-gray-100/50 dark:border-gray-800/40">
+              <div className="p-3 bg-gray-50 dark:bg-gray-900/40 rounded-md /50">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                  Hikari Connection Pool
+                  {t("hikariPool")}
                 </p>
                 <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-1 select-all">
                   {dbInfo?.poolName || "MtpHikariPool"}
                 </p>
               </div>
 
-              <div className="p-3 bg-gray-50 dark:bg-gray-900/40 rounded-md border border-gray-100/50 dark:border-gray-800/40">
+              <div className="p-3 bg-gray-50 dark:bg-gray-900/40 rounded-md /50">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                  JDBC String
+                  {t("jdbcString")}
                 </p>
                 <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mt-1 font-mono break-all line-clamp-2 select-all hover:line-clamp-none transition-all duration-300 cursor-pointer">
                   {dbInfo?.jdbcUrl || "unknown"}
@@ -183,15 +180,17 @@ const SwitchDatabase: React.FC = () => {
               </div>
             </div>
           )}
-        </Card>
+        </div>
 
         {/* Database Switcher Panel */}
-        <Card className="lg:col-span-3 p-6 rounded-md dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-850 shadow-lg">
+        <div className="lg:col-span-3 p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-blue-100/50 dark:shadow-black/40 border border-white/20 dark:border-gray-700/50">
           <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <Server className="text-blue-600 dark:text-blue-400" />
-              <h3 className="text-lg font-black dark:text-white tracking-tight">
-                Database Router Configuration
+            <div className="flex items-center gap-4">
+              <div className="p-2.5 bg-gradient-to-br from-gray-800 to-gray-600 dark:from-gray-700 dark:to-gray-500 text-white rounded-xl shadow-md">
+                <Server size={20} />
+              </div>
+              <h3 className="text-xl font-black bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                {t("dbRouterConfig")}
               </h3>
             </div>
             <Button
@@ -203,9 +202,9 @@ const SwitchDatabase: React.FC = () => {
             >
               <RefreshCw
                 size={12}
-                className={`mr-1.5 ${loading ? "animate-spin" : ""}`}
+                className={`mr-1.5 ${loading ?"animate-spin":""}`}
               />{" "}
-              Refresh
+              {t("refresh")}
             </Button>
           </div>
 
@@ -213,17 +212,13 @@ const SwitchDatabase: React.FC = () => {
             <Alert
               color="warning"
               icon={AlertOctagon}
-              className="rounded-md border-none shadow-sm dark:bg-amber-950/20 dark:text-amber-300"
+              className="rounded-xl border border-amber-200/50 dark:border-amber-900/30 shadow-md dark:bg-amber-950/20 dark:text-amber-300 backdrop-blur-sm"
             >
               <div className="text-xs leading-relaxed font-semibold">
                 <span className="font-black uppercase tracking-wider block mb-1">
-                  Critical Notice:
+                  {t("criticalNotice")}
                 </span>
-                Switching target databases will immediately evict active
-                connection pool resources, clear local runtime cache buffers,
-                and establish active JDBC sockets to the new database source.
-                Active user sessions are retained, but data metrics will reflect
-                the new database context.
+                {t("dbSwitchWarning")}
               </div>
             </Alert>
 
@@ -232,16 +227,16 @@ const SwitchDatabase: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsCustom(false)}
-                  className={`flex-1 py-2 px-3 rounded-md border text-xs font-black uppercase tracking-wider transition-all ${!isCustom ? "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/40" : "bg-transparent border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50"}`}
+                  className={`flex-1 py-2 px-3 rounded-md text-xs font-black uppercase tracking-wider transition-all ${!isCustom ?"bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/40":"bg-transparent  text-gray-500 hover:bg-gray-50"}`}
                 >
-                  Select Database
+                  {t("selectDatabase")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsCustom(true)}
-                  className={`flex-1 py-2 px-3 rounded-md border text-xs font-black uppercase tracking-wider transition-all ${isCustom ? "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/40" : "bg-transparent border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50"}`}
+                  className={`flex-1 py-2 px-3 rounded-md text-xs font-black uppercase tracking-wider transition-all ${isCustom ?"bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/40":"bg-transparent  text-gray-500 hover:bg-gray-50"}`}
                 >
-                  Custom Target Name
+                  {t("customTargetName")}
                 </button>
               </div>
 
@@ -251,7 +246,7 @@ const SwitchDatabase: React.FC = () => {
                     htmlFor="db-select"
                     className="text-xs font-black uppercase tracking-wider text-gray-400 dark:text-gray-500"
                   >
-                    Available Databases
+                    {t("availableDatabases")}
                   </Label>
                   <Select
                     id="db-select"
@@ -261,7 +256,7 @@ const SwitchDatabase: React.FC = () => {
                     required
                   >
                     <option value="" disabled>
-                      -- Select Target Database --
+                      {t("selectTargetDatabasePlaceholder")}
                     </option>
                     <option value="MtpAppDB2018_full">
                       MtpAppDB2018_full (Production Primary)
@@ -283,21 +278,19 @@ const SwitchDatabase: React.FC = () => {
                     htmlFor="custom-db"
                     className="text-xs font-black uppercase tracking-wider text-gray-400 dark:text-gray-500"
                   >
-                    Custom SQL Database Target Name
+                    {t("customSqlDbTargetName")}
                   </Label>
                   <TextInput
                     id="custom-db"
                     type="text"
                     className="mt-1.5 font-bold"
-                    placeholder="e.g. MtpAppDB2018_sandbox"
+                    placeholder={t("customDbPlaceholder")}
                     value={customDb}
                     onChange={(e) => setCustomDb(e.target.value)}
                     required
                   />
                   <p className="text-[10px] text-gray-400 mt-1.5 leading-relaxed">
-                    Database target must exist inside the same SQL Server
-                    Express instance as configured in your application
-                    properties.
+                    {t("dbMustExistSameInstance")}
                   </p>
                 </div>
               )}
@@ -311,22 +304,21 @@ const SwitchDatabase: React.FC = () => {
             >
               {switching ? (
                 <>
-                  <Spinner size="sm" className="mr-2" /> Connecting &
-                  Establishing Pool Socket...
+                  <Spinner size="sm" className="mr-2" /> {t("connectingEstablishingPool")}
                 </>
               ) : (
                 <>
                   <RefreshCw size={14} className="mr-2 animate-pulse" />{" "}
-                  Re-Route Active Datasource
+                  {t("reRouteActiveDatasource")}
                 </>
               )}
             </Button>
           </form>
-        </Card>
+        </div>
       </div>
 
       {/* Database Backup Panel */}
-      <Card className="w-full p-6 rounded-md dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-850 shadow-lg mt-8 relative overflow-hidden">
+      <div className="w-full p-6 rounded-md dark:bg-gray-800/40 dark:backdrop-blur-md shadow-lg mt-8 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-400/5 rounded-md blur-2xl pointer-events-none"></div>
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
@@ -334,7 +326,7 @@ const SwitchDatabase: React.FC = () => {
               <Save size={20} />
             </div>
             <h3 className="text-lg font-black dark:text-white tracking-tight">
-              Database Backup & Recovery
+              {t("dbBackupAndRecovery")}
             </h3>
           </div>
         </div>
@@ -346,12 +338,9 @@ const SwitchDatabase: React.FC = () => {
           >
             <div className="text-xs leading-relaxed font-semibold">
               <span className="font-black uppercase tracking-wider block mb-1">
-                Backup Operations:
+                {t("backupOperations")}
               </span>
-              Generating a backup will serialize the current active database
-              into a native .bak file on the server. Full backups capture the
-              entire database state, while differential backups only capture
-              changes since the last full backup.
+              {t("backupOperationsDesc")}
             </div>
           </Alert>
 
@@ -360,7 +349,7 @@ const SwitchDatabase: React.FC = () => {
               htmlFor="backup-type"
               className="text-xs font-black uppercase tracking-wider text-gray-400 dark:text-gray-500"
             >
-              Select Backup Type
+              {t("selectBackupType")}
             </Label>
             <Select
               id="backup-type"
@@ -370,10 +359,10 @@ const SwitchDatabase: React.FC = () => {
               required
             >
               <option value="full">
-                Full Backup (.bak) - Complete Snapshot
+                {t("fullBackup")}
               </option>
               <option value="differential">
-                Differential Backup (.bak) - Changes Only
+                {t("differentialBackup")}
               </option>
             </Select>
           </div>
@@ -386,19 +375,19 @@ const SwitchDatabase: React.FC = () => {
           >
             {backingUp ? (
               <>
-                <Spinner size="sm" className="mr-2" /> Generating Backup File...
+                <Spinner size="sm" className="mr-2" /> {t("generatingBackupFile")}
               </>
             ) : (
               <>
-                <Save size={14} className="mr-2" /> Trigger Database Backup
+                <Save size={14} className="mr-2" /> {t("triggerDatabaseBackup")}
               </>
             )}
           </Button>
         </form>
-      </Card>
+      </div>
 
       {/* Backup Settings Panel */}
-      <Card className="w-full p-6 rounded-md dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-850 shadow-lg mt-8 relative overflow-hidden">
+      <div className="w-full p-6 rounded-md dark:bg-gray-800/40 dark:backdrop-blur-md shadow-lg mt-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 dark:bg-purple-400/5 rounded-md blur-2xl pointer-events-none"></div>
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
@@ -406,7 +395,7 @@ const SwitchDatabase: React.FC = () => {
               <Server size={20} />
             </div>
             <h3 className="text-lg font-black dark:text-white tracking-tight">
-              Advanced Backup Configuration
+              {t("advancedBackupConfig")}
             </h3>
           </div>
         </div>
@@ -415,12 +404,12 @@ const SwitchDatabase: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Local/Network Path */}
             <div className="space-y-4">
-              <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-800 pb-2">
-                Local / Network Storage
+              <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 border-b pb-2">
+                {t("localNetworkStorage")}
               </h4>
               <div>
                 <Label className="text-xs font-black uppercase text-gray-400">
-                  Target Path (UNC or Local)
+                  {t("targetPathUncOrLocal")}
                 </Label>
                 <TextInput
                   className="mt-1"
@@ -439,12 +428,12 @@ const SwitchDatabase: React.FC = () => {
 
             {/* Cloud Settings */}
             <div className="space-y-4">
-              <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-800 pb-2">
-                Cloud Storage (S3 / Compatible)
+              <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 border-b pb-2">
+                {t("cloudStorageS3")}
               </h4>
               <div>
                 <Label className="text-xs font-black uppercase text-gray-400">
-                  Enable Cloud Upload
+                  {t("enableCloudUpload")}
                 </Label>
                 <Select
                   className="mt-1"
@@ -456,15 +445,15 @@ const SwitchDatabase: React.FC = () => {
                     })
                   }
                 >
-                  <option value="false">Disabled</option>
-                  <option value="true">Enabled</option>
+                  <option value="false">{t("disabled")}</option>
+                  <option value="true">{t("enabled")}</option>
                 </Select>
               </div>
               {backupSettings.backupCloudEnabled === "true" && (
                 <div className="space-y-4 pt-2">
                   <div>
                     <Label className="text-xs font-black uppercase text-gray-400">
-                      Bucket Name
+                      {t("bucketName")}
                     </Label>
                     <TextInput
                       className="mt-1"
@@ -479,7 +468,7 @@ const SwitchDatabase: React.FC = () => {
                   </div>
                   <div>
                     <Label className="text-xs font-black uppercase text-gray-400">
-                      Region
+                      {t("region")}
                     </Label>
                     <TextInput
                       className="mt-1"
@@ -494,7 +483,7 @@ const SwitchDatabase: React.FC = () => {
                   </div>
                   <div>
                     <Label className="text-xs font-black uppercase text-gray-400">
-                      Access Key
+                      {t("accessKey")}
                     </Label>
                     <TextInput
                       className="mt-1"
@@ -510,7 +499,7 @@ const SwitchDatabase: React.FC = () => {
                   </div>
                   <div>
                     <Label className="text-xs font-black uppercase text-gray-400">
-                      Secret Key
+                      {t("secretKey")}
                     </Label>
                     <TextInput
                       className="mt-1"
@@ -530,13 +519,13 @@ const SwitchDatabase: React.FC = () => {
 
             {/* Automated Scheduling */}
             <div className="space-y-4 md:col-span-2">
-              <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-800 pb-2">
-                Automated Background Scheduling
+              <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 border-b pb-2">
+                {t("automatedBackgroundScheduling")}
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label className="text-xs font-black uppercase text-gray-400">
-                    Enable Scheduler
+                    {t("enableScheduler")}
                   </Label>
                   <Select
                     className="mt-1"
@@ -548,15 +537,15 @@ const SwitchDatabase: React.FC = () => {
                       })
                     }
                   >
-                    <option value="false">Disabled</option>
-                    <option value="true">Enabled</option>
+                    <option value="false">{t("disabled")}</option>
+                    <option value="true">{t("enabled")}</option>
                   </Select>
                 </div>
                 {backupSettings.backupScheduleEnabled === "true" && (
                   <>
                     <div>
                       <Label className="text-xs font-black uppercase text-gray-400">
-                        Schedule Frequency (Cron)
+                        {t("scheduleFrequencyCron")}
                       </Label>
                       <Select
                         className="mt-1"
@@ -568,19 +557,19 @@ const SwitchDatabase: React.FC = () => {
                           })
                         }
                       >
-                        <option value="0 0 0 * * ?">Daily at Midnight</option>
-                        <option value="0 0 2 * * ?">Daily at 2:00 AM</option>
+                        <option value="0 0 0 * * ?">{t("dailyAtMidnight")}</option>
+                        <option value="0 0 2 * * ?">{t("dailyAt2AM")}</option>
                         <option value="0 0 0 * * SUN">
-                          Weekly (Sunday Midnight)
+                          {t("weeklySundayMidnight")}
                         </option>
                         <option value="0 0/5 * * * ?">
-                          Every 5 Minutes (Testing)
+                          {t("every5MinutesTesting")}
                         </option>
                       </Select>
                     </div>
                     <div>
                       <Label className="text-xs font-black uppercase text-gray-400">
-                        Scheduled Backup Type
+                        {t("scheduledBackupType")}
                       </Label>
                       <Select
                         className="mt-1"
@@ -592,9 +581,9 @@ const SwitchDatabase: React.FC = () => {
                           })
                         }
                       >
-                        <option value="full">Full Backup (.bak)</option>
+                        <option value="full">{t("fullBackup")}</option>
                         <option value="differential">
-                          Differential Backup (.bak)
+                          {t("differentialBackup")}
                         </option>
                       </Select>
                     </div>
@@ -604,7 +593,7 @@ const SwitchDatabase: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex justify-end pt-4 border-t">
             <Button
               type="submit"
               color={savingSettings ? "light" : "blue"}
@@ -616,11 +605,11 @@ const SwitchDatabase: React.FC = () => {
               ) : (
                 <Save size={14} className="mr-2" />
               )}
-              Save Configuration
+              {t("saveConfiguration")}
             </Button>
           </div>
         </form>
-      </Card>
+      </div>
     </div>
   );
 };

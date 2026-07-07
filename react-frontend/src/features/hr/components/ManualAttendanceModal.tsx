@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  TextInput,
-  Select,
-  Button,
-  Textarea,
-} from '@/lib/flowbite-compat';
+import {Label, TextInput, Select, Button, Textarea} from '@/lib/flowbite-compat';
 import { X, Clock, MapPin, User, FileText, Calendar } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from '@/components/common/DatePicker';
@@ -68,28 +58,29 @@ const ManualAttendanceModal: React.FC<ManualAttendanceModalProps> = ({
     });
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Modal show={isOpen} onClose={onClose} size="lg">
-      <div className="absolute top-4 right-4 z-50">
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
-        >
-          <X size={20} />
-        </button>
-      </div>
-      <ModalHeader className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-md">
-            <Clock size={20} />
+    <div className="fixed inset-0 md:left-[260px] z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-slide-up flex flex-col">
+        <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 px-6 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-md">
+              <Clock size={20} />
+            </div>
+            <h3 className="text-xl font-black dark:text-white uppercase tracking-tight">
+              Manual Attendance Log
+            </h3>
           </div>
-          <h3 className="text-xl font-black dark:text-white uppercase tracking-tight">
-            Manual Attendance Log
-          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors p-2 rounded-md"
+          >
+            <X size={20} />
+          </button>
         </div>
-      </ModalHeader>
-      <ModalBody className="dark:bg-gray-800 p-6 pb-4">
+        <div className="p-6 max-h-[70vh] overflow-y-auto bg-white dark:bg-gray-800">
         <form
           id="manual-attendance-form"
           onSubmit={hookSubmit(onFormSubmit)}
@@ -193,31 +184,32 @@ const ManualAttendanceModal: React.FC<ManualAttendanceModalProps> = ({
             />
           </div>
         </form>
-      </ModalBody>
-      <ModalFooter className="bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700 p-4">
-        <div className="flex gap-2 w-full justify-end">
-          <Button
-            color="gray"
-            outline
-            size="sm"
-            onClick={onClose}
-            className="rounded px-2"
-          >
-            Discard
-          </Button>
-          <Button
-            color="blue"
-            outline
-            size="sm"
-            type="submit"
-            form="manual-attendance-form"
-            className="flex-1 rounded uppercase tracking-wider font-bold"
-          >
-            Commit Log Entry
-          </Button>
         </div>
-      </ModalFooter>
-    </Modal>
+        <div className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-4 px-6">
+          <div className="flex gap-2 w-full justify-end">
+            <Button
+              color="gray"
+              outline
+              size="sm"
+              onClick={onClose}
+              className="rounded px-2"
+            >
+              Discard
+            </Button>
+            <Button
+              color="blue"
+              outline
+              size="sm"
+              type="submit"
+              form="manual-attendance-form"
+              className="flex-1 rounded uppercase tracking-wider font-bold"
+            >
+              Commit Log Entry
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

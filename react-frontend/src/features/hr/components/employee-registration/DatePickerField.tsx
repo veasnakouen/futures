@@ -1,5 +1,5 @@
 import React from "react";
-import { Label } from '@/lib/flowbite-compat';
+import {Label} from '@/lib/flowbite-compat';
 import { Controller, type Control } from "react-hook-form";
 import { format } from "date-fns";
 import { type EmployeeFormData } from '../../../../schemas/employeeSchema';

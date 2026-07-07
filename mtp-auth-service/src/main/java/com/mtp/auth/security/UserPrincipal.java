@@ -27,6 +27,10 @@ public class UserPrincipal implements UserDetails {
         return user.getEmail();
     }
 
+    public String getBranch() {
+        return user.getBranch();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         java.util.Set<GrantedAuthority> authorities = user.getRoles().stream()
@@ -61,6 +65,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
+        if (!user.isLockoutEnabled()) {
+            return true;
+        }
+        if (user.getLockoutEnd() != null && user.getLockoutEnd().isAfter(java.time.Instant.now())) {
+            return false;
+        }
         return true;
     }
 

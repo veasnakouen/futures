@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from '@/lib/react-router-compat';
 import { useQuery } from "@tanstack/react-query";
 import api from "../services/api";
-import { Spinner, Button, Badge } from '@/lib/flowbite-compat';
+import {Spinner, Button, Badge} from '@/lib/flowbite-compat';
 import {
   MapPin,
   DollarSign,
@@ -61,10 +61,10 @@ const JobDetailPage = () => {
       </Link>
 
       {/* Job Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8">
         <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
           {job.imageUrl ? (
-            <div className="w-24 h-24 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shrink-0 bg-white shadow-sm">
+            <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-white shadow-sm">
               <img
                 src={job.imageUrl}
                 alt="Company Logo"
@@ -72,7 +72,7 @@ const JobDetailPage = () => {
               />
             </div>
           ) : (
-            <div className="w-24 h-24 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shrink-0 bg-gray-50 dark:bg-gray-700 flex items-center justify-center text-indigo-500 shadow-sm">
+            <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-gray-50 dark:bg-gray-700 flex items-center justify-center text-indigo-500 shadow-sm">
               <Building size={32} />
             </div>
           )}
@@ -135,7 +135,7 @@ const JobDetailPage = () => {
       </div>
 
       {/* Job Description */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="p-8 space-y-8">
           {/* Responsibilities */}
           {job.responsibilities && (
@@ -169,7 +169,7 @@ const JobDetailPage = () => {
         </div>
 
         {/* Mobile Apply Button */}
-        <div className="p-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 md:hidden sticky bottom-0 z-10">
+        <div className="p-6 bg-gray-50 dark:bg-gray-800/50 border-t md:hidden sticky bottom-0 z-10">
           <Button
             color="blue"
             size="xl"

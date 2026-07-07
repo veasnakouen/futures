@@ -1,13 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Modal,
-  ModalBody,
-  Button,
-  Select,
-  TextInput,
-  Textarea,
-  Label,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Button, Select, TextInput, Textarea, Label} from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
@@ -178,7 +170,7 @@ const TicketCreationModal: React.FC<TicketCreationModalProps> = ({
           className="p-6 pb-0 space-y-6"
         >
           {/* Requester Section */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm">
             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
               Select Requester
             </h4>
@@ -266,7 +258,7 @@ const TicketCreationModal: React.FC<TicketCreationModalProps> = ({
           </div>
 
           {/* Ticket Details Section */}
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-sm shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-sm shadow-sm">
             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
               Ticket description
             </h4>
@@ -371,7 +363,7 @@ const TicketCreationModal: React.FC<TicketCreationModalProps> = ({
           </div>
 
           {/* Subject and Description */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm border border-gray-100 dark:border-gray-700 space-y-3">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm space-y-3">
             <div>
               <Label className="text-[10px] font-black text-gray-700 dark:text-gray-300 uppercase mb-2 block tracking-widest">
                 Subject *

@@ -17,7 +17,7 @@ const NotificationStream: React.FC<NotificationStreamProps> = ({
       duration={600}
       triggerOnce={true}
     >
-      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
+      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
         <div className="flex items-center justify-between mb-8 shrink-0">
           <h4 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-4 tracking-tight">
             <div className="p-3 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-md shadow-sm">
@@ -25,7 +25,7 @@ const NotificationStream: React.FC<NotificationStreamProps> = ({
             </div>
             Notification Stream
           </h4>
-          <span className="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-900/30 rounded-md px-4 py-1 font-black uppercase text-[10px] tracking-widest shadow-sm">
+          <span className="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-100/50 dark:border-blue-900/30 rounded-md px-4 py-1 font-black uppercase text-[10px] tracking-widest shadow-sm">
             {notifications.length} Signals
           </span>
         </div>
@@ -45,7 +45,7 @@ const NotificationStream: React.FC<NotificationStreamProps> = ({
             notifications.map((n: string, i: number) => (
               <div
                 key={i}
-                className="p-5 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 rounded-md border border-gray-100/50 dark:border-gray-700/50 flex gap-4 items-start animate-slide-in group transition-all duration-350 cursor-pointer"
+                className="p-5 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 rounded-md /50 flex gap-4 items-start animate-slide-in group transition-all duration-350 cursor-pointer"
               >
                 <div className="relative flex items-center justify-center mt-1.5 shrink-0">
                   <div className="absolute w-3 h-3 bg-blue-400 rounded-md animate-ping opacity-60"></div>

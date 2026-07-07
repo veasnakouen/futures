@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, Spinner } from '@/lib/flowbite-compat';
+import {Spinner} from '@/lib/flowbite-compat';
 import {
   Shield,
   Sparkles,
@@ -120,11 +120,11 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
       <div className="space-y-8 pb-12 max-w-[1600px] mx-auto">
         {error && (
           <ScrollReveal animation="fade-in" duration={400}>
-            <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 p-6 rounded-md shadow-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 p-6 rounded-md shadow-sm">
               <p className="text-red-600 dark:text-red-400 font-black uppercase text-xs flex items-center gap-3">
                 <Shield size={20} /> {error}
               </p>
-            </Card>
+            </div>
           </ScrollReveal>
         )}
 
@@ -135,7 +135,7 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
           duration={600}
           triggerOnce={true}
         >
-          <div className="bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 px-8 py-5 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="bg-white dark:bg-gray-800/40 dark:backdrop-blur-md px-8 py-5 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="space-y-0.5">
               <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
                 {getGreeting()}, {currentUser?.username || "Guest"}
@@ -149,15 +149,15 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
               </p>
             </div>
             <div className="flex flex-wrap gap-3 shrink-0">
-              <div className="flex items-center gap-2.5 bg-gray-50/50 dark:bg-gray-900/30 px-3.5 py-1.5 rounded-md border border-gray-100 dark:border-gray-750">
+              <div className="flex items-center gap-2.5 bg-gray-50/50 dark:bg-gray-900/30 px-3.5 py-1.5 rounded-md">
                 <span className="w-1.5 h-1.5 rounded-md bg-blue-500 animate-pulse"></span>
                 <span className="text-[8px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
                   System Impact: {stats?.totalClients?.toLocaleString() ?? 0}
                 </span>
               </div>
-              <div className="flex items-center gap-2.5 bg-gray-50/50 dark:bg-gray-900/30 px-3.5 py-1.5 rounded-md border border-gray-100 dark:border-gray-750">
+              <div className="flex items-center gap-2.5 bg-gray-50/50 dark:bg-gray-900/30 px-3.5 py-1.5 rounded-md">
                 <span
-                  className={`w-1.5 h-1.5 rounded-md ${connectionStatus === "online" ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}
+                  className={`w-1.5 h-1.5 rounded-md ${connectionStatus ==="online"?"bg-emerald-500 animate-pulse":"bg-rose-500"}`}
                 ></span>
                 <span className="text-[8px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-505">
                   {connectionStatus === "online"
@@ -179,7 +179,7 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
           duration={600}
           triggerOnce={true}
         >
-          <div className="bg-gradient-to-r from-blue-600/10 via-indigo-600/5 to-purple-600/10 border border-blue-500/20 dark:border-blue-400/20 rounded-md p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="bg-gradient-to-r from-blue-600/10 via-indigo-600/5 to-purple-600/10 border-blue-500/20 dark:border-blue-400/20 rounded-md p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Sparkles
@@ -251,7 +251,7 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
               <a
                 key={idx}
                 href={action.to}
-                className="flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 dark:backdrop-blur-md border border-gray-100 dark:border-gray-800/80 rounded-md shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group"
+                className="flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 dark:backdrop-blur-md rounded-md shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group"
               >
                 <div
                   className={`p-3 rounded-md transition-colors ${action.color} group-hover:text-white`}
@@ -287,7 +287,7 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <MiniMap />
+          <MiniMap isDark={isDark} />
           <CriticalTasks />
         </div>
       </div>

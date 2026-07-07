@@ -109,7 +109,7 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
       }}
     >
       {" "}
-      <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md">
+      <div className="flex items-center justify-between p-5 border-b bg-white/50 dark:bg-gray-800/50 backdrop-blur-md">
         {" "}
         <h3 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2 uppercase tracking-wide">
           {" "}
@@ -122,7 +122,7 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+          className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
         >
           {" "}
           <X size={16} />{" "}
@@ -130,7 +130,7 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
       </div>{" "}
       <ModalBody className="p-6 bg-gray-50/50 dark:bg-gray-900/50">
         {" "}
-        <div className="relative w-full h-[55vh] min-h-[350px] rounded-xl overflow-hidden shadow-inner border border-gray-200 dark:border-gray-700 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] dark:bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-200 dark:bg-gray-800">
+        <div className="relative w-full h-[55vh] min-h-[350px] rounded-xl overflow-hidden shadow-inner bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] dark:bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-200 dark:bg-gray-800">
           {" "}
           <Cropper
             image={imageSrc}
@@ -149,11 +149,11 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
           />{" "}
         </div>{" "}
       </ModalBody>{" "}
-      <div className="p-5 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
+      <div className="p-5 bg-white dark:bg-gray-800">
         {" "}
         <div className="max-w-md mx-auto mb-6">
           {" "}
-          <div className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 px-4 py-2.5 rounded-full border border-gray-100 dark:border-gray-700 shadow-sm">
+          <div className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 px-4 py-2.5 rounded-full shadow-sm">
             {" "}
             <ZoomOut size={18} className="text-indigo-400" />{" "}
             <input

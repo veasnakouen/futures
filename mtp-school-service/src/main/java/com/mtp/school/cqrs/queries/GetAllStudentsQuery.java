@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class GetAllStudentsQuery {
     private int page;
     private int size;
+    private String outreachWorkerName;
 }

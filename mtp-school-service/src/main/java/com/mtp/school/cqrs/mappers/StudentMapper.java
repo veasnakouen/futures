@@ -22,4 +22,6 @@ public interface StudentMapper {
 
     @Mapping(source = "studentParents", target = "parents")
     StudentQueryResultDto toDto(Student entity);
+
+    com.mtp.school.models.Address toAddress(com.mtp.school.cqrs.dto.AddressDto addressDto);
 }

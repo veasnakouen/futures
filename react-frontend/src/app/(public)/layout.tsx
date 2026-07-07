@@ -11,11 +11,11 @@ export default function PublicLayout({
   const { isDark, setTheme } = useTheme();
   return (
     <div
-      className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200 ${isDark ? "dark" : ""}`}
+      className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200 ${isDark ?"dark":""}`}
     >
       {" "}
       {/* Navigation Bar */}{" "}
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b sticky top-0 z-50">
         {" "}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {" "}
@@ -70,7 +70,7 @@ export default function PublicLayout({
         {children}{" "}
       </main>{" "}
       {/* Footer */}{" "}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
+      <footer className="bg-white dark:bg-gray-800 border-t mt-auto">
         {" "}
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           {" "}

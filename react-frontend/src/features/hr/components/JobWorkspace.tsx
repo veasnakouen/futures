@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Badge,
-  Button,
-  Avatar,
-  Tooltip,
-  Spinner,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from '@/lib/flowbite-compat';
+import {Badge, Button, Avatar, Tooltip, Spinner, Modal, ModalHeader, ModalBody, ModalFooter} from '@/lib/flowbite-compat';
 import {
   ArrowLeft,
   MapPin,
@@ -101,32 +90,32 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
   const renderDetails = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-sm border-none bg-gray-50 dark:bg-gray-800 p-6">
+        <div className="shadow-sm border-none bg-gray-50 dark:bg-gray-800 p-6">
           <h4 className="text-sm font-black uppercase tracking-widest text-gray-500 mb-4">
             Job Responsibilities
           </h4>
           <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
             {vacancy.responsibilities || "Not specified"}
           </p>
-        </Card>
-        <Card className="shadow-sm border-none bg-gray-50 dark:bg-gray-800 p-6">
+        </div>
+        <div className="shadow-sm border-none bg-gray-50 dark:bg-gray-800 p-6">
           <h4 className="text-sm font-black uppercase tracking-widest text-gray-500 mb-4">
             Requirements & Skills
           </h4>
           <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
             {vacancy.requirement || "Not specified"}
           </p>
-        </Card>
+        </div>
       </div>
       {vacancy.applicationInformation && (
-        <Card className="shadow-sm border-none bg-blue-50 dark:bg-blue-900/20 p-6">
+        <div className="shadow-sm border-none bg-blue-50 dark:bg-blue-900/20 p-6">
           <h4 className="text-sm font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-4">
             Application Instructions
           </h4>
           <p className="text-sm text-blue-800 dark:text-blue-200 whitespace-pre-wrap">
             {vacancy.applicationInformation}
           </p>
-        </Card>
+        </div>
       )}
     </div>
   );
@@ -146,7 +135,7 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
           return (
             <div
               key={stage}
-              className="flex-1 min-w-[280px] bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border dark:border-gray-700"
+              className="flex-1 min-w-[280px] bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4"
             >
               <div className="flex justify-between items-center mb-4">
                 <h4 className="text-xs font-black uppercase tracking-widest text-gray-500">
@@ -160,7 +149,7 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
                 {stageApps.map((app) => (
                   <div
                     key={app.id}
-                    className="bg-white dark:bg-gray-800 p-4 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+                    className="bg-white dark:bg-gray-800 p-4 rounded-md shadow-sm"
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <Avatar size="sm" rounded />
@@ -251,7 +240,7 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
                   </div>
                 ))}
                 {stageApps.length === 0 && (
-                  <div className="text-center py-8 text-gray-400 text-xs font-bold uppercase tracking-widest border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md">
+                  <div className="text-center py-8 text-gray-400 text-xs font-bold uppercase tracking-widest border-2 rounded-md">
                     No candidates
                   </div>
                 )}
@@ -281,7 +270,7 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
             (app) => app.client?.id === c.id,
           );
           return (
-            <Card
+            <div
               key={c.id}
               className="shadow-sm border-none dark:bg-gray-800 group hover:shadow-md transition-all"
             >
@@ -317,7 +306,7 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
               >
                 {isAlreadyShortlisted ? "In Pipeline" : "Shortlist Talent"}
               </Button>
-            </Card>
+            </div>
           );
         })}
       </div>
@@ -334,7 +323,7 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
       </button>
 
       {/* Job Header */}
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border dark:border-gray-700 relative overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
@@ -426,7 +415,7 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
           {selectedApplicant && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-1 space-y-6">
-                <Card className="shadow-none border dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <div className="shadow-none bg-gray-50 dark:bg-gray-800">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">
                     Target Position
                   </h4>
@@ -436,8 +425,8 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
                   <p className="text-xs text-gray-500">
                     {vacancy.employerName}
                   </p>
-                </Card>
-                <Card className="shadow-none border dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                </div>
+                <div className="shadow-none bg-gray-50 dark:bg-gray-800">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">
                     Client Profile
                   </h4>
@@ -453,11 +442,11 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
                       </p>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
               <div className="lg:col-span-2 space-y-6">
-                <div className="border dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
-                  <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b dark:border-gray-700 flex justify-between items-center">
+                <div className="rounded-lg overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
+                  <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b flex justify-between items-center">
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
                       Auto-Generated Cover Letter
                     </span>
@@ -470,8 +459,8 @@ const JobWorkspace: React.FC<JobWorkspaceProps> = ({
                   </div>
                 </div>
 
-                <div className="border dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
-                  <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b dark:border-gray-700 flex justify-between items-center">
+                <div className="rounded-lg overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
+                  <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b flex justify-between items-center">
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
                       Auto-Generated CV Preview
                     </span>

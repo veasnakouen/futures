@@ -27,9 +27,12 @@ public class Branch {
 
     private String email;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @OneToMany(mappedBy = "branch")
     private List<Student> students;
-    
+
     @OneToMany(mappedBy = "branch")
     private List<Teacher> teachers;
 

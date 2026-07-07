@@ -9,7 +9,7 @@ import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import CustomModalHeader from "../../../components/common/CustomModalHeader";
 import CustomModalFooter from "../../../components/common/CustomModalFooter";
-import { Modal, ModalBody } from "@/lib/flowbite-compat";
+import {Modal, ModalBody} from "@/lib/flowbite-compat";
 import DatePicker from "../../../components/common/DatePicker";
 import { format } from "date-fns";
 
@@ -84,7 +84,7 @@ export default function HousekeepingTaskFormModal({ isOpen, onClose, itemToEdit 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Room</label>
-              <select {...register("roomId")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("roomId")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">Select Room...</option>
                 {rooms.map((room) => (
                   <option key={room.id} value={room.id}>
@@ -96,7 +96,7 @@ export default function HousekeepingTaskFormModal({ isOpen, onClose, itemToEdit 
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Staff</label>
-              <select {...register("staffId")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("staffId")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">Select Staff...</option>
                 {staffs.map((staff) => (
                   <option key={staff.id} value={staff.id}>
@@ -123,7 +123,7 @@ export default function HousekeepingTaskFormModal({ isOpen, onClose, itemToEdit 
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-              <select {...register("status")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("status")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="PENDING">PENDING</option>
                 <option value="IN_PROGRESS">IN PROGRESS</option>
                 <option value="COMPLETED">COMPLETED</option>
@@ -131,7 +131,7 @@ export default function HousekeepingTaskFormModal({ isOpen, onClose, itemToEdit 
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-              <textarea {...register("notes")} rows={2} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <textarea {...register("notes")} rows={2} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
             </div>
           </div>
         </ModalBody>

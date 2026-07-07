@@ -7,7 +7,9 @@ import java.time.LocalDate;
 public class EnrollmentQueryResultDto {
     private String id;
     private String studentId;
+    private String studentName;
     private String courseId;
+    private String courseName;
     private LocalDate enrollmentDate;
     private String grade;
 }

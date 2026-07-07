@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Label,
-  TextInput,
-  Button,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, ModalHeader, Label, TextInput, Button} from '@/lib/flowbite-compat';
 import { Briefcase } from "lucide-react";
 
 interface QuickJobPositionModalProps {
@@ -26,7 +19,7 @@ const QuickJobPositionModal: React.FC<QuickJobPositionModalProps> = ({
 }) => {
   return (
     <Modal show={isOpen} onClose={onClose} size="md" popup>
-      <ModalHeader className="border-b dark:border-gray-700 px-6 py-4">
+      <ModalHeader className="border-b px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-md">
             <Briefcase size={20} />
@@ -60,7 +53,7 @@ const QuickJobPositionModal: React.FC<QuickJobPositionModalProps> = ({
               placeholder="e.g. Senior Software Engineer"
             />
           </div>
-          <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t">
             <Button
               color="light"
               size="sm"

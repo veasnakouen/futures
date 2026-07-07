@@ -16,4 +16,5 @@ public class UpdateTeacherCommand {
     private java.math.BigDecimal baseSalary;
     private com.mtp.school.cqrs.dto.AddressDto address;
     private String branchId;
+    private String imageUrl;
 }

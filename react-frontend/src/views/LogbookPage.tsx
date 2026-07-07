@@ -1,21 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  Button,
-  Badge,
-  Spinner,
-  Modal,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-  Label,
-  TextInput,
-  Checkbox,
-  Textarea,
-  Select,
-  ModalHeader,
-  ModalBody,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Spinner, Modal, Dropdown, DropdownItem, DropdownDivider, Label, TextInput, Checkbox, Textarea, Select, ModalHeader, ModalBody} from '@/lib/flowbite-compat';
 import ModernPagination from "@/components/common/ModernPagination";
 import { DataTable, type DataTableColumn } from "../components/ui/DataTable";
 import {
@@ -33,12 +17,14 @@ import {
   MoreVertical,
 } from "lucide-react";
 import Layout from "@/components/common/Layout";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import ConfirmModal from "@/components/common/ConfirmModal";
 
 const LogbookPage = ({ isDark, setIsDark }: any) => {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -173,12 +159,12 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Daily Logbook">
+    <Layout isDark={isDark} setIsDark={setIsDark} title={t("logbook")}>
       <div className="space-y-6 animate-fade-in">
         <header className="flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold dark:text-white">
-              Attendance & Activity Log
+              {t("attendanceActivityLog")}
             </h2>
             <p className="text-sm text-gray-500">
               Track daily walk-in services and facility usage
@@ -205,34 +191,34 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
             }}
             className="rounded-md shadow-lg shadow-blue-500/20"
           >
-            <Plus size={18} className="mr-2" /> Quick Entry
+            <Plus size={18} className="mr-2" /> {t("quickEntry")}
           </Button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
             {
-              label: "Today Entries",
+              label: t("todayEntries"),
               count: logs.length,
               icon: <History className="text-blue-500" />,
             },
             {
-              label: "Computer Lab",
+              label: t("computerLab"),
               count: logs.filter((l) => l.usingComputer).length,
               icon: <Monitor className="text-emerald-500" />,
             },
             {
-              label: "Library Use",
+              label: t("libraryUse"),
               count: logs.filter((l) => l.library).length,
               icon: <Library className="text-orange-500" />,
             },
             {
-              label: "Job Guidance",
+              label: t("jobGuidance"),
               count: logs.filter((l) => l.jobinformation).length,
               icon: <Briefcase className="text-indigo-500" />,
             },
           ].map((stat, i) => (
-            <Card key={i} className="border-none shadow-sm dark:bg-gray-800">
+            <div key={i} className="border-none shadow-sm dark:bg-gray-800">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-md bg-gray-50 dark:bg-gray-700">
                   {stat.icon}
@@ -246,7 +232,7 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
                   </p>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
@@ -264,7 +250,7 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
                 setSearch(e.target.value);
                 setPage(0);
               }}
-              className="w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all shadow-sm"
+              className="w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-800 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all shadow-sm"
             />
             {search && (
               <button
@@ -379,7 +365,7 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
 
         {/* Entry Modal */}
         <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {isViewMode
                 ? "Log Entry Details"
@@ -390,7 +376,7 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+              className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm"
             >
               <X size={20} />
             </button>
@@ -510,12 +496,12 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700 mt-6 pt-6">
+                <div className="flex justify-end gap-3 pt-4 border-t mt-6 pt-6">
                   <Button
                     outline
                     color={isViewMode ? "blue" : "gray"}
                     size="sm"
-                    className={`rounded-md font-bold uppercase text-[10px] tracking-widest px-4 ${isViewMode ? "w-full" : ""}`}
+                    className={`rounded-md font-bold uppercase text-[10px] tracking-widest px-4 ${isViewMode ?"w-full":""}`}
                     onClick={() => setIsModalOpen(false)}
                   >
                     {isViewMode ? "Close" : "Cancel"}

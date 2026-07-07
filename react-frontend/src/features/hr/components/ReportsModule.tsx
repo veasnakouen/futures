@@ -1,15 +1,5 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Button,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Badge,
-} from '@/lib/flowbite-compat';
+import {Button, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Badge} from '@/lib/flowbite-compat';
 import {
   FileText,
   Download,
@@ -117,7 +107,7 @@ const ReportsModule: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card
+        <div
           className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md cursor-pointer hover:shadow-md transition-shadow group"
           onClick={() => toast.success("Initializing Payroll Export")}
         >
@@ -134,9 +124,9 @@ const ReportsModule: React.FC = () => {
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card
+        <div
           className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md cursor-pointer hover:shadow-md transition-shadow group"
           onClick={() => toast.success("Generating Audit Log")}
         >
@@ -153,9 +143,9 @@ const ReportsModule: React.FC = () => {
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card
+        <div
           className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md cursor-pointer hover:shadow-md transition-shadow group"
           onClick={() => toast.success("Exporting Attendance")}
         >
@@ -172,9 +162,9 @@ const ReportsModule: React.FC = () => {
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card
+        <div
           className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md cursor-pointer hover:shadow-md transition-shadow group"
           onClick={() => toast.success("Exporting Directory")}
         >
@@ -191,11 +181,11 @@ const ReportsModule: React.FC = () => {
               </p>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Report Ledger */}
-      <Card className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
+      <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
         <h4 className="font-black text-lg dark:text-white flex items-center gap-2 uppercase tracking-tight mb-6">
           <FileText size={20} className="text-blue-600" /> Recent Generated
           Reports
@@ -258,7 +248,7 @@ const ReportsModule: React.FC = () => {
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

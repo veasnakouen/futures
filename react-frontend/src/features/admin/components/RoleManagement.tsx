@@ -1,24 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api from '@/services/api';
-import {
-  Table,
-  Button,
-  Modal,
-  Label,
-  Badge,
-  TextInput,
-  Checkbox,
-  Card,
-  ModalFooter,
-  ModalHeader,
-  ModalBody,
-  Select,
-  FloatingLabel,
-  Accordion,
-  AccordionPanel,
-  AccordionTitle,
-  AccordionContent,
-} from '@/lib/flowbite-compat';
+import {Table, Button, Modal, Label, Badge, TextInput, Checkbox, ModalFooter, ModalHeader, ModalBody, Select, FloatingLabel, Accordion, AccordionPanel, AccordionTitle, AccordionContent} from '@/lib/flowbite-compat';
 import ModernPagination from '@/components/common/ModernPagination';
 import {
   X,
@@ -38,6 +21,7 @@ import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 
 const RoleManagement = () => {
+  const { t } = useTranslation();
   const [roles, setRoles] = useState<any[]>([]);
   const [permissions, setPermissions] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -95,7 +79,7 @@ const RoleManagement = () => {
       setPermissions(p.data);
     } catch (e) {
       console.error("ROLE FETCH ERROR:", e);
-      toast.error("Failed to load role definitions");
+      toast.error(t("failedToLoadRoleDefs"));
     } finally {
       setLoading(false);
     }
@@ -119,24 +103,24 @@ const RoleManagement = () => {
         );
       }
 
-      toast.success("Security role created");
+      toast.success(t("securityRoleCreated"));
       setShowCreateRoleModal(false);
       setNewRole({ name: "" });
       setSelectedNewRolePerms([]);
       setShowPermissionsGrid(false);
       fetchData();
     } catch (e: any) {
-      toast.error(e.response?.data || "Failed to create role");
+      toast.error(e.response?.data || t("failedToCreateRole"));
     }
   };
 
   const handleCreatePerm = async () => {
     if (!newPerm.resource) {
-      toast.error("Please select a resource");
+      toast.error(t("pleaseSelectResource"));
       return;
     }
     if (selectedActions.length === 0) {
-      toast.error("Please select at least one action right");
+      toast.error(t("pleaseSelectActionRight"));
       return;
     }
 
@@ -154,7 +138,7 @@ const RoleManagement = () => {
               name: generatedName,
               description:
                 newPerm.description ||
-                `Grant ${action} access to ${newPerm.resource}`,
+                t("grantAccessDesc", { action, resource: newPerm.resource }),
               resource: newPerm.resource,
               action: action,
             });
@@ -178,15 +162,15 @@ const RoleManagement = () => {
       );
 
       if (successCount > 0) {
-        toast.success(`Defined ${successCount} new permission(s)`);
+        toast.success(t("definedNewPermissions", { count: successCount }));
       }
       if (existCount > 0 && successCount === 0) {
-        toast.error("Selected permission(s) already exist");
+        toast.error(t("selectedPermissionsExist"));
       } else if (existCount > 0) {
-        toast.success(`${existCount} permission(s) already existed`);
+        toast.success(t("permissionsAlreadyExisted", { count: existCount }));
       }
       if (failCount > 0) {
-        toast.error(`Failed to define ${failCount} permission(s)`);
+        toast.error(t("failedToDefinePermissions", { count: failCount }));
       }
 
       if (successCount > 0 || existCount > 0) {
@@ -196,7 +180,7 @@ const RoleManagement = () => {
         fetchData();
       }
     } catch (e) {
-      toast.error("An error occurred while defining permissions");
+      toast.error(t("errorDefiningPermissions"));
     } finally {
       setLoading(false);
     }
@@ -209,11 +193,11 @@ const RoleManagement = () => {
         `/admin/roles/${selectedRole.id}/permissions`,
         selectedPerms,
       );
-      toast.success(`Permissions updated for ${selectedRole.name}`);
+      toast.success(t("permissionsUpdatedFor", { name: selectedRole.name }));
       setShowPermAssignModal(false);
       fetchData();
     } catch (e) {
-      toast.error("Failed to apply permissions");
+      toast.error(t("failedToApplyPermissions"));
     }
   };
 
@@ -233,60 +217,75 @@ const RoleManagement = () => {
   }, [searchTerm]);
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <h2 className="text-xl font-bold dark:text-white flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
-            Advanced Access Control
-          </h2>
-          <div className="flex items-center gap-2 w-full md:w-auto">
+    <div className="space-y-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-emerald-100/50 dark:shadow-black/40 p-6 border border-white/20 dark:border-gray-700/50 animate-fade-in">
+      <div>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-xl shadow-lg shadow-emerald-200 dark:shadow-emerald-900/30">
+              <ShieldCheck size={24} />
+            </div>
+            <h2 className="text-2xl font-black bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              {t("advancedAccessControl")}
+            </h2>
+          </div>
+          <div className="flex items-center gap-3 w-full md:w-auto">
             <TextInput
               id="role-search"
               type="text"
               icon={Search}
-              placeholder="Search..."
+              placeholder={t("searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full md:w-64"
             />
-            <Button color="blue" onClick={() => setShowCreateRoleModal(true)}>
+            <Button color="blue" onClick={() => setShowCreateRoleModal(true)} className="rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-95">
               <PlusCircle className="w-4 h-4 mr-2" />
-              Role
+              {t("role")}
             </Button>
-            <Button color="blue" onClick={() => setShowCreatePermModal(true)}>
+            <Button color="blue" onClick={() => setShowCreatePermModal(true)} className="rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-95">
               <BookmarkPlus className="w-4 h-4 mr-2" />
-              Permission
+              {t("permission")}
             </Button>
-            <Button color="gray" onClick={fetchData} disabled={loading}>
+            <Button color="gray" onClick={fetchData} disabled={loading} className="rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 active:scale-95">
               <RefreshCw
-                className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                className={`w-4 h-4 ${loading ?"animate-spin":""}`}
               />
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {paginatedRoles?.map((r) => (
-          <Card key={r.id}>
-            <div className="flex justify-between items-start">
-              <ShieldAlert className="w-6 h-6 text-gray-400" />
+          <div
+            key={r.id}
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 shadow-lg shadow-gray-200/50 dark:shadow-black/40 ring-1 ring-black/5 dark:ring-white/10 hover:shadow-2xl hover:shadow-emerald-500/20 dark:hover:shadow-emerald-900/40 hover:-translate-y-2 transition-all duration-300 flex flex-col group cursor-pointer"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <ShieldAlert className="w-6 h-6" />
+              </div>
               <Badge color={r.name.includes("ADMIN") ? "failure" : "info"}>
-                {r.name.includes("ADMIN") ? "High Authority" : "Standard Role"}
+                {r.name.includes("ADMIN") ? t("highAuthority") : t("standardRole")}
               </Badge>
             </div>
-            <h5 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-              {r.name}
-            </h5>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {r.permissions?.length || 0} Managed Rights
-            </p>
-            <Button color="blue" onClick={() => openPermAssignModal(r)}>
-              Configure Access
+            <div className="flex-1 mb-6">
+              <h5 className="text-xl font-black tracking-tight text-gray-900 dark:text-white mb-1">
+                {r.name}
+              </h5>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {t("managedRights", { count: r.permissions?.length || 0 })}
+              </p>
+            </div>
+            <Button
+              color="blue"
+              onClick={() => openPermAssignModal(r)}
+              className="w-full shadow-lg shadow-blue-500/20 rounded-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all active:scale-95"
+            >
+              {t("configureAccess")}
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
-          </Card>
+          </div>
         ))}
       </div>
 
@@ -309,14 +308,14 @@ const RoleManagement = () => {
         size="xl"
       >
         <CustomModalHeader
-          title="Define Security Role"
-          subtitle="Security Management"
+          title={t("defineSecurityRole")}
+          subtitle={t("securityManagement")}
           onClose={() => setShowCreateRoleModal(false)}
         />
         <ModalBody>
           <div className="space-y-6">
             <div>
-              <Label>Role Identifier (e.g. SUPERVISOR)</Label>
+              <Label>{t("roleIdentifier")}</Label>
               <TextInput
                 placeholder="REPORTS_ADMIN"
                 value={newRole.name}
@@ -327,12 +326,12 @@ const RoleManagement = () => {
               <button
                 type="button"
                 onClick={() => setShowPermissionsGrid(!showPermissionsGrid)}
-                className="flex items-center justify-between w-full p-3 text-sm font-medium text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors rounded-md border border-gray-200 dark:border-gray-600 focus:outline-none"
+                className="flex items-center justify-between w-full p-3 text-sm font-medium text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors rounded-md focus:outline-none"
               >
-                <span>Assign Permissions</span>
+                <span>{t("assignPermissions")}</span>
                 <svg
                   data-accordion-icon
-                  className={`w-4 h-4 shrink-0 transition-transform ${showPermissionsGrid ? "rotate-180" : ""}`}
+                  className={`w-4 h-4 shrink-0 transition-transform ${showPermissionsGrid ?"rotate-180":""}`}
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -345,7 +344,7 @@ const RoleManagement = () => {
                 </svg>
               </button>
               {showPermissionsGrid && (
-                <div className="p-3 mt-2 border border-gray-100 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800">
+                <div className="p-3 mt-2 rounded-md bg-gray-50 dark:bg-gray-800">
                   <div className="flex justify-end mb-3">
                     <Button
                       size="xs"
@@ -358,14 +357,14 @@ const RoleManagement = () => {
                         }
                       }}
                     >
-                      {selectedNewRolePerms.length === permissions.length && permissions.length > 0 ? "Deselect All" : "Select All"}
+                      {selectedNewRolePerms.length === permissions.length && permissions.length > 0 ? t("deselectAll") : t("selectAll")}
                     </Button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[200px] overflow-y-auto pr-2">
                     {permissions?.map((p) => (
                       <label
                         key={p.id}
-                        className="flex flex-row items-center justify-start gap-3 p-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-md shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-colors"
+                        className="flex flex-row items-center justify-start gap-3 p-3 bg-white dark:bg-gray-900 rounded-md shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-colors"
                       >
                         <Checkbox
                           id={`newrole-perm-${p.id}`}
@@ -399,7 +398,7 @@ const RoleManagement = () => {
                           </div>
                           <div className="text-[10px] text-gray-400 font-normal mt-0.5">
                             {p.description ||
-                              `Grant ${p.action} access to ${p.resource}`}
+                              t("grantAccessDesc", { action: p.action, resource: p.resource })}
                           </div>
                         </div>
                       </label>
@@ -414,9 +413,9 @@ const RoleManagement = () => {
           <CustomModalFooter
             onClose={() => setShowCreateRoleModal(false)}
             isEditMode={false}
-            submitText="Save Role"
+            submitText={t("saveRole")}
             onSubmit={handleCreateRole}
-            cancelText="Cancel"
+            cancelText={t("cancel")}
           />
         </div>
       </Modal>
@@ -428,41 +427,37 @@ const RoleManagement = () => {
         size="md"
       >
         <CustomModalHeader
-          title="New Resource-Based Permission"
-          subtitle="Security Management"
+          title={t("newResourceBasedPermission")}
+          subtitle={t("securityManagement")}
           onClose={() => setShowCreatePermModal(false)}
         />
         <ModalBody>
           <div className="space-y-4">
             <div>
-              <Label>Target Resource</Label>
+              <Label>{t("targetResource")}</Label>
               <Select
                 value={newPerm.resource}
                 onChange={(e) =>
                   setNewPerm({ ...newPerm, resource: e.target.value })
                 }
               >
-                <option value="">Select a resource...</option>
+                <option value="">{t("selectResource")}</option>
                 {RESOURCES.map((r) => (
                   <option key={r} value={r}>
-                    {r}
+                    {t(r.toLowerCase(), { defaultValue: r })}
                   </option>
                 ))}
               </Select>
             </div>
             <div>
-              <Label>Action Rights (Multi-Select)</Label>
+              <Label>{t("actionRights")}</Label>
               <div className="grid grid-cols-2 gap-2 mt-1">
                 {ACTIONS.map((a) => {
                   const isChecked = selectedActions.includes(a);
                   return (
                     <label
                       key={a}
-                      className={`flex items-center gap-2 p-2.5 rounded-md cursor-pointer border transition-all duration-150 ${
-                        isChecked
-                          ? "bg-blue-50/80 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 shadow-sm"
-                          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                      }`}
+                      className={`flex items-center gap-2 p-2.5 rounded-md cursor-pointer transition-all duration-150 ${ isChecked ?"bg-blue-50/80 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 shadow-sm":"bg-white dark:bg-gray-800  hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
                     >
                       <Checkbox
                         checked={isChecked}
@@ -483,9 +478,9 @@ const RoleManagement = () => {
               </div>
             </div>
             <div>
-              <Label>Description</Label>
+              <Label>{t("description")}</Label>
               <TextInput
-                placeholder="Brief explanation of this right"
+                placeholder={t("briefExplanation")}
                 value={newPerm.description}
                 onChange={(e) =>
                   setNewPerm({ ...newPerm, description: e.target.value })
@@ -494,7 +489,7 @@ const RoleManagement = () => {
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-[10px] text-gray-500 font-mono space-y-1">
               <span className="font-bold block text-gray-400 uppercase text-[9px] mb-1">
-                Generated Names:
+                {t("generatedNames")}
               </span>
               {newPerm.resource && selectedActions.length > 0 ? (
                 selectedActions.map((a) => (
@@ -508,7 +503,7 @@ const RoleManagement = () => {
                 ))
               ) : (
                 <span className="text-gray-400">
-                  Select resource and at least one action right...
+                  {t("selectResourceAndAction")}
                 </span>
               )}
             </div>
@@ -518,9 +513,9 @@ const RoleManagement = () => {
           <CustomModalFooter
             onClose={() => setShowCreatePermModal(false)}
             isEditMode={false}
-            submitText="Create Permission"
+            submitText={t("createPermission")}
             onSubmit={handleCreatePerm}
-            cancelText="Cancel"
+            cancelText={t("cancel")}
           />
         </div>
       </Modal>
@@ -532,8 +527,8 @@ const RoleManagement = () => {
         size="xl"
       >
         <CustomModalHeader
-          title={`Configure Access Rights: ${selectedRole?.name}`}
-          subtitle="Security Management"
+          title={t("configureAccessRightsFor", { name: selectedRole?.name })}
+          subtitle={t("securityManagement")}
           onClose={() => setShowPermAssignModal(false)}
         />
         <ModalBody>
@@ -549,14 +544,14 @@ const RoleManagement = () => {
                 }
               }}
             >
-              {selectedPerms.length === permissions.length && permissions.length > 0 ? "Deselect All" : "Select All"}
+              {selectedPerms.length === permissions.length && permissions.length > 0 ? t("deselectAll") : t("selectAll")}
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-2">
             {permissions?.map((p) => (
               <label
                 key={p.id}
-                className="flex flex-row items-center justify-start gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                className="flex flex-row items-center justify-start gap-3 p-3 bg-white dark:bg-gray-800 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <Checkbox
                   id={`perm-${p.id}`}
@@ -590,7 +585,7 @@ const RoleManagement = () => {
                   </div>
                   <div className="text-[10px] text-gray-400 font-normal mt-0.5">
                     {p.description ||
-                      `Grant ${p.action} access to ${p.resource}`}
+                      t("grantAccessDesc", { action: p.action, resource: p.resource })}
                   </div>
                 </div>
               </label>
@@ -601,9 +596,9 @@ const RoleManagement = () => {
           <CustomModalFooter
             onClose={() => setShowPermAssignModal(false)}
             isEditMode={false}
-            submitText="Save Configuration"
+            submitText={t("saveConfiguration")}
             onSubmit={savePermissions}
-            cancelText="Cancel"
+            cancelText={t("cancel")}
           />
         </div>
       </Modal>

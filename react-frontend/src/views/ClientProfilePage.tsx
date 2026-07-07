@@ -1,31 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from '@/lib/react-router-compat';
-import {
-  Card,
-  Button,
-  Badge,
-  Spinner,
-  Avatar,
-  Alert,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  TextInput,
-  Textarea,
-  Select,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHeadCell,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-  ToggleSwitch,
-} from '@/lib/flowbite-compat';
+import {Button, Badge, Spinner, Avatar, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Label, TextInput, Textarea, Select, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Dropdown, DropdownItem, DropdownDivider, ToggleSwitch} from '@/lib/flowbite-compat';
 import DatePicker from "@/components/common/DatePicker";
 import ModernPagination from "@/components/common/ModernPagination";
 import ModernTabs from "@/components/common/ModernTabs";
@@ -828,7 +803,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           <Button
             color="light"
             onClick={() => navigate("/clients")}
-            className="rounded-md border border-gray-200 dark:border-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs"
+            className="rounded-md bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs"
           >
             <ArrowLeft
               size={16}
@@ -842,7 +817,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
         <div className="relative">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-700 h-36 rounded-lg shadow-lg"></div>
           <div className="px-4 -mt-14">
-            <Card className="rounded-lg border-none shadow-2xl dark:bg-gray-800">
+            <div className="rounded-lg border-none shadow-2xl dark:bg-gray-800">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="relative group">
@@ -951,7 +926,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8 pt-8 border-t dark:border-gray-700">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8 pt-8 border-t">
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
                     <Phone size={12} /> Phone Number
@@ -987,7 +962,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                   </p>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </div>
 
@@ -1005,14 +980,14 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-3">
               {/* Left: Quick Stats & Timeline */}
               <div className="lg:col-span-2 space-y-4">
-                <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                   <h3 className="font-black text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                     <History className="text-blue-600" /> Interaction Timeline
                   </h3>
                   <div className="relative pl-8 space-y-5 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100 dark:before:bg-gray-700">
                     {cases.map((c: any, i: number) => (
                       <div key={i} className="relative">
-                        <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center border-4 border-white dark:border-gray-800 text-blue-600">
+                        <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center border-4 border-white text-blue-600">
                           <ShieldCheck size={10} />
                         </div>
                         <div>
@@ -1032,7 +1007,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                       </div>
                     ))}
                     <div className="relative">
-                      <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-white dark:border-gray-800 text-gray-500">
+                      <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-white text-gray-500">
                         <User size={10} />
                       </div>
                       <div>
@@ -1053,9 +1028,9 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
 
-                <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800 overflow-hidden">
+                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800 overflow-hidden">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="font-black text-lg text-gray-900 dark:text-white flex items-center gap-2">
                       <Briefcase className="text-emerald-500" /> Placement
@@ -1085,7 +1060,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                       hoverable
                       className="border-none w-full min-w-[600px] relative"
                     >
-                      <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b dark:border-gray-700 sticky top-0 z-20 backdrop-blur-md shadow-sm">
+                      <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b sticky top-0 z-20 backdrop-blur-md shadow-sm">
                         <TableHeadCell className="px-6 py-4 font-bold">
                           Company
                         </TableHeadCell>
@@ -1116,7 +1091,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                           placements.map((p: any, i: number) => (
                             <TableRow
                               key={i}
-                              className="dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                              className="dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                             >
                               <TableCell className="px-6 py-4 font-bold dark:text-white">
                                 {p.companyName || "N/A"}
@@ -1180,17 +1155,17 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                       </TableBody>
                     </Table>
                   </div>
-                </Card>
+                </div>
               </div>
 
               {/* Right: Personal Details & Documents */}
               <div className="space-y-4">
-                <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                   <h3 className="font-black text-lg text-gray-900 dark:text-white mb-6">
                     Vital Information
                   </h3>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Gender
                       </span>
@@ -1198,7 +1173,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                         {client.gender}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Marital Status
                       </span>
@@ -1206,7 +1181,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                         {client.maritalStatus || "Single"}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         ID Card
                       </span>
@@ -1214,7 +1189,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                         {client.idCard || "N/A"}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Nationality
                       </span>
@@ -1222,7 +1197,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                         {client.nationality || "Khmer"}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b dark:border-gray-700">
+                    <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Physical
                       </span>
@@ -1231,9 +1206,9 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                       </span>
                     </div>
                   </div>
-                </Card>
+                </div>
 
-                <Card className="rounded-lg border-none shadow-lg dark:bg-gray-800">
+                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="font-black text-lg text-gray-900 dark:text-white">
                       Attachments
@@ -1295,11 +1270,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                                   ?.click();
                               }
                             }}
-                            className={`p-4 rounded-lg border flex flex-col items-center gap-2 group cursor-pointer transition-all ${
-                              fileUrl
-                                ? "bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400"
-                                : "bg-gray-50 dark:bg-gray-700/50 border-gray-100 dark:border-gray-600 hover:border-blue-400"
-                            }`}
+                            className={`p-4 rounded-lg flex flex-col items-center gap-2 group cursor-pointer transition-all ${ fileUrl ?"bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400":"bg-gray-50 dark:bg-gray-700/50  hover:border-blue-400"}`}
                           >
                             {/* Action Buttons Overlay */}
                             {fileUrl && (
@@ -1358,7 +1329,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                                       window.open(fileUrl, "_blank");
                                     }
                                   }}
-                                  className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+                                  className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
                                   title="Download Attachment"
                                 >
                                   <Download size={12} />
@@ -1372,7 +1343,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                                       .getElementById(`upload-${doc.field}`)
                                       ?.click();
                                   }}
-                                  className="p-1 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+                                  className="p-1 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
                                   title="Replace Attachment"
                                 >
                                   <Edit size={12} />
@@ -1384,7 +1355,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                                     e.stopPropagation();
                                     handleRemoveAttachment(doc.field);
                                   }}
-                                  className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+                                  className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
                                   title="Delete Attachment"
                                 >
                                   <Trash2 size={12} />
@@ -1394,11 +1365,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
 
                             {/* Icon */}
                             <div
-                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${
-                                fileUrl
-                                  ? "bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400"
-                                  : "bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-                              }`}
+                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${ fileUrl ?"bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400":"bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
                             >
                               {isCardUploading ? (
                                 <Spinner size="sm" />
@@ -1412,7 +1379,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                               {doc.label}
                             </span>
                             <span
-                              className={`text-[9px] font-bold ${fileUrl ? "text-green-600 dark:text-green-400" : "text-gray-400"}`}
+                              className={`text-[9px] font-bold ${fileUrl ?"text-green-600 dark:text-green-400":"text-gray-400"}`}
                             >
                               {isCardUploading
                                 ? "Uploading..."
@@ -1425,7 +1392,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                       );
                     })}
                   </div>
-                </Card>
+                </div>
               </div>
             </div>
           )}
@@ -1484,13 +1451,13 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                   </Button>
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
                 <div className="overflow-x-auto overflow-y-auto max-h-[400px] custom-scrollbar">
                   <Table
                     hoverable
                     className="border-none w-full min-w-[850px] relative"
                   >
-                    <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b dark:border-gray-700 sticky top-0 z-20 backdrop-blur-md shadow-sm">
+                    <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b sticky top-0 z-20 backdrop-blur-md shadow-sm">
                       <TableHeadCell className="px-6 py-4 font-bold">
                         ID
                       </TableHeadCell>
@@ -1529,7 +1496,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                           return (
                             <TableRow
                               key={c.id || index}
-                              className="dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                              className="dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                             >
                               <TableCell className="px-6 py-4 font-bold dark:text-white">
                                 {c.id}
@@ -1637,7 +1604,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {educations?.map((edu: any, i: number) => (
-                  <Card
+                  <div
                     key={i}
                     className="rounded-lg border-none shadow-lg dark:bg-gray-800 group relative"
                   >
@@ -1678,10 +1645,10 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                         </p>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
                 {(educations?.length === 0 || !educations) && (
-                  <div className="col-span-full py-20 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
+                  <div className="col-span-full py-20 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2">
                     <GraduationCap
                       size={48}
                       className="mx-auto text-gray-300 mb-4"
@@ -1719,14 +1686,14 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
             },
           }}
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {isEditMode ? "Update Placement" : "Record New Placement"}
             </h3>
             <button
               type="button"
               onClick={() => setIsPlacementModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -1827,7 +1794,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               </div>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 relative z-40 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t relative z-40 justify-end gap-3 !p-4">
             <Button
               outline
               color="gray"
@@ -1855,14 +1822,14 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           onClose={() => setIsSupportModalOpen(false)}
           size="lg"
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {isEditMode ? "Update Assessment" : "New Support Entry"}
             </h3>
             <button
               type="button"
               onClick={() => setIsSupportModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -1916,7 +1883,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                     </Select>
                   </div>
                 )}
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent hover: dark:hover:">
                   <ToggleSwitch
                     checked={supportForm.healthProblem}
                     label="Health Problem Detected?"
@@ -1940,7 +1907,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                   />
                 )}
 
-                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent hover: dark:hover:">
                   <ToggleSwitch
                     checked={supportForm.drugProblem}
                     label="Drug Issue Detected?"
@@ -1966,7 +1933,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               </div>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
             <Button
               outline
               color="gray"
@@ -1995,14 +1962,14 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           onClose={() => setIsEducationModalOpen(false)}
           size="md"
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {isEditMode ? "Update Education" : "Add Education"}
             </h3>
             <button
               type="button"
               onClick={() => setIsEducationModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -2052,7 +2019,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               </div>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
             <Button
               outline
               size="sm"
@@ -2080,14 +2047,14 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           onClose={() => setIsCaseWorkerModalOpen(false)}
           size="lg"
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               Manage Case Workers
             </h3>
             <button
               type="button"
               onClick={() => setIsCaseWorkerModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -2095,7 +2062,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           <ModalBody className="p-6 bg-white dark:bg-gray-800 space-y-6">
             <form
               onSubmit={handleSaveWorker}
-              className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4 border dark:border-gray-700"
+              className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4"
             >
               <h4 className="font-bold text-sm dark:text-white">
                 {editingWorkerId ? "Edit Case Worker" : "Add Case Worker"}
@@ -2174,7 +2141,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               <h4 className="font-bold text-sm dark:text-white">
                 Case Workers List
               </h4>
-              <div className="border rounded-md divide-y dark:border-gray-700 dark:divide-gray-700 max-h-60 overflow-y-auto">
+              <div className="rounded-md divide-y dark:divide-gray-700 max-h-60 overflow-y-auto">
                 {caseWorkers.length === 0 ? (
                   <p className="p-4 text-center text-sm text-gray-500 italic">
                     No case workers registered.
@@ -2230,7 +2197,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               </div>
             </div>
           </ModalBody>
-          <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+          <ModalFooter className="bg-white dark:bg-gray-800 border-t">
             <div className="flex justify-end w-full">
               <Button
                 outline
@@ -2266,7 +2233,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
             },
           }}
         >
-          <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
             <h3 className="text-xl font-bold dark:text-white">
               {editingSsCaseId
                 ? "Edit Social Support Case"
@@ -2275,7 +2242,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
             <button
               type="button"
               onClick={() => setIsSocialSupportCaseModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -2358,7 +2325,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                 </div>
 
                 <div className="md:col-span-2 space-y-4">
-                  <Label className="block border-b pb-1 dark:border-gray-700">
+                  <Label className="block border-b pb-1">
                     Problem List
                   </Label>
 
@@ -2627,7 +2594,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               </div>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 relative z-40 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t relative z-40 justify-end gap-3 !p-4">
             <Button
               outline
               color="gray"
@@ -2655,14 +2622,14 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           onClose={() => setIsManageLevelsOpen(false)}
           size="md"
         >
-          <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-4 border-b rounded-t-md bg-white dark:bg-gray-800">
             <span className="text-lg font-bold dark:text-white">
               Manage Education Levels
             </span>
             <button
               type="button"
               onClick={() => setIsManageLevelsOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -2692,7 +2659,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               </Button>
             </div>
 
-            <div className="border rounded-md divide-y dark:border-gray-700 dark:divide-gray-700 max-h-60 overflow-y-auto">
+            <div className="rounded-md divide-y dark:divide-gray-700 max-h-60 overflow-y-auto">
               {educationLevels.length === 0 ? (
                 <p className="p-4 text-center text-sm text-gray-500 italic">
                   No levels configured.
@@ -2764,7 +2731,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               )}
             </div>
           </ModalBody>
-          <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+          <ModalFooter className="bg-white dark:bg-gray-800 border-t">
             <div className="flex justify-end w-full">
               <Button
                 outline
@@ -2785,14 +2752,14 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           onClose={() => setIsManageCasesOpen(false)}
           size="lg"
         >
-          <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-4 border-b rounded-t-md bg-white dark:bg-gray-800">
             <span className="text-lg font-bold dark:text-white">
               Manage Client Cases
             </span>
             <button
               type="button"
               onClick={() => setIsManageCasesOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -2801,7 +2768,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
             {/* Form to Add or Edit Case */}
             <form
               onSubmit={handleAddCase}
-              className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4 border dark:border-gray-700"
+              className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg space-y-4"
             >
               <h4 className="font-bold text-sm dark:text-white">
                 {isCaseEditMode ? "Edit Case Info" : "Open a New Case"}
@@ -2813,7 +2780,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                     renderTrigger={() => (
                       <button
                         type="button"
-                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex justify-between items-center p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 outline-none"
+                        className="w-full bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex justify-between items-center p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 outline-none"
                       >
                         <span className="truncate">
                           {caseForm.serviceType || "Select Service"}
@@ -2868,7 +2835,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                     renderTrigger={() => (
                       <button
                         type="button"
-                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex justify-between items-center p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 outline-none"
+                        className="w-full bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 flex justify-between items-center p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600 outline-none"
                       >
                         <span className="truncate">
                           {caseForm.priority || "Select Priority"}
@@ -2965,7 +2932,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               <h4 className="font-bold text-sm dark:text-white">
                 Existing Cases
               </h4>
-              <div className="border rounded-md divide-y dark:border-gray-700 dark:divide-gray-700 max-h-60 overflow-y-auto">
+              <div className="rounded-md divide-y dark:divide-gray-700 max-h-60 overflow-y-auto">
                 {cases.length === 0 ? (
                   <p className="p-4 text-center text-sm text-gray-500 italic">
                     No cases opened for this client yet.
@@ -3026,7 +2993,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               </div>
             </div>
           </ModalBody>
-          <ModalFooter className="bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+          <ModalFooter className="bg-white dark:bg-gray-800 border-t">
             <div className="flex justify-end w-full">
               <Button
                 outline
@@ -3047,14 +3014,14 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           onClose={() => setIsManagePlacementTypesOpen(false)}
           size="md"
         >
-          <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+          <div className="flex justify-between items-center p-4 border-b rounded-t-md bg-white dark:bg-gray-800">
             <span className="text-lg font-bold dark:text-white">
               Manage Placement Types
             </span>
             <button
               type="button"
               onClick={() => setIsManagePlacementTypesOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -3081,7 +3048,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               </Button>
             </div>
 
-            <div className="border dark:border-gray-700 rounded-lg overflow-hidden divide-y dark:divide-gray-700 bg-white dark:bg-gray-800 max-h-[300px] overflow-y-auto">
+            <div className="rounded-lg overflow-hidden divide-y dark:divide-gray-700 bg-white dark:bg-gray-800 max-h-[300px] overflow-y-auto">
               {placementCategories.length === 0 ? (
                 <p className="text-gray-500 text-sm text-center py-4">
                   No placement types available. Add one above.
@@ -3090,7 +3057,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
                 placementCategories.map((category: any, index: number) => (
                   <div
                     key={category.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600 group"
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg group"
                   >
                     {editingPlacementTypeIndex === index ? (
                       <div className="flex-1 flex items-center gap-2 mr-2">
@@ -3156,7 +3123,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               )}
             </div>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700 p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800 border-t p-4">
             <div className="flex justify-end w-full">
               <Button
                 outline

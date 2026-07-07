@@ -35,18 +35,17 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        if (headerAccessor.getUser() != null) {
-            String username = headerAccessor.getUser().getName();
+        
+        String username = null;
+        if (headerAccessor.getSessionAttributes() != null) {
+            username = (String) headerAccessor.getSessionAttributes().get("username");
+        }
+        
+        if (username != null) {
             log.info("WebSocket connection established for user: {}", username);
-            
-            // Map the username to the session attributes for later retrieval on disconnect
-            if (headerAccessor.getSessionAttributes() != null) {
-                headerAccessor.getSessionAttributes().put("username", username);
-            }
-            
             addUser(username);
         } else {
-            log.warn("WebSocket connection established but no user Principal found");
+            log.warn("WebSocket connection established but no user found in session attributes");
         }
     }
 

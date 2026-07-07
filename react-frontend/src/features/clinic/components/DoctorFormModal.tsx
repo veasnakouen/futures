@@ -10,7 +10,7 @@ import CustomModalHeader from "../../../components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 import DatePicker from "@/components/common/DatePicker";
 import { format } from "date-fns";
-import { Modal, ModalBody } from "@/lib/flowbite-compat";
+import {Modal, ModalBody} from "@/lib/flowbite-compat";
 
 const schema = z.object({
   firstName: z.string().min(1, "Required"),
@@ -83,17 +83,17 @@ export default function DoctorFormModal({ isOpen, onClose, itemToEdit }: Props) 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First Name</label>
-              <input {...register("firstName")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input {...register("firstName")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
               {errors.firstName && <span className="text-red-500 text-xs mt-1">{errors.firstName.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Last Name</label>
-              <input {...register("lastName")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input {...register("lastName")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
               {errors.lastName && <span className="text-red-500 text-xs mt-1">{errors.lastName.message}</span>}
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Specialization</label>
-              <select {...register("specialization")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("specialization")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">Select Specialization</option>
                 <option value="Cardiologist">Cardiologist</option>
                 <option value="Neurologist">Neurologist</option>
@@ -107,35 +107,35 @@ export default function DoctorFormModal({ isOpen, onClose, itemToEdit }: Props) 
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
-              <input {...register("contactNumber")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input {...register("contactNumber")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-              <input {...register("email")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input {...register("email")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">License Number</label>
-              <input {...register("licenseNumber")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input {...register("licenseNumber")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">NPI Number</label>
-              <input {...register("npiNumber")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input {...register("npiNumber")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Years of Experience</label>
-              <input type="number" {...register("yearOfExperience")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input type="number" {...register("yearOfExperience")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Consultation Fee</label>
-              <input type="number" step="0.01" {...register("consultationFee")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input type="number" step="0.01" {...register("consultationFee")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employee ID</label>
-              <input {...register("employeeId")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
+              <input {...register("employeeId")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
-              <select {...register("role")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("role")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">Select Role</option>
                 <option value="Doctor">Doctor</option>
                 <option value="Nurse">Nurse</option>
@@ -175,7 +175,7 @@ export default function DoctorFormModal({ isOpen, onClose, itemToEdit }: Props) 
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Shift</label>
-              <select {...register("shift")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("shift")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">Select Shift</option>
                 <option value="Morning">Morning</option>
                 <option value="Evening">Evening</option>

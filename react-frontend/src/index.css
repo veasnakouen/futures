@@ -35,7 +35,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --radius: 0.25rem;
   }
 
   .dark {
@@ -138,7 +138,7 @@ body {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   color: #64748b;
   text-decoration: none;
   font-weight: 500;
@@ -190,7 +190,7 @@ body {
 /* Datepicker Styling Overrides - Premium SaaS Look */
 
 .datepicker-picker {
-  @apply border-none rounded-2xl p-4 bg-white dark:bg-gray-900 !important;
+  @apply border-none rounded-sm p-4 bg-white dark:bg-gray-900 !important;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
   backdrop-filter: blur(10px);
 }
@@ -199,7 +199,7 @@ body {
 [data-testid="flowbite-datepicker-popup"] .mt-2 button,
 .datepicker-picker>div:last-child>button,
 [id^="portal-"] .mt-2 button {
-  @apply rounded-lg font-black uppercase text-[10px] tracking-[0.1em] px-4 py-2 transition-all w-full !important;
+  @apply rounded-sm font-black uppercase text-[10px] tracking-[0.1em] px-4 py-2 transition-all w-full !important;
   background-color: rgba(59, 130, 246, 0.1) !important;
   color: #2563eb !important;
   border: 1px solid rgba(59, 130, 246, 0.2) !important;
@@ -226,11 +226,11 @@ body {
 }
 
 .datepicker-header .datepicker-controls button {
-  @apply rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors !important;
+  @apply rounded-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors !important;
 }
 
 .datepicker-view .datepicker-grid .datepicker-cell {
-  @apply rounded-lg text-sm font-bold transition-all !important;
+  @apply rounded-sm text-sm font-bold transition-all !important;
 }
 
 .datepicker-view .datepicker-grid .datepicker-cell:hover {
@@ -260,7 +260,7 @@ body {
 
 .card {
   background: white;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
@@ -325,7 +325,7 @@ tr:hover td {
   background: #2563eb;
   color: white;
   padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   border: none;
   font-weight: 600;
   cursor: pointer;
@@ -384,7 +384,7 @@ body {
 .glass-panel {
   background: var(--bg-card);
   border: 1px solid var(--custom-border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   box-shadow: var(--glass-shadow);
   padding: 1.25rem;
 }
@@ -396,7 +396,7 @@ body {
   gap: 0.75rem;
   background: var(--bg-dark);
   padding: 0.9rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   border: 1px solid var(--custom-border);
   margin-bottom: 1rem;
   align-items: center;
@@ -416,7 +416,7 @@ body {
 .date-group {
   background: var(--bg-card);
   padding: 0.2rem 0.5rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   border: 1px solid var(--custom-border);
   display: flex;
   align-items: center;
@@ -463,7 +463,7 @@ body {
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
   padding: 0.55rem 0.9rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   outline: none;
   transition: all 0.25s ease;
   width: 100%;
@@ -488,7 +488,7 @@ body {
 .custom-select {
   width: 100%;
   padding: 0.55rem 0.9rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   background: var(--bg-card);
   border: 1px solid var(--custom-border);
   color: var(--text-primary);
@@ -524,7 +524,7 @@ body {
   gap: 0.4rem;
   background: var(--bg-dark);
   padding: 0.4rem 0.6rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   border: 1px solid var(--custom-border);
 }
 
@@ -578,7 +578,7 @@ body {
   color: var(--text-secondary);
   background: var(--bg-dark);
   padding: 0.4rem 0.85rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   border: 1px solid var(--custom-border);
   max-width: 340px;
   white-space: nowrap;
@@ -599,7 +599,7 @@ body {
   color: var(--text-primary);
   border: 1px solid var(--custom-border);
   padding: 0.55rem 1.1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   font-weight: 500;
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -617,7 +617,7 @@ body {
   color: var(--text-primary);
   border: 1px solid var(--custom-border);
   padding: 0.55rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   font-weight: 500;
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -639,7 +639,7 @@ body {
   color: white;
   border: none;
   padding: 0.55rem 1.1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   font-weight: 600;
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -677,7 +677,7 @@ body {
   min-width: 210px;
   box-shadow: var(--glass-shadow);
   border: 1px solid var(--custom-border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   z-index: 100;
   overflow: hidden;
 }
@@ -727,7 +727,7 @@ body {
   position: relative;
   min-height: 600px;
   background: var(--bg-dark);
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   padding: 1.5rem;
   overflow: auto;
   border: 1px solid var(--custom-border);
@@ -782,13 +782,13 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 10;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   gap: 1.5rem;
 }
 
 .skeleton-wrapper {
   width: min(700px, 90%);
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   overflow: hidden;
   opacity: 0.5;
 }
@@ -796,7 +796,7 @@ body {
 .skeleton-page {
   background: var(--bg-dark);
   padding: 1.5rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
 }
 
 .skeleton-bar {
@@ -907,7 +907,7 @@ body {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.25);
   padding: 0.9rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -954,7 +954,7 @@ body {
 
 /* Ensure the modal content card is constrained and displays as a flex container */
 [role="dialog"] [data-testid="modal-content"],
-[role="dialog"] div[class*="rounded-lg"][class*="shadow"]:not(button):not(nav):not(div.w-64) {
+[role="dialog"] div[class*="rounded-sm"][class*="shadow"]:not(button):not(nav):not(div.w-64) {
   display: flex !important;
   flex-direction: column !important;
   max-height: 85vh !important;
@@ -1108,7 +1108,7 @@ html[data-theme="antigravity"] {
 
 [data-testid="modal"]>div>div {
   border-radius: 0.75rem !important;
-  /* rounded-xl */
+  /* rounded-sm */
 }
 
 /* Force Flowbite React Dropdowns to top z-index */
@@ -1122,3 +1122,9 @@ div:has(> ul[role="menu"]) {
 [data-testid="flowbite-dropdown-target"]+div {
   z-index: 60 !important;
 }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+

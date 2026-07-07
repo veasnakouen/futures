@@ -1,30 +1,5 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Badge,
-  Button,
-  TextInput,
-  Label,
-  Avatar,
-  Tooltip,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Spinner,
-  Progress,
-  Dropdown,
-  DropdownItem,
-  DropdownHeader,
-  DropdownDivider,
-  Checkbox,
-} from '@/lib/flowbite-compat';
+import {Badge, Button, TextInput, Label, Avatar, Tooltip, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Modal, ModalHeader, ModalBody, ModalFooter, Spinner, Progress, Dropdown, DropdownItem, DropdownHeader, DropdownDivider, Checkbox} from '@/lib/flowbite-compat';
 import ModernPagination from '@/components/common/ModernPagination';
 import DatePicker from '@/components/common/DatePicker';
 import { format } from "date-fns";
@@ -56,6 +31,8 @@ import {
   Upload,
   ChevronDown,
   SlidersHorizontal,
+  UserCheck,
+  Archive,
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -75,6 +52,7 @@ interface AssetsModuleProps {
   onUpdate: (assetId: number, assetData: any) => Promise<void>;
   onDelete: (assetId: number) => Promise<void>;
   onRefresh?: () => void;
+  isLoading?: boolean;
 }
 
 const AssetsModule: React.FC<AssetsModuleProps> = ({
@@ -86,10 +64,12 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
   onUpdate,
   onDelete,
   onRefresh,
+  isLoading,
 }) => {
   const [viewMode, setViewMode] = useState<"GRID" | "TABLE">("GRID");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
+  const [itemsPerRow, setItemsPerRow] = useState("4");
 
   const defaultAssetValues = {
     name: "",
@@ -177,7 +157,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
 
   // Dynamic Asset Categories State
   const [assetCategories, setAssetCategories] = useState<string[]>(() => {
-    const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).getItem("mtp_asset_categories");
+    const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).getItem("mtp_asset_categories");
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -215,7 +195,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
       "Other",
     ];
     setAssetCategories(updated);
-    (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).setItem("mtp_asset_categories", JSON.stringify(updated));
+    (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("mtp_asset_categories", JSON.stringify(updated));
     setNewCategoryName("");
     toast.success(`Category "${trimmed}" added`);
   };
@@ -262,7 +242,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
         (c) => c.toLowerCase() !== catToDelete.toLowerCase(),
       );
       setAssetCategories(updated);
-      (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).setItem("mtp_asset_categories", JSON.stringify(updated));
+      (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("mtp_asset_categories", JSON.stringify(updated));
       toast.success(`Category "${catToDelete}" deleted successfully`);
     } catch (err) {
       toast.error("Failed to migrate asset categories in database");
@@ -323,7 +303,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
       const updated = [...assetCategories];
       updated[index] = newName;
       setAssetCategories(updated);
-      (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).setItem("mtp_asset_categories", JSON.stringify(updated));
+      (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("mtp_asset_categories", JSON.stringify(updated));
       setEditingCatIndex(null);
       toast.success(`Category renamed to "${newName}"`);
     } catch (err) {
@@ -600,47 +580,66 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       {/* Inventory Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-blue-600 bg-white/50 backdrop-blur-xl">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-            Total Inventory
-          </p>
-          <h4 className="text-4xl font-black dark:text-white text-blue-600">
-            {totalAssets}
-          </h4>
-        </Card>
-        <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-emerald-500 bg-white/50 backdrop-blur-xl">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-            Deployed Assets
-          </p>
-          <h4 className="text-4xl font-black dark:text-white text-emerald-600">
-            {assignedCount}
-          </h4>
-        </Card>
-        <Card className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm flex flex-col justify-center border-l-4 border-l-amber-500 bg-white/50 backdrop-blur-xl">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-            Available Stock
-          </p>
-          <h4 className="text-4xl font-black dark:text-white text-amber-500">
-            {availableCount}
-          </h4>
-        </Card>
-        <Card className="p-8 rounded-md bg-gradient-to-br from-gray-800 to-gray-900 text-white border-none shadow-md flex flex-col justify-center">
-          <div className="flex items-center gap-2 mb-2">
-            <Shield size={16} className="text-blue-400" />
-            <p className="text-[10px] font-black uppercase tracking-widest opacity-80">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="p-4 bg-white dark:bg-gray-800 shadow-sm flex items-center gap-4 rounded-none group cursor-pointer transition-all hover:shadow-md">
+          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-500 rounded-none transition-all group-hover:bg-gray-100 dark:group-hover:bg-gray-600">
+            <Box size={24} />
+          </div>
+          <div className="flex-1 text-left">
+            <h4 className="text-xl font-black dark:text-white uppercase">
+              {totalAssets}
+            </h4>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
+              Total Inventory
+            </p>
+          </div>
+        </div>
+
+        <div className="p-4 bg-white dark:bg-gray-800 shadow-sm flex items-center gap-4 rounded-none group cursor-pointer transition-all hover:shadow-md">
+          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-500 rounded-none transition-all group-hover:bg-gray-100 dark:group-hover:bg-gray-600">
+            <UserCheck size={24} />
+          </div>
+          <div className="flex-1 text-left">
+            <h4 className="text-xl font-black dark:text-white uppercase">
+              {assignedCount}
+            </h4>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
+              Deployed Assets
+            </p>
+          </div>
+        </div>
+
+        <div className="p-4 bg-white dark:bg-gray-800 shadow-sm flex items-center gap-4 rounded-none group cursor-pointer transition-all hover:shadow-md">
+          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-500 rounded-none transition-all group-hover:bg-gray-100 dark:group-hover:bg-gray-600">
+            <Archive size={24} />
+          </div>
+          <div className="flex-1 text-left">
+            <h4 className="text-xl font-black dark:text-white uppercase">
+              {availableCount}
+            </h4>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
+              Available Stock
+            </p>
+          </div>
+        </div>
+
+        <div className="p-4 bg-white dark:bg-gray-800 shadow-sm flex items-center gap-4 rounded-none group cursor-pointer transition-all hover:shadow-md">
+          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-500 rounded-none transition-all group-hover:bg-gray-100 dark:group-hover:bg-gray-600">
+            <Shield size={24} />
+          </div>
+          <div className="flex-1 text-left">
+            <h4 className="text-xl font-black dark:text-white uppercase">
+              98.4%
+            </h4>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
               Asset Compliance
             </p>
           </div>
-          <h4 className="text-2xl font-black">98.4%</h4>
-          <p className="text-[9px] font-bold mt-1 opacity-60 uppercase tracking-tighter">
-            Node: Cambodia-Global-HQ
-          </p>
-        </Card>
+        </div>
       </div>
 
       {importProgress && (
-        <div className="mb-8 p-6 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700 shadow-md animate-pulse">
+        <div className="mb-8 p-6 bg-white dark:bg-gray-800 rounded-md shadow-md animate-pulse">
           <div className="flex justify-between items-center mb-4">
             <div>
               <h4 className="text-sm font-black uppercase tracking-widest dark:text-white">
@@ -654,8 +653,8 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
               <p className="text-lg font-black text-blue-600 dark:text-blue-400">
                 {importProgress.total > 0
                   ? Math.round(
-                      (importProgress.processed / importProgress.total) * 100,
-                    )
+                    (importProgress.processed / importProgress.total) * 100,
+                  )
                   : 0}
                 %
               </p>
@@ -678,11 +677,11 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
       )}
 
       {/* Navigation & Filters */}
-      <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-white/50 dark:bg-gray-800/50 p-4 rounded-md border dark:border-gray-700/50 shadow-sm">
-        <div className="relative flex shrink-0 bg-gray-100/80 dark:bg-gray-900/60 p-1 rounded-md w-24 border border-gray-200/50 dark:border-gray-800/50 shadow-inner overflow-hidden">
+      <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-white/50 dark:bg-gray-800/50 p-4 rounded-md shadow-sm">
+        <div className="relative flex shrink-0 bg-gray-100/80 dark:bg-gray-900/60 p-1 rounded-md w-24 shadow-inner overflow-hidden">
           {/* Sliding Pill */}
           <div
-            className="absolute top-1 bottom-1 left-1 rounded-md bg-white dark:bg-gray-800 shadow-md border dark:border-gray-700/50 transition-all duration-300 ease-out pointer-events-none"
+            className="absolute top-1 bottom-1 left-1 rounded-md bg-white dark:bg-gray-800 shadow-md transition-all duration-300 ease-out pointer-events-none"
             style={{
               width: "calc(50% - 4px)",
               transform: `translateX(${viewMode === "GRID" ? "0" : "100%"})`,
@@ -691,21 +690,21 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
           <button
             onClick={() => setViewMode("GRID")}
             title="Grid View"
-            className={`relative z-10 flex-1 py-1.5 transition-all duration-300 flex items-center justify-center rounded-md focus:outline-none ${viewMode === "GRID" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
+            className={`relative z-10 flex-1 py-1.5 transition-all duration-300 flex items-center justify-center rounded-md focus:outline-none ${viewMode ==="GRID"?"text-blue-600 dark:text-blue-400":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
           >
             <LayoutGrid
               size={16}
-              className={`transition-transform duration-300 ${viewMode === "GRID" ? "scale-110" : ""}`}
+              className={`transition-transform duration-300 ${viewMode ==="GRID"?"scale-110":""}`}
             />
           </button>
           <button
             onClick={() => setViewMode("TABLE")}
             title="List View"
-            className={`relative z-10 flex-1 py-1.5 transition-all duration-300 flex items-center justify-center rounded-md focus:outline-none ${viewMode === "TABLE" ? "text-blue-600 dark:text-blue-400" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
+            className={`relative z-10 flex-1 py-1.5 transition-all duration-300 flex items-center justify-center rounded-md focus:outline-none ${viewMode ==="TABLE"?"text-blue-600 dark:text-blue-400":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
           >
             <List
               size={16}
-              className={`transition-transform duration-300 ${viewMode === "TABLE" ? "scale-110" : ""}`}
+              className={`transition-transform duration-300 ${viewMode ==="TABLE"?"scale-110":""}`}
             />
           </button>
         </div>
@@ -718,7 +717,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                 setTypeFilter(e.target.value);
                 setCurrentPage(1); // Reset to page 1 on filter change
               }}
-              className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-md text-gray-900 dark:text-white text-xs shadow-sm h-12 focus:ring-1 focus:ring-blue-500 px-3 w-[110px] flex-1 sm:flex-none"
+              className="bg-white dark:bg-gray-800 border-transparent rounded-md text-gray-900 dark:text-white text-xs shadow-sm h-12 focus:ring-0 focus:border-transparent px-3 w-[110px] flex-1 sm:flex-none"
             >
               {assetTypes.map((t) => (
                 <option key={t} value={t}>
@@ -727,6 +726,18 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
               ))}
             </select>
 
+            {viewMode === "GRID" && (
+              <select
+                value={itemsPerRow}
+                onChange={(e) => setItemsPerRow(e.target.value)}
+                className="bg-white dark:bg-gray-800 border-transparent rounded-md text-gray-900 dark:text-white text-xs shadow-sm h-12 focus:ring-0 focus:border-transparent px-3 w-[120px] flex-1 sm:flex-none"
+              >
+                <option value="3">3 per row</option>
+                <option value="4">4 per row</option>
+                <option value="5">5 per row</option>
+              </select>
+            )}
+
             <div className="relative flex-1 min-w-[140px] sm:w-40 lg:w-44 group">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Search size={14} className="text-gray-400" />
@@ -734,7 +745,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
               <input
                 type="text"
                 placeholder="Search..."
-                className="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-xs rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full pl-9 pr-10 h-12 transition-colors"
+                className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-xs rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full pl-9 pr-10 h-12 transition-colors"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -760,7 +771,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
             <Dropdown
               placement="bottom-end"
               label={
-                <div className="rounded-md h-12 px-4 font-black uppercase text-[10px] border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-white flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                <div className="rounded-md h-12 px-4 font-black uppercase text-[10px] shadow-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-white flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                   <SlidersHorizontal size={14} className="text-blue-500" />{" "}
                   Actions{" "}
                   <ChevronDown size={14} className="ml-1 text-gray-400" />
@@ -768,13 +779,13 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
               }
               arrowIcon={false}
               inline
-              className="backdrop-blur-xl bg-white/95 dark:bg-gray-800/95 border-none shadow-md rounded-md p-1.5 min-w-[240px] z-50"
+              className="backdrop-blur-xl bg-white/95 dark:bg-gray-800/95 !border-transparent !border-0 !ring-0 shadow-md rounded-md p-1.5 min-w-[240px] z-50"
             >
               <DropdownHeader className="border-none">
                 <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-3 py-1">
                   Bulk Operations
                 </span>
-                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-md mt-1 border dark:border-gray-700/50">
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-md mt-1 shadow-sm">
                   <Checkbox
                     id="clear-data-check-dropdown"
                     checked={clearBeforeImport}
@@ -905,9 +916,16 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
       </div>
 
       {viewMode === "GRID" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 animate-slide-up">
-          {filteredAssets.length === 0 ? (
-            <div className="col-span-full py-32 text-center border border-dashed dark:border-gray-700 rounded-md bg-white/30 dark:bg-gray-800/20 backdrop-blur-sm">
+        <div className={`grid gap-6 animate-slide-up ${itemsPerRow ==="3"?"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 sm:grid-cols-3 lg:grid-cols-5":"grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
+          {isLoading ? (
+            <div className="col-span-full py-32 text-center rounded-md bg-white/30 dark:bg-gray-800/20 backdrop-blur-sm flex flex-col items-center justify-center">
+              <Spinner size="xl" />
+              <p className="mt-6 font-black animate-pulse text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                Syncing Hardware Ledger...
+              </p>
+            </div>
+          ) : filteredAssets.length === 0 ? (
+            <div className="col-span-full py-32 text-center rounded-md bg-white/30 dark:bg-gray-800/20 backdrop-blur-sm">
               <Monitor size={64} className="mx-auto text-gray-200 mb-6" />
               <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">
                 No Assets Detected
@@ -920,47 +938,49 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
             paginatedAssets.map((a) => (
               <div
                 key={a.id}
-                className="border-none shadow-sm dark:bg-gray-800 rounded-md p-6 hover:shadow-md hover:z-20 focus-within:z-30 transition-all group relative bg-white/50 backdrop-blur-xl border border-white/10 dark:border-gray-700/50"
+                className="shadow-sm dark:bg-gray-800 p-0 hover:shadow-md transition-all group relative bg-white flex flex-col rounded-none"
               >
-                <div className="absolute inset-0 rounded-md overflow-hidden pointer-events-none z-0">
-                  <div className="absolute -right-8 -top-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity transform group-hover:scale-110 group-hover:-rotate-12 duration-700">
-                    {getAssetIcon(a.assetType)}
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-start mb-8 relative z-10">
-                  <div className="w-14 h-14 rounded-md overflow-hidden bg-white dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-inner shrink-0 border dark:border-gray-600">
-                    {a.imageUrl ? (
-                      <img
-                        src={a.imageUrl}
-                        alt={a.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div
-                        className={`p-4 w-full h-full flex items-center justify-center ${a.status === "Assigned" ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20" : "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20"}`}
-                      >
-                        {getAssetIcon(a.assetType)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
+                {/* Image Area - Top Half */}
+                <div className="w-full h-36 sm:h-40 bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-gray-400 shrink-0 relative overflow-hidden group-hover:bg-gray-200 dark:group-hover:bg-gray-800 transition-colors">
+                  {a.imageUrl ? (
+                    <img
+                      src={a.imageUrl}
+                      alt={a.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="scale-150">
+                      {getAssetIcon(a.assetType)}
+                    </div>
+                  )}
+                  {/* Status Badge */}
+                  <div className="absolute top-4 left-4">
                     <Badge
                       color={a.status === "Assigned" ? "blue" : "success"}
-                      className="rounded-md px-4 py-1 text-[9px] font-black uppercase tracking-widest"
+                      className="rounded-none px-3 py-1 text-[9px] font-black uppercase tracking-widest shadow-sm"
                     >
                       {a.status || "Available"}
                     </Badge>
+                  </div>
+                  {/* Actions Dropdown */}
+                  <div className="absolute top-4 right-4">
                     <Dropdown
                       placement="bottom-end"
                       label={
-                        <div className="p-1.5 rounded-md bg-white/80 dark:bg-gray-900/80 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-400 hover:text-blue-600 cursor-pointer shadow-sm border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
-                          <MoreVertical size={14} />
+                        <div className="p-2 bg-transparent hover:bg-white dark:hover:bg-gray-800 transition-all text-gray-500 hover:text-gray-900 dark:hover:text-white cursor-pointer rounded-none">
+                          <MoreVertical size={16} />
                         </div>
                       }
                       arrowIcon={false}
                       inline
-                      className="backdrop-blur-xl bg-white/95 dark:bg-gray-800/95 border-none shadow-2xl !rounded-md p-2 min-w-[200px] !z-50"
+                      theme={{
+                        floating: {
+                          base: "z-50 w-fit focus:outline-none shadow-2xl",
+                          style: {
+                            auto: "border-none !rounded-none bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl text-gray-900 dark:text-white"
+                          }
+                        }
+                      }}
                     >
                       <DropdownHeader className="border-none">
                         <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-2 py-1">
@@ -972,10 +992,10 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                           onClick={() =>
                             setTimeout(() => handleProcessReturn(a), 0)
                           }
-                          className="rounded-md mb-1 hover:bg-orange-50 dark:hover:bg-orange-900/20 group/item"
+                          className="rounded-none mb-1 hover:bg-orange-50 dark:hover:bg-orange-900/20 group/item"
                         >
                           <div className="flex items-center gap-3 py-1">
-                            <div className="p-1.5 bg-orange-100 dark:bg-orange-900/40 text-orange-600 rounded-md group-hover/item:scale-110 transition-transform">
+                            <div className="p-1.5 bg-orange-100 dark:bg-orange-900/40 text-orange-600 rounded-none group-hover/item:scale-110 transition-transform">
                               <RotateCcw size={14} />
                             </div>
                             <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
@@ -988,10 +1008,10 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                           onClick={() =>
                             setTimeout(() => handleOpenAssign(a), 0)
                           }
-                          className="rounded-md mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"
+                          className="rounded-none mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"
                         >
                           <div className="flex items-center gap-3 py-1">
-                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-md group-hover/item:scale-110 transition-transform">
+                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-none group-hover/item:scale-110 transition-transform">
                               <UserPlus size={14} />
                             </div>
                             <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
@@ -1004,10 +1024,10 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                         onClick={() =>
                           setTimeout(() => generateAssetLabel(a), 0)
                         }
-                        className="rounded-md mb-1 hover:bg-gray-50 dark:hover:bg-gray-700/50 group/item"
+                        className="rounded-none mb-1 hover:bg-gray-50 dark:hover:bg-gray-700/50 group/item"
                       >
                         <div className="flex items-center gap-3 py-1">
-                          <div className="p-1.5 bg-gray-100 dark:bg-gray-700/40 text-gray-600 rounded-md group-hover/item:scale-110 transition-transform">
+                          <div className="p-1.5 bg-gray-100 dark:bg-gray-700/40 text-gray-600 rounded-none group-hover/item:scale-110 transition-transform">
                             <Printer size={14} />
                           </div>
                           <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
@@ -1019,10 +1039,10 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                         onClick={() =>
                           setTimeout(() => handleOpenDetails(a), 0)
                         }
-                        className="rounded-md mb-1 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group/item"
+                        className="rounded-none mb-1 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group/item"
                       >
                         <div className="flex items-center gap-3 py-1">
-                          <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 rounded-md group-hover/item:scale-110 transition-transform">
+                          <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 rounded-none group-hover/item:scale-110 transition-transform">
                             <Zap size={14} />
                           </div>
                           <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
@@ -1032,10 +1052,10 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                       </DropdownItem>
                       <DropdownItem
                         onClick={() => setTimeout(() => handleOpenEdit(a), 0)}
-                        className="rounded-md mb-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group/item"
+                        className="rounded-none mb-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group/item"
                       >
                         <div className="flex items-center gap-3 py-1">
-                          <div className="p-1.5 bg-emerald-100 dark:emerald-900/40 text-emerald-600 rounded-md group-hover/item:scale-110 transition-transform">
+                          <div className="p-1.5 bg-emerald-100 dark:emerald-900/40 text-emerald-600 rounded-none group-hover/item:scale-110 transition-transform">
                             <LayoutGrid size={14} />
                           </div>
                           <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
@@ -1043,13 +1063,13 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                           </span>
                         </div>
                       </DropdownItem>
-                      <DropdownDivider className="my-1 border-gray-100 dark:border-gray-750" />
+                      <DropdownDivider className="my-1" />
                       <DropdownItem
                         onClick={() => setTimeout(() => handleDelete(a.id), 0)}
-                        className="rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 group/item"
+                        className="rounded-none hover:bg-rose-50 dark:hover:bg-rose-900/20 group/item"
                       >
                         <div className="flex items-center gap-3 py-1">
-                          <div className="p-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 rounded-md group-hover/item:scale-110 transition-transform">
+                          <div className="p-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 rounded-none group-hover/item:scale-110 transition-transform">
                             <Trash2 size={14} />
                           </div>
                           <span className="font-bold text-xs text-rose-650">
@@ -1061,45 +1081,47 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="font-black dark:text-white text-2xl tracking-tight leading-none mb-2">
+                {/* Details Area - Bottom Half */}
+                <div className="p-3 sm:p-4 flex flex-col flex-1">
+                  <h3 className="text-sm sm:text-base font-black dark:text-white uppercase mb-1.5 line-clamp-1">
                     {a.name}
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge
-                      color="gray"
-                      className="text-[8px] font-black uppercase rounded-md border-none"
-                    >
+                  </h3>
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    <span className="text-[8px] font-black text-gray-500 uppercase px-1.5 py-0.5 shadow-sm">
                       {a.assetType || "Other"}
-                    </Badge>
-                    <code className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-gray-700/50 px-2 py-0.5 rounded-md flex items-center gap-1">
-                      <RotateCcw size={10} className="text-blue-500" />{" "}
+                    </span>
+                    <span className="text-[8px] font-black text-gray-500 uppercase px-1.5 py-0.5 shadow-sm">
                       {a.serialNumber}
-                    </code>
+                    </span>
                   </div>
-                </div>
 
-                <div className="mt-8 pt-8 border-t dark:border-gray-700 flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    {a.employee ? (
-                      <Avatar img={a.employee.photo} rounded size="sm" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400">
-                        <Box size={14} />
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
+                  <p className="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 flex-1 line-clamp-2 leading-relaxed">
+                    {a.employee
+                      ? `Currently deployed to ${a.employee.firstNameEnglish} ${a.employee.lastNameEnglish}.`
+                      : "Located in main stock node. Ready for deployment."}
+                  </p>
+
+                  {/* Footer (Custodian & Button) */}
+                  <div className="flex flex-wrap items-end justify-between pt-3 mt-auto gap-y-2 gap-x-2 border-t">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest truncate">
                         Custodian
                       </p>
-                      <p
-                        className={`font-black mt-0.5 ${a.employee ? "text-gray-700 dark:text-white text-sm" : "text-gray-300 dark:text-gray-600 italic text-xs"}`}
-                      >
-                        {a.employee
-                          ? `${a.employee.firstNameEnglish} ${a.employee.lastNameEnglish}`
-                          : "Stock Node"}
+                      <p className="text-xs sm:text-sm font-black dark:text-white mt-0.5 truncate">
+                        {a.employee ? a.employee.firstNameEnglish : "Stock"}
                       </p>
                     </div>
+                    {/* Primary Action Button */}
+                    <button
+                      onClick={() =>
+                        a.status === "Assigned"
+                          ? handleProcessReturn(a)
+                          : handleOpenAssign(a)
+                      }
+                      className="bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-900 px-3 sm:px-4 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-colors hover:bg-gray-900 dark:hover:bg-white rounded-none shadow-sm shrink-0 w-full xl:w-auto text-center"
+                    >
+                      {a.status === "Assigned" ? "Return" : "Assign"}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1107,8 +1129,8 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
           )}
         </div>
       ) : (
-        <Card className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-visible bg-white/50 backdrop-blur-xl">
-          <div className="p-8 border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20">
+        <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-visible bg-white/50 backdrop-blur-xl">
+          <div className="p-8 border-b bg-gray-50/50 dark:bg-gray-700/20">
             <h4 className="text-xl font-black dark:text-white uppercase tracking-tight">
               Enterprise Asset Ledger
             </h4>
@@ -1122,7 +1144,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
               hoverable
               className="border-none w-full min-w-[800px] relative"
             >
-              <TableHead className="bg-gray-50/90 dark:bg-gray-800/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-[1] backdrop-blur-md border-b dark:border-gray-600 shadow-sm">
+              <TableHead className="bg-gray-50/90 dark:bg-gray-800/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-[1] backdrop-blur-md border-b shadow-sm">
                 <TableHeadCell className="px-8 py-6">
                   Asset Specification
                 </TableHeadCell>
@@ -1141,188 +1163,222 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                 </TableHeadCell>
               </TableHead>
               <TableBody className="divide-y dark:divide-gray-700">
-                {paginatedAssets.map((a) => (
-                  <TableRow
-                    key={a.id}
-                    className="relative bg-white dark:bg-gray-800 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:z-[2] focus-within:z-[2]"
-                  >
-                    <TableCell className="px-8 py-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-md bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-sm border dark:border-gray-600 overflow-hidden shrink-0">
-                          {a.imageUrl ? (
-                            <img
-                              src={a.imageUrl}
-                              alt={a.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="p-2.5 text-blue-600">
-                              {getAssetIcon(a.assetType)}
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-black dark:text-white uppercase tracking-tight">
-                            {a.name}
-                          </p>
-                          <p className="text-[8px] font-black text-gray-400 uppercase">
-                            {a.assetType || "Equipment"}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-8 py-6 font-mono text-[10px] font-black text-gray-500">
-                      {a.serialNumber}
-                    </TableCell>
-                    <TableCell className="px-8 py-6">
-                      <Badge
-                        color={a.status === "Assigned" ? "blue" : "success"}
-                        className="rounded-md px-4 py-1 text-[9px] font-black uppercase tracking-widest"
-                      >
-                        {a.status || "Available"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-8 py-6">
-                      {a.employee ? (
-                        <div className="flex items-center gap-3">
-                          <Avatar img={a.employee.photo} rounded size="xs" />
-                          <span className="font-black text-sm dark:text-white">
-                            {a.employee.firstNameEnglish}{" "}
-                            {a.employee.lastNameEnglish}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-300 dark:bg-gray-600 text-xs italic font-bold uppercase tracking-widest">
-                          Ready for Deployment
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="px-8 py-6 font-bold text-xs text-gray-400">
-                      {a.assignedDate
-                        ? format(new Date(a.assignedDate), "MMM dd, yyyy")
-                        : "—"}
-                    </TableCell>
-                    <TableCell className="px-8 py-6 text-right">
-                      <div className="flex justify-end">
-                        <Dropdown
-                          placement="bottom-end"
-                          label={
-                            <div className="p-2 rounded-md bg-white/80 dark:bg-gray-900/80 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-500 dark:text-gray-400 hover:text-blue-600 cursor-pointer shadow-sm border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
-                              <MoreVertical size={16} />
-                            </div>
-                          }
-                          arrowIcon={false}
-                          inline
-                          className="backdrop-blur-xl bg-white/95 dark:bg-gray-800/95 border-none shadow-2xl !rounded-md p-2 min-w-[200px] !z-50"
-                        >
-                          <DropdownHeader className="border-none">
-                            <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-2 py-1">
-                              Asset Operations
-                            </span>
-                          </DropdownHeader>
-                          {a.status === "Assigned" ? (
-                            <DropdownItem
-                              onClick={() =>
-                                setTimeout(() => handleProcessReturn(a), 0)
-                              }
-                              className="rounded-md mb-1 hover:bg-orange-50 dark:hover:bg-orange-900/20 group/item"
-                            >
-                              <div className="flex items-center gap-3 py-1">
-                                <div className="p-1.5 bg-orange-100 dark:bg-orange-900/40 text-orange-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                  <RotateCcw size={14} />
-                                </div>
-                                <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
-                                  Return to Stock
-                                </span>
-                              </div>
-                            </DropdownItem>
-                          ) : (
-                            <DropdownItem
-                              onClick={() =>
-                                setTimeout(() => handleOpenAssign(a), 0)
-                              }
-                              className="rounded-md mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"
-                            >
-                              <div className="flex items-center gap-3 py-1">
-                                <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                  <UserPlus size={14} />
-                                </div>
-                                <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
-                                  Assign to Staff
-                                </span>
-                              </div>
-                            </DropdownItem>
-                          )}
-                          <DropdownItem
-                            onClick={() =>
-                              setTimeout(() => generateAssetLabel(a), 0)
-                            }
-                            className="rounded-md mb-1 hover:bg-gray-50 dark:hover:bg-gray-700/50 group/item"
-                          >
-                            <div className="flex items-center gap-3 py-1">
-                              <div className="p-1.5 bg-gray-100 dark:bg-gray-700/40 text-gray-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                <Printer size={14} />
-                              </div>
-                              <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
-                                Print Tag
-                              </span>
-                            </div>
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() =>
-                              setTimeout(() => handleOpenDetails(a), 0)
-                            }
-                            className="rounded-md mb-1 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group/item"
-                          >
-                            <div className="flex items-center gap-3 py-1">
-                              <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                <Zap size={14} />
-                              </div>
-                              <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
-                                View Details
-                              </span>
-                            </div>
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() =>
-                              setTimeout(() => handleOpenEdit(a), 0)
-                            }
-                            className="rounded-md mb-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group/item"
-                          >
-                            <div className="flex items-center gap-3 py-1">
-                              <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                <LayoutGrid size={14} />
-                              </div>
-                              <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
-                                Edit Record
-                              </span>
-                            </div>
-                          </DropdownItem>
-                          <DropdownDivider className="my-1 border-gray-100 dark:border-gray-750" />
-                          <DropdownItem
-                            onClick={() =>
-                              setTimeout(() => handleDelete(a.id), 0)
-                            }
-                            className="rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 group/item"
-                          >
-                            <div className="flex items-center gap-3 py-1">
-                              <div className="p-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                <Trash2 size={14} />
-                              </div>
-                              <span className="font-bold text-xs text-rose-650">
-                                Purge Node
-                              </span>
-                            </div>
-                          </DropdownItem>
-                        </Dropdown>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="py-32 text-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <Spinner size="xl" />
+                        <p className="mt-6 font-black animate-pulse text-[10px] uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                          Syncing Hardware Ledger...
+                        </p>
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : filteredAssets.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="py-32 text-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <Monitor size={64} className="mx-auto text-gray-200 mb-6" />
+                        <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">
+                          No Assets Detected
+                        </h3>
+                        <p className="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-widest">
+                          Adjust your search or register new hardware
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedAssets.map((a) => (
+                    <TableRow
+                      key={a.id}
+                      className="relative bg-white dark:bg-gray-800 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:z-[2] focus-within:z-[2]"
+                    >
+                      <TableCell className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-md bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-sm overflow-hidden shrink-0">
+                            {a.imageUrl ? (
+                              <img
+                                src={a.imageUrl}
+                                alt={a.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="p-2.5 text-blue-600">
+                                {getAssetIcon(a.assetType)}
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-black dark:text-white uppercase tracking-tight">
+                              {a.name}
+                            </p>
+                            <p className="text-[8px] font-black text-gray-400 uppercase">
+                              {a.assetType || "Equipment"}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-8 py-6 font-mono text-[10px] font-black text-gray-500">
+                        {a.serialNumber}
+                      </TableCell>
+                      <TableCell className="px-8 py-6">
+                        <Badge
+                          color={a.status === "Assigned" ? "blue" : "success"}
+                          className="rounded-md px-4 py-1 text-[9px] font-black uppercase tracking-widest"
+                        >
+                          {a.status || "Available"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="px-8 py-6">
+                        {a.employee ? (
+                          <div className="flex items-center gap-3">
+                            <Avatar img={a.employee.photo} rounded size="xs" />
+                            <span className="font-black text-sm dark:text-white">
+                              {a.employee.firstNameEnglish}{" "}
+                              {a.employee.lastNameEnglish}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-300 dark:bg-gray-600 text-xs italic font-bold uppercase tracking-widest">
+                            Ready for Deployment
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="px-8 py-6 font-bold text-xs text-gray-400">
+{a.assignedDate
+                          ? format(new Date(a.assignedDate), "MMM dd, yyyy")
+                          : "—"}
+                      </TableCell>
+                      <TableCell className="px-8 py-6 text-right">
+                        <div className="flex justify-end">
+                          <Dropdown
+                            placement="bottom-end"
+                            label={
+                              <div className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-400 hover:text-blue-600 cursor-pointer shadow-sm rounded-none border-transparent">
+                                <MoreVertical size={14} />
+                              </div>
+                            }
+                            arrowIcon={false}
+                            inline
+                            theme={{
+                              floating: {
+                                base: "z-50 w-fit focus:outline-none shadow-2xl",
+                                style: {
+                                  auto: "border-none !rounded-none bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl text-gray-900 dark:text-white"
+                                }
+                              }
+                            }}
+                          >
+                            <DropdownHeader className="border-none">
+                              <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-2 py-1">
+                                Asset Operations
+                              </span>
+                            </DropdownHeader>
+                            {a.status === "Assigned" ? (
+                              <DropdownItem
+                                onClick={() =>
+                                  setTimeout(() => handleProcessReturn(a), 0)
+                                }
+                                className="rounded-md mb-1 hover:bg-orange-50 dark:hover:bg-orange-900/20 group/item"
+                              >
+                                <div className="flex items-center gap-3 py-1">
+                                  <div className="p-1.5 bg-orange-100 dark:bg-orange-900/40 text-orange-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                    <RotateCcw size={14} />
+                                  </div>
+                                  <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                    Return to Stock
+                                  </span>
+                                </div>
+                              </DropdownItem>
+                            ) : (
+                              <DropdownItem
+                                onClick={() =>
+                                  setTimeout(() => handleOpenAssign(a), 0)
+                                }
+                                className="rounded-md mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"
+                              >
+                                <div className="flex items-center gap-3 py-1">
+                                  <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                    <UserPlus size={14} />
+                                  </div>
+                                  <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                    Assign to Staff
+                                  </span>
+                                </div>
+                              </DropdownItem>
+                            )}
+                            <DropdownItem
+                              onClick={() =>
+                                setTimeout(() => generateAssetLabel(a), 0)
+                              }
+                              className="rounded-md mb-1 hover:bg-gray-50 dark:hover:bg-gray-700/50 group/item"
+                            >
+                              <div className="flex items-center gap-3 py-1">
+                                <div className="p-1.5 bg-gray-100 dark:bg-gray-700/40 text-gray-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                  <Printer size={14} />
+                                </div>
+                                <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                  Print Tag
+                                </span>
+                              </div>
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() =>
+                                setTimeout(() => handleOpenDetails(a), 0)
+                              }
+                              className="rounded-md mb-1 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group/item"
+                            >
+                              <div className="flex items-center gap-3 py-1">
+                                <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                  <Zap size={14} />
+                                </div>
+                                <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                  View Details
+                                </span>
+                              </div>
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() =>
+                                setTimeout(() => handleOpenEdit(a), 0)
+                              }
+                              className="rounded-md mb-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group/item"
+                            >
+                              <div className="flex items-center gap-3 py-1">
+                                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                  <LayoutGrid size={14} />
+                                </div>
+                                <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                  Edit Record
+                                </span>
+                              </div>
+                            </DropdownItem>
+                            <DropdownDivider className="my-1" />
+                            <DropdownItem
+                              onClick={() =>
+                                setTimeout(() => handleDelete(a.id), 0)
+                              }
+                              className="rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 group/item"
+                            >
+                              <div className="flex items-center gap-3 py-1">
+                                <div className="p-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                  <Trash2 size={14} />
+                                </div>
+                                <span className="font-bold text-xs text-rose-650">
+                                  Purge Node
+                                </span>
+                              </div>
+                            </DropdownItem>
+                          </Dropdown>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Pagination Controls */}
@@ -1345,21 +1401,21 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
         onClose={() => setIsRegModalOpen(false)}
         size="xl"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
             {isEditMode ? "Update Hardware Node" : "Register New Equipment"}
           </h3>
           <button
             type="button"
             onClick={() => setIsRegModalOpen(false)}
-            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm"
           >
             <X size={20} />
           </button>
         </div>
         <ModalBody className="p-0">
           {/* Stepper UI */}
-          <div className="flex items-center justify-between px-8 py-4 bg-gray-50 dark:bg-gray-800/80 border dark:border-gray-700 rounded-full mx-6 mt-6 mb-2">
+          <div className="flex items-center justify-between px-8 py-4 bg-gray-50 dark:bg-gray-800/80 rounded-full mx-6 mt-6 mb-2">
             {[
               { step: 1, title: "Identity & Visuals", icon: HardDrive },
               { step: 2, title: "Financials", icon: RotateCcw },
@@ -1370,12 +1426,12 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                 className="flex flex-col items-center gap-1 relative z-10 flex-1"
               >
                 <div
-                  className={`w-8 h-8 min-w-[32px] min-h-[32px] shrink-0 text-sm rounded-full flex items-center justify-center font-black transition-colors ${currentStep >= s.step ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "bg-gray-200 dark:bg-gray-700 text-gray-500"}`}
+                  className={`w-8 h-8 min-w-[32px] min-h-[32px] shrink-0 text-sm rounded-full flex items-center justify-center font-black transition-colors ${currentStep >= s.step ?"bg-blue-600 text-white shadow-md shadow-blue-500/20":"bg-gray-200 dark:bg-gray-700 text-gray-500"}`}
                 >
                   {s.step}
                 </div>
                 <p
-                  className={`text-[9px] font-black uppercase tracking-widest ${currentStep >= s.step ? "text-blue-600 dark:text-blue-400" : "text-gray-400"}`}
+                  className={`text-[9px] font-black uppercase tracking-widest ${currentStep >= s.step ?"text-blue-600 dark:text-blue-400":"text-gray-400"}`}
                 >
                   {s.title}
                 </p>
@@ -1432,7 +1488,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                   </Label>
                   <div className="relative">
                     <select
-                      className={`w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all ${errors.assetType ? "ring-2 ring-red-500 border-transparent" : ""}`}
+                      className={`w-full bg-gray-50 dark:bg-gray-700  rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all ${errors.assetType ?"ring-2 ring-red-500 border-transparent":""}`}
                       {...register("assetType")}
                     >
                       {assetTypes
@@ -1455,8 +1511,8 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                   <Label className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 block">
                     Visual Reference
                   </Label>
-                  <div className="flex items-center gap-5 p-5 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700 shadow-inner group">
-                    <div className="w-20 h-20 rounded-xl bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md shrink-0 group-hover:scale-105 transition-transform duration-300">
+                  <div className="flex items-center gap-5 p-5 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/80 rounded-xl shadow-inner group">
+                    <div className="w-20 h-20 rounded-xl bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden shadow-md shrink-0 group-hover:scale-105 transition-transform duration-300">
                       {imageUrl ? (
                         <img
                           src={imageUrl}
@@ -1485,7 +1541,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                         />
                         <label
                           htmlFor="asset-image-upload"
-                          className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm"
+                          className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm"
                         >
                           <Upload size={14} className="mr-2" /> Upload Image
                         </label>
@@ -1543,7 +1599,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                     Equipment Condition
                   </Label>
                   <select
-                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
+                    className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
                     {...register("assetCondition")}
                   >
                     <option value="New">New</option>
@@ -1583,7 +1639,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                     Cost Center / Department
                   </Label>
                   <select
-                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
+                    className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
                     {...register("costCenter")}
                   >
                     <option value="">Select Department...</option>
@@ -1615,7 +1671,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                     Acquisition Source
                   </Label>
                   <select
-                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
+                    className="w-full bg-gray-50 dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition-all"
                     {...register("acquisitionType")}
                   >
                     <option value="Purchased">Purchased</option>
@@ -1666,7 +1722,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                   </div>
                 </div>
 
-                <div className="sm:col-span-2 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
+                <div className="sm:col-span-2 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-4 block">
                     Asset Flags
                   </Label>
@@ -1675,7 +1731,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                       <input
                         type="checkbox"
                         {...register("isReturnable")}
-                        className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700"
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
                         Requires Return (Offboarding)
@@ -1685,7 +1741,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                       <input
                         type="checkbox"
                         {...register("isIntangible")}
-                        className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700"
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
                         Intangible (Software/License)
@@ -1695,7 +1751,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                       <input
                         type="checkbox"
                         {...register("isKit")}
-                        className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700"
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
                         Kit / Bundle (e.g. Onboarding Kit)
@@ -1705,7 +1761,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                       <input
                         type="checkbox"
                         {...register("isActive")}
-                        className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700"
                       />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
                         Active Status
@@ -1717,7 +1773,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
             )}
           </div>
         </ModalBody>
-        <ModalFooter className="flex justify-between border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 p-5 rounded-b-md">
+        <ModalFooter className="flex justify-between border-t bg-gray-50 dark:bg-gray-800/80 p-5 rounded-b-md">
           <Button
             outline
             size="sm"
@@ -1776,14 +1832,14 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
         onClose={() => setIsAssignModalOpen(false)}
         size="md"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
             Hardware Deployment
           </h3>
           <button
             type="button"
             onClick={() => setIsAssignModalOpen(false)}
-            className="text-red-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 p-1.5 rounded-md shadow-sm border border-red-500"
+            className="text-red-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 p-1.5 rounded-md shadow-sm border-red-500"
           >
             <X size={16} />
           </button>
@@ -1813,7 +1869,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                   <TextInput
                     icon={Search}
                     placeholder="Search staff..."
-                    className="rounded-md text-xs"
+                    className="rounded-md text-xs [&_input]:border-transparent [&_input]:shadow-sm focus:[&_input]:ring-0 focus:[&_input]:border-transparent"
                     value={assignSearch}
                     onChange={(e) => setAssignSearch(e.target.value)}
                     autoComplete="off"
@@ -1821,14 +1877,14 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                 </div>
 
                 {assignSearch.trim().length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-xl z-[100] max-h-60 overflow-y-auto custom-scrollbar">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-md shadow-xl z-[100] max-h-60 overflow-y-auto custom-scrollbar">
                     {filteredEmployeesForAssign.length > 0 ? (
                       filteredEmployeesForAssign.map((e) => (
                         <button
                           key={e.id}
                           onClick={() => handleConfirmAssign(e.id)}
                           disabled={isProcessing}
-                          className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all border-b last:border-b-0 border-gray-100 dark:border-gray-700/50 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700"
+                          className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all border-b last:border-b-0 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700"
                         >
                           <div className="flex items-center gap-3 text-left">
                             <Avatar img={e.photo} rounded size="sm" />
@@ -1874,14 +1930,14 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
         onClose={() => setIsDetailsModalOpen(false)}
         size="lg"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
             Asset Specifications
           </h3>
           <button
             type="button"
             onClick={() => setIsDetailsModalOpen(false)}
-            className="text-red-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 p-1.5 rounded-md shadow-sm border border-red-500"
+            className="text-red-500 hover:text-red-600 transition-colors bg-white hover:bg-red-50 dark:bg-gray-800 dark:hover:bg-red-900/20 p-1.5 rounded-md shadow-sm border-red-500"
           >
             <X size={16} />
           </button>
@@ -1889,8 +1945,8 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
         <ModalBody>
           {viewingAsset && (
             <div className="space-y-8">
-              <div className="flex items-center gap-6 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-md border dark:border-gray-700/50">
-                <div className="w-20 h-20 rounded-md bg-white dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-md border dark:border-gray-600 overflow-hidden shrink-0">
+              <div className="flex items-center gap-6 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-md">
+                <div className="w-20 h-20 rounded-md bg-white dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-md overflow-hidden shrink-0">
                   {viewingAsset.imageUrl ? (
                     <img
                       src={viewingAsset.imageUrl}
@@ -1922,7 +1978,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-white dark:bg-gray-800 rounded-md shadow-sm border dark:border-gray-700">
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-md shadow-sm">
                   <p className="text-[9px] font-black text-gray-400 uppercase mb-1">
                     Equipment Category
                   </p>
@@ -1930,7 +1986,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                     {viewingAsset.assetType || "Standard"}
                   </p>
                 </div>
-                <div className="p-4 bg-white dark:bg-gray-800 rounded-md shadow-sm border dark:border-gray-700">
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-md shadow-sm">
                   <p className="text-[9px] font-black text-gray-400 uppercase mb-1">
                     Audit Status
                   </p>
@@ -1940,7 +1996,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                 </div>
               </div>
 
-              <div className="p-6 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700">
+              <div className="p-6 bg-white dark:bg-gray-800 rounded-md">
                 <h5 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                   <Database size={12} className="text-emerald-500" />{" "}
                   Acquisition & Tracking
@@ -1969,9 +2025,9 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                     <p className="font-black text-sm dark:text-white">
                       {viewingAsset.purchaseDate
                         ? format(
-                            new Date(viewingAsset.purchaseDate),
-                            "MMM dd, yyyy",
-                          )
+                          new Date(viewingAsset.purchaseDate),
+                          "MMM dd, yyyy",
+                        )
                         : "N/A"}{" "}
                       — ${viewingAsset.purchaseCost || 0}
                     </p>
@@ -1983,9 +2039,9 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                     <p className="font-black text-sm dark:text-white">
                       {viewingAsset.warrantyExpiryDate
                         ? format(
-                            new Date(viewingAsset.warrantyExpiryDate),
-                            "MMM dd, yyyy",
-                          )
+                          new Date(viewingAsset.warrantyExpiryDate),
+                          "MMM dd, yyyy",
+                        )
                         : "N/A"}
                     </p>
                   </div>
@@ -2008,7 +2064,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                 </div>
               </div>
 
-              <div className="p-6 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700">
+              <div className="p-6 bg-white dark:bg-gray-800 rounded-md">
                 <h5 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                   <LayoutGrid size={12} className="text-purple-500" /> HR &
                   Internal Controls
@@ -2077,7 +2133,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                 </div>
               </div>
 
-              <div className="p-6 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-700">
+              <div className="p-6 bg-white dark:bg-gray-800 rounded-md">
                 <h5 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                   <UserPlus size={12} className="text-blue-500" /> Deployment
                   Context
@@ -2109,15 +2165,15 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                       <p className="font-black text-sm dark:text-white">
                         {viewingAsset.assignedDate
                           ? format(
-                              new Date(viewingAsset.assignedDate),
-                              "MMM dd, yyyy",
-                            )
+                            new Date(viewingAsset.assignedDate),
+                            "MMM dd, yyyy",
+                          )
                           : "N/A"}
                       </p>
                     </div>
                   </div>
                 ) : (
-                  <div className="py-8 text-center border border-dashed dark:border-gray-700 rounded-md">
+                  <div className="py-8 text-center rounded-md">
                     <Box size={32} className="mx-auto text-gray-200 mb-2" />
                     <p className="text-xs font-black text-gray-400 uppercase italic">
                       Unassigned Asset Hub
@@ -2147,14 +2203,14 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
         onClose={() => setIsCategoryModalOpen(false)}
         size="md"
       >
-        <div className="flex justify-between items-center p-5 border-b dark:border-gray-700 rounded-t-md bg-white dark:bg-gray-800">
+        <div className="flex justify-between items-center p-5 border-b rounded-t-md bg-white dark:bg-gray-800">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
             Manage Asset Categories
           </h3>
           <button
             type="button"
             onClick={() => setIsCategoryModalOpen(false)}
-            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm"
           >
             <X size={20} />
           </button>
@@ -2195,7 +2251,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
                 {assetCategories.map((cat, idx) => (
                   <div
                     key={cat}
-                    className="flex items-center justify-between p-3 rounded-md bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700/50 hover:shadow-md transition-all"
+                    className="flex items-center justify-between p-3 rounded-md bg-gray-50 dark:bg-gray-700/50 hover:shadow-md transition-all"
                   >
                     <div className="flex-1 pr-3">
                       {editingCatIndex === idx ? (

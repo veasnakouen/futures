@@ -1,22 +1,15 @@
 import React from "react";
-import {
-  Badge,
-  Progress,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-} from '@/lib/flowbite-compat';
-import { Box, MapPin, Edit3, Trash2, Search } from "lucide-react";
+import {Badge, Progress, Button, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow} from '@/lib/flowbite-compat';
+import { Box, MapPin, Edit3, Trash2, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 interface InventoryTableProps {
   items: any[];
   handleEdit: (item: any) => void;
   handleView: (item: any) => void;
   handleDelete: (id: number) => void;
+  sortField?: string;
+  sortDir?: string;
+  onSort?: (field: string) => void;
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
@@ -24,7 +17,16 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   handleEdit,
   handleView,
   handleDelete,
+  sortField,
+  sortDir,
+  onSort,
 }) => {
+  const renderSortIcon = (field: string) => {
+    if (!onSort) return null;
+    if (sortField !== field) return <ArrowUpDown size={12} className="ml-1 opacity-30" />;
+    return sortDir === "asc" ? <ArrowUp size={12} className="ml-1 text-blue-500" /> : <ArrowDown size={12} className="ml-1 text-blue-500" />;
+  };
+
   const getStockStatus = (quantity: number, min: number) => {
     if (quantity === 0)
       return { label: "Out of Stock", color: "failure" as const };
@@ -43,13 +45,21 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
       <div className="min-w-[900px]">
         <Table hoverable className="border-none">
           <TableHead className="bg-gray-50/50 dark:bg-gray-800/50 text-[10px] font-black uppercase tracking-widest text-gray-400">
-            <TableHeadCell className="px-6 py-3">
-              Item Description
+            <TableHeadCell className="px-6 py-3 cursor-pointer hover:text-gray-600 transition-colors" onClick={() => onSort && onSort("name")}>
+              <div className="flex items-center">Item Description {renderSortIcon("name")}</div>
             </TableHeadCell>
-            <TableHeadCell className="px-6 py-3">Stock Level</TableHeadCell>
-            <TableHeadCell className="px-6 py-3">Valuation</TableHeadCell>
-            <TableHeadCell className="px-6 py-3">Storage Node</TableHeadCell>
-            <TableHeadCell className="px-6 py-3">Status</TableHeadCell>
+            <TableHeadCell className="px-6 py-3 cursor-pointer hover:text-gray-600 transition-colors" onClick={() => onSort && onSort("quantity")}>
+              <div className="flex items-center">Stock Level {renderSortIcon("quantity")}</div>
+            </TableHeadCell>
+            <TableHeadCell className="px-6 py-3 cursor-pointer hover:text-gray-600 transition-colors" onClick={() => onSort && onSort("unitPrice")}>
+              <div className="flex items-center">Valuation {renderSortIcon("unitPrice")}</div>
+            </TableHeadCell>
+            <TableHeadCell className="px-6 py-3 cursor-pointer hover:text-gray-600 transition-colors" onClick={() => onSort && onSort("location")}>
+              <div className="flex items-center">Storage Node {renderSortIcon("location")}</div>
+            </TableHeadCell>
+            <TableHeadCell className="px-6 py-3 cursor-pointer hover:text-gray-600 transition-colors" onClick={() => onSort && onSort("status")}>
+              <div className="flex items-center">Status {renderSortIcon("status")}</div>
+            </TableHeadCell>
             <TableHeadCell className="px-6 py-3 text-right">
               Actions
             </TableHeadCell>
@@ -74,7 +84,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                   >
                     <TableCell className="px-6 py-3">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-md bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-sm border dark:border-gray-600 overflow-hidden">
+                        <div className="w-12 h-12 rounded-md bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-sm overflow-hidden">
                           {item.imageUrl ? (
                             <img
                               src={item.imageUrl}
@@ -145,7 +155,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                           size="xs"
                           color="light"
                           onClick={() => handleView(item)}
-                          className="rounded-md h-8 w-8 p-0 flex items-center justify-center border-gray-200 dark:border-gray-700 shadow-sm hover:text-emerald-600"
+                          className="rounded-md h-8 w-8 p-0 flex items-center justify-center shadow-sm hover:text-emerald-600"
                           title="View Item Details"
                         >
                           <Search size={14} />
@@ -154,7 +164,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                           size="xs"
                           color="light"
                           onClick={() => handleEdit(item)}
-                          className="rounded-md h-8 w-8 p-0 flex items-center justify-center border-gray-200 dark:border-gray-700 shadow-sm hover:text-blue-600"
+                          className="rounded-md h-8 w-8 p-0 flex items-center justify-center shadow-sm hover:text-blue-600"
                           title="Edit Item"
                         >
                           <Edit3 size={14} />
@@ -163,7 +173,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                           size="xs"
                           color="light"
                           onClick={() => handleDelete(item.id)}
-                          className="rounded-md h-8 w-8 p-0 flex items-center justify-center border-gray-200 dark:border-gray-700 shadow-sm hover:text-rose-600"
+                          className="rounded-md h-8 w-8 p-0 flex items-center justify-center shadow-sm hover:text-rose-600"
                         >
                           <Trash2 size={14} />
                         </Button>

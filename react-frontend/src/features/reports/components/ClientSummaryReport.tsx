@@ -67,29 +67,17 @@ const ClientSummaryReport: React.FC<Props> = ({
       <div className="text-center mb-8 border-b-2 border-black pb-4 relative min-h-[100px]">
         {customLogoUrl && (
           <div
-            className={`absolute top-0 ${
-              !customLogoLocation || customLogoLocation === "top-left"
-                ? "left-0"
-                : customLogoLocation === "top-right"
-                  ? "right-0"
-                  : "left-1/2 -translate-x-1/2"
-            }`}
+            className={`absolute top-0 ${ !customLogoLocation || customLogoLocation ==="top-left"?"left-0": customLogoLocation ==="top-right"?"right-0":"left-1/2 -translate-x-1/2"}`}
           >
             <img
               src={customLogoUrl}
               alt="Report Logo"
-              className={`h-16 object-contain ${
-                customLogoShape === "circle"
-                  ? "rounded-full aspect-square object-cover"
-                  : customLogoShape === "rounded"
-                    ? "rounded-2xl"
-                    : ""
-              }`}
+              className={`h-16 object-contain ${ customLogoShape ==="circle"?"rounded-full aspect-square object-cover": customLogoShape ==="rounded"?"rounded-2xl":"" }`}
             />
           </div>
         )}
         <div
-          className={`flex flex-col items-center justify-center w-full ${customLogoUrl && customLogoLocation === "top-center" ? "pt-20" : "pt-4"}`}
+          className={`flex flex-col items-center justify-center w-full ${customLogoUrl && customLogoLocation ==="top-center"?"pt-20":"pt-4"}`}
         >
           <h1 className="text-2xl font-bold uppercase">{customTitle || "Futures Program"}</h1>
           <h2 className="text-xl">{customSubtitle || "Client Summary Report"}</h2>
@@ -110,46 +98,42 @@ const ClientSummaryReport: React.FC<Props> = ({
 
       {/* Report Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse border border-gray-300 text-xs">
+        <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="bg-gray-100 uppercase">
-              <th className="border border-gray-300 p-2">Code</th>
-              <th className="border border-gray-300 p-2">Full Name</th>
-              <th className="border border-gray-300 p-2">Gender</th>
-              <th className="border border-gray-300 p-2">Province</th>
-              <th className="border border-gray-300 p-2">Contact</th>
-              <th className="border border-gray-300 p-2">Reg. Date</th>
-              <th className="border border-gray-300 p-2">Status</th>
+              <th className="p-2">Code</th>
+              <th className="p-2">Full Name</th>
+              <th className="p-2">Gender</th>
+              <th className="p-2">Province</th>
+              <th className="p-2">Contact</th>
+              <th className="p-2">Reg. Date</th>
+              <th className="p-2">Status</th>
             </tr>
           </thead>
           <tbody>
             {data.map((client) => (
               <tr key={client.id || Math.random()} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-2 font-bold">
+                <td className="p-2 font-bold">
                   {client.clientCode || "N/A"}
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="p-2">
                   {client.firstName} {client.lastName}
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="p-2">
                   {client.gender || "N/A"}
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="p-2">
                   {client.province || "N/A"}
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="p-2">
                   {client.contactPhone || "N/A"}
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="p-2">
                   {safeDateFormat(client.registerDate)}
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="p-2">
                   <span
-                    className={`px-2 py-1 rounded-md text-[10px] uppercase font-bold ${
-                      client.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
+                    className={`px-2 py-1 rounded-md text-[10px] uppercase font-bold ${ client.status ==="Active"?"bg-green-100 text-green-700":"bg-gray-100 text-gray-700"}`}
                   >
                     {client.status || "N/A"}
                   </span>

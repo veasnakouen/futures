@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Table,
-  TableHead,
-  TableBody,
-  TableHeadCell,
-  TableRow,
-  TableCell,
-  Badge,
-  Button,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Table, TableHead, TableBody, TableHeadCell, TableRow, TableCell, Badge, Button, Spinner} from '@/lib/flowbite-compat';
 import { History, Database, ArrowRight, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import api from "../services/api";
@@ -108,10 +97,10 @@ const ImportHistoryPage: React.FC = () => {
             </p>
           </div>
         ) : (
-          <Card className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white/50 backdrop-blur-xl p-0">
+          <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white/50 backdrop-blur-xl p-0">
             <div className="overflow-x-auto overflow-y-auto max-h-[600px] custom-scrollbar">
               <Table hoverable className="relative w-full min-w-[800px]">
-                <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-20 backdrop-blur-md border-b dark:border-gray-600">
+                <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-20 backdrop-blur-md border-b">
                   <TableHeadCell className="px-8 py-6">
                     Source / Sheet
                   </TableHeadCell>
@@ -201,7 +190,7 @@ const ImportHistoryPage: React.FC = () => {
                 </TableBody>
               </Table>
             </div>
-          </Card>
+          </div>
         )}
       </div>
     </Layout>

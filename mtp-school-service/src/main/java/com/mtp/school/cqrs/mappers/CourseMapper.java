@@ -12,5 +12,8 @@ public interface CourseMapper {
     @Mapping(target = "id", ignore = true)
     Course toEntity(CreateCourseCommand command);
 
+    @Mapping(source = "teacher.id", target = "teacherId")
+    @Mapping(source = "teacher.firstName", target = "teacherFirstName")
+    @Mapping(source = "teacher.lastName", target = "teacherLastName")
     CourseQueryResultDto toDto(Course entity);
 }

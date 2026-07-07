@@ -103,3 +103,6 @@ resilience4j:
     instances:
       backendCircuitBreaker:
         timeoutDuration: 15s
+
+jwt:
+  secret: ${JWT_SECRET:MTB_SECRET_KEY_2026_MODERN_SYSTEM_SECURE_KEY_1234567890}

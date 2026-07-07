@@ -19,12 +19,15 @@ public class StudentController {
 
     private final CreateStudentCommandHandler createHandler;
     private final UpdateStudentCommandHandler updateHandler;
+    private final DeleteStudentCommandHandler deleteHandler;
     private final GetAllStudentsQueryHandler getAllHandler;
     private final GetStudentByIdQueryHandler getByIdHandler;
 
     @GetMapping
-    public Page<StudentQueryResultDto> getAll(Pageable pageable) {
-        return getAllHandler.handle(new GetAllStudentsQuery(pageable.getPageNumber(), pageable.getPageSize()));
+    public Page<StudentQueryResultDto> getAll(
+            Pageable pageable,
+            @RequestParam(required = false) String outreachWorkerName) {
+        return getAllHandler.handle(new GetAllStudentsQuery(pageable.getPageNumber(), pageable.getPageSize(), outreachWorkerName));
     }
 
     @GetMapping("/{id}")
@@ -45,5 +48,11 @@ public class StudentController {
         return updateHandler.handle(command)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        deleteHandler.handle(id);
+        return ResponseEntity.noContent().build();
     }
 }

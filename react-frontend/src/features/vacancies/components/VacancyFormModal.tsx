@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  ModalBody,
-  Button,
-  Label,
-  TextInput,
-  Select,
-  Textarea,
-  Spinner,
-} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Button, Label, TextInput, Select, Textarea, Spinner} from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
@@ -115,7 +106,7 @@ const VacancyFormModal: React.FC<VacancyFormModalProps> = ({
           <form id="vacancy-form" onSubmit={handleSubmit} className="space-y-6">
             <fieldset disabled={isViewMode}>
               {/* Image Upload */}
-              <div className="flex flex-col items-center justify-center mb-6 p-4 border border-dashed border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-800/50">
+              <div className="flex flex-col items-center justify-center mb-6 p-4 rounded-md bg-gray-50 dark:bg-gray-800/50">
                 <label className="relative group cursor-pointer block">
                   <div className="w-24 h-24 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-sm border-2 border-transparent group-hover:border-blue-500 dark:group-hover:border-blue-400 transition-colors flex items-center justify-center">
                     {formData.imageUrl ? (
@@ -384,7 +375,7 @@ const VacancyFormModal: React.FC<VacancyFormModalProps> = ({
           </form>
         </ModalBody>
 
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t">
           <CustomModalFooter
             onClose={onClose}
             isEditMode={isEditMode}

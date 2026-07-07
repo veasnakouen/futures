@@ -8,6 +8,7 @@ import SwitchDatabase from "@/features/admin/components/SwitchDatabase";
 import ModernTabs from "@/components/common/ModernTabs";
 import { ShieldCheck, Logs, ShieldUser, DatabaseBackup } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
+import { useTranslation } from "react-i18next";
 
 interface AdminPageProps {
   isDark: boolean;
@@ -23,6 +24,8 @@ const TABS = [
 
 const AdminPage = ({ isDark, setIsDark }: AdminPageProps) => {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
+  
   const hasSystemConfig =
     user?.roles?.includes("SYSTEM_CONFIG") ||
     user?.roles?.includes("ROLE_SUPERADMIN");
@@ -32,6 +35,13 @@ const AdminPage = ({ isDark, setIsDark }: AdminPageProps) => {
       return !!hasSystemConfig;
     }
     return true;
+  }).map(tab => {
+    let label = tab.label;
+    if (tab.id === "USERS") label = t("userAccessControl");
+    if (tab.id === "ROLES") label = t("rolePermissions");
+    if (tab.id === "LOGS") label = t("userLogRecorder");
+    if (tab.id === "DB") label = t("switchDatabase");
+    return { ...tab, label };
   });
 
   const [activeTab, setActiveTab] = useState(filteredTabs[0]?.id || "USERS");

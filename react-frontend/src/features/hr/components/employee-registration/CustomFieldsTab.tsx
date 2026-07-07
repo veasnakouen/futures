@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, TextInput } from '@/lib/flowbite-compat';
+import {Button, TextInput} from '@/lib/flowbite-compat';
 import { Trash2 } from "lucide-react";
 import { type UseFormReturn, useFieldArray } from "react-hook-form";
 import { type EmployeeFormData } from '../../../../schemas/employeeSchema';

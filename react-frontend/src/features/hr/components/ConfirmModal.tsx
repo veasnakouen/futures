@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, ModalHeader, ModalBody, Button } from '@/lib/flowbite-compat';
+import {Modal, ModalHeader, ModalBody, Button} from '@/lib/flowbite-compat';
 import { X, AlertTriangle, Info } from "lucide-react";
 
 interface ConfirmModalProps {
@@ -31,7 +31,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm border border-gray-100 dark:border-gray-700"
+          className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm"
         >
           <X size={20} />
         </button>

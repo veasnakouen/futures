@@ -9,7 +9,7 @@ import { clinicService, PrescriptionDto, CreatePrescriptionCommand, UpdatePrescr
 import { toast } from "react-hot-toast";
 import CustomModalHeader from "../../../components/common/CustomModalHeader";
 import CustomModalFooter from "../../../components/common/CustomModalFooter";
-import { Modal, ModalBody } from "@/lib/flowbite-compat";
+import {Modal, ModalBody} from "@/lib/flowbite-compat";
 
 const itemSchema = z.object({
   id: z.string().optional(),
@@ -20,6 +20,8 @@ const itemSchema = z.object({
   duration: z.string().min(1, "Required"),
   refillsAllowed: z.string().min(1, "Required"),
   phamacyId: z.string().min(1, "Required"),
+  inventoryItemId: z.number().optional(),
+  quantityDispensed: z.number().optional(),
 });
 
 const schema = z.object({
@@ -45,7 +47,7 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
     defaultValues: {
       patientId: "",
       diagnosis: "",
-      items: [{ drugName: "", ndcCode: "", dosage: "", frequency: "", duration: "", refillsAllowed: "0", phamacyId: "P-001" }]
+      items: [{ drugName: "", ndcCode: "", dosage: "", frequency: "", duration: "", refillsAllowed: "0", phamacyId: "P-001", quantityDispensed: 1 }]
     }
   });
 
@@ -83,7 +85,7 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
         reset({
           patientId: "",
           diagnosis: "",
-          items: [{ drugName: "", ndcCode: "", dosage: "", frequency: "", duration: "", refillsAllowed: "0", phamacyId: "P-001" }]
+          items: [{ drugName: "", ndcCode: "", dosage: "", frequency: "", duration: "", refillsAllowed: "0", phamacyId: "P-001", quantityDispensed: 1 }]
         });
       }
     }
@@ -113,7 +115,7 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Patient</label>
-              <select {...register("patientId")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("patientId")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">Select Patient...</option>
                 {patientsData?.data?.content?.map((p: any) => (
                   <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
@@ -123,7 +125,7 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Diagnosis</label>
-              <select {...register("diagnosis")} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select {...register("diagnosis")} className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">Select Diagnosis...</option>
                 {diagnosisTemplatesData?.data?.content?.map((d: any) => (
                   <option key={d.id} value={d.name}>{d.name} ({d.icd10Code})</option>
@@ -133,17 +135,17 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
             </div>
           </div>
 
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+          <div className="border-t pt-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Medications</h3>
-              <button type="button" onClick={() => append({ drugName: "", ndcCode: "", dosage: "", frequency: "", duration: "", refillsAllowed: "0", phamacyId: "P-001" })} className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+              <button type="button" onClick={() => append({ drugName: "", ndcCode: "", dosage: "", frequency: "", duration: "", refillsAllowed: "0", phamacyId: "P-001", quantityDispensed: 1 })} className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
                 + Add Medicine
               </button>
             </div>
             
             <div className="space-y-4">
               {fields.map((field, index) => (
-                <div key={field.id} className="grid grid-cols-12 gap-3 items-start border border-gray-200 dark:border-gray-700 p-4 rounded-lg relative">
+                <div key={field.id} className="grid grid-cols-12 gap-3 items-start p-4 rounded-lg relative">
                   {fields.length > 1 && (
                     <button type="button" onClick={() => remove(index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold px-2">✕</button>
                   )}
@@ -154,12 +156,17 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
                       {...register(`items.${index}.drugName`, {
                         onChange: (e) => {
                           const selectedDrug = stockItems?.find((item: any) => item.name === e.target.value);
-                          if (selectedDrug && selectedDrug.sku) {
-                            setValue(`items.${index}.ndcCode`, selectedDrug.sku);
+                          if (selectedDrug) {
+                            if (selectedDrug.sku) {
+                              setValue(`items.${index}.ndcCode`, selectedDrug.sku);
+                            }
+                            if (selectedDrug.id) {
+                              setValue(`items.${index}.inventoryItemId`, selectedDrug.id);
+                            }
                           }
                         }
                       })} 
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="">Select Drug</option>
                       {stockItems?.map((item: any) => (
@@ -171,17 +178,17 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
 
                   <div className="col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">NDC/SKU Code</label>
-                    <input {...register(`items.${index}.ndcCode`)} className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                    <input {...register(`items.${index}.ndcCode`)} className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                   </div>
 
                   <div className="col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Dosage</label>
-                    <input {...register(`items.${index}.dosage`)} className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                    <input {...register(`items.${index}.dosage`)} className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                   </div>
 
                   <div className="col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Frequency</label>
-                    <select {...register(`items.${index}.frequency`)} className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    <select {...register(`items.${index}.frequency`)} className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                       <option value="Daily">Daily</option>
                       <option value="BID">BID (2x/day)</option>
                       <option value="TID">TID (3x/day)</option>
@@ -192,7 +199,7 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
 
                   <div className="col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Duration</label>
-                    <select {...register(`items.${index}.duration`)} className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    <select {...register(`items.${index}.duration`)} className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                       <option value="1 Week">1 Week</option>
                       <option value="2 Weeks">2 Weeks</option>
                       <option value="1 Month">1 Month</option>
@@ -202,11 +209,17 @@ export default function PrescriptionFormModal({ isOpen, onClose, itemToEdit }: P
 
                   <div className="col-span-1">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Refills</label>
-                    <input {...register(`items.${index}.refillsAllowed`)} type="number" className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                    <input {...register(`items.${index}.refillsAllowed`)} type="number" className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                  </div>
+
+                  <div className="col-span-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Qty</label>
+                    <input {...register(`items.${index}.quantityDispensed`, { valueAsNumber: true })} type="number" min="1" className="w-full px-2 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                   </div>
                   
-                  {/* Hidden pharmacy ID */}
+                  {/* Hidden fields */}
                   <input type="hidden" {...register(`items.${index}.phamacyId`)} />
+                  <input type="hidden" {...register(`items.${index}.inventoryItemId`, { valueAsNumber: true })} />
                 </div>
               ))}
             </div>

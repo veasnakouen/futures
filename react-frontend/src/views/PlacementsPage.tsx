@@ -1,27 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  Table,
-  TableHead,
-  TableHeadCell,
-  TableBody,
-  TableRow,
-  TableCell,
-  Badge,
-  Button,
-  Spinner,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  TextInput,
-  Select,
-  Popover,
-  Dropdown,
-  DropdownItem,
-  DropdownDivider,
-} from '@/lib/flowbite-compat';
+import {Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Badge, Button, Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Label, TextInput, Select, Popover, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
 import DatePicker from "@/components/common/DatePicker";
 import ModernPagination from "@/components/common/ModernPagination";
 import {
@@ -123,21 +101,16 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
     "compensatory",
     "status",
   ]);
-  const [gridDensity, setGridDensity] = useState<
-    "large" | "medium" | "compact"
-  >("medium");
+  const [itemsPerRow, setItemsPerRow] = useState("4");
 
   const getGridClass = () => {
-    switch (gridDensity) {
-      case "large":
-        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 items-start";
-      case "medium":
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 items-start";
-      case "compact":
-        return "grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 items-start";
-      default:
-        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 items-start";
-    }
+    return `grid gap-6 ${
+      itemsPerRow === "3"
+        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-4 items-start"
+        : itemsPerRow === "5"
+        ? "grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 p-4 items-start"
+        : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4 items-start"
+    }`;
   };
 
   // Query for Placements
@@ -305,7 +278,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
   return (
     <>
       <div className="space-y-6 animate-fade-in max-w-[1600px] mx-auto pb-6">
-        <header className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 border border-gray-100 dark:border-gray-700/50">
+        <header className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-indigo-600 text-white rounded-md shadow-xl shadow-indigo-500/20">
               <Briefcase size={24} />
@@ -331,7 +304,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
           </div>
         </header>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30 mb-4 border border-gray-100 dark:border-gray-700/50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30 mb-4">
           <div className="flex flex-col xl:flex-row gap-4">
             <div className="relative flex-1 group">
               <Search
@@ -341,7 +314,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
               <input
                 type="text"
                 placeholder="Search company or candidate..."
-                className="w-full pl-12 pr-10 py-2.5 bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
+                className="w-full pl-12 pr-10 py-2.5 bg-white dark:bg-gray-700/50 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -359,19 +332,19 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md px-4 py-2.5 outline-none dark:text-white focus:ring-2 focus:ring-blue-500 transition-all font-bold text-xs uppercase tracking-widest min-w-[140px]"
+                className="bg-gray-50 dark:bg-gray-700/50 rounded-md px-4 py-2.5 outline-none dark:text-white focus:ring-2 focus:ring-blue-500 transition-all font-bold text-xs uppercase tracking-widest min-w-[140px]"
               >
                 <option>All Status</option>
                 <option>Active</option>
                 <option>Resigned</option>
                 <option>Terminated</option>
               </select>
-              <div className="flex items-center gap-2 border-l border-gray-200 dark:border-gray-700 pl-3">
+              <div className="flex items-center gap-2 border-l pl-3">
                 {viewMode === "list" && (
                   <Dropdown
                     inline
                     label={
-                      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
                         <Filter size={16} className="text-blue-500" />
                         <span className="font-bold hidden sm:block">
                           Columns
@@ -407,62 +380,30 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                   </Dropdown>
                 )}
                 {viewMode === "grid" && (
-                  <Dropdown
-                    inline
-                    label={
-                      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
-                        <LayoutGrid size={16} className="text-indigo-500" />
-                        <span className="font-bold hidden sm:block">
-                          Grid Size
-                        </span>
-                      </div>
-                    }
-                    arrowIcon={false}
-                  >
-                    <DropdownItem
-                      onClick={() => setGridDensity("large")}
-                      className={
-                        gridDensity === "large"
-                          ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                          : ""
-                      }
+                  <div className="flex-shrink-0">
+                    <select
+                      className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-0 focus:border-transparent transition-all duration-200 text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                      value={itemsPerRow}
+                      onChange={(e) => setItemsPerRow(e.target.value)}
                     >
-                      Large (3 per row)
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() => setGridDensity("medium")}
-                      className={
-                        gridDensity === "medium"
-                          ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                          : ""
-                      }
-                    >
-                      Medium (4 per row)
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() => setGridDensity("compact")}
-                      className={
-                        gridDensity === "compact"
-                          ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 font-bold"
-                          : ""
-                      }
-                    >
-                      Compact (5 per row)
-                    </DropdownItem>
-                  </Dropdown>
+                      <option value="3">3 per row</option>
+                      <option value="4">4 per row</option>
+                      <option value="5">5 per row</option>
+                    </select>
+                  </div>
                 )}
                 <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-md p-1 shrink-0">
                   <button
                     onClick={() => setViewMode("grid")}
                     title="Grid View"
-                    className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                    className={`p-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                   >
                     <LayoutGrid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
                     title="List View"
-                    className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+                    className={`p-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
                   >
                     <List size={16} />
                   </button>
@@ -504,7 +445,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
               color: "orange",
             },
           ].map((stat, i) => (
-            <Card key={i} className="border-none shadow-sm dark:bg-gray-800">
+            <div key={i} className="border-none shadow-sm dark:bg-gray-800">
               <div className="flex items-center gap-4">
                 <div
                   className={`p-4 rounded-md bg-${stat.color}-50 dark:bg-${stat.color}-900/20`}
@@ -520,7 +461,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                   </h3>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
@@ -532,10 +473,10 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
             </p>
           </div>
         ) : viewMode === "list" ? (
-          <Card className="border-none shadow-lg dark:bg-gray-800">
+          <div className="border-none shadow-lg dark:bg-gray-800">
             <div className="overflow-x-auto overflow-y-auto min-h-[400px] max-h-[55vh] custom-scrollbar pb-2">
               <Table className="dark:bg-gray-800 w-full min-w-[800px] relative">
-                <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b dark:border-gray-600">
+                <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm border-b">
                   <TableHeadCell className="font-black text-[9px] py-3 uppercase tracking-widest">
                     Candidate
                   </TableHeadCell>
@@ -565,7 +506,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                   {placements.map((p: any, i: number) => (
                     <TableRow
                       key={i}
-                      className="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50/80 dark:hover:bg-gray-700/50 transition-colors"
+                      className="bg-white dark:bg-gray-800 hover:bg-gray-50/80 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <TableCell className="px-6 py-4 font-extrabold text-gray-900 dark:text-white text-sm">
                         {p.clientName || `Client #${p.clientId}`}
@@ -610,7 +551,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                                   ? "failure"
                                   : "gray"
                             }
-                            className={`w-fit rounded-md px-3 py-1 font-black text-[9px] uppercase tracking-widest ${p.status?.toLowerCase() === "resigned" ? "!bg-orange-100 !text-orange-700 dark:!bg-orange-900/40 dark:!text-orange-400" : ""}`}
+                            className={`w-fit rounded-md px-3 py-1 font-black text-[9px] uppercase tracking-widest ${p.status?.toLowerCase() ==="resigned"?"!bg-orange-100 !text-orange-700 dark:!bg-orange-900/40 dark:!text-orange-400":""}`}
                           >
                             {p.status}
                           </Badge>
@@ -654,7 +595,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                                 </span>
                               </div>
                             </DropdownItem>
-                            <DropdownDivider className="my-1 border-gray-100 dark:border-gray-700" />
+                            <DropdownDivider className="my-1" />
                             <DropdownItem
                               onClick={() => handleDeleteClick(p.id)}
                               className="rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 group/item"
@@ -676,11 +617,11 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                 </TableBody>
               </Table>
             </div>
-          </Card>
+          </div>
         ) : (
           <div className={getGridClass()}>
             {placements.map((p: any, i: number) => (
-              <Card
+              <div
                 key={i}
                 className="border-none shadow-sm hover:shadow-xl transition-all dark:bg-gray-800 rounded-md focus-within:z-30 pt-8 pb-2 relative group h-full flex flex-col"
               >
@@ -755,7 +696,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                     </Badge>
                   </div>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         )}
@@ -792,7 +733,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
             },
           }}
         >
-          <div className="flex items-center justify-between p-5 border-b dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-md">
+          <div className="flex items-center justify-between p-5 border-b bg-white dark:bg-gray-800 rounded-t-md">
             <h3 className="text-xl font-black dark:text-white">
               {isViewMode
                 ? "Placement Details"
@@ -803,7 +744,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="p-1.5 text-gray-500 bg-transparent border border-gray-300 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
+              className="p-1.5 text-gray-500 bg-transparent rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors shadow-sm"
             >
               <X size={16} />
             </button>
@@ -837,7 +778,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                     Commencement Date
                   </Label>
                   {isViewMode ? (
-                    <div className="flex items-center justify-between w-full p-2.5 bg-gray-50 dark:bg-gray-700/50 border dark:border-gray-600 rounded-md">
+                    <div className="flex items-center justify-between w-full p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-md">
                       <span className="text-sm font-bold text-gray-900 dark:text-white">
                         {formData.placementDate
                           ? format(
@@ -935,7 +876,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
               </fieldset>
             </form>
           </ModalBody>
-          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 justify-end gap-3 !p-4">
+          <ModalFooter className="bg-gray-50 dark:bg-gray-800/50 border-t justify-end gap-3 !p-4">
             <Button
               outline
               color="gray"

@@ -12,4 +12,7 @@ public class PrescriptionItemDto {
     private String duration;
     private String refillsAllowed;
     private String phamacyId;
+
+    private Long inventoryItemId;
+    private Integer quantityDispensed;
 }
