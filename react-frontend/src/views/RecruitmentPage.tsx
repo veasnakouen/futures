@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Layout from "@/components/common/Layout";
+
 import { useTranslation } from "react-i18next";
 import { Activity, Briefcase, Building2, User, Handshake } from "lucide-react";
 
@@ -178,7 +178,7 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Recruitment Hub">
+    <>
       <div className="max-w-[1600px] mx-auto animate-fade-in relative">
         {loading && (
           <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center rounded-xl">
@@ -262,7 +262,7 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

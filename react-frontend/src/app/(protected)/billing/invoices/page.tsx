@@ -9,8 +9,8 @@ export default function InvoicesPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Invoices">
+    <>
       <InvoiceList />
-    </Layout>
+    </>
   );
 }

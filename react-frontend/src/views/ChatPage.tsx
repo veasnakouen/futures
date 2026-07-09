@@ -13,7 +13,7 @@ import {
   Info,
   CheckCheck,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import websocketService from "../services/websocketService";
 import authService from "../services/authService";
 import { format } from "date-fns";
@@ -166,7 +166,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
     );
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Team Chat">
+    <>
       <div className="flex h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-gray-900 animate-fade-in">
         {/* Modern Sidebar */}
         <div className="w-80 bg-gray-50 dark:bg-gray-900/50 flex flex-col border-r">
@@ -425,7 +425,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

@@ -21,24 +21,23 @@ public class ClientQueryServiceImpl implements ClientQueryService {
 
     @Override
     public Page<ClientSummaryDto> getAllClients(String name, String branch, String status, Pageable pageable) {
-        Specification<Client> spec = Specification.where(null);
+        return clientRepository.findAllSummaries(name, branch, status, pageable).map(this::mapToSummaryDtoFromInterface);
+    }
 
-        if (name != null && !name.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.or(
-                    cb.like(cb.lower(root.get("firstName")), "%" + name.toLowerCase() + "%"),
-                    cb.like(cb.lower(root.get("lastName")), "%" + name.toLowerCase() + "%"),
-                    cb.like(cb.lower(root.get("clientCode")), "%" + name.toLowerCase() + "%")));
-        }
-
-        if (branch != null && !branch.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("branch"), branch));
-        }
-
-        if (status != null && !status.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
-        }
-
-        return clientRepository.findAll(spec, pageable).map(this::mapToSummaryDto);
+    private ClientSummaryDto mapToSummaryDtoFromInterface(ClientRepository.ClientSummary entity) {
+        ClientSummaryDto dto = new ClientSummaryDto();
+        dto.setId(entity.getId());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setGender(entity.getGender());
+        dto.setBranch(entity.getBranch());
+        dto.setClientCode(entity.getClientCode());
+        dto.setPhoto(entity.getPhoto());
+        dto.setStatus(entity.getStatus());
+        dto.setEmail(entity.getEmail());
+        dto.setContactPhone(entity.getContactPhone());
+        dto.setRegisterDate(entity.getRegisterDate());
+        return dto;
     }
 
     @Override

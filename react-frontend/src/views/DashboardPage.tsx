@@ -9,7 +9,7 @@ import {
   MessageCircle,
   Users,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import api from "../services/api";
 import { useTranslation } from "react-i18next";
 import authService from "../services/authService";
@@ -102,7 +102,7 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
 
   if (loading) {
     return (
-      <Layout isDark={isDark} setIsDark={setIsDark} title={t("dashboard")}>
+      <>
         <div className="flex items-center justify-center h-[70vh]">
           <div className="text-center">
             <Spinner size="xl" />
@@ -111,12 +111,12 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
             </p>
           </div>
         </div>
-      </Layout>
+      </>
     );
   }
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title={t("dashboard")}>
+    <>
       <div className="space-y-8 pb-12 max-w-[1600px] mx-auto">
         {error && (
           <ScrollReveal animation="fade-in" duration={400}>
@@ -291,7 +291,7 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
           <CriticalTasks />
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

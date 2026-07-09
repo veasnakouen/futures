@@ -50,7 +50,7 @@ export default function CourseList() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             {t("courses")}
@@ -61,14 +61,14 @@ export default function CourseList() {
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-sm shadow-blue-500/20"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded font-medium transition-colors shadow-sm shadow-blue-500/20"
         >
           <Plus size={18} />
           {t("addCourse")}
         </button>
       </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
+      {/*  */}
+      <div className="bg-white dark:bg-gray-800 rounded shadow-sm overflow-hidden">
         <div className="p-4 border-b flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
           <div className="relative w-64">
             <Search
@@ -78,7 +78,7 @@ export default function CourseList() {
             <input
               type="text"
               placeholder={t("searchCourses")}
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
         </div>

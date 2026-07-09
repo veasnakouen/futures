@@ -43,7 +43,7 @@ public class StockTransferService {
         itemLocationStockRepository.save(stock);
 
         // Update global aggregated quantity to keep backward compatibility
-        item.setQuantity(item.getQuantity() + quantityToAdd);
+        item.addStock(quantityToAdd);
         inventoryRepository.save(item);
     }
 
@@ -85,7 +85,7 @@ public class StockTransferService {
         itemLocationStockRepository.save(stock);
 
         // Update global aggregated quantity
-        item.setQuantity(item.getQuantity() - quantityToConsume);
+        item.removeStock(quantityToConsume);
         inventoryRepository.save(item);
     }
 
@@ -147,7 +147,11 @@ public class StockTransferService {
         itemLocationStockRepository.save(stock);
 
         // Update global aggregated quantity to keep in sync
-        item.setQuantity(item.getQuantity() + difference);
+        if (difference > 0) {
+            item.addStock(difference);
+        } else if (difference < 0) {
+            item.removeStock(Math.abs(difference));
+        }
         inventoryRepository.save(item);
     }
 

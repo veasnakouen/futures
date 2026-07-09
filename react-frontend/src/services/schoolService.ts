@@ -178,8 +178,8 @@ export const schoolService = {
   updateStudent: (id: string, data: UpdateStudentCommand) =>
     api.put(`/school/students/${id}`, data),
   deleteStudent: (id: string) => api.delete(`/school/students/${id}`),
-  
-  getCustomFields: (entityType: string) => 
+
+  getCustomFields: (entityType: string) =>
     api.get(`/school/custom-fields?entityType=${entityType}`),
 
   // --- Branches ---
@@ -310,10 +310,10 @@ export const referralCaseService = {
   createCase: (data: ReferralCaseDto) => api.post(`/referral-cases`, data),
   updateCase: (id: string, data: ReferralCaseDto) => api.put(`/referral-cases/${id}`, data),
   deleteCase: (id: string) => api.delete(`/referral-cases/${id}`),
-  
+
   addReferral: (caseId: string, data: ReferralDto) => api.post(`/referral-cases/${caseId}/referrals`, data),
   updateReferral: (referralId: string, data: ReferralDto) => api.put(`/referral-cases/referrals/${referralId}`, data),
-  getReferralsByDepartments: (departmentIds: number[]) => 
+  getReferralsByDepartments: (departmentIds: number[]) =>
     api.get(`/referral-cases/referrals/by-departments?departmentIds=${departmentIds.join(',')}`),
 };
 

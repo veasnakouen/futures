@@ -29,7 +29,7 @@ import {
   ChevronDown,
   X,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import api from "../services/api";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
@@ -39,8 +39,12 @@ import ClientRegistrationModal from "@/features/clients/components/ClientRegistr
 import ClientAdvancedFeatures from "@/features/clients/components/ClientAdvancedFeatures";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "../queryClient";
+import ClientSidebar from "@/features/clients/components/ClientSidebar";
+import ClientInfoTabs from "@/features/clients/components/ClientInfoTabs";
+import ClientCases from "@/features/clients/components/ClientCases";
 const ClientProfilePage = ({ isDark, setIsDark }: any) => {
   const { id } = useParams();
+  const [activeMenu, setActiveMenu] = useState("Client / Referral");
   const navigate = useNavigate();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -758,20 +762,20 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
 
   if (loading) {
     return (
-      <Layout isDark={isDark} setIsDark={setIsDark} title="Client Portfolio">
+      <>
         <div className="flex flex-col items-center justify-center h-[70vh]">
           <Spinner size="xl" />
           <p className="mt-4 text-gray-500 font-medium animate-pulse">
             Building 360° Portfolio View...
           </p>
         </div>
-      </Layout>
+      </>
     );
   }
 
   if (error || !data) {
     return (
-      <Layout isDark={isDark} setIsDark={setIsDark} title="Error">
+      <>
         <div className="max-w-md mx-auto mt-20 text-center">
           <Alert color="failure" className="rounded-lg p-8 shadow-xl">
             <h3 className="text-lg font-bold mb-2">Portfolio Unavailable</h3>
@@ -785,887 +789,62 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
             </Button>
           </Alert>
         </div>
-      </Layout>
+      </>
     );
   }
 
   const { client, cases, placements, socialSupports, educations } = data;
 
+
   return (
-    <Layout
-      isDark={isDark}
-      setIsDark={setIsDark}
-      title={`${client.firstName} ${client.lastName}`}
-    >
-      <div className="space-y-6 animate-fade-in pb-20">
-        {/* Back Navigation Button */}
-        <div className="flex justify-start">
-          <Button
-            color="light"
-            onClick={() => navigate("/clients")}
-            className="rounded-md bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs"
-          >
-            <ArrowLeft
-              size={16}
-              className="mr-2 text-blue-600 dark:text-blue-400"
-            />{" "}
-            Back to Client Directory
-          </Button>
-        </div>
-
-        {/* Header / Summary Card */}
-        <div className="relative">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 h-36 rounded-lg shadow-lg"></div>
-          <div className="px-4 -mt-14">
-            <div className="rounded-lg border-none shadow-2xl dark:bg-gray-800">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div className="flex flex-col md:flex-row items-center gap-6">
-                  <div className="relative group">
-                    <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-white dark:ring-gray-700 shadow-xl transition-transform duration-300 transform hover:scale-105 bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
-                      {client.photo ? (
-                        <img
-                          src={client.photo}
-                          alt={`${client.firstName} ${client.lastName}`}
-                          className="w-full h-full object-cover object-center"
-                        />
-                      ) : (
-                        <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                          {client.firstName[0] + client.lastName[0]}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-center md:text-left">
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-1">
-                      <h2 className="text-3xl font-black text-gray-900 dark:text-white">
-                        {client.firstName} {client.lastName}
-                      </h2>
-                      <Badge
-                        color={
-                          client.status === "Active" ? "success" : "warning"
-                        }
-                        className="rounded-full px-3 py-1 font-bold"
-                      >
-                        {client.status || "Active"}
-                      </Badge>
-                    </div>
-                    <p className="text-gray-500 dark:text-gray-400 font-bold tracking-widest text-xs uppercase flex items-center gap-2 justify-center md:justify-start">
-                      <span className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-blue-600 dark:text-blue-400">
-                        {client.clientCode}
-                      </span>
-                      • Registered{" "}
-                      {client.registerDate
-                        ? format(new Date(client.registerDate), "MMM dd, yyyy")
-                        : "N/A"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-3 w-full md:w-auto items-stretch">
-                  <Button
-                    color="blue"
-                    onClick={() => navigate(`/clients/${id}/cv`)}
-                    className="rounded-lg flex-1 md:flex-none shadow-lg shadow-blue-500/20 h-[42px]"
-                  >
-                    <FileText size={18} className="mr-2" /> Generate CV
-                  </Button>
-                  <Dropdown
-                    renderTrigger={() => (
-                      <Button
-                        color="gray"
-                        className="rounded-lg flex-1 md:flex-none h-[42px]"
-                      >
-                        <MoreVertical size={18} />
-                      </Button>
-                    )}
-                    placement="bottom-end"
-                  >
-                    <DropdownItem
-                      onClick={() => {
-                        let safeDob = "";
-                        if (client.dateOfBirth) {
-                          try {
-                            safeDob = new Date(client.dateOfBirth)
-                              .toISOString()
-                              .split("T")[0];
-                          } catch (e) {
-                            safeDob = "";
-                          }
-                        }
-                        let safeIdPoor = "";
-                        if (client.idpoorValiddate) {
-                          try {
-                            safeIdPoor = new Date(client.idpoorValiddate)
-                              .toISOString()
-                              .split("T")[0];
-                          } catch (e) {
-                            safeIdPoor = "";
-                          }
-                        }
-
-                        setClientForm({
-                          ...client,
-                          dateOfBirth: safeDob,
-                          idpoorValiddate: safeIdPoor,
-                        });
-                        setIsClientModalOpen(true);
-                      }}
-                    >
-                      <Edit className="mr-2 h-4 w-4" /> Edit Profile
-                    </DropdownItem>
-                    <DropdownItem onClick={() => window.print()}>
-                      <FileText className="mr-2 h-4 w-4" /> Print Profile
-                    </DropdownItem>
-                    <DropdownDivider />
-                    <DropdownItem
-                      onClick={() => handleDeleteItem("profile", 0)}
-                      className="text-red-600 dark:text-red-400"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" /> Delete Client
-                    </DropdownItem>
-                  </Dropdown>
-                </div>
+    <>
+        <div className="flex flex-col lg:flex-row gap-6 mt-6 pb-20 px-4">
+          <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0">
+            <ClientSidebar 
+              client={client} 
+              activeMenu={activeMenu} 
+              setActiveMenu={setActiveMenu} 
+              onEditClient={() => {
+                let safeDob = "";
+                if (client.dateOfBirth) {
+                  try {
+                    safeDob = new Date(client.dateOfBirth).toISOString().split("T")[0];
+                  } catch (e) {}
+                }
+                let safeIdPoor = "";
+                if (client.idpoorValiddate) {
+                  try {
+                    safeIdPoor = new Date(client.idpoorValiddate).toISOString().split("T")[0];
+                  } catch (e) {}
+                }
+                setClientForm({
+                  ...client,
+                  dateOfBirth: safeDob,
+                  idpoorValiddate: safeIdPoor,
+                });
+                setIsClientModalOpen(true);
+              }}
+              onDeleteClient={() => handleDeleteItem("profile", 0)}
+              programsCount={placements?.length || 0}
+              staffsCount={0}
+            />
+          </div>
+          <div className="flex-1 w-full min-w-0">
+            {activeMenu === "Client / Referral" && (
+              <ClientInfoTabs client={client} educations={educations} />
+            )}
+            {activeMenu === "Case Management" && (
+              <ClientCases clientId={client.id} />
+            )}
+            {activeMenu === "Program Management" && (
+              <div className="flex items-center justify-center p-20 bg-white/50 dark:bg-gray-800/50 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 animate-fade-in h-full">
+                <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">
+                  Program Management (Under Construction)
+                </p>
               </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8 pt-8 border-t">
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                    <Phone size={12} /> Phone Number
-                  </p>
-                  <p className="text-sm font-bold dark:text-gray-200">
-                    {client.contactPhone || "No contact"}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                    <Mail size={12} /> Email Address
-                  </p>
-                  <p className="text-sm font-bold dark:text-gray-200 truncate">
-                    {client.email || "None"}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                    <MapPin size={12} /> Location
-                  </p>
-                  <p className="text-sm font-bold dark:text-gray-200">
-                    {client.province || client.address || "N/A"}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                    <Calendar size={12} /> Date of Birth
-                  </p>
-                  <p className="text-sm font-bold dark:text-gray-200">
-                    {client.dateOfBirth
-                      ? format(new Date(client.dateOfBirth), "dd MMM yyyy")
-                      : "Unknown"}
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
-
-        {/* Main Content Tabs */}
-        <div className="px-4 mt-8 mb-6">
-          <ModernTabs
-            tabs={["Overview", "Social Support", "CV & Education"]}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
-        </div>
-
-        <div className="animate-fade-in">
-          {activeTab === "Overview" && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-3">
-              {/* Left: Quick Stats & Timeline */}
-              <div className="lg:col-span-2 space-y-4">
-                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
-                  <h3 className="font-black text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                    <History className="text-blue-600" /> Interaction Timeline
-                  </h3>
-                  <div className="relative pl-8 space-y-5 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100 dark:before:bg-gray-700">
-                    {cases.map((c: any, i: number) => (
-                      <div key={i} className="relative">
-                        <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center border-4 border-white text-blue-600">
-                          <ShieldCheck size={10} />
-                        </div>
-                        <div>
-                          <p className="font-bold text-[10px] uppercase tracking-widest text-blue-500 mb-1">
-                            {format(new Date(c.openDate), "MMM dd, yyyy")}
-                          </p>
-                          <h4 className="text-base font-black dark:text-white mb-1">
-                            {c.serviceType}: {c.subject}
-                          </h4>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                            {c.description}
-                          </p>
-                          <Badge color="info" className="mt-2 inline-flex">
-                            {c.status || "Open"}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                    <div className="relative">
-                      <div className="absolute -left-[29px] top-1 w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-white text-gray-500">
-                        <User size={10} />
-                      </div>
-                      <div>
-                        <p className="font-bold text-[10px] uppercase tracking-widest text-gray-400 mb-1">
-                          {client.registerDate
-                            ? format(
-                                new Date(client.registerDate),
-                                "MMM dd, yyyy",
-                              )
-                            : "N/A"}
-                        </p>
-                        <h4 className="text-base font-black dark:text-white">
-                          Account Created
-                        </h4>
-                        <p className="text-sm text-gray-500">
-                          Initial registration in {client.branch} branch.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800 overflow-hidden">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-black text-lg text-gray-900 dark:text-white flex items-center gap-2">
-                      <Briefcase className="text-emerald-500" /> Placement
-                      History
-                    </h3>
-                    <Button
-                      size="xs"
-                      onClick={() => {
-                        setIsEditMode(false);
-                        setPlacementForm({
-                          clientId: id,
-                          companyName: "",
-                          salary: "",
-                          placementDate: new Date().toISOString().split("T")[0],
-                          status: "Active",
-                          placementType: placementTypes[0] || "Employment",
-                        });
-                        setIsPlacementModalOpen(true);
-                      }}
-                      className="rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700 border-none transition-colors"
-                    >
-                      <Plus size={16} className="mr-1" /> Record Placement
-                    </Button>
-                  </div>
-                  <div className="overflow-x-auto overflow-y-auto max-h-[400px] custom-scrollbar">
-                    <Table
-                      hoverable
-                      className="border-none w-full min-w-[600px] relative"
-                    >
-                      <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b sticky top-0 z-20 backdrop-blur-md shadow-sm">
-                        <TableHeadCell className="px-6 py-4 font-bold">
-                          Company
-                        </TableHeadCell>
-                        <TableHeadCell className="px-6 py-4 font-bold">
-                          Date
-                        </TableHeadCell>
-                        <TableHeadCell className="px-6 py-4 font-bold">
-                          Salary
-                        </TableHeadCell>
-                        <TableHeadCell className="px-6 py-4 font-bold">
-                          Status
-                        </TableHeadCell>
-                        <TableHeadCell className="px-6 py-4 font-bold text-right">
-                          Actions
-                        </TableHeadCell>
-                      </TableHead>
-                      <TableBody className="divide-y divide-gray-100 dark:divide-gray-700">
-                        {placements.length === 0 ? (
-                          <TableRow>
-                            <TableCell
-                              colSpan={5}
-                              className="text-center py-8 text-gray-400 italic"
-                            >
-                              No placements recorded.
-                            </TableCell>
-                          </TableRow>
-                        ) : (
-                          placements.map((p: any, i: number) => (
-                            <TableRow
-                              key={i}
-                              className="dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                            >
-                              <TableCell className="px-6 py-4 font-bold dark:text-white">
-                                {p.companyName || "N/A"}
-                              </TableCell>
-                              <TableCell className="px-6 py-4 text-xs">
-                                {p.placementDate
-                                  ? format(
-                                      new Date(p.placementDate),
-                                      "MMM yyyy",
-                                    )
-                                  : "N/A"}
-                              </TableCell>
-                              <TableCell className="px-6 py-4 font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                                {p.salary || "N/A"}
-                              </TableCell>
-                              <TableCell className="px-6 py-4">
-                                <Badge
-                                  color={
-                                    p.status === "Active" ? "success" : "gray"
-                                  }
-                                >
-                                  {p.status || "Unknown"}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="px-6 py-4 text-right">
-                                <div className="flex justify-end gap-1">
-                                  <button
-                                    onClick={() => {
-                                      setPlacementForm({
-                                        clientId: p.clientId,
-                                        companyName: p.companyName || "",
-                                        salary: p.salary || "",
-                                        placementDate: p.placementDate
-                                          ? p.placementDate.split(" ")[0]
-                                          : "",
-                                        status: p.status || "Active",
-                                        placementType:
-                                          p.placementType || "Employment",
-                                      });
-                                      setEditingId(p.id);
-                                      setIsEditMode(true);
-                                      setIsPlacementModalOpen(true);
-                                    }}
-                                    className="p-2 text-blue-400 hover:text-blue-600"
-                                  >
-                                    <Edit size={16} />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleDeleteItem("placement", p.id)
-                                    }
-                                    className="p-2 text-red-400 hover:text-red-600"
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right: Personal Details & Documents */}
-              <div className="space-y-4">
-                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
-                  <h3 className="font-black text-lg text-gray-900 dark:text-white mb-6">
-                    Vital Information
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                        Gender
-                      </span>
-                      <span className="text-sm font-bold dark:text-gray-200">
-                        {client.gender}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                        Marital Status
-                      </span>
-                      <span className="text-sm font-bold dark:text-gray-200">
-                        {client.maritalStatus || "Single"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                        ID Card
-                      </span>
-                      <span className="text-sm font-bold dark:text-gray-200 font-mono">
-                        {client.idCard || "N/A"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                        Nationality
-                      </span>
-                      <span className="text-sm font-bold dark:text-gray-200">
-                        {client.nationality || "Khmer"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                        Physical
-                      </span>
-                      <span className="text-sm font-bold dark:text-gray-200">
-                        {client.height || "-"} cm / {client.weight || "-"} kg
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-lg border-none shadow-lg dark:bg-gray-800">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-black text-lg text-gray-900 dark:text-white">
-                      Attachments
-                    </h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      {
-                        label: "Photo ID",
-                        icon: <User />,
-                        color: "blue",
-                        field: "photoIdAttachment",
-                      },
-                      {
-                        label: "Contract",
-                        icon: <FileText />,
-                        color: "emerald",
-                        field: "contractAttachment",
-                      },
-                      {
-                        label: "ID Poor",
-                        icon: <Award />,
-                        color: "orange",
-                        field: "idPoorAttachment",
-                      },
-                      {
-                        label: "CV",
-                        icon: <GraduationCap />,
-                        color: "violet",
-                        field: "cvAttachment",
-                      },
-                    ].map((doc, i) => {
-                      const fileUrl = client[doc.field];
-                      const isCardUploading = isUploading[doc.field];
-                      return (
-                        <div key={i} className="relative">
-                          {/* Hidden File Input */}
-                          <input
-                            type="file"
-                            id={`upload-${doc.field}`}
-                            className="hidden"
-                            accept="image/*,application/pdf"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                handleUploadAttachment(doc.field, file);
-                              }
-                            }}
-                          />
-
-                          {/* Card wrapper */}
-                          <div
-                            onClick={() => {
-                              if (fileUrl) {
-                                window.open(fileUrl, "_blank");
-                              } else {
-                                document
-                                  .getElementById(`upload-${doc.field}`)
-                                  ?.click();
-                              }
-                            }}
-                            className={`p-4 rounded-lg flex flex-col items-center gap-2 group cursor-pointer transition-all ${ fileUrl ?"bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400":"bg-gray-50 dark:bg-gray-700/50  hover:border-blue-400"}`}
-                          >
-                            {/* Action Buttons Overlay */}
-                            {fileUrl && (
-                              <div className="absolute top-2 right-2 flex gap-1 z-10">
-                                {/* Download Button */}
-                                <button
-                                  type="button"
-                                  onClick={async (e) => {
-                                    e.stopPropagation();
-                                    const filename = `${doc.label.replace(/\\s+/g, "_")}_attachment`;
-
-                                    // For Cloudinary URLs, use the fl_attachment transformation to force download
-                                    if (
-                                      fileUrl.includes("res.cloudinary.com") &&
-                                      fileUrl.includes("/upload/")
-                                    ) {
-                                      const downloadUrl = fileUrl.replace(
-                                        "/upload/",
-                                        `/upload/fl_attachment:${filename}/`,
-                                      );
-                                      const link = document.createElement("a");
-                                      link.href = downloadUrl;
-                                      link.download = filename;
-                                      document.body.appendChild(link);
-                                      link.click();
-                                      document.body.removeChild(link);
-                                      return;
-                                    }
-
-                                    // Fallback for other URLs: try fetch to create a local blob
-                                    try {
-                                      const response = await fetch(fileUrl);
-                                      if (!response.ok)
-                                        throw new Error(
-                                          "Network response was not ok",
-                                        );
-                                      const blob = await response.blob();
-                                      const blobUrl =
-                                        window.URL.createObjectURL(blob);
-                                      const link = document.createElement("a");
-                                      link.href = blobUrl;
-                                      link.download = filename;
-                                      document.body.appendChild(link);
-                                      link.click();
-                                      document.body.removeChild(link);
-                                      setTimeout(
-                                        () =>
-                                          window.URL.revokeObjectURL(blobUrl),
-                                        100,
-                                      );
-                                    } catch (error) {
-                                      console.error(
-                                        "Download failed, opening in new tab",
-                                        error,
-                                      );
-                                      window.open(fileUrl, "_blank");
-                                    }
-                                  }}
-                                  className="p-1 text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
-                                  title="Download Attachment"
-                                >
-                                  <Download size={12} />
-                                </button>
-                                {/* Edit / Replace Button */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    document
-                                      .getElementById(`upload-${doc.field}`)
-                                      ?.click();
-                                  }}
-                                  className="p-1 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
-                                  title="Replace Attachment"
-                                >
-                                  <Edit size={12} />
-                                </button>
-                                {/* Delete Button */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRemoveAttachment(doc.field);
-                                  }}
-                                  className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded bg-white dark:bg-gray-800 shadow-sm"
-                                  title="Delete Attachment"
-                                >
-                                  <Trash2 size={12} />
-                                </button>
-                              </div>
-                            )}
-
-                            {/* Icon */}
-                            <div
-                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${ fileUrl ?"bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400":"bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
-                            >
-                              {isCardUploading ? (
-                                <Spinner size="sm" />
-                              ) : (
-                                doc.icon
-                              )}
-                            </div>
-
-                            {/* Label & Status */}
-                            <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                              {doc.label}
-                            </span>
-                            <span
-                              className={`text-[9px] font-bold ${fileUrl ?"text-green-600 dark:text-green-400":"text-gray-400"}`}
-                            >
-                              {isCardUploading
-                                ? "Uploading..."
-                                : fileUrl
-                                  ? "Attached (Click to view)"
-                                  : "Not Attached"}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "Social Support" && (
-            <div className="pt-3 space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-xl font-black dark:text-white">
-                  Social Support History
-                </h3>
-                <div className="flex gap-2">
-                  <Button
-                    color="gray"
-                    onClick={() => {
-                      setWorkerForm({
-                        name: "",
-                        program: "Futures",
-                        status: "Active",
-                      });
-                      setEditingWorkerId(null);
-                      setIsCaseWorkerModalOpen(true);
-                    }}
-                    className="rounded-lg shadow-sm"
-                  >
-                    Add Case Worker
-                  </Button>
-                  <Button
-                    color="blue"
-                    onClick={() => {
-                      setSsCaseForm({
-                        haveCaseManager: "HavecaseWorker",
-                        caseWorkerId: "",
-                        healthProblem: false,
-                        healthProblemDetail: "",
-                        drugProblem: false,
-                        drugProblemDetail: "",
-                        babyProblem: false,
-                        babyProblemDetail: "",
-                        personalProblem: false,
-                        personalProblemDetail: "",
-                        legalProblem: false,
-                        legalProblemDetail: "",
-                        otherProblem: false,
-                        otherProblemDetail: "",
-                        description: "",
-                        openDate: new Date().toISOString().split("T")[0],
-                        closeDate: "",
-                        status: "OpenCase",
-                      });
-                      setEditingSsCaseId(null);
-                      setIsSocialSupportCaseModalOpen(true);
-                    }}
-                    className="rounded-lg shadow-lg shadow-blue-500/20"
-                  >
-                    <Plus size={18} className="mr-2" /> Add Social Support
-                  </Button>
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-                <div className="overflow-x-auto overflow-y-auto max-h-[400px] custom-scrollbar">
-                  <Table
-                    hoverable
-                    className="border-none w-full min-w-[850px] relative"
-                  >
-                    <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-xs text-gray-500 uppercase dark:text-gray-400 border-b sticky top-0 z-20 backdrop-blur-md shadow-sm">
-                      <TableHeadCell className="px-6 py-4 font-bold">
-                        ID
-                      </TableHeadCell>
-                      <TableHeadCell className="px-6 py-4 font-bold">
-                        Have case
-                      </TableHeadCell>
-                      <TableHeadCell className="px-6 py-4 font-bold">
-                        Case worker
-                      </TableHeadCell>
-                      <TableHeadCell className="px-6 py-4 font-bold">
-                        Open date
-                      </TableHeadCell>
-                      <TableHeadCell className="px-6 py-4 font-bold">
-                        Close date
-                      </TableHeadCell>
-                      <TableHeadCell className="px-6 py-4 font-bold">
-                        Problem
-                      </TableHeadCell>
-                      <TableHeadCell className="px-6 py-4 font-bold text-right">
-                        Action
-                      </TableHeadCell>
-                    </TableHead>
-                    <TableBody className="divide-y divide-gray-100 dark:divide-gray-700">
-                      {socialSupportCases.length === 0 ? (
-                        <TableRow>
-                          <TableCell
-                            colSpan={7}
-                            className="text-center py-8 text-gray-400 italic"
-                          >
-                            No social support cases recorded.
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        socialSupportCases.map((c: any, index: number) => {
-                          const problems = getProblemsList(c.id);
-                          return (
-                            <TableRow
-                              key={c.id || index}
-                              className="dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                            >
-                              <TableCell className="px-6 py-4 font-bold dark:text-white">
-                                {c.id}
-                              </TableCell>
-                              <TableCell className="px-6 py-4">
-                                <Badge
-                                  color={
-                                    c.haveCaseManager === "HavecaseWorker" ||
-                                    c.haveCaseManager === "Yes"
-                                      ? "success"
-                                      : "gray"
-                                  }
-                                >
-                                  {c.haveCaseManager === "HavecaseWorker" ||
-                                  c.haveCaseManager === "Yes"
-                                    ? "Yes"
-                                    : "No"}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="px-6 py-4 dark:text-gray-200">
-                                {c.caseWorker?.name || "N/A"}
-                              </TableCell>
-                              <TableCell className="px-6 py-4 text-xs dark:text-gray-200">
-                                {c.openDate
-                                  ? format(new Date(c.openDate), "MMM dd, yyyy")
-                                  : "N/A"}
-                              </TableCell>
-                              <TableCell className="px-6 py-4 text-xs dark:text-gray-200">
-                                {c.closeDate
-                                  ? format(
-                                      new Date(c.closeDate),
-                                      "MMM dd, yyyy",
-                                    )
-                                  : "N/A"}
-                              </TableCell>
-                              <TableCell className="px-6 py-4">
-                                <div className="flex flex-wrap gap-1">
-                                  {problems === "None" ? (
-                                    <span className="text-xs text-gray-400 italic">
-                                      None
-                                    </span>
-                                  ) : (
-                                    problems.split(", ").map((p, pidx) => (
-                                      <Badge
-                                        key={pidx}
-                                        color="failure"
-                                        size="xs"
-                                      >
-                                        {p}
-                                      </Badge>
-                                    ))
-                                  )}
-                                </div>
-                              </TableCell>
-                              <TableCell className="px-6 py-4 text-right">
-                                <div className="flex justify-end gap-1">
-                                  <button
-                                    onClick={() => handleEditSsCase(c)}
-                                    className="p-2 text-blue-400 hover:text-blue-600"
-                                  >
-                                    <Edit size={16} />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteSsCase(c.id)}
-                                    className="p-2 text-red-400 hover:text-red-600"
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "CV & Education" && (
-            <div className="pt-3 space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-xl font-black dark:text-white">
-                  Academic & Professional Development
-                </h3>
-                <Button
-                  color="indigo"
-                  onClick={() => {
-                    setIsEditMode(false);
-                    setEducationForm({
-                      clientId: id,
-                      schoolName: "",
-                      currentLevel: educationLevels[0] || "High School",
-                      status: "Completed",
-                    });
-                    setIsEducationModalOpen(true);
-                  }}
-                  className="rounded-lg shadow-lg shadow-indigo-500/20"
-                >
-                  <Plus size={18} className="mr-2" /> Add Education Record
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {educations?.map((edu: any, i: number) => (
-                  <div
-                    key={i}
-                    className="rounded-lg border-none shadow-lg dark:bg-gray-800 group relative"
-                  >
-                    <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => {
-                          setEducationForm({
-                            clientId: edu.clientId,
-                            schoolName: edu.schoolName || "",
-                            currentLevel: edu.currentLevel || "High School",
-                            status: edu.status || "Completed",
-                          });
-                          setEditingId(edu.id);
-                          setIsEditMode(true);
-                          setIsEducationModalOpen(true);
-                        }}
-                        className="p-2 text-blue-400 hover:text-blue-600"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteItem("education", edu.id)}
-                        className="p-2 text-gray-400 hover:text-red-500"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 flex items-center justify-center">
-                        <GraduationCap size={24} />
-                      </div>
-                      <div>
-                        <h4 className="font-black text-gray-900 dark:text-white">
-                          {edu.schoolName || "Unknown Institution"}
-                        </h4>
-                        <p className="text-sm text-gray-500 font-bold uppercase tracking-wider text-[10px]">
-                          {edu.currentLevel || "Unspecified Level"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {(educations?.length === 0 || !educations) && (
-                  <div className="col-span-full py-20 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2">
-                    <GraduationCap
-                      size={48}
-                      className="mx-auto text-gray-300 mb-4"
-                    />
-                    <p className="text-gray-500 font-bold">
-                      Education history is currently empty.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* --- MODALS --- */}
-
-        {/* Placement Modal */}
         <Modal
           show={isPlacementModalOpen}
           onClose={() => setIsPlacementModalOpen(false)}
@@ -3220,7 +2399,7 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
           }
         }}
       />
-    </Layout>
+    </>
   );
 };
 

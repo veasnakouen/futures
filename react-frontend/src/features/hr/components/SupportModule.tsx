@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, TextInput, Select, Tabs} from '@/lib/flowbite-compat';
+import { Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, TextInput, Select, Tabs } from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import { format } from "date-fns";
 import {
@@ -14,6 +14,7 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
+  Award,
 } from "lucide-react";
 import {
   PieChart,
@@ -89,7 +90,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
     title: string;
     message: string;
     onConfirm: () => void;
-  }>({ isOpen: false, title: "", message: "", onConfirm: () => {} });
+  }>({ isOpen: false, title: "", message: "", onConfirm: () => { } });
 
   // Evaluation Filters
   const [evalStartDate, setEvalStartDate] = useState("");
@@ -403,7 +404,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
               <TableRow
                 key={t.id}
                 onClick={() => setSelectedTicketId(t.id)}
-                className={`cursor-pointer transition-colors ${selectedTicketId === t.id ?"bg-blue-100 dark:bg-blue-900/50":"hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
+                className={`cursor-pointer transition-colors ${selectedTicketId === t.id ? "bg-blue-100 dark:bg-blue-900/50" : "hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
               >
                 <TableCell className="py-2 px-2 font-mono text-blue-600">
                   0{t.id}
@@ -613,7 +614,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                       <TableRow
                         key={tkt.id}
                         onClick={() => setSelectedTicketId(tkt.id)}
-                        className={`cursor-pointer transition-colors ${selectedTicketId === tkt.id ?"bg-blue-100 dark:bg-blue-900/50":"bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
+                        className={`cursor-pointer transition-colors ${selectedTicketId === tkt.id ? "bg-blue-100 dark:bg-blue-900/50" : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
                       >
                         <TableCell className="py-2 px-2 text-center font-mono text-xs text-blue-600 font-bold">
                           0{tkt.id}
@@ -628,7 +629,7 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                         </TableCell>
                         <TableCell className="py-2 px-2 text-center">
                           <span
-                            className={`text-[10px] font-bold uppercase ${getPriorityColor(tkt.priority) ==="failure"?"text-red-500":"text-gray-600"}`}
+                            className={`text-[10px] font-bold uppercase ${getPriorityColor(tkt.priority) === "failure" ? "text-red-500" : "text-gray-600"}`}
                           >
                             {tkt.priority || "Level 3"}
                           </span>
@@ -857,10 +858,12 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                           Total Finalized Ticket(s)
                         </p>
                         <h3 className="text-4xl font-black mb-2">
-                          {evalGenResolved}
+                          {/* <span>🎀</span> */}
+                          <div className="flex text-center items-center justify-center"><Award color="red" />
+                            {evalGenResolved}</div>
                         </h3>
                         <div
-                          className={`w-14 h-14 ${evalGenResolved < 4 ?"bg-red-500": evalGenResolved > 20 ?"bg-green-500":"bg-blue-600"} rounded-md flex flex-col items-center justify-center text-white text-xs font-black shadow-lg leading-tight text-center`}
+                          className={`w-14 h-14 ${evalGenResolved < 4 ? "bg-red-500" : evalGenResolved > 20 ? "bg-green-500" : "bg-blue-600"} rounded-full flex flex-col items-center justify-center text-white text-xs font-black shadow-lg hover:shadow-2xl hover:cursor-pointer transition-all duration-500 hover:scale-110 ease-in-out leading-tight text-center`}
                         >
                           {evalGenResolved < 4 ? (
                             "BAD"
@@ -912,12 +915,12 @@ const SupportModule: React.FC<SupportModuleProps> = ({
                           {evalAgentResolved}
                         </h3>
                         <div
-                          className={`w-14 h-14 ${evalAgentResolved < 4 ?"bg-red-500": evalAgentResolved > 20 ?"bg-green-500":"bg-blue-600"} rounded-md flex flex-col items-center justify-center text-white text-xs font-black shadow-lg leading-tight text-center`}
+                          className={`w-14 h-14 ${evalAgentResolved < 4 ? "bg-red-500" : evalAgentResolved > 20 ? "bg-green-500" : "bg-blue-600"} rounded-full flex flex-col items-center justify-center text-white text-xs font-black shadow-lg hover:shadow-2xl hover:cursor-pointer transition-all duration-500 hover:scale-110 ease-in-out leading-tight text-center`}
                         >
                           {evalAgentResolved < 4 ? (
-                            "BAD"
+                            "BAD!"
                           ) : evalAgentResolved > 20 ? (
-                            "BEST!"
+                            "BEST"
                           ) : (
                             <>
                               GOOD
@@ -946,11 +949,11 @@ const SupportModule: React.FC<SupportModuleProps> = ({
           initialData={
             isEditingTicket && selectedTicketId
               ? tickets.find(
-                  (t) =>
-                    String(t.id) === String(selectedTicketId) ||
-                    `TKT-${String(t.id).padStart(5, "0")}` ===
-                      String(selectedTicketId),
-                )
+                (t) =>
+                  String(t.id) === String(selectedTicketId) ||
+                  `TKT-${String(t.id).padStart(5, "0")}` ===
+                  String(selectedTicketId),
+              )
               : null
           }
         />

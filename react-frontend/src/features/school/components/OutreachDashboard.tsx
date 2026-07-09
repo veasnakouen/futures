@@ -11,7 +11,7 @@ const OutreachDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const filteredVisits = visits.filter((v: any) => 
+  const filteredVisits = visits.filter((v: any) =>
     v.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     v.communityEntryNotes?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -20,7 +20,7 @@ const OutreachDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+      <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-6 roundeds border border-gray-100 dark:border-gray-700 shadow-sm">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <MapPin className="text-emerald-500" /> Community Outreach
@@ -30,7 +30,7 @@ const OutreachDashboard = () => {
         <div className="flex gap-4 items-center">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input 
+            <input
               type="text"
               placeholder="Search visits..."
               className="pl-9 pr-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white"
@@ -44,7 +44,7 @@ const OutreachDashboard = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded shadow-sm hover:shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-500 ease-in-out overflow-hidden">
         <Table hoverable>
           <TableHead className="bg-gray-50 dark:bg-gray-700/50">
             <TableHeadCell>Date</TableHeadCell>
@@ -102,7 +102,7 @@ const OutreachDashboard = () => {
           </TableBody>
         </Table>
       </div>
-      
+
       {isModalOpen && (
         <OutreachVisitModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       )}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import {Button, Label, TextInput, Select, ToggleSwitch, Alert, Avatar, Spinner, Badge, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
+import { Button, Label, TextInput, Select, ToggleSwitch, Alert, Avatar, Spinner, Badge, Dropdown, DropdownItem, DropdownDivider } from '@/lib/flowbite-compat';
 import {
   User,
   Lock,
@@ -28,7 +28,7 @@ import {
   ChevronDown,
   MessageSquare,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import ChatbotSettingsTab from '@/features/admin/components/ChatbotSettingsTab';
 import api from "../services/api";
 import { useTranslation } from "react-i18next";
@@ -40,6 +40,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useAuthStore } from "../store/authStore";
 import { getFaceFocusedUrl } from "../utils/cloudinary";
 
+import { useQuery } from "@tanstack/react-query";
 import TenantsTab from '@/features/admin/components/TenantsTab';
 
 const SettingsPage = ({ isDark, setIsDark }: any) => {
@@ -67,6 +68,12 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
   const [redisHost, setRedisHost] = useState("");
   const [redisPort, setRedisPort] = useState("6379");
 
+  // Infrastructure Scaling Settings
+  const [enableLoadBalancing, setEnableLoadBalancing] = useState(false);
+  const [loadBalancerType, setLoadBalancerType] = useState("NGINX");
+  const [enableReverseProxy, setEnableReverseProxy] = useState(false);
+  const [reverseProxyUrl, setReverseProxyUrl] = useState("");
+
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [cropTarget, setCropTarget] = useState<"avatar" | "logo">("avatar");
@@ -93,88 +100,68 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
     confirmPassword: "",
   });
 
-  const [accessLogs, setAccessLogs] = useState<any[]>([]);
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
-  const [securitySubTab, setSecuritySubTab] = useState<"session" | "activity">(
-    "session",
-  );
-  const [loadingLogs, setLoadingLogs] = useState(false);
+  const [securitySubTab, setSecuritySubTab] = useState<"session" | "activity">("session");
   const [logsSearch, setLogsSearch] = useState("");
   const [logsStartDate, setLogsStartDate] = useState("");
   const [logsEndDate, setLogsEndDate] = useState("");
   const [logsCurrentPage, setLogsCurrentPage] = useState(1);
   const [logsPageSize, setLogsPageSize] = useState(10);
 
+  const { data: profileQueryData } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const response = await api.get("/users/me");
+      return response.data;
+    }
+  });
+
+  useEffect(() => {
+    if (profileQueryData) {
+      const photoUrl = profileQueryData.photo || profileQueryData.avatarUrl || "";
+      setProfileData({
+        firstName: profileQueryData.firstName || "",
+        lastName: profileQueryData.lastName || "",
+        email: profileQueryData.email || "",
+        branch: profileQueryData.branch || "Main Office",
+        photo: photoUrl,
+      });
+      updateUser({ photo: photoUrl });
+    }
+  }, [profileQueryData, updateUser]);
+
+  const { data: accessLogs = [], isLoading: isLoadingAccessLogs, refetch: refetchAccessLogs } = useQuery({
+    queryKey: ['accessLogs'],
+    queryFn: async () => {
+      const res = await api.get("/access-logs");
+      return res.data;
+    },
+    enabled: activeTab === "security_logs" && securitySubTab === "session"
+  });
+
+  const { data: auditLogs = [], isLoading: isLoadingAuditLogs, refetch: refetchAuditLogs } = useQuery({
+    queryKey: ['auditLogs'],
+    queryFn: async () => {
+      const res = await api.get("/compliance/logs");
+      return res.data;
+    },
+    enabled: activeTab === "security_logs" && securitySubTab === "activity"
+  });
+
+  const loadingLogs = isLoadingAccessLogs || isLoadingAuditLogs;
+
   useEffect(() => {
     setLogsCurrentPage(1);
   }, [logsSearch, logsStartDate, logsEndDate, logsPageSize, securitySubTab]);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  useEffect(() => {
-    if (activeTab === "security_logs") {
-      if (securitySubTab === "session") {
-        fetchAccessLogs();
-      } else {
-        fetchAuditLogs();
-      }
-    }
-  }, [activeTab, securitySubTab]);
-
-  const fetchAccessLogs = async () => {
-    setLoadingLogs(true);
-    try {
-      const res = await api.get("/access-logs");
-      setAccessLogs(res.data);
-    } catch (err) {
-      console.error("Failed to fetch access logs", err);
-    } finally {
-      setLoadingLogs(false);
-    }
-  };
-
-  const fetchAuditLogs = async () => {
-    setLoadingLogs(true);
-    try {
-      const res = await api.get("/compliance/logs");
-      setAuditLogs(res.data);
-    } catch (err) {
-      console.error("Failed to fetch audit logs", err);
-    } finally {
-      setLoadingLogs(false);
-    }
-  };
-
   const handleClearLogs = async (type: string) => {
-    setLoadingLogs(true);
     try {
       await api.delete(`/access-logs/clear?type=${type}`);
       setSuccess("Logs cleared successfully.");
       setTimeout(() => setSuccess(null), 3000);
-      fetchAccessLogs(); // Refresh the list
-    } catch (err) {
+      refetchAccessLogs(); // Refresh the list
+    } catch (err: any) {
       setError("Failed to clear logs.");
       setTimeout(() => setError(null), 3000);
-      setLoadingLogs(false);
-    }
-  };
-
-  const fetchProfile = async () => {
-    try {
-      const response = await api.get("/users/me");
-      const photoUrl = response.data.photo || response.data.avatarUrl || "";
-      setProfileData({
-        firstName: response.data.firstName || "",
-        lastName: response.data.lastName || "",
-        email: response.data.email || "",
-        branch: response.data.branch || "Main Office",
-        photo: photoUrl,
-      });
-      updateUser({ photo: photoUrl });
-    } catch (err) {
-      console.error("Failed to load profile", err.message);
     }
   };
 
@@ -292,6 +279,22 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
       api.get("/settings/GATEWAY_REDIS_PORT")
         .then((res) => setRedisPort(res.data.value))
         .catch(() => setRedisPort("6379"));
+
+      api.get("/settings/ENABLE_LOAD_BALANCING")
+        .then((res) => setEnableLoadBalancing(res.data.value === "true"))
+        .catch(() => setEnableLoadBalancing(false));
+
+      api.get("/settings/LOAD_BALANCER_TYPE")
+        .then((res) => setLoadBalancerType(res.data.value))
+        .catch(() => setLoadBalancerType("NGINX"));
+
+      api.get("/settings/ENABLE_REVERSE_PROXY")
+        .then((res) => setEnableReverseProxy(res.data.value === "true"))
+        .catch(() => setEnableReverseProxy(false));
+
+      api.get("/settings/REVERSE_PROXY_URL")
+        .then((res) => setReverseProxyUrl(res.data.value))
+        .catch(() => setReverseProxyUrl(""));
     }
   }, [activeTab]);
 
@@ -343,6 +346,22 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
       await api.post("/settings", {
         key: "GATEWAY_REDIS_PORT",
         value: redisPort,
+      });
+      await api.post("/settings", {
+        key: "ENABLE_LOAD_BALANCING",
+        value: enableLoadBalancing.toString(),
+      });
+      await api.post("/settings", {
+        key: "LOAD_BALANCER_TYPE",
+        value: loadBalancerType,
+      });
+      await api.post("/settings", {
+        key: "ENABLE_REVERSE_PROXY",
+        value: enableReverseProxy.toString(),
+      });
+      await api.post("/settings", {
+        key: "REVERSE_PROXY_URL",
+        value: reverseProxyUrl,
       });
       if (appLogo) {
         await api.post("/settings", { key: "APP_LOGO", value: appLogo });
@@ -401,7 +420,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
   );
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title={t("settings")}>
+    <>
       <div className="max-w-[1600px] mx-auto space-y-6 animate-fade-in">
         {success && (
           <Alert
@@ -517,7 +536,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm transition-all duration-300 ${activeTab === item.id ?"bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 font-bold translate-x-1":"text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 hover:translate-x-1 font-medium"}`}
+                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm transition-all duration-300 ${activeTab === item.id ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 font-bold translate-x-1" : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 hover:translate-x-1 font-medium"}`}
                   >
                     {item.icon} {item.label}
                   </button>
@@ -813,6 +832,73 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                             />
                           </div>
                         </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="max-w-md pt-4 border-t mt-6">
+                    <h3 className="text-md font-semibold dark:text-white mb-4 flex items-center gap-2">
+                      <Server size={18} className="text-indigo-500" />
+                      Infrastructure & Scaling
+                    </h3>
+                    <p className="text-xs text-gray-500 mb-6">
+                      Configure integrations for when the application scales to multiple nodes. Note: Enabling these requires the corresponding infrastructure (Nginx, HAProxy, etc.) to be provisioned.
+                    </p>
+
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <Label>Enable Load Balancing Integration</Label>
+                        <p className="text-xs text-gray-500">
+                          Prepare application to handle forwarded headers from a Load Balancer.
+                        </p>
+                      </div>
+                      <ToggleSwitch
+                        checked={enableLoadBalancing}
+                        onChange={(checked) => setEnableLoadBalancing(checked)}
+                      />
+                    </div>
+                    {enableLoadBalancing && (
+                      <div className="animate-fade-in mt-4 mb-6">
+                        <Label>Load Balancer Type</Label>
+                        <Select
+                          className="mt-1"
+                          value={loadBalancerType}
+                          onChange={(e: any) => setLoadBalancerType(e.target.value)}
+                        >
+                          <option value="NGINX">NGINX</option>
+                          <option value="HAPROXY">HAProxy</option>
+                          <option value="AWS_ELB">AWS Elastic Load Balancer</option>
+                          <option value="OTHER">Other</option>
+                        </Select>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between mb-4 mt-6 border-t pt-4">
+                      <div>
+                        <Label>Enable Reverse Proxy Mode</Label>
+                        <p className="text-xs text-gray-500">
+                          Trust proxy headers (X-Forwarded-For, X-Forwarded-Proto).
+                        </p>
+                      </div>
+                      <ToggleSwitch
+                        checked={enableReverseProxy}
+                        onChange={(checked) => setEnableReverseProxy(checked)}
+                      />
+                    </div>
+                    {enableReverseProxy && (
+                      <div className="animate-fade-in mt-4">
+                        <Label htmlFor="reverseProxyUrl">Reverse Proxy Base URL</Label>
+                        <TextInput
+                          id="reverseProxyUrl"
+                          type="text"
+                          className="mt-1"
+                          placeholder="e.g. https://api.yourdomain.com"
+                          value={reverseProxyUrl}
+                          onChange={(e) => setReverseProxyUrl(e.target.value)}
+                        />
+                        <p className="text-xs text-gray-500 mt-2">
+                          The public URL of the proxy pointing to your API Gateway.
+                        </p>
                       </div>
                     )}
                   </div>
@@ -1201,8 +1287,8 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                       <button
                         onClick={() =>
                           securitySubTab === "session"
-                            ? fetchAccessLogs()
-                            : fetchAuditLogs()
+                            ? refetchAccessLogs()
+                            : refetchAuditLogs()
                         }
                         className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700/50 rounded-lg hover:border-blue-400 hover:text-blue-500 transition-all duration-200"
                       >
@@ -1215,13 +1301,13 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                   <div className="flex px-5 border-b bg-white dark:bg-gray-800">
                     <button
                       onClick={() => setSecuritySubTab("session")}
-                      className={`px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${securitySubTab ==="session"?"border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400":"border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
+                      className={`px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${securitySubTab === "session" ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400" : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
                     >
                       Session Logs
                     </button>
                     <button
                       onClick={() => setSecuritySubTab("activity")}
-                      className={`px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${securitySubTab ==="activity"?"border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400":"border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
+                      className={`px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 transition-colors ${securitySubTab === "activity" ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400" : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
                     >
                       Activity Logs
                     </button>
@@ -1422,7 +1508,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                                 </div>
                                 <div className="shrink-0">
                                   <span
-                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${isCritical ?"bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-700/50": isWarning ?"bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-700/50": isSuccess ?"bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-700/50":"bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-700/50"}`}
+                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${isCritical ? "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-700/50" : isWarning ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-700/50" : isSuccess ? "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-700/50" : "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-700/50"}`}
                                   >
                                     {log.type}
                                   </span>
@@ -1518,7 +1604,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                               {/* Data Usage Badge */}
                               <div className="shrink-0">
                                 <span
-                                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${log.dataUsageType?.includes("Heavy") ?"bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-700/50": log.dataUsageType?.includes("API") ?"bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-700/50":"bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50"}`}
+                                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${log.dataUsageType?.includes("Heavy") ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-700/50" : log.dataUsageType?.includes("API") ? "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-700/50" : "bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50"}`}
                                 >
                                   {log.dataUsageType || "Standard"}
                                 </span>
@@ -1576,7 +1662,7 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
           cropShape={cropTarget === "avatar" ? "round" : "rect"}
         />
       )}
-    </Layout>
+    </>
   );
 };
 

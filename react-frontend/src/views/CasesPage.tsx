@@ -13,7 +13,7 @@ import {
   User,
   Calendar,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import toast from "react-hot-toast";
@@ -201,7 +201,7 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Case Management">
+    <>
       <div className="animate-fade-in pb-10 space-y-6">
         {/* Modern Analytics Header */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -638,7 +638,7 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
           }
         />
       </div>
-    </Layout>
+    </>
   );
 };
 

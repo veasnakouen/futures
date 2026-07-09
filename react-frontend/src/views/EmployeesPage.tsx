@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {Button, Spinner} from '@/lib/flowbite-compat';
+import { Button, Spinner } from '@/lib/flowbite-compat';
 import {
   Users,
   Clock,
@@ -30,7 +30,7 @@ import {
   useQueryClient,
   useQuery,
 } from "@tanstack/react-query";
-import Layout from "@/components/common/Layout";
+
 import api from "../services/api";
 import { subDays, addDays } from "date-fns";
 import toast from "react-hot-toast";
@@ -70,8 +70,8 @@ import EmployeeDetailModal from "@/features/hr/components/EmployeeDetailModal";
 import AnalyticsModal from "@/features/hr/components/AnalyticsModal";
 import ManualAttendanceModal from "@/features/hr/components/ManualAttendanceModal";
 import BiometricDeviceModal from "@/features/hr/components/BiometricDeviceModal";
-import { 
-  useAttendance, 
+import {
+  useAttendance,
   usePayroll,
   useAnalyticsStats,
   useAnalyticsDemographics,
@@ -103,7 +103,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
-    const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).getItem("hr_viewMode");
+    const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).getItem("hr_viewMode");
     return (saved as "grid" | "list") || "grid";
   });
   const [statusFilter, setStatusFilter] = useState("");
@@ -139,16 +139,16 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
     | "support"
     | "reports"
   >(() => {
-    const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).getItem("hr_activeModule");
+    const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).getItem("hr_activeModule");
     return (saved as any) || "directory";
   });
 
   useEffect(() => {
-    (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).setItem("hr_viewMode", viewMode);
+    (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("hr_viewMode", viewMode);
   }, [viewMode]);
 
   useEffect(() => {
-    (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).setItem("hr_activeModule", activeModule);
+    (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("hr_activeModule", activeModule);
   }, [activeModule]);
 
   // Infinite Query for Employees
@@ -229,11 +229,11 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
             content: oldData.content.map((emp: any) =>
               emp.id === variables.id
                 ? {
-                    ...emp,
-                    ...response.data,
-                    departmentName: response.data.department?.name,
-                    positionName: response.data.position?.name,
-                  }
+                  ...emp,
+                  ...response.data,
+                  departmentName: response.data.department?.name,
+                  positionName: response.data.position?.name,
+                }
                 : emp,
             ),
           };
@@ -284,11 +284,11 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
             content: oldData.content.map((emp: any) =>
               emp.id === variables.id
                 ? {
-                    ...emp,
-                    ...response.data,
-                    departmentName: response.data.department?.name,
-                    positionName: response.data.position?.name,
-                  }
+                  ...emp,
+                  ...response.data,
+                  departmentName: response.data.department?.name,
+                  positionName: response.data.position?.name,
+                }
                 : emp,
             ),
           };
@@ -305,9 +305,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [portalTab, setPortalTab] = useState<
-    "profile" | "attendance" | "leave" | "performance" | "payroll" | "assets"
-  >("profile");
+  const [portalTab, setPortalTab] = useState<string>("profile");
   const [isManualAttendanceOpen, setIsManualAttendanceOpen] = useState(false);
   const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(false);
 
@@ -393,7 +391,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
   const { data: demographics } = useAnalyticsDemographics();
   const { data: deptDist } = useAnalyticsDeptDist();
   const analyticsData = { stats: analyticsStats || {}, demographics: demographics || {}, deptDist: deptDist || [] };
-  
+
   const { data: globalVacancies = [] } = useVacancies();
   const { data: recruitmentStats = {} } = useRecruitmentStats();
   const { data: globalClients = [] } = useLookups("clients"); // Assuming this might have been clients? Wait no, let me default to [] and skip for now if it doesn't match exactly, or use the placements endpoints
@@ -404,7 +402,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
   const { data: globalTicketTypes = [] } = useLookups("ticket-types");
   const { data: globalAssessments = [] } = useAssessments();
   const { data: globalUsers = [] } = useLookups("users"); // Adjust as needed
-  
+
   // Notice: globalEmployees is already fetched in `employees` (from useQuery above)
   const globalEmployees = employees;
 
@@ -536,7 +534,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
         if (typeof fullEmp.customFields === "string") {
           try {
             parsedCustomFields = JSON.parse(fullEmp.customFields);
-          } catch (e) {}
+          } catch (e) { }
         } else if (Array.isArray(fullEmp.customFields)) {
           parsedCustomFields = fullEmp.customFields;
         }
@@ -924,7 +922,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Team Directory">
+    <>
       <div className="space-y-8 max-w-[1600px] mx-auto">
         <header className="bg-white dark:bg-gray-800 p-8 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6">
@@ -1070,7 +1068,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
             <button
               key={item.id}
               onClick={() => setActiveModule(item.id as any)}
-              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded text-xs font-black transition-all duration-300 transform hover:scale-105 active:scale-95 ${activeModule === item.id ?"bg-white dark:bg-gray-700 text-blue-600 shadow-sm ring-1 ring-blue-600 dark:ring-blue-500":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/30 ring-1 ring-gray-200 dark:ring-gray-700"}`}
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded text-xs font-black transition-all duration-300 transform hover:scale-105 active:scale-95 ${activeModule === item.id ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm ring-1 ring-blue-600 dark:ring-blue-500" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/30 ring-1 ring-gray-200 dark:ring-gray-700"}`}
             >
               {item.icon} {item.label}
             </button>
@@ -1234,19 +1232,19 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
                 "support",
                 "reports",
               ].includes(activeModule) && (
-                <div className="py-24 text-center animate-fade-in">
-                  <Settings
-                    size={64}
-                    className="mx-auto text-gray-300 mb-6 animate-spin-slow"
-                  />
-                  <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">
-                    Module Initializing
-                  </h3>
-                  <p className="text-xs text-gray-400 font-bold mt-2">
-                    Connecting to enterprise data node: {activeModule}
-                  </p>
-                </div>
-              )}
+                  <div className="py-24 text-center animate-fade-in">
+                    <Settings
+                      size={64}
+                      className="mx-auto text-gray-300 mb-6 animate-spin-slow"
+                    />
+                    <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">
+                      Module Initializing
+                    </h3>
+                    <p className="text-xs text-gray-400 font-bold mt-2">
+                      Connecting to enterprise data node: {activeModule}
+                    </p>
+                  </div>
+                )}
             </motion.div>
           </AnimatePresence>
         </main>
@@ -1379,7 +1377,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
                   {importCandidates.map((candidate) => (
                     <label
                       key={candidate.id}
-                      className={`flex items-center gap-4 p-3 rounded-xl border-2 cursor-pointer transition-all duration-150 ${ selectedImportIds.includes(candidate.id) ?"border-violet-400 bg-violet-50 dark:bg-violet-900/20 dark:border-violet-600":" hover: dark:hover: bg-white dark:bg-gray-800"}`}
+                      className={`flex items-center gap-4 p-3 rounded-xl border-2 cursor-pointer transition-all duration-150 ${selectedImportIds.includes(candidate.id) ? "border-violet-400 bg-violet-50 dark:bg-violet-900/20 dark:border-violet-600" : " hover: dark:hover: bg-white dark:bg-gray-800"}`}
                     >
                       <input
                         type="checkbox"
@@ -1457,7 +1455,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
                   className="flex items-center gap-2 px-5 py-2 text-sm font-black text-white bg-violet-600 rounded-xl hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/20"
                 >
                   {importLoading ? (
-                    <Spinner size="sm" />
+                    <Spinner size="lg" />
                   ) : (
                     <UserPlus size={15} />
                   )}
@@ -1471,7 +1469,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
           </div>
         </div>
       )}
-    </Layout>
+    </>
   );
 };
 

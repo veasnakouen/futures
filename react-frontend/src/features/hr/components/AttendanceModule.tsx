@@ -23,7 +23,7 @@ import {
   List,
   X,
 } from "lucide-react";
-import {Button, Badge, Avatar, Select, TextInput, Checkbox, Label, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell} from '@/lib/flowbite-compat';
+import { Button, Badge, Avatar, Select, TextInput, Checkbox, Label, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell } from '@/lib/flowbite-compat';
 import {
   AreaChart,
   Area,
@@ -43,7 +43,11 @@ import { format } from "date-fns";
 
 import HolidayModal from "./HolidayModal";
 import toast from "react-hot-toast";
-
+import { TimetableFormModal } from "./TimetableFormModal";
+import { ScheduleAssignmentModal } from "./ScheduleAssignmentModal";
+import { HolidayFormModal } from "./HolidayFormModal";
+import { useTimetable } from "@/hooks/useTimetable";
+import { useHoliday } from "@/hooks/useHoliday";
 interface AttendanceModuleProps {
   globalAttendance: any[];
   onManualLog: () => void;
@@ -62,8 +66,16 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
   const [statusFilter, setStatusFilter] = useState("");
   const [unmappedOnly, setUnmappedOnly] = useState(false);
   const [isHolidayModalOpen, setIsHolidayModalOpen] = React.useState(false);
+  const [isTimetableModalOpen, setIsTimetableModalOpen] = useState(false);
+  const [isAssignScheduleModalOpen, setIsAssignScheduleModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [itemsPerRow, setItemsPerRow] = useState("4");
+
+  const { useTimetables } = useTimetable();
+  const { data: timetables = [] } = useTimetables();
+
+  const { useHolidays } = useHoliday();
+  const { data: holidays = [] } = useHolidays();
 
   // Real-time Analytics Calculations
   const onPremisesCount = React.useMemo(() => {
@@ -86,7 +98,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
             <button
               key={tab}
               onClick={() => setSubTab(tab)}
-              className={`shrink-0 px-8 py-2.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${subTab === tab ?"bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 scale-95 hover:scale-100"}`}
+              className={`shrink-0 px-8 py-2.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${subTab === tab ? "bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 scale-95 hover:scale-100"}`}
             >
               {tab}
             </button>
@@ -268,13 +280,13 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                     <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
                       <button
                         onClick={() => setViewMode("grid")}
-                        className={`p-1.5 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                        className={`p-1.5 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                       >
                         <LayoutGrid size={16} />
                       </button>
                       <button
                         onClick={() => setViewMode("list")}
-                        className={`p-1.5 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                        className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                       >
                         <List size={16} />
                       </button>
@@ -415,7 +427,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                   </TableBody>
                 </Table>
               ) : (
-                <div className={`grid gap-4 p-6 bg-gray-50/30 dark:bg-gray-900/10 ${itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
+                <div className={`grid gap-4 p-6 bg-gray-50/30 dark:bg-gray-900/10 ${itemsPerRow === "3" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : itemsPerRow === "5" ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-5" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
                   {(globalAttendance || [])
                     .filter((log) => {
                       const fullName = log.employee
@@ -491,67 +503,62 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
 
       {subTab === "SCHEDULE" && (
         <div className="space-y-8 animate-fade-in pb-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm border border-gray-100 dark:border-gray-700">
+            <div>
+              <h3 className="text-lg font-black dark:text-white uppercase tracking-tight">Shift & Schedule Management</h3>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Manage employee schedules, shifts, and system holidays</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button color="blue" size="sm" onClick={() => setIsAssignScheduleModalOpen(true)} className="rounded-md uppercase tracking-wider font-bold text-[10px]">
+                <Calendar size={14} className="mr-2" /> Assign Schedule
+              </Button>
+              <Button color="light" size="sm" onClick={() => setIsTimetableModalOpen(true)} className="rounded-md uppercase tracking-wider font-bold text-[10px]">
+                <Clock size={14} className="mr-2" /> Manage Timetable
+              </Button>
+              <Button color="light" size="sm" onClick={() => setIsHolidayModalOpen(true)} className="rounded-md uppercase tracking-wider font-bold text-[10px]">
+                <LayoutGrid size={14} className="mr-2" /> System Holidays
+              </Button>
+            </div>
+          </div>
           {/* Shift Configuration Row */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              {
-                name: "Day Shift",
-                time: "08:00 - 17:00",
-                count: 12,
-                color: "blue",
-              },
-              {
-                name: "Swing Shift",
-                time: "14:00 - 22:00",
-                count: 5,
-                color: "indigo",
-              },
-              {
-                name: "Night Shift",
-                time: "22:00 - 06:00",
-                count: 3,
-                color: "gray",
-              },
-              {
-                name: "General Duty",
-                time: "Flexible",
-                count: 8,
-                color: "emerald",
-              },
-            ].map((shift, i) => (
-              <div
-                key={i}
-                className={`p-6 bg-white rounded-md dark:bg-gray-800  shadow-sm hover:shadow-lg transition-all group`}
-              >
-                <div className="flex justify-between items-start">
-                  <div
-                    className={`p-2 rounded-md bg-${shift.color}-100 dark:bg-${shift.color}-900/20 text-${shift.color}-600`}
-                  >
-                    <Clock size={18} />
+            {timetables.length > 0 ? (
+              timetables.map((shift, i) => (
+                <div
+                  key={i}
+                  className={`p-6 bg-white rounded-md dark:bg-gray-800  shadow-sm hover:shadow-lg transition-all group`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div
+                      className={`p-2 rounded-md bg-blue-100 dark:bg-blue-900/20 text-blue-600`}
+                    >
+                      <Clock size={18} />
+                    </div>
+                    <Badge color="success" className="rounded-md">
+                      Active
+                    </Badge>
                   </div>
-                  <Badge
-                    color={shift.name === "Day Shift" ? "success" : "gray"}
-                    className="rounded-md"
-                  >
-                    Active
-                  </Badge>
+                  <h5 className="mt-4 text-sm font-black dark:text-white uppercase tracking-tight">
+                    {shift.name}
+                  </h5>
+                  <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">
+                    {shift.onDutyTime} - {shift.offDutyTime}
+                  </p>
+                  <div className="mt-4 pt-4 border-t flex justify-between items-center">
+                    <span className="text-[10px] font-black text-gray-400 uppercase">
+                      Personnel
+                    </span>
+                    <span className="text-lg font-black dark:text-white">
+                      -
+                    </span>
+                  </div>
                 </div>
-                <h5 className="mt-4 text-sm font-black dark:text-white uppercase tracking-tight">
-                  {shift.name}
-                </h5>
-                <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">
-                  {shift.time}
-                </p>
-                <div className="mt-4 pt-4 border-t flex justify-between items-center">
-                  <span className="text-[10px] font-black text-gray-400 uppercase">
-                    Personnel
-                  </span>
-                  <span className="text-lg font-black dark:text-white">
-                    {shift.count}
-                  </span>
-                </div>
+              ))
+            ) : (
+              <div className="col-span-4 p-8 text-center text-gray-400 dark:text-gray-500 font-bold">
+                No timetables configured.
               </div>
-            ))}
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -610,51 +617,38 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 Upcoming Holidays
               </h4>
               <div className="space-y-6">
-                {[
-                  {
-                    name: "Visak Bochea",
-                    date: "May 22",
-                    days: "1 Day",
-                    status: "Mandatory",
-                  },
-                  {
-                    name: "Royal Plowing Ceremony",
-                    date: "May 24",
-                    days: "1 Day",
-                    status: "Mandatory",
-                  },
-                  {
-                    name: "Queen Mother Birthday",
-                    date: "June 18",
-                    days: "1 Day",
-                    status: "Corporate",
-                  },
-                ].map((h, i) => (
-                  <div key={i} className="flex gap-4 items-center">
-                    <div className="w-12 h-12 rounded-md bg-amber-50 dark:bg-amber-900/20 text-amber-600 flex flex-col items-center justify-center">
-                      <span className="text-[10px] font-black uppercase leading-none">
-                        {h.date.split(" ")[0]}
-                      </span>
-                      <span className="text-sm font-black leading-none">
-                        {h.date.split(" ")[1]}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs font-black dark:text-white uppercase leading-tight">
-                        {h.name}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[8px] font-black text-gray-400 uppercase">
-                          {h.days}
+                {holidays.length > 0 ? (
+                  holidays.map((h, i) => (
+                    <div key={i} className="flex gap-4 items-center">
+                      <div className="w-12 h-12 rounded-md bg-amber-50 dark:bg-amber-900/20 text-amber-600 flex flex-col items-center justify-center">
+                        <span className="text-[10px] font-black uppercase leading-none">
+                          {format(new Date(h.eventDate), "MMM")}
                         </span>
-                        <div className="w-1 h-1 rounded-md bg-gray-300"></div>
-                        <span className="text-[8px] font-black text-amber-600 uppercase">
-                          {h.status}
+                        <span className="text-sm font-black leading-none">
+                          {format(new Date(h.eventDate), "dd")}
                         </span>
                       </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-black dark:text-white uppercase leading-tight">
+                          {h.name}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[8px] font-black text-gray-400 uppercase">
+                            1 Day
+                          </span>
+                          <div className="w-1 h-1 rounded-md bg-gray-300"></div>
+                          <span className="text-[8px] font-black text-amber-600 uppercase">
+                            {h.category || "System"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-gray-400 dark:text-gray-500 font-bold text-xs uppercase">
+                    No upcoming holidays
                   </div>
-                ))}
+                )}
                 <Button
                   color="blue"
                   onClick={() => setIsHolidayModalOpen(true)}
@@ -666,14 +660,6 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
             </div>
           </div>
 
-          <HolidayModal
-            isOpen={isHolidayModalOpen}
-            onClose={() => setIsHolidayModalOpen(false)}
-            onSubmit={(data) => {
-              toast.success(`${data.name} added to the operational roster`);
-              // In a real app, this would call an API
-            }}
-          />
         </div>
       )}
 
@@ -1109,6 +1095,20 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
           </div>
         </div>
       )}
+
+      <TimetableFormModal
+        isOpen={isTimetableModalOpen}
+        onClose={() => setIsTimetableModalOpen(false)}
+      />
+      <ScheduleAssignmentModal
+        isOpen={isAssignScheduleModalOpen}
+        onClose={() => setIsAssignScheduleModalOpen(false)}
+        onSave={() => setIsAssignScheduleModalOpen(false)}
+      />
+      <HolidayFormModal
+        isOpen={isHolidayModalOpen}
+        onClose={() => setIsHolidayModalOpen(false)}
+      />
     </div>
   );
 };

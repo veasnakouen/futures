@@ -9,8 +9,8 @@ export default function PatientsPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Patients">
+    <>
       <PatientList />
-    </Layout>
+    </>
   );
 }

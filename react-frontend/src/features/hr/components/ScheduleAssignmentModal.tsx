@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Users, Calendar as CalendarIcon } from "lucide-react";
 
 interface ScheduleAssignmentModalProps {
@@ -15,10 +16,13 @@ export const ScheduleAssignmentModal: React.FC<ScheduleAssignmentModalProps> = (
     dateTo: "",
   });
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  return (
-    <div className="fixed inset-0 md:left-[260px] z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 md:left-[260px] z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
       <div className="bg-[#1e293b] border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-slide-up">
         <div className="flex justify-between items-center p-5 border-b border-gray-700/50 bg-[#0f172a]/50">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -99,6 +103,7 @@ export const ScheduleAssignmentModal: React.FC<ScheduleAssignmentModalProps> = (
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

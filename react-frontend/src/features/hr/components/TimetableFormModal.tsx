@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { useTimetable } from "@/hooks/useTimetable";
 
 interface TimetableFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
   initialData?: any;
 }
 
-export const TimetableFormModal: React.FC<TimetableFormModalProps> = ({ isOpen, onClose, onSave, initialData }) => {
+export const TimetableFormModal: React.FC<TimetableFormModalProps> = ({ isOpen, onClose, initialData }) => {
+  const { useCreateTimetable, useUpdateTimetable } = useTimetable();
+  const createMutation = useCreateTimetable();
+  const updateMutation = useUpdateTimetable();
   const [formData, setFormData] = useState(
     initialData || {
       name: "",
@@ -19,10 +23,13 @@ export const TimetableFormModal: React.FC<TimetableFormModalProps> = ({ isOpen, 
     }
   );
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  return (
-    <div className="fixed inset-0 md:left-[260px] z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 md:left-[260px] z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
       <div className="bg-[#1e293b] border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-slide-up">
         <div className="flex justify-between items-center p-5 border-b border-gray-700/50 bg-[#0f172a]/50">
           <h2 className="text-lg font-bold text-white">
@@ -96,13 +103,21 @@ export const TimetableFormModal: React.FC<TimetableFormModalProps> = ({ isOpen, 
             បោះបង់ / Cancel
           </button>
           <button
-            onClick={() => onSave(formData)}
-            className="px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors shadow-lg shadow-blue-500/20"
+            onClick={() => {
+              if (initialData?.id) {
+                updateMutation.mutate({ ...formData, id: initialData.id }, { onSuccess: () => onClose() });
+              } else {
+                createMutation.mutate(formData, { onSuccess: () => onClose() });
+              }
+            }}
+            disabled={createMutation.isPending || updateMutation.isPending}
+            className="px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50"
           >
-            រក្សាទុក / Save
+            {(createMutation.isPending || updateMutation.isPending) ? "កំពុងរក្សាទុក..." : "រក្សាទុក / Save"}
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

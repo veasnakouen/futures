@@ -16,7 +16,7 @@ import {
   X,
   MoreVertical,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { format } from "date-fns";
@@ -159,7 +159,7 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title={t("logbook")}>
+    <>
       <div className="space-y-6 animate-fade-in">
         <header className="flex justify-between items-center">
           <div>
@@ -530,7 +530,7 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
           message="Are you sure you want to delete this log entry? This record is used for reporting statistics."
         />
       </div>
-    </Layout>
+    </>
   );
 };
 

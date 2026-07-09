@@ -138,15 +138,14 @@ public class EmployeeController {
     }
 
     @GetMapping
-    @Cacheable("employees")
-    public Page<?> getAll(
+    public Page<?> getAllEmployees(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String dept,
+            @RequestParam(required = false) String department,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String contract,
-            Pageable pageable) {
+            @RequestParam(required = false) String contractType,
+            @PageableDefault(size = 20) Pageable pageable) {
         Page<EmployeeRepository.EmployeeSummary> page = (Page<EmployeeRepository.EmployeeSummary>) employeeRepository
-                .findAllSummaries(search, dept, status, contract, pageable);
+                .findAllSummaries(search, department, status, contractType, pageable);
         if (!page.isEmpty()) {
             String photo = page.getContent().get(0).getPhoto();
             log.info("Employee list fetched. Count: {}, First photo length: {}", page.getTotalElements(),

@@ -11,8 +11,8 @@ const DepartmentManagement = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDept, setEditingDept] = useState<any>(null);
-  const [formData, setFormData] = useState({ 
-    name: "", 
+  const [formData, setFormData] = useState({
+    name: "",
     description: "",
     requiredRole: "",
     headOfDepartment: "",
@@ -23,8 +23,8 @@ const DepartmentManagement = () => {
   const handleOpenModal = (dept?: any) => {
     if (dept) {
       setEditingDept(dept);
-      setFormData({ 
-        name: dept.name, 
+      setFormData({
+        name: dept.name,
         description: dept.description || "",
         requiredRole: dept.requiredRole || "",
         headOfDepartment: dept.headOfDepartment || "",
@@ -33,8 +33,8 @@ const DepartmentManagement = () => {
       });
     } else {
       setEditingDept(null);
-      setFormData({ 
-        name: "", 
+      setFormData({
+        name: "",
         description: "",
         requiredRole: "",
         headOfDepartment: "",
@@ -65,19 +65,19 @@ const DepartmentManagement = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+      <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded border border-gray-100 dark:border-gray-700 shadow-sm">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Building2 className="text-blue-500" /> Departments
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Manage referral departments for case management.</p>
         </div>
-        <Button onClick={() => handleOpenModal()} className="flex items-center gap-2">
+        <Button onClick={() => handleOpenModal()} className="flex items-center gap-2 rounded">
           <Plus className="w-4 h-4" /> Add Department
         </Button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <Table hoverable>
           <TableHead>
             <TableHeadCell>Name</TableHeadCell>
@@ -107,28 +107,28 @@ const DepartmentManagement = () => {
         </Table>
       </div>
 
-      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} >
         <Modal.Header>{editingDept ? "Edit Department" : "Add Department"}</Modal.Header>
         <form onSubmit={handleSubmit}>
           <Modal.Body className="space-y-4">
             <div>
               <div className="mb-2 block"><Label value="Department Name" /></div>
-              <TextInput 
+              <TextInput
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required 
+                required
               />
             </div>
             <div>
               <div className="mb-2 block"><Label value="Description" /></div>
-              <TextInput 
+              <TextInput
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </div>
             <div>
               <div className="mb-2 block"><Label value="Required Access Role (Optional)" /></div>
-              <TextInput 
+              <TextInput
                 placeholder="e.g. ROLE_COUNSELOR"
                 value={formData.requiredRole}
                 onChange={(e) => setFormData({ ...formData, requiredRole: e.target.value })}
@@ -137,7 +137,7 @@ const DepartmentManagement = () => {
             </div>
             <div>
               <div className="mb-2 block"><Label value="Head of Department" /></div>
-              <TextInput 
+              <TextInput
                 value={formData.headOfDepartment}
                 onChange={(e) => setFormData({ ...formData, headOfDepartment: e.target.value })}
               />
@@ -145,7 +145,7 @@ const DepartmentManagement = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="mb-2 block"><Label value="Contact Email" /></div>
-                <TextInput 
+                <TextInput
                   type="email"
                   value={formData.contactEmail}
                   onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
@@ -153,7 +153,7 @@ const DepartmentManagement = () => {
               </div>
               <div>
                 <div className="mb-2 block"><Label value="Location" /></div>
-                <TextInput 
+                <TextInput
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 />

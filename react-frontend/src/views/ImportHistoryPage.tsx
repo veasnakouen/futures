@@ -3,7 +3,7 @@ import {Table, TableHead, TableBody, TableHeadCell, TableRow, TableCell, Badge, 
 import { History, Database, ArrowRight, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import api from "../services/api";
-import Layout from "@/components/common/Layout";
+
 import { format } from "date-fns";
 
 const ImportHistoryPage: React.FC = () => {
@@ -57,7 +57,7 @@ const ImportHistoryPage: React.FC = () => {
   };
 
   return (
-    <Layout isDark={false} setIsDark={() => {}} title="Import Control Center">
+    <> {}} title="Import Control Center">
       <div className="p-8 space-y-8 animate-fade-in">
         <div className="flex justify-between items-center">
           <div>
@@ -193,7 +193,7 @@ const ImportHistoryPage: React.FC = () => {
           </div>
         )}
       </div>
-    </Layout>
+    </>
   );
 };
 

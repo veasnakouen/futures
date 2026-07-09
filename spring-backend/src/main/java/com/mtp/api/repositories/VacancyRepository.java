@@ -16,9 +16,19 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Integer> {
     @Query("SELECT v.status, COUNT(v) FROM Vacancy v GROUP BY v.status")
     List<Object[]> countByStatus();
 
-    @Query("SELECT v FROM Vacancy v " +
+    @Query(value = "SELECT v FROM Vacancy v " +
+           "LEFT JOIN FETCH v.jobPosition jp " +
+           "LEFT JOIN FETCH v.employer emp " +
+           "LEFT JOIN FETCH v.jobCategory jc " +
+           "WHERE :search IS NULL OR :search = '' OR " +
+           "LOWER(jp.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(emp.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(v.location) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(v.contractType) LIKE LOWER(CONCAT('%', :search, '%'))",
+           countQuery = "SELECT count(v) FROM Vacancy v " +
            "LEFT JOIN v.jobPosition jp " +
            "LEFT JOIN v.employer emp " +
+           "LEFT JOIN v.jobCategory jc " +
            "WHERE :search IS NULL OR :search = '' OR " +
            "LOWER(jp.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(emp.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +

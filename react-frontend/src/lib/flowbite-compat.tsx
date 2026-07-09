@@ -110,8 +110,8 @@ export const Badge = ({
     </SBadge>
   );
 };
+// 
 import { cn } from "@/lib/utils";
-
 export const TextInput = React.forwardRef(
   ({ icon: Icon, rightIcon: RightIcon, color, sizing, helperText, addon, className, ...props }: any, ref: any) => {
     return (
@@ -144,6 +144,8 @@ export const TextInput = React.forwardRef(
   },
 );
 TextInput.displayName = "TextInput";
+
+// 
 export const Textarea = React.forwardRef(
   ({ className, ...props }: any, ref: any) => {
     return <STextarea ref={ref} className={cn(className)} {...props} />;
@@ -169,6 +171,7 @@ export const Checkbox = React.forwardRef(
   },
 );
 Checkbox.displayName = "Checkbox";
+// 
 export const Label = ({ value, children, className, ...props }: any) => {
   return (
     <SLabel className={className} {...props}>
@@ -176,6 +179,7 @@ export const Label = ({ value, children, className, ...props }: any) => {
     </SLabel>
   );
 };
+// 
 export const Spinner = ({ size, className, ...props }: any) => {
   return (
     <SSpinner
@@ -193,6 +197,7 @@ export const Card = ({ children, className, ...props }: any) => {
     </SCard>
   );
 };
+// 
 export const Alert = ({
   color,
   icon: Icon,
@@ -225,6 +230,7 @@ export const Alert = ({
     </SAlert>
   );
 };
+// 
 export const Avatar = ({
   img,
   rounded,
@@ -245,6 +251,7 @@ export const Avatar = ({
     </SAvatar>
   );
 };
+//
 export const ToggleSwitch = ({ checked, onChange, label, className }: any) => {
   return (
     <div className={`flex items-center space-x-2 ${className || ""}`}>
@@ -315,6 +322,7 @@ export const Dropdown = ({
     </SDropdownMenu>
   );
 };
+
 export const DropdownHeader = ({ children, className }: any) => (
   <div className={`px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b  ${className || ""}`}>
     {children}
@@ -385,7 +393,7 @@ export const Modal = Object.assign(
       <SDialog open={show} onOpenChange={onClose}>
         {" "}
         <SDialogContent
-          className={`${maxW} p-0 [&>button]:hidden border-none gap-0`}
+          className={`${maxW} p-0 [&>button]:hidden border-none gap-0 sm:rounded-xl overflow-hidden flex flex-col max-h-[90vh]`}
           onInteractOutside={(e) => {
             const target = e.target as Element;
             if (target && target.closest && (target.closest('.react-select__menu') || target.closest('[class*="react-select"]'))) {
@@ -543,7 +551,7 @@ export const Datepicker = ({ className, value, onChange, placeholder, type, ...p
   // Try to parse existing string values to Date objects
   const parsedDate = value ? new Date(value) : null;
   const isValidDate = parsedDate && !isNaN(parsedDate.getTime());
-  
+
   return (
     <CustomDatePicker
       value={isValidDate ? parsedDate : null}
@@ -560,7 +568,7 @@ export const Datepicker = ({ className, value, onChange, placeholder, type, ...p
               }
             }
             onChange({ target: { value: formattedDate, name: props.name } });
-          } catch(e) {
+          } catch (e) {
             onChange(date);
           }
         }

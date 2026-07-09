@@ -52,9 +52,9 @@ export default function EnrollmentList() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded-3xl shadow-xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded shadow-lg">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-2xl shadow-inner">
+          <div className="p-3 bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-full shadow-inner">
             <GraduationCap size={28} className="drop-shadow-sm" />
           </div>
           <div>
@@ -69,12 +69,12 @@ export default function EnrollmentList() {
             <input
               type="text"
               placeholder={t("searchEnrollments")}
-              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-purple-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
+              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded text-sm focus:ring-2 focus:ring-purple-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
             />
           </div>
           <button
             onClick={handleCreate}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-purple-500/30 whitespace-nowrap hover:scale-105 active:scale-95"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-3 rounded font-bold transition-all shadow-lg shadow-purple-500/30 whitespace-nowrap hover:scale-105 active:scale-95"
           >
             <Plus size={20} strokeWidth={2.5} /> {t("newEnrollment")}
           </button>
@@ -82,10 +82,10 @@ export default function EnrollmentList() {
       </div>
 
       {/* Data Table */}
-      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded-3xl shadow-xl overflow-hidden">
+      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
-            <thead className="text-xs text-gray-900 dark:text-gray-100 uppercase bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-md">
+            <thead className="text-xs text-gray-900 dark:text-gray-100 uppercase bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-lg">
               <tr>
                 <th className="px-8 py-5 font-black tracking-wider">{t("studentName")}</th>
                 <th className="px-6 py-5 font-black tracking-wider">{t("courseName")}</th>
@@ -101,7 +101,7 @@ export default function EnrollmentList() {
                 <tr>
                   <td colSpan={5} className="px-6 py-16 text-center">
                     <div className="flex flex-col items-center justify-center">
-                      <div className="w-16 h-16 bg-purple-500/10 dark:bg-purple-900/20 rounded-full flex items-center justify-center mb-4">
+                      <div className="w-16 h-16 bg-purple-500/10 dark:bg-purple-900/50 rounded-full flex items-center justify-center mb-4">
                         <GraduationCap className="w-8 h-8 text-purple-500 dark:text-purple-400" />
                       </div>
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
@@ -125,7 +125,7 @@ export default function EnrollmentList() {
                     <td className="px-6 py-5 font-medium">{enrollment.enrollmentDate}</td>
                     <td className="px-6 py-5">
                       {enrollment.grade ? (
-                        <span className="px-3 py-1 bg-green-500/20 text-green-700 dark:text-green-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-green-500/20">
+                        <span className="px-3 py-1 bg-green-500/20 text-green-700 dark:text-green-400 rounded text-[10px] font-black uppercase tracking-widest border border-green-500/20">
                           {enrollment.grade}
                         </span>
                       ) : (

@@ -12,6 +12,13 @@ import HumanPortfolio from "../../../components/common/HumanPortfolio";
 import { Modal, Button } from "@/lib/flowbite-compat";
 import { toast } from "react-hot-toast";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function StudentList() {
   const [page, setPage] = useState(0);
@@ -71,37 +78,50 @@ export default function StudentList() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded-3xl shadow-xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded shadow-md">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-2xl shadow-inner">
-            <Users size={28} className="drop-shadow-sm" />
+          <div className="p-3 bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-full shadow-inner">
+            <Users size={28} className="drop-shadow-md" />
           </div>
           <div>
             <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{t("students")}</h2>
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-widest">{t("manageStudentsDesc")}</p>
           </div>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <div className="relative flex-1 sm:w-64 group flex items-center gap-2">
             {usersLoading ? (
-               <div className="text-sm text-gray-500 mr-2">...</div>
+              <div className="text-sm text-gray-500 mr-2">...</div>
             ) : (
-              <select
-                value={selectedOutreachWorker}
-                onChange={(e) => {
-                  setSelectedOutreachWorker(e.target.value);
+              <Select
+                value={selectedOutreachWorker || "all"}
+                onValueChange={(val) => {
+                  setSelectedOutreachWorker(val === "all" ? "" : val);
                   setPage(0); // reset to first page when filtering
                 }}
-                className="w-full pl-4 pr-10 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/50 dark:text-white transition-all shadow-inner"
               >
-                <option value="">All Workers (My Clients)</option>
-                {usersData?.map((u: any) => (
-                  <option key={u.id} value={`${u.firstName} ${u.lastName}`}>
-                    {u.firstName} {u.lastName} {u.userName ? `(${u.userName})` : ''}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-full h-[46px] pl-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded text-sm focus:ring-2 focus:ring-blue-500/50 dark:text-white transition-all shadow-inner">
+                  <SelectValue placeholder="All Workers (My Clients)">
+                    {selectedOutreachWorker && selectedOutreachWorker !== "all" 
+                      ? selectedOutreachWorker 
+                      : "All Workers (My Clients)"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-xl rounded-lg">
+                  <SelectItem value="all" className="cursor-pointer font-medium text-blue-600 dark:text-blue-400">
+                    All Workers (My Clients)
+                  </SelectItem>
+                  {usersData?.map((u: any) => (
+                    <SelectItem key={u.id} value={`${u.firstName} ${u.lastName}`} className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 my-1">
+                      <div className="flex flex-col items-start text-left">
+                        <span>{u.firstName} {u.lastName}</span>
+                        {u.userName && <span className="text-xs text-gray-400">({u.userName})</span>}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           </div>
           <div className="relative flex-1 sm:w-64 group">
@@ -109,12 +129,12 @@ export default function StudentList() {
             <input
               type="text"
               placeholder={t("searchStudents")}
-              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
+              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded text-sm focus:ring-2 focus:ring-blue-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
             />
           </div>
           <button
             onClick={handleCreate}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/30 whitespace-nowrap hover:scale-105 active:scale-95"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-6 py-3 rounded font-bold transition-all shadow-lg shadow-blue-500/30 whitespace-nowrap hover:scale-105 active:scale-95"
           >
             <Plus size={20} strokeWidth={2.5} /> {t("addStudent")}
           </button>
@@ -122,7 +142,7 @@ export default function StudentList() {
       </div>
 
       {/* Data Table */}
-      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded-3xl shadow-xl overflow-hidden">
+      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
             <thead className="text-xs text-gray-900 dark:text-gray-100 uppercase bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-md">
@@ -209,6 +229,7 @@ export default function StudentList() {
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         studentToEdit={selectedStudent}
+
       />
 
       <Modal show={isViewOpen} onClose={() => setIsViewOpen(false)} size="3xl" dismissible>

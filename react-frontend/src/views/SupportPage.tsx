@@ -16,7 +16,7 @@ import {
   Eye,
   EyeIcon,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 import api from "../services/api";
@@ -291,7 +291,7 @@ const SupportPage = ({ isDark, setIsDark }: any) => {
   ];
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Support Center">
+    <>
       <div className="space-y-3 animate-fade-in">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -479,7 +479,7 @@ const SupportPage = ({ isDark, setIsDark }: any) => {
           message="Are you sure you want to delete this support ticket? This action cannot be undone."
         />
       </div>
-    </Layout>
+    </>
   );
 };
 

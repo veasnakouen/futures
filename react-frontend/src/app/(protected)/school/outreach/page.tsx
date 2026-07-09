@@ -10,10 +10,10 @@ export default function OutreachPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Outreach">
+    <>
       <div className="p-6">
         <OutreachDashboard />
       </div>
-    </Layout>
+    </>
   );
 }

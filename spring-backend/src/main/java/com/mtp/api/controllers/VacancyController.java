@@ -21,7 +21,6 @@ public class VacancyController {
     private JobService jobService;
 
     @GetMapping
-    @Cacheable("vacancies")
     public Page<VacancyDto> getAllVacancies(
             Pageable pageable,
             @RequestParam(required = false) String search) {
@@ -29,7 +28,6 @@ public class VacancyController {
     }
 
     @GetMapping("/public")
-    @Cacheable("public_vacancies")
     public Page<VacancyDto> getPublicVacancies(
             Pageable pageable,
             @RequestParam(required = false) String search) {

@@ -10,10 +10,10 @@ export default function CaseManagementPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Case Management">
+    <>
       <div className="p-6">
         <CaseManagementDashboard />
       </div>
-    </Layout>
+    </>
   );
 }

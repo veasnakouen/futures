@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {Modal, ModalHeader, ModalBody, ModalFooter, Button, Avatar, Badge, Progress, Spinner} from '@/lib/flowbite-compat';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Avatar, Badge, Progress, Spinner, Tooltip } from '@/lib/flowbite-compat';
 import {
   Users,
   Clock,
@@ -20,6 +20,9 @@ import {
 } from "lucide-react";
 import api from '@/services/api';
 import { format } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import EmployeeSidebar from "./EmployeeSidebar";
+import EmployeeProfileTab from "./EmployeeProfileTab";
 import {
   Radar,
   RadarChart,
@@ -31,18 +34,52 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   CartesianGrid,
   AreaChart,
   Area,
 } from "recharts";
 
+export interface EmployeeData {
+  id: number | string;
+  idNo?: string;
+  firstNameEnglish?: string;
+  lastNameEnglish?: string;
+  firstNameKhmer?: string;
+  lastNameKhmer?: string;
+  photo?: string;
+  status?: string;
+  customFields?: string | any[];
+  department?: { id?: number; name?: string; location?: string } | string;
+  workShift?: { id?: number; name?: string } | string;
+  currentPosition?: string;
+  [key: string]: any;
+}
+
+export interface AttendanceRecord {
+  id?: number;
+  date?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+  status?: string;
+  [key: string]: any;
+}
+
+export interface LeaveRecord {
+  id?: number;
+  leaveType?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  [key: string]: any;
+}
+
 interface EmployeeDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedEmployee: any;
+  selectedEmployee: EmployeeData | null;
   portalTab: string;
-  setPortalTab: (tab: any) => void;
+  setPortalTab: (tab: string) => void;
 }
 
 const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
@@ -52,44 +89,41 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
   portalTab,
   setPortalTab,
 }) => {
-  const [attendanceData, setAttendanceData] = useState<any[]>([]);
-  const [leaveData, setLeaveData] = useState<any[]>([]);
-  const [loadingData, setLoadingData] = useState(false);
+  const { data: attendanceData = [], isLoading: isLoadingAttendance } = useQuery<AttendanceRecord[]>({
+    queryKey: ['employeeAttendance', selectedEmployee?.id],
+    queryFn: async () => {
+      const res = await api.get(`/hr/attendance/employee/${selectedEmployee?.id}`);
+      return res.data || [];
+    },
+    enabled: isOpen && !!selectedEmployee?.id && portalTab === "attendance",
+  });
 
-  useEffect(() => {
-    if (isOpen && selectedEmployee?.id) {
-      fetchPortalData();
-    }
-  }, [isOpen, selectedEmployee, portalTab]);
+  const { data: leaveData = [], isLoading: isLoadingLeave } = useQuery<LeaveRecord[]>({
+    queryKey: ['employeeLeave', selectedEmployee?.id],
+    queryFn: async () => {
+      const res = await api.get(`/hr/leaves/employee/${selectedEmployee?.id}`);
+      return res.data || [];
+    },
+    enabled: isOpen && !!selectedEmployee?.id && portalTab === "leave",
+  });
 
-  const fetchPortalData = async () => {
-    // Only fetch if tab matches
-    if (portalTab === "attendance") {
-      try {
-        setLoadingData(true);
-        const res = await api.get(
-          `/hr/attendance/employee/${selectedEmployee.id}`,
-        );
-        setAttendanceData(res.data || []);
-      } catch (err) {
-        console.error("Failed to fetch attendance");
-      } finally {
-        setLoadingData(false);
+  const loadingData = isLoadingAttendance || isLoadingLeave;
+
+  const parsedCustomFields = React.useMemo(() => {
+    try {
+      if (typeof selectedEmployee?.customFields === "string") {
+        return JSON.parse(selectedEmployee.customFields);
       }
-    } else if (portalTab === "leave") {
-      try {
-        setLoadingData(true);
-        const res = await api.get(`/hr/leaves/employee/${selectedEmployee.id}`);
-        setLeaveData(res.data || []);
-      } catch (err) {
-        console.error("Failed to fetch leave requests");
-      } finally {
-        setLoadingData(false);
+      if (Array.isArray(selectedEmployee?.customFields)) {
+        return selectedEmployee.customFields;
       }
+    } catch (e) {
+      console.error("Failed to parse customFields", e);
     }
-  };
+    return [];
+  }, [selectedEmployee?.customFields]);
 
-  const formatDateSafely = (dateStr: string, formatStr: string) => {
+  const formatDateSafely = (dateStr: string | undefined, formatStr: string) => {
     if (!dateStr) return "N/A";
     try {
       return format(new Date(dateStr), formatStr);
@@ -99,7 +133,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
   };
 
   return (
-    <Modal show={isOpen} onClose={onClose} size="5xl">
+    <Modal show={isOpen} onClose={onClose} size="7xl">
       <div className="flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-800 border-b rounded-t-md">
         <div className="flex items-center gap-4">
           <div className="relative shrink-0 group/avatar">
@@ -132,431 +166,27 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
         </button>
       </div>
       <ModalBody className="p-0 dark:bg-gray-800">
-        <div className="flex h-[70vh] min-h-[500px] overflow-hidden">
-          <div className="w-64 bg-gray-50 dark:bg-gray-700/30 border-r flex flex-col justify-between overflow-y-auto">
-            <nav className="space-y-1 p-6">
-              {[
-                {
-                  id: "profile",
-                  label: "Personnel Profile",
-                  icon: <Users size={18} />,
-                },
-                {
-                  id: "performance",
-                  label: "Performance & KPI",
-                  icon: <Award size={18} />,
-                },
-                {
-                  id: "attendance",
-                  label: "Attendance Log",
-                  icon: <Clock size={18} />,
-                },
-                {
-                  id: "leave",
-                  label: "Leave & Time Off",
-                  icon: <Calendar size={18} />,
-                },
-                {
-                  id: "payroll",
-                  label: "Compensation",
-                  icon: <DollarSign size={18} />,
-                },
-                {
-                  id: "assets",
-                  label: "Company Assets",
-                  icon: <Monitor size={18} />,
-                },
-                {
-                  id: "documents",
-                  label: "Documents",
-                  icon: <FileText size={18} />,
-                },
-                {
-                  id: "previous_position",
-                  label: "Previous Position",
-                  icon: <History size={18} />,
-                },
-                {
-                  id: "education",
-                  label: "Education",
-                  icon: <GraduationCap size={18} />,
-                },
-                {
-                  id: "work_experience",
-                  label: "Work Experience",
-                  icon: <Briefcase size={18} />,
-                },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setPortalTab(item.id as any)}
-                  className={`w-full flex items-center gap-3 px-4 py-3.5 text-xs font-bold transition-all border-b ${portalTab === item.id ?"border-blue-600 text-blue-600 bg-blue-50/50 dark:bg-blue-900/20":" text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}
-                >
-                  {item.icon} {item.label}
-                </button>
-              ))}
-            </nav>
-            <div className="p-6 border-t shrink-0">
-              <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">
-                Confidential Personnel Data • Authorized Access Only
-              </p>
-            </div>
+
+        <div className="flex flex-col lg:flex-row gap-6 p-6 bg-gray-50/50 dark:bg-gray-900/50 h-[85vh] overflow-hidden">
+          <div className="w-full lg:w-[320px] xl:w-[350px] shrink-0 h-full overflow-y-auto custom-scrollbar pr-2">
+            <EmployeeSidebar
+              employee={selectedEmployee}
+              activeMenu={portalTab}
+              setActiveMenu={setPortalTab}
+            />
           </div>
-          <div className="flex-1 p-10 overflow-y-auto bg-white dark:bg-gray-800">
-            <div className="flex justify-between items-center mb-10">
-              <h2 className="text-2xl font-black dark:text-white capitalize">
-                {portalTab} Analysis
+          <div className="flex-1 w-full min-w-0 h-full overflow-y-auto custom-scrollbar">
+            <div className="flex justify-between items-center mb-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <h2 className="text-xl font-black dark:text-white capitalize">
+                {portalTab} Information
               </h2>
-              <Button
-                color="light"
-                size="sm"
-                onClick={() => window.print()}
-                className="rounded-md"
-              >
+              <Button color="light" size="sm" onClick={() => window.print()} className="rounded-md">
                 <FileText size={16} className="mr-2" /> Export Report
               </Button>
             </div>
 
-            <div className="max-w-4xl space-y-10 pb-10">
-              {portalTab === "profile" && (
-                <div className="space-y-12 animate-fade-in">
-                  <section>
-                    <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-6 flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-md bg-blue-600"></div>{" "}
-                      Core Identity
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                      {/* Large Profile Photo */}
-                      <div className="col-span-1">
-                        <div className="aspect-square rounded-md bg-gray-50 dark:bg-gray-700/50 border-4 border-white shadow-md overflow-hidden group relative">
-                          {selectedEmployee?.photo ? (
-                            <img
-                              src={selectedEmployee.photo}
-                              alt="Profile"
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
-                              <Users size={48} className="mb-2" />
-                              <p className="text-[8px] font-black uppercase">
-                                No Image
-                              </p>
-                            </div>
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                            <p className="text-[8px] font-black text-white uppercase tracking-widest">
-                              Employee Visual ID
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Identity Details */}
-                      <div className="col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8 bg-gray-50/50 dark:bg-gray-700/20 p-8 rounded-md">
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Full Legal Name (EN/KH)
-                          </p>
-                          <p className="text-lg font-black dark:text-white leading-tight">
-                            {selectedEmployee?.title}{" "}
-                            {selectedEmployee?.firstNameEnglish}{" "}
-                            {selectedEmployee?.lastNameEnglish}
-                            {selectedEmployee?.firstNameKhmer && (
-                              <span className="block text-sm font-black text-blue-600 mt-1">
-                                {selectedEmployee.firstNameKhmer}{" "}
-                                {selectedEmployee.lastNameKhmer}
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Gender Identity
-                          </p>
-                          <p className="text-lg font-black dark:text-white leading-tight">
-                            {selectedEmployee?.gender}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Date of Birth
-                          </p>
-                          <p className="text-lg font-black dark:text-white leading-tight">
-                            {selectedEmployee?.dateOfBirth || "N/A"}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Nationality
-                          </p>
-                          <p className="text-lg font-black dark:text-white leading-tight">
-                            {selectedEmployee?.nationality || "N/A"}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Place of Birth
-                          </p>
-                          <p className="text-lg font-black dark:text-white leading-tight">
-                            {selectedEmployee?.placeOfBirth || "N/A"}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Blood Group
-                          </p>
-                          <p className="text-lg font-black text-red-600 leading-tight">
-                            {selectedEmployee?.bloodGroup || "O+"}
-                          </p>
-                        </div>
-                        <div className="space-y-1 col-span-2">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Residential Address
-                          </p>
-                          <p className="text-sm font-bold dark:text-gray-300 leading-tight">
-                            {selectedEmployee?.address || "No address recorded"}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Personnel ID
-                          </p>
-                          <p className="text-lg font-black text-blue-600 leading-tight">
-                            {selectedEmployee?.idNo}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Primary Contact
-                          </p>
-                          <p className="text-lg font-black dark:text-white leading-tight">
-                            {selectedEmployee?.phoneNumber}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                            Staff Email
-                          </p>
-                          <p className="text-lg font-black dark:text-white leading-tight truncate">
-                            {selectedEmployee?.email}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-
-                  <section>
-                    <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-6 flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-md bg-blue-600"></div>{" "}
-                      Career Roadmap
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="p-8 rounded-md dark:bg-gray-800 border-none shadow-sm">
-                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-4">
-                          Current Designation
-                        </p>
-                        <p className="text-2xl font-black dark:text-white">
-                          {selectedEmployee?.position?.name ||
-                            selectedEmployee?.position ||
-                            "Staff"}
-                        </p>
-                        <div className="mt-6 pt-6 border-t flex justify-between items-center">
-                          <div>
-                            <p className="text-[8px] font-black text-gray-400 uppercase">
-                              Department
-                            </p>
-                            <p className="font-black dark:text-gray-300">
-                              {selectedEmployee?.department?.name ||
-                                selectedEmployee?.department ||
-                                "General"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-[8px] font-black text-gray-400 uppercase text-right">
-                              Join Date
-                            </p>
-                            <p className="font-black dark:text-gray-300 text-right">
-                              {selectedEmployee?.joinDate}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="mt-4 grid grid-cols-2 gap-4">
-                          <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
-                            <p className="text-[8px] font-black text-gray-400 uppercase">
-                              Contract Period
-                            </p>
-                            <p className="text-[10px] font-black dark:text-white truncate">
-                              {selectedEmployee?.contractStartDate || "N/A"} —{" "}
-                              {selectedEmployee?.contractEndDate || "Ongoing"}
-                            </p>
-                          </div>
-                          <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
-                            <p className="text-[8px] font-black text-blue-600 uppercase">
-                              Probation End Date
-                            </p>
-                            <p className="text-[10px] font-black dark:text-white">
-                              {selectedEmployee?.probationEndDate || "None"}
-                            </p>
-                          </div>
-                          <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
-                            <p className="text-[8px] font-black text-gray-400 uppercase">
-                              Supervisor
-                            </p>
-                            <p className="text-[10px] font-black dark:text-white">
-                              {selectedEmployee?.manager || "Not Assigned"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="p-6 bg-emerald-50 dark:bg-emerald-900/10 rounded-md flex justify-between items-center border-emerald-100 dark:border-emerald-900/20">
-                          <div>
-                            <p className="text-[9px] font-black text-emerald-600 uppercase">
-                              Employment Status
-                            </p>
-                            <p className="font-black dark:text-white">
-                              Full-Time Persistent
-                            </p>
-                          </div>
-                          <Badge color="success" className="rounded-md px-4">
-                            Active
-                          </Badge>
-                        </div>
-                        <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-md flex justify-between items-center border-blue-100 dark:border-blue-900/20">
-                          <div>
-                            <p className="text-[9px] font-black text-blue-600 uppercase">
-                              Compensation Tier
-                            </p>
-                            <p className="font-black dark:text-white">
-                              Tier-1 Salary Scale
-                            </p>
-                          </div>
-                          <p className="font-black text-lg dark:text-white">
-                            ${selectedEmployee?.basicSalary?.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-
-                  {(selectedEmployee?.customFields?.length > 0 || true) && (
-                    <section>
-                      <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-md bg-blue-600"></div>{" "}
-                        Organization Attributes
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="p-4 rounded-md text-center">
-                          <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
-                            Marital Status
-                          </p>
-                          <p className="font-black dark:text-white">
-                            {selectedEmployee?.maritalStatus || "Single"}
-                          </p>
-                        </div>
-                        <div className="p-4 rounded-md text-center">
-                          <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
-                            Children
-                          </p>
-                          <p className="font-black dark:text-white">
-                            {selectedEmployee?.children || "0"}
-                          </p>
-                        </div>
-                        <div className="p-4 rounded-md text-center">
-                          <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
-                            {selectedEmployee?.identityCardType ||
-                              "National ID"}
-                          </p>
-                          <p className="font-black dark:text-white">
-                            {selectedEmployee?.identityCardNumber || "N/A"}
-                          </p>
-                        </div>
-                        <div className="p-4 rounded-md text-center">
-                          <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
-                            Biometric Status
-                          </p>
-                          <p className="font-black dark:text-white">
-                            {selectedEmployee?.biometricStatus ||
-                              "Not Enrolled"}
-                          </p>
-                        </div>
-                        <div className="p-4 rounded-md text-center">
-                          <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
-                            Biometric Hardware ID
-                          </p>
-                          <p className="font-black dark:text-white">
-                            {selectedEmployee?.biometricId || "N/A"}
-                          </p>
-                        </div>
-                        {selectedEmployee?.customFields?.length > 0
-                          ? selectedEmployee.customFields
-                              .filter(
-                                (f: any) =>
-                                  ![
-                                    "legacyPreviousPosition",
-                                    "legacyEducation",
-                                    "legacyWorkExperience",
-                                  ].includes(f.key),
-                              )
-                              .map((f: any, i: number) => (
-                                <div
-                                  key={i}
-                                  className="p-4 rounded-md text-center"
-                                >
-                                  <p className="text-[8px] font-black text-gray-400 uppercase mb-1">
-                                    {f.key}
-                                  </p>
-                                  <p className="font-black dark:text-white">
-                                    {f.value}
-                                  </p>
-                                </div>
-                              ))
-                          : null}
-                      </div>
-                    </section>
-                  )}
-
-                  <section>
-                    <h4 className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-6 flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-md bg-red-600"></div>{" "}
-                      Emergency Protocol
-                    </h4>
-                    <div className="p-8 bg-red-50/50 dark:bg-red-900/10 rounded-md border-red-100 dark:border-red-900/20 flex items-center gap-8">
-                      <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-md flex items-center justify-center shadow-inner">
-                        <ShieldCheck size={32} />
-                      </div>
-                      <div className="flex-1 grid grid-cols-3 gap-8">
-                        <div>
-                          <p className="text-[9px] font-black text-red-600/60 uppercase">
-                            Primary Contact
-                          </p>
-                          <p className="font-black dark:text-white">
-                            {selectedEmployee?.emergencyContactName ||
-                              "Unspecified"}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[9px] font-black text-red-600/60 uppercase">
-                            Relationship
-                          </p>
-                          <p className="font-black dark:text-white">
-                            {selectedEmployee?.emergencyContact || "N/A"}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[9px] font-black text-red-600/60 uppercase">
-                            Crisis Hotline
-                          </p>
-                          <p className="font-black dark:text-white">
-                            {selectedEmployee?.emergencyContactPhone || "N/A"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-                </div>
-              )}
-
+            <div className="w-full space-y-6 pb-10">
+              {portalTab === "profile" && <EmployeeProfileTab employee={selectedEmployee} />}
               {portalTab === "performance" && (
                 <div className="space-y-10 animate-fade-in">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -649,7 +279,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                                   />
                                 </linearGradient>
                               </defs>
-                              <Tooltip />
+                              <RechartsTooltip />
                               <Area
                                 type="monotone"
                                 dataKey="val"
@@ -717,7 +347,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                                 : "Active"}
                             </p>
                             <p
-                              className={`text-[8px] font-black uppercase ${log.status ==="Present"?"text-emerald-500":"text-amber-500"}`}
+                              className={`text-[8px] font-black uppercase ${log.status === "Present" ? "text-emerald-500" : "text-amber-500"}`}
                             >
                               {log.status || "Active Session"}
                             </p>
@@ -838,7 +468,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               ?.slice(-4)
                               .padStart(
                                 selectedEmployee?.bankAccountNumber?.length ||
-                                  0,
+                                0,
                                 "*",
                               ) || "N/A"}
                           </p>
@@ -884,7 +514,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               {item.label}
                             </span>
                             <span
-                              className={`font-mono font-black ${item.type ==="plus"?"text-emerald-500":"text-red-500"}`}
+                              className={`font-mono font-black ${item.type === "plus" ? "text-emerald-500" : "text-red-500"}`}
                             >
                               {item.val < 0 ? "-" : "+"}$
                               {Math.abs(item.val).toLocaleString()}
@@ -987,7 +617,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                                 window.open(fileUrl, "_blank");
                               }
                             }}
-                            className={`p-4 rounded-lg flex flex-col items-center gap-2 group cursor-pointer transition-all ${ fileUrl ?"bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400":"bg-gray-50 dark:bg-gray-700/50 "}`}
+                            className={`p-4 rounded-lg flex flex-col items-center gap-2 group cursor-pointer transition-all ${fileUrl ? "bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800/50 hover:border-green-400" : "bg-gray-50 dark:bg-gray-700/50 "}`}
                           >
                             {fileUrl && (
                               <div className="absolute top-2 right-2 flex gap-1 z-10">
@@ -1022,7 +652,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               </div>
                             )}
                             <div
-                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${fileUrl ?"bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400":"bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
+                              className={`p-3 rounded-xl shadow-sm transition-transform group-hover:scale-110 ${fileUrl ? "bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400" : "bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
                             >
                               {doc.icon}
                             </div>
@@ -1030,7 +660,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                               {doc.label}
                             </span>
                             <span
-                              className={`text-[9px] font-bold ${fileUrl ?"text-green-600 dark:text-green-400":"text-gray-400"}`}
+                              className={`text-[9px] font-bold ${fileUrl ? "text-green-600 dark:text-green-400" : "text-gray-400"}`}
                             >
                               {fileUrl
                                 ? "Attached (Click to view)"
@@ -1046,7 +676,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
               {portalTab === "previous_position" &&
                 (() => {
-                  const prevPos = selectedEmployee?.customFields?.find(
+                  const prevPos = parsedCustomFields.find(
                     (f: any) => f.key === "legacyPreviousPosition",
                   )?.value;
                   return (
@@ -1082,7 +712,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
               {portalTab === "education" &&
                 (() => {
-                  const eduRaw = selectedEmployee?.customFields?.find(
+                  const eduRaw = parsedCustomFields.find(
                     (f: any) => f.key === "legacyEducation",
                   )?.value;
                   let eduList: any[] = [];
@@ -1147,7 +777,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
               {portalTab === "work_experience" &&
                 (() => {
-                  const workRaw = selectedEmployee?.customFields?.find(
+                  const workRaw = parsedCustomFields.find(
                     (f: any) => f.key === "legacyWorkExperience",
                   )?.value;
                   let workList: any[] = [];

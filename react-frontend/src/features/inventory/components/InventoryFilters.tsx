@@ -1,5 +1,12 @@
 import React from "react";
-import {TextInput, Select, Button} from '@/lib/flowbite-compat';
+import { TextInput, Button } from '@/lib/flowbite-compat';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search, Filter } from "lucide-react";
 
 interface InventoryFiltersProps {
@@ -32,14 +39,18 @@ const InventoryFilters: React.FC<InventoryFiltersProps> = ({
         />
       </div>
       <Select
-        className="w-56 rounded-md border-none bg-gray-50 dark:bg-gray-700/50"
-        value={categoryFilter}
-        onChange={(e) => setCategoryFilter(e.target.value)}
+        value={categoryFilter === "" ? "all" : categoryFilter}
+        onValueChange={(val) => setCategoryFilter(val === "all" ? "" : val)}
       >
-        <option value="">All Categories</option>
-        {categories.map((c, i) => (
-          <option key={i} value={c}>{c}</option>
-        ))}
+        <SelectTrigger className="w-56 h-10 border-none bg-gray-50 dark:bg-gray-700/50 rounded-md focus:ring-0">
+          <SelectValue placeholder="All Categories" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Categories</SelectItem>
+          {categories.map((c, i) => (
+            <SelectItem key={i} value={c}>{c}</SelectItem>
+          ))}
+        </SelectContent>
       </Select>
       <Button
         color="gray"

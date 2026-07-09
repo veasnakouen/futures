@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 	// Core Spring Boot
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "../../store/authStore";
+import Layout from "../../components/common/Layout";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function ProtectedLayout({
   children,
@@ -11,6 +13,9 @@ export default function ProtectedLayout({
   const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const { isDark, setTheme } = useTheme();
+  
+  const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   useEffect(() => {
     setIsMounted(true);
@@ -26,5 +31,9 @@ export default function ProtectedLayout({
     return null; // Or a loading spinner
   }
 
-  return <>{children}</>;
+  return (
+    <Layout isDark={isDark} setIsDark={setIsDark}>
+      {children}
+    </Layout>
+  );
 }

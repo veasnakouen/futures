@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Layout from "@/components/common/Layout";
+
 import UserManagement from "@/features/admin/components/UserManagement";
 import RoleManagement from "@/features/admin/components/RoleManagement";
 import UserLogRecorder from "@/features/admin/components/UserLogRecorder";
@@ -47,11 +47,7 @@ const AdminPage = ({ isDark, setIsDark }: AdminPageProps) => {
   const [activeTab, setActiveTab] = useState(filteredTabs[0]?.id || "USERS");
 
   return (
-    <Layout
-      isDark={isDark}
-      setIsDark={setIsDark}
-      title="Security & Administration"
-    >
+    <>
       <div className="max-w-7xl mx-auto animate-fade-in">
         {/* Animated Custom Tabs Navigation */}
         <div>
@@ -80,7 +76,7 @@ const AdminPage = ({ isDark, setIsDark }: AdminPageProps) => {
           </AnimatePresence>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

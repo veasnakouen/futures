@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import Layout from "@/components/common/Layout";
+
 import api from "../services/api";
 import { useTranslation } from "react-i18next";
 import { toast } from 'react-hot-toast';
@@ -232,7 +232,7 @@ const ReportsPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title={t("reports")}>
+    <>
       <div className="space-y-2 -mt-2 lg:-mt-4 animate-fade-in h-full flex flex-col max-w-[1600px] mx-auto pb-4">
         <ReportFilterBar
           REPORT_LIST={REPORT_LIST}
@@ -379,7 +379,7 @@ const ReportsPage = ({ isDark, setIsDark }: any) => {
           />
         )}
       </div>
-    </Layout>
+    </>
   );
 };
 

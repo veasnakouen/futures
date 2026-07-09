@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "InventoryItems")
@@ -18,81 +18,86 @@ public class InventoryItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @jakarta.validation.constraints.Size(max = 50, message = "SKU cannot exceed 50 characters")
+    private String sku;
+
     @jakarta.validation.constraints.NotBlank(message = "Item name is required")
     @jakarta.validation.constraints.Size(max = 255, message = "Name cannot exceed 255 characters")
     private String name;
 
-    @jakarta.validation.constraints.Size(max = 50, message = "SKU cannot exceed 50 characters")
-    private String sku;
-
-    private String category;
-
-    @jakarta.validation.constraints.NotNull(message = "Quantity is required")
-    @jakarta.validation.constraints.Min(value = 0, message = "Quantity cannot be negative")
-    private Integer quantity;
-
-    private String unit;
-
-    @jakarta.validation.constraints.Min(value = 0, message = "Minimum quantity cannot be negative")
-    private Integer minQuantity;
-
-    private Double costPrice;
-
-    private Double salePrice;
-
-    @jakarta.validation.constraints.DecimalMin(value = "0.0", message = "Unit price cannot be negative")
-    private Double unitPrice;
-
-    private String location;
-
-    private String status;
-
     @jakarta.validation.constraints.Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
-    private LocalDateTime lastRestockDate;
-
-    // --- Enterprise WMS Fields ---
-
-    // Supply Chain
-    private String vendor;
-    private Integer maxQuantity;
-    private Integer leadTimeDays;
-
-    // Logistics
-    private String binLocation;
-    private Double weight;
-    private String dimensions;
-
-    // Traceability
-    private String batchNumber;
-    private String barcode;
-    private LocalDate expirationDate;
-
-    // --- HR & Internal Controls ---
-    private Boolean isReturnable = false;
-    private Boolean isKit = false;
-    private Boolean isIntangible = false;
-    private Boolean isSubscription = false;
-    private Boolean isActive = true;
-
-    private LocalDate renewalDate;
-
-    // --- Cost & Ownership ---
-    private String acquisitionType; // Purchased, Donated, Leased
-    private String donorOrPartnerName;
-    private String costCenter;
-    private Integer usefulLifeYears;
-
-    // --- Categorization ---
-    private String productFamily;
+    private String category;
     private String brand;
-    private String modelNumber;
+
+    @jakarta.validation.constraints.DecimalMin(value = "0.0", message = "Price cannot be negative")
+    private BigDecimal price;
+
+    private BigDecimal costPrice;
+
+    private BigDecimal discountPercentage;
+
+    @jakarta.validation.constraints.NotNull(message = "Stock quantity is required")
+    @jakarta.validation.constraints.Min(value = 0, message = "Quantity cannot be negative")
+    private Integer stockQuantity;
+
+    @jakarta.validation.constraints.Min(value = 0, message = "Reorder level cannot be negative")
+    private Integer reorderLevel;
+
+    private Double weight;
+
+    private Boolean active = true;
+
+    private Boolean featured = false;
+
+    private Double rating;
+
+    private Integer reviewCount;
+
+    private Boolean trackStock = true;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "department_id")
+    private com.mtp.stock.models.stubs.DepartmentStub department;
 
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "UpdatedAt")
+    private LocalDateTime updatedAt;
+
     @Lob
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String imageUrl;
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    // --- Domain Methods ---
+
+    public void addStock(int amount) {
+        if (amount < 0) throw new IllegalArgumentException("Cannot add negative stock");
+        this.stockQuantity = (this.stockQuantity == null ? 0 : this.stockQuantity) + amount;
+    }
+
+    public void removeStock(int amount) {
+        if (amount < 0) throw new IllegalArgumentException("Cannot remove negative stock");
+        if (this.stockQuantity == null || this.stockQuantity < amount) {
+            throw new IllegalStateException("Insufficient stock to fulfill request");
+        }
+        this.stockQuantity -= amount;
+    }
+
+    public boolean requiresRestocking() {
+        int threshold = (this.reorderLevel != null) ? this.reorderLevel : 0;
+        return this.stockQuantity != null && this.stockQuantity <= threshold;
+    }
+
+    public BigDecimal calculateTotalValue() {
+        if (this.stockQuantity == null || this.price == null) return BigDecimal.ZERO;
+        return this.price.multiply(BigDecimal.valueOf(this.stockQuantity));
+    }
 }

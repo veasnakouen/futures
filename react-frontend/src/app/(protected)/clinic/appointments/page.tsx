@@ -9,8 +9,8 @@ export default function AppointmentsPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Appointments">
+    <>
       <AppointmentList />
-    </Layout>
+    </>
   );
 }

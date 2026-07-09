@@ -16,11 +16,6 @@ public interface InventoryRepository extends JpaRepository<InventoryItem, Long> 
     @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.category FROM InventoryItem i WHERE i.category IS NOT NULL AND i.category != ''")
     List<String> findDistinctCategories();
 
-    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.location FROM InventoryItem i WHERE i.location IS NOT NULL AND i.location != ''")
-    List<String> findDistinctLocations();
-
-    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.unit FROM InventoryItem i WHERE i.unit IS NOT NULL AND i.unit != ''")
-    List<String> findDistinctUnits();
-
-    List<InventoryItem> findByStatus(String status);
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.department FROM InventoryItem i WHERE i.department IS NOT NULL AND i.department != ''")
+    List<String> findDistinctDepartments();
 }

@@ -36,9 +36,9 @@ public class InventoryController {
     public ResponseEntity<?> getStats() {
         List<InventoryItem> all = inventoryRepository.findAll();
         double valuation = all.stream()
-                .mapToDouble(i -> i.getQuantity() * (i.getUnitPrice() != null ? i.getUnitPrice() : 0)).sum();
-        long lowStock = all.stream().filter(i -> i.getQuantity() <= i.getMinQuantity() && i.getQuantity() > 0).count();
-        long outOfStock = all.stream().filter(i -> i.getQuantity() <= 0).count();
+                .mapToDouble(i -> i.calculateTotalValue().doubleValue()).sum();
+        long lowStock = all.stream().filter(i -> i.getStockQuantity() <= (i.getReorderLevel() != null ? i.getReorderLevel() : 0) && i.getStockQuantity() > 0).count();
+        long outOfStock = all.stream().filter(i -> i.getStockQuantity() <= 0).count();
 
         java.util.Map<String, Object> stats = new java.util.HashMap<>();
         stats.put("valuation", valuation);
@@ -53,16 +53,13 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryRepository.findDistinctCategories());
     }
 
-    @GetMapping("/locations")
-    @Cacheable(value = "inventory", key = "'locations'")
-    public ResponseEntity<List<String>> getLocations() {
-        return ResponseEntity.ok(inventoryRepository.findDistinctLocations());
-    }
+    @Autowired
+    private com.mtp.stock.repositories.DepartmentRepository departmentRepository;
 
-    @GetMapping("/units")
-    @Cacheable(value = "inventory", key = "'units'")
-    public ResponseEntity<List<String>> getUnits() {
-        return ResponseEntity.ok(inventoryRepository.findDistinctUnits());
+    @GetMapping("/departments")
+    @Cacheable(value = "inventory", key = "'departments'")
+    public ResponseEntity<List<com.mtp.stock.models.stubs.DepartmentStub>> getDepartments() {
+        return ResponseEntity.ok(departmentRepository.findAll());
     }
 
     @GetMapping("/{id}")
@@ -100,13 +97,20 @@ public class InventoryController {
             item.setName(itemDetails.getName());
             item.setSku(itemDetails.getSku());
             item.setCategory(itemDetails.getCategory());
-            item.setQuantity(itemDetails.getQuantity());
-            item.setUnit(itemDetails.getUnit());
-            item.setMinQuantity(itemDetails.getMinQuantity());
-            item.setUnitPrice(itemDetails.getUnitPrice());
-            item.setLocation(itemDetails.getLocation());
-            item.setStatus(itemDetails.getStatus());
             item.setDescription(itemDetails.getDescription());
+            item.setBrand(itemDetails.getBrand());
+            item.setPrice(itemDetails.getPrice());
+            item.setCostPrice(itemDetails.getCostPrice());
+            item.setDiscountPercentage(itemDetails.getDiscountPercentage());
+            item.setStockQuantity(itemDetails.getStockQuantity());
+            item.setReorderLevel(itemDetails.getReorderLevel());
+            item.setWeight(itemDetails.getWeight());
+            item.setActive(itemDetails.getActive());
+            item.setFeatured(itemDetails.getFeatured());
+            item.setRating(itemDetails.getRating());
+            item.setReviewCount(itemDetails.getReviewCount());
+            item.setDepartment(itemDetails.getDepartment());
+            item.setTrackStock(itemDetails.getTrackStock());
 
             if (itemDetails.getImageUrl() != null && itemDetails.getImageUrl().startsWith("data:image")) {
                 try {

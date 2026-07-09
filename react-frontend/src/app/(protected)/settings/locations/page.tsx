@@ -9,8 +9,8 @@ export default function LocationSettingsPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Location Management">
+    <>
       <LocationManagement />
-    </Layout>
+    </>
   );
 }

@@ -9,8 +9,8 @@ export default function CoursesPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
   
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Courses">
+    <>
       <CourseList />
-    </Layout>
+    </>
   );
 }

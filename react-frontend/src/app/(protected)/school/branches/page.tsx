@@ -1,6 +1,5 @@
 import React from "react";
 import { cookies } from "next/headers";
-import PageLayoutWrapper from "../../../../components/common/PageLayoutWrapper";
 import BranchListClient from "../../../../features/school/components/BranchListClient";
 import { BranchDto } from "../../../../services/schoolService";
 
@@ -44,8 +43,8 @@ export default async function BranchesPage() {
   const branches = await getBranches();
   
   return (
-    <PageLayoutWrapper title="Branches">
+    <>
       <BranchListClient initialBranches={branches} />
-    </PageLayoutWrapper>
+    </>
   );
 }

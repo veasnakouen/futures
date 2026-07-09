@@ -9,8 +9,8 @@ export default function LabOrdersPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Lab Orders">
+    <>
       <LabOrderList />
-    </Layout>
+    </>
   );
 }

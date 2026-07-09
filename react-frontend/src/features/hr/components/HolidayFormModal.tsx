@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { useHoliday } from "@/hooks/useHoliday";
 
 interface HolidayFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
   initialData?: any;
 }
 
-export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onClose, onSave, initialData }) => {
+export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onClose, initialData }) => {
+  const { useCreateHoliday, useUpdateHoliday } = useHoliday();
+  const createMutation = useCreateHoliday();
+  const updateMutation = useUpdateHoliday();
   const [formData, setFormData] = useState(
     initialData || {
       name: "",
@@ -17,10 +21,13 @@ export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onCl
     }
   );
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  return (
-    <div className="fixed inset-0 md:left-[260px] z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 md:left-[260px] z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
       <div className="bg-[#1e293b] border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-slide-up">
         <div className="flex justify-between items-center p-5 border-b border-gray-700/50 bg-[#0f172a]/50">
           <h2 className="text-lg font-bold text-white">
@@ -73,13 +80,21 @@ export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onCl
             បោះបង់ / Cancel
           </button>
           <button
-            onClick={() => onSave(formData)}
-            className="px-5 py-2 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors shadow-lg shadow-rose-500/20"
+            onClick={() => {
+              if (initialData?.id) {
+                updateMutation.mutate({ ...formData, id: initialData.id }, { onSuccess: () => onClose() });
+              } else {
+                createMutation.mutate(formData, { onSuccess: () => onClose() });
+              }
+            }}
+            disabled={createMutation.isPending || updateMutation.isPending}
+            className="px-5 py-2 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors shadow-lg shadow-rose-500/20 disabled:opacity-50"
           >
-            រក្សាទុក / Save
+            {(createMutation.isPending || updateMutation.isPending) ? "កំពុងរក្សាទុក..." : "រក្សាទុក / Save"}
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

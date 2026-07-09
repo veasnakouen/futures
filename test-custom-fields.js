@@ -8,7 +8,7 @@ async function test() {
         "fields": ["Brand", "Category", "Description", "Price", "Quality", "VoucherNumber", "CodeNumber", "Name"],
         "filters": [],
         "groupBy": "",
-        "aggregations": [{"field": "Price", "function": "SUM"}],
+        "aggregations": [{ "field": "Price", "function": "SUM" }],
         "customFields": [
           { "name": "Age", "type": "blank", "formula": "" },
           { "name": "FQ", "type": "blank", "formula": "" },

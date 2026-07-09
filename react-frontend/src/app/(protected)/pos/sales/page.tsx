@@ -10,8 +10,8 @@ export default function PosSalesPage() {
     const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
     return (
-        <Layout isDark={isDark} setIsDark={setIsDark} title="Sales History">
+        <>
             <SalesHistory />
-        </Layout>
+        </>
     );
 }

@@ -4,6 +4,8 @@ import { Clock, Layers, CalendarDays, Calendar as CalendarIcon, Edit2, Trash2, P
 import { TimetableFormModal } from "@/features/hr/components/TimetableFormModal";
 import { HolidayFormModal } from "@/features/hr/components/HolidayFormModal";
 import { ScheduleAssignmentModal } from "@/features/hr/components/ScheduleAssignmentModal";
+import { useTimetable } from "@/hooks/useTimetable";
+import { useHoliday } from "@/hooks/useHoliday";
 
 export default function TimetablePage() {
   const [activeTab, setActiveTab] = useState("maintenance");
@@ -13,15 +15,11 @@ export default function TimetablePage() {
   const [isHolidayModalOpen, setIsHolidayModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
-  // Mock data states
-  const [timetables, setTimetables] = useState([
-    { id: 1, name: "TimeTable AM", onDutyTime: "08:00", offDutyTime: "12:00", lateTime: 15, leaveEarlyTime: 15 },
-    { id: 2, name: "TimeTable PM", onDutyTime: "13:00", offDutyTime: "17:00", lateTime: 15, leaveEarlyTime: 15 }
-  ]);
+  const { useTimetables } = useTimetable();
+  const { data: timetables = [] } = useTimetables();
 
-  const [holidays, setHolidays] = useState([
-    { id: 1, name: "Khmer New Year", date: "2026-04-14", description: "Public Holiday" }
-  ]);
+  const { useHolidays } = useHoliday();
+  const { data: holidays = [] } = useHolidays();
 
   const [schedules, setSchedules] = useState([
     { id: 1, employeeId: "EMP-001", employeeName: "Koeun Veasna", shiftId: "SHIFT-3", shiftName: "Full Day", dateFrom: "2026-07-01", dateTo: "2026-07-31" }
@@ -242,7 +240,7 @@ export default function TimetablePage() {
                 <tbody className="divide-y divide-gray-700/30">
                   {holidays.map((h) => (
                     <tr key={h.id} className="hover:bg-white/5 transition-colors">
-                      <td className="px-5 py-4 font-bold text-sm text-rose-400">{h.date}</td>
+                      <td className="px-5 py-4 font-bold text-sm text-rose-400">{h.eventDate}</td>
                       <td className="px-5 py-4 font-bold text-sm text-white">{h.name}</td>
                       <td className="px-5 py-4 text-sm text-gray-400">{h.description}</td>
                       <td className="px-5 py-4 text-right">

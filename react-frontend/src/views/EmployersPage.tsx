@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from '@/lib/react-router-compat';
 import { useDebounce } from "../hooks/useDebounce";
-import {Button, Badge, Spinner, TextInput, Label, Modal, Textarea, Select, ModalHeader, ModalBody, Dropdown, DropdownItem, DropdownDivider, ModalFooter} from '@/lib/flowbite-compat';
+import { Button, Badge, Spinner, TextInput, Label, Modal, Textarea, Select, ModalHeader, ModalBody, Dropdown, DropdownItem, DropdownDivider, ModalFooter } from '@/lib/flowbite-compat';
 import ModernPagination from "@/components/common/ModernPagination";
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
@@ -56,13 +56,12 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
   const [itemsPerRow, setItemsPerRow] = useState("4");
 
   const getGridClass = () => {
-    return `grid gap-6 ${
-      itemsPerRow === "3"
+    return `grid gap-6 ${itemsPerRow === "3"
         ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
         : itemsPerRow === "5"
-        ? "grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-        : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-    }`;
+          ? "grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      }`;
   };
   const PAGE_SIZE = viewMode === "grid" ? 9 : 10;
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -131,14 +130,14 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
               : [],
         );
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const fetchConnections = async () => {
     try {
       const res = await api.get("/connections");
       setConnections(res.data);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const fetchEmployers = async (page = 0, size = 9, search = "") => {
@@ -359,14 +358,14 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                 <button
                   onClick={() => setViewMode("grid")}
                   title="Grid View"
-                  className={`p-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                  className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                 >
                   <LayoutGrid size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
                   title="List View"
-                  className={`p-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                  className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                 >
                   <List size={18} />
                 </button>
@@ -497,7 +496,7 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                             ? "Remove connection"
                             : "Add to network"
                         }
-                        className={`!rounded transition-all w-9 h-9 flex items-center justify-center !p-0 ${ connections.some( (c) => c.targetType ==="EMPLOYER"&& c.targetId === String(employer.id), ) ?"border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100":"border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"}`}
+                        className={`!rounded transition-all w-9 h-9 flex items-center justify-center !p-0 ${connections.some((c) => c.targetType === "EMPLOYER" && c.targetId === String(employer.id),) ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100" : "border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"}`}
                       >
                         {connections.some(
                           (c) =>
@@ -513,23 +512,23 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                             c.targetType === "EMPLOYER" &&
                             c.targetId === String(employer.id),
                         ) && (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-user-check"
-                          >
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <polyline points="16 11 18 13 22 9" />
-                          </svg>
-                        )}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="lucide lucide-user-check"
+                            >
+                              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                              <circle cx="9" cy="7" r="4" />
+                              <polyline points="16 11 18 13 22 9" />
+                            </svg>
+                          )}
                       </Button>
                       <Button
                         onClick={() => {
@@ -670,10 +669,10 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                         {visibleColumns.includes("status") && (
                           <div className="md:col-span-1">
                             <span
-                              className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md ${ employer.status ==="Active"?"bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400":"bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"}`}
+                              className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md ${employer.status === "Active" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"}`}
                             >
                               <span
-                                className={`w-1.5 h-1.5 rounded-md ${ employer.status ==="Active"?"bg-green-500":"bg-yellow-500"}`}
+                                className={`w-1.5 h-1.5 rounded-md ${employer.status === "Active" ? "bg-green-500" : "bg-yellow-500"}`}
                               />
                               {employer.status || "Active"}
                             </span>

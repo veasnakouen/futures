@@ -52,9 +52,9 @@ export default function ExtracurricularList() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded-3xl shadow-xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded shadow-xl">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 rounded-2xl shadow-inner">
+          <div className="p-3 bg-transparent hover:bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 rounded-full hover:shadow-inner">
             <Activity size={28} className="drop-shadow-sm" />
           </div>
           <div>
@@ -69,12 +69,12 @@ export default function ExtracurricularList() {
             <input
               type="text"
               placeholder={t("searchActivities")}
-              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-fuchsia-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
+              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded text-sm focus:ring-2 focus:ring-fuchsia-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
             />
           </div>
           <button
             onClick={handleCreate}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-fuchsia-500/30 whitespace-nowrap hover:scale-105 active:scale-95"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-600/75 to-indigo-600 hover:from-indigo-600 hover:to-orange-600/75 text-white px-6 py-3 rounded font-bold transition-all duratison-7500 ease-in-out shadow-lg shadow-fuchsia-500/30 whitespace-nowrap hover:scale-105 active:scale-90"
           >
             <Plus size={20} strokeWidth={2.5} /> {t("addActivity")}
           </button>
@@ -82,7 +82,7 @@ export default function ExtracurricularList() {
       </div>
 
       {/* Data Table */}
-      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded-3xl shadow-xl overflow-hidden">
+      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
             <thead className="text-xs text-gray-900 dark:text-gray-100 uppercase bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-md">
@@ -105,8 +105,8 @@ export default function ExtracurricularList() {
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
                         {t("noActivitiesFound")}
                       </h3>
-                      <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                        {t("addFirstActivity")}
+                      <p className="text-sm text-gray-500 max-w-sm mx-auto border rounded hover:cursor-pointer px-2 py-1" onClick={handleCreate}>
+                        {t("+ addFirstActivity")}
                       </p>
                     </div>
                   </td>

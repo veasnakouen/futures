@@ -50,39 +50,39 @@ spring:
           lowerCaseServiceId: true
       routes:
         - id: stock-service
-          uri: lb://mtp-stock-service
+          uri: lb://MTP-STOCK-SERVICE
           predicates:
             - Path=/api/stock/**
         - id: auth-service
-          uri: lb://mtp-auth-service
+          uri: lb://MTP-AUTH-SERVICE
           predicates:
             - Path=/api/auth/**
         - id: report-builder-service
-          uri: lb://mtp-report-service
+          uri: lb://MTP-REPORT-SERVICE
           predicates:
             - Path=/api/report-builder/**, /api/custom-reports/**
         - id: school-service
-          uri: lb://mtp-school-service
+          uri: lb://MTP-SCHOOL-SERVICE
           predicates:
             - Path=/api/school/**
         - id: clinic-service
-          uri: lb://mtp-clinic-service
+          uri: lb://MTP-CLINIC-SERVICE
           predicates:
             - Path=/api/clinic/**
         - id: hotel-service
-          uri: lb://mtp-hotel-service
+          uri: lb://MTP-HOTEL-SERVICE
           predicates:
             - Path=/api/hotel/**
         - id: future-service
-          uri: lb://mtp-future-service
+          uri: lb://MTP-FUTURE-SERVICE
           predicates:
             - Path=/api/future/**
         - id: pos-service
-          uri: lb://mtp-pos-service
+          uri: lb://MTP-POS-SERVICE
           predicates:
             - Path=/api/pos/**
         - id: hr-service
-          uri: lb://mtp-hr-service
+          uri: lb://MTP-HR-SERVICE
           predicates:
             - Path=/api/**, /ws/**
 

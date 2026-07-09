@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Badge, Button, Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Label, TextInput, Select, Popover, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
+import { Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Badge, Button, Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Label, TextInput, Select, Popover, Dropdown, DropdownItem, DropdownDivider } from '@/lib/flowbite-compat';
 import DatePicker from "@/components/common/DatePicker";
 import ModernPagination from "@/components/common/ModernPagination";
 import {
@@ -104,13 +104,12 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
   const [itemsPerRow, setItemsPerRow] = useState("4");
 
   const getGridClass = () => {
-    return `grid gap-6 ${
-      itemsPerRow === "3"
+    return `grid gap-6 ${itemsPerRow === "3"
         ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-4 items-start"
         : itemsPerRow === "5"
-        ? "grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 p-4 items-start"
-        : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4 items-start"
-    }`;
+          ? "grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 p-4 items-start"
+          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4 items-start"
+      }`;
   };
 
   // Query for Placements
@@ -396,14 +395,14 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                   <button
                     onClick={() => setViewMode("grid")}
                     title="Grid View"
-                    className={`p-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                    className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                   >
                     <LayoutGrid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
                     title="List View"
-                    className={`p-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                    className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                   >
                     <List size={16} />
                   </button>
@@ -528,9 +527,9 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                             <span>
                               {p.placementDate
                                 ? format(
-                                    new Date(p.placementDate),
-                                    "MMM dd, yyyy",
-                                  )
+                                  new Date(p.placementDate),
+                                  "MMM dd, yyyy",
+                                )
                                 : "N/A"}
                             </span>
                           </div>
@@ -551,7 +550,7 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                                   ? "failure"
                                   : "gray"
                             }
-                            className={`w-fit rounded-md px-3 py-1 font-black text-[9px] uppercase tracking-widest ${p.status?.toLowerCase() ==="resigned"?"!bg-orange-100 !text-orange-700 dark:!bg-orange-900/40 dark:!text-orange-400":""}`}
+                            className={`w-fit rounded-md px-3 py-1 font-black text-[9px] uppercase tracking-widest ${p.status?.toLowerCase() === "resigned" ? "!bg-orange-100 !text-orange-700 dark:!bg-orange-900/40 dark:!text-orange-400" : ""}`}
                           >
                             {p.status}
                           </Badge>
@@ -782,9 +781,9 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
                       <span className="text-sm font-bold text-gray-900 dark:text-white">
                         {formData.placementDate
                           ? format(
-                              new Date(formData.placementDate),
-                              "MMM dd, yyyy",
-                            )
+                            new Date(formData.placementDate),
+                            "MMM dd, yyyy",
+                          )
                           : "N/A"}
                       </span>
                       <Calendar size={16} className="text-gray-400" />

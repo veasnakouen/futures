@@ -66,23 +66,23 @@ export default function BranchListClient({ initialBranches }: { initialBranches:
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <MapPin className="h-6 w-6 text-blue-600" />
+            <MapPin className="h-6 w-6 text-red-600" />
             {t("branches")}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t("manageBranchesDesc")}
+            {t("manageBranchesDescriptions")}
           </p>
         </div>
         <button
           onClick={handleAddNew}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
           {t("addBranch")}
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700/50 dark:text-gray-300">

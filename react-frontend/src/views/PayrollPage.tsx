@@ -19,7 +19,7 @@ import {
   Clock,
   X,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import api from "../services/api";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
@@ -67,7 +67,7 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Financial & Payroll">
+    <>
       <div className="space-y-8 animate-fade-in pb-10">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -332,7 +332,7 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

@@ -26,7 +26,7 @@ import toast from "react-hot-toast";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import ModernPagination from "@/components/common/ModernPagination";
 import { useDebounce } from "../hooks/useDebounce";
-import Layout from "@/components/common/Layout";
+
 
 // Modular Components
 import ClientFilters from "@/features/clients/components/ClientFilters";
@@ -403,7 +403,7 @@ const ClientsPage = ({ isDark, setIsDark, hideLayout = false }: any) => {
 
   const ConditionalLayout = ({ hideLayout, children, ...props }: any) => {
     if (hideLayout) return <>{children}</>;
-    return <Layout {...props}>{children}</Layout>;
+    return <>{children}</>;
   };
 
   return (

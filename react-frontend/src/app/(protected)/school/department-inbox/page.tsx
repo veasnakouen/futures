@@ -10,10 +10,10 @@ export default function DepartmentInboxPage() {
   const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Department Inbox">
+    <>
       <div className="p-6">
         <DepartmentInbox />
       </div>
-    </Layout>
+    </>
   );
 }

@@ -10,8 +10,8 @@ export default function PosPage() {
     const setIsDark = (dark: boolean) => setTheme(dark ? "dark" : "light");
 
     return (
-        <Layout isDark={isDark} setIsDark={setIsDark} title="POS Terminal">
+        <>
             <PosDashboard />
-        </Layout>
+        </>
     );
 }

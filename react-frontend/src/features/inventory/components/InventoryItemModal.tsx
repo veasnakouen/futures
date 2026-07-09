@@ -1,5 +1,6 @@
 import React from "react";
-import {Modal, ModalBody, Label, TextInput, Select, Button, FileInput} from '@/lib/flowbite-compat';
+import {Modal, ModalBody, Label, TextInput, Button, FileInput, ToggleSwitch} from '@/lib/flowbite-compat';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 import CreatableSelect from "@/components/common/CreatableSelect";
@@ -27,7 +28,6 @@ interface InventoryItemModalProps {
   handleSubmit: (e: React.FormEvent) => void;
   categories: string[];
   locations: string[];
-  units: string[];
 }
 
 const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
@@ -43,7 +43,6 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
   handleSubmit,
   categories,
   locations,
-  units,
 }) => {
   const imageUrl = watch("imageUrl");
 
@@ -137,21 +136,40 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
             </div>
             <div>
               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">
-                Storage Location
+                Department
               </Label>
-              <CreatableSelect
-                options={locations}
-                value={watch("location")}
-                onChange={(val) => setValue("location", val, { shouldValidate: true })}
-                placeholder="Select or type location..."
+              <Select
+                value={watch("departmentId") ? watch("departmentId").toString() : ""}
+                onValueChange={(val) => setValue("departmentId", parseInt(val), { shouldValidate: true })}
                 disabled={isViewMode}
-              />
-              {errors.location && (
+              >
+                <SelectTrigger className="w-full h-10 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 rounded-md">
+                  <SelectValue placeholder="Select a department..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {locations.map((loc: any) => (
+                    <SelectItem key={loc.id} value={loc.id.toString()}>{loc.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.departmentId && (
                 <p className="text-[10px] font-bold text-red-500 mt-1">
-                  {errors.location.message}
+                  {errors.departmentId.message}
                 </p>
               )}
             </div>
+          </div>
+
+          <div className="flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+            <div className="flex-1">
+              <h4 className="text-sm font-bold dark:text-white">Track Inventory Stock</h4>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Enable this if the item is a physical product that requires stock monitoring.</p>
+            </div>
+            <ToggleSwitch
+              checked={watch("trackStock")}
+              onChange={(checked: boolean) => setValue("trackStock", checked, { shouldValidate: true })}
+              disabled={isViewMode}
+            />
           </div>
 
           <div className="grid grid-cols-3 gap-6">
@@ -162,45 +180,44 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
               <TextInput
                 disabled={isViewMode}
                 type="number"
-                {...register("quantity")}
+                {...register("stockQuantity")}
                 className="rounded-md"
               />
-              {errors.quantity && (
+              {errors.stockQuantity && (
                 <p className="text-[10px] font-bold text-red-500 mt-1">
-                  {errors.quantity.message}
+                  {errors.stockQuantity.message}
                 </p>
               )}
             </div>
             <div>
               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">
-                Safety Threshold
+                Reorder Level
               </Label>
               <TextInput
                 disabled={isViewMode}
                 type="number"
-                {...register("minQuantity")}
+                {...register("reorderLevel")}
                 className="rounded-md"
               />
-              {errors.minQuantity && (
+              {errors.reorderLevel && (
                 <p className="text-[10px] font-bold text-red-500 mt-1">
-                  {errors.minQuantity.message}
+                  {errors.reorderLevel.message}
                 </p>
               )}
             </div>
             <div>
               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">
-                Measurement Unit
+                Brand
               </Label>
-              <CreatableSelect
-                options={units}
-                value={watch("unit")}
-                onChange={(val) => setValue("unit", val, { shouldValidate: true })}
-                placeholder="Select or type unit (e.g. pcs, boxes)"
+              <TextInput
                 disabled={isViewMode}
+                {...register("brand")}
+                placeholder="Brand name"
+                className="rounded-md"
               />
-              {errors.unit && (
+              {errors.brand && (
                 <p className="text-[10px] font-bold text-red-500 mt-1">
-                  {errors.unit.message}
+                  {errors.brand.message}
                 </p>
               )}
             </div>
@@ -209,18 +226,18 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
           <div className="grid grid-cols-2 gap-6">
             <div>
               <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">
-                Unit Valuation (USD)
+                Price (USD)
               </Label>
               <TextInput
                 disabled={isViewMode}
                 type="number"
                 step="0.01"
-                {...register("unitPrice")}
+                {...register("price")}
                 className="rounded-md"
               />
-              {errors.unitPrice && (
+              {errors.price && (
                 <p className="text-[10px] font-bold text-red-500 mt-1">
-                  {errors.unitPrice.message}
+                  {errors.price.message}
                 </p>
               )}
             </div>

@@ -7,13 +7,14 @@ import com.mtp.stock.repositories.InventoryTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
 public class InventoryTransactionService {
 
     private final InventoryTransactionRepository transactionRepository;
-    private final InventoryRepository itemRepository; // Assuming this is the repo for InventoryItem
+    private final InventoryRepository itemRepository;
 
     @Transactional
     public InventoryTransaction recordTransaction(InventoryTransaction transaction) {
@@ -24,15 +25,17 @@ public class InventoryTransactionService {
             transaction.setTotalPrice(transaction.getUnitPrice() * Math.abs(transaction.getQuantity()));
         }
 
-        // Update real-time quantity in InventoryItem
-        int currentQty = item.getQuantity() != null ? item.getQuantity() : 0;
-        item.setQuantity(currentQty + transaction.getQuantity());
+        // Update real-time quantity in InventoryItem using domain method
+        if (transaction.getQuantity() > 0) {
+            item.addStock(transaction.getQuantity());
+        } else if (transaction.getQuantity() < 0) {
+            item.removeStock(Math.abs(transaction.getQuantity()));
+        }
         
-        // If it's a purchase, update the last restock date and cost price
+        // If it's a purchase, update the cost price
         if (transaction.getType().name().contains("PURCHASE") || transaction.getType().name().contains("IN")) {
-            item.setLastRestockDate(transaction.getTransactionDate());
             if (transaction.getUnitPrice() != null) {
-                item.setCostPrice(transaction.getUnitPrice());
+                item.setCostPrice(BigDecimal.valueOf(transaction.getUnitPrice()));
             }
         }
 

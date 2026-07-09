@@ -67,7 +67,6 @@ public class ClientController {
     private PersonalityRepository personalityRepository;
 
     @GetMapping
-    @Cacheable("clients")
     public Page<ClientSummaryDto> getAllClients(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String branch,

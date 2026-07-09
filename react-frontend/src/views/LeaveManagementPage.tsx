@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Layout from "@/components/common/Layout";
+
 import { 
   useMyLeaves, 
   useLeaveBalance, 
@@ -147,7 +147,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Leave Management">
+    <>
       <div className="max-w-[1600px] mx-auto space-y-6 animate-fade-in">
         {/* Tabs */}
         <div className="mb-6">
@@ -499,7 +499,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

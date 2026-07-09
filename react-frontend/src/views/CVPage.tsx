@@ -12,7 +12,7 @@ import {
   Briefcase,
   GraduationCap,
 } from "lucide-react";
-import Layout from "@/components/common/Layout";
+
 import api from "../services/api";
 import { getFaceFocusedUrl } from "../utils/cloudinary";
 
@@ -46,24 +46,24 @@ const CVPage = ({ isDark, setIsDark }: any) => {
 
   if (loading)
     return (
-      <Layout isDark={isDark} setIsDark={setIsDark} title="Generating CV...">
+      <>
         <div className="flex justify-center p-20">
           <Spinner size="xl" />
         </div>
-      </Layout>
+      </>
     );
   if (error || !data)
     return (
-      <Layout isDark={isDark} setIsDark={setIsDark} title="Error">
+      <>
         <Alert color="failure">{error}</Alert>
-      </Layout>
+      </>
     );
 
   const { client, educations, languages, computerSkills, jobExperiences } =
     data;
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="CV Builder">
+    <>
       <div className="max-w-5xl mx-auto space-y-6">
         <header className="flex justify-between items-center no-print">
           <Button
@@ -294,7 +294,7 @@ const CVPage = ({ isDark, setIsDark }: any) => {
           @page { size: A4; margin: 0; }
         }
       `}</style>
-    </Layout>
+    </>
   );
 };
 

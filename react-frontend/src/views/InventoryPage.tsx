@@ -8,7 +8,7 @@ import {
 import {Button, Spinner} from '@/lib/flowbite-compat';
 import { Package, Plus, Activity, History, MapPin } from "lucide-react";
 import { Link, useSearchParams } from '@/lib/react-router-compat';
-import Layout from "@/components/common/Layout";
+
 import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import toast from "react-hot-toast";
@@ -90,12 +90,11 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       name: "",
       sku: "",
       category: "Office Supplies",
-      quantity: 0,
-      unit: "pcs",
-      minQuantity: 5,
-      unitPrice: 0,
-      location: "Warehouse",
-      status: "In Stock",
+      brand: "",
+      stockQuantity: 0,
+      reorderLevel: 5,
+      price: 0,
+      department: "General",
       description: "",
       imageUrl: "",
     },
@@ -140,12 +139,10 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       name: "Ergonomic Office Chair",
       sku: "FURN-CHR-001",
       category: "Furniture",
-      quantity: 45,
-      unit: "pcs",
-      minQuantity: 10,
-      unitPrice: 199.99,
-      location: "Main Warehouse A",
-      status: "In Stock",
+      stockQuantity: 45,
+      reorderLevel: 10,
+      price: 199.99,
+      department: "Main Warehouse A",
       description: "High-quality ergonomic mesh office chair.",
       imageUrl: "https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&q=80&w=300"
     },
@@ -154,12 +151,10 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       name: "Dell UltraSharp 27 Monitor",
       sku: "IT-MON-U2722D",
       category: "IT Equipment",
-      quantity: 12,
-      unit: "pcs",
-      minQuantity: 15,
-      unitPrice: 349.00,
-      location: "IT Storage Room",
-      status: "Low Stock",
+      stockQuantity: 12,
+      reorderLevel: 15,
+      price: 349.00,
+      department: "IT Storage Room",
       description: "27-inch 1440p monitor for office workstations.",
       imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=300"
     },
@@ -168,12 +163,10 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       name: "A4 Printer Paper (500 sheets)",
       sku: "OFF-PAP-A4",
       category: "Office Supplies",
-      quantity: 120,
-      unit: "packs",
-      minQuantity: 50,
-      unitPrice: 5.99,
-      location: "Supply Closet B",
-      status: "In Stock",
+      stockQuantity: 120,
+      reorderLevel: 50,
+      price: 5.99,
+      department: "Supply Closet B",
       description: "Standard A4 white printer paper, 80gsm.",
       imageUrl: "https://images.unsplash.com/photo-1612042858178-02434b9d0312?auto=format&fit=crop&q=80&w=300"
     },
@@ -182,12 +175,10 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       name: "Wireless Mouse (Logitech)",
       sku: "IT-MOU-WL",
       category: "IT Equipment",
-      quantity: 3,
-      unit: "pcs",
-      minQuantity: 10,
-      unitPrice: 29.99,
-      location: "IT Storage Room",
-      status: "Low Stock",
+      stockQuantity: 3,
+      reorderLevel: 10,
+      price: 29.99,
+      department: "IT Storage Room",
       description: "Logitech MX Anywhere 3 wireless mouse.",
       imageUrl: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&q=80&w=300"
     },
@@ -196,12 +187,10 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       name: "Standing Desk Frame",
       sku: "FURN-DSK-STD",
       category: "Furniture",
-      quantity: 0,
-      unit: "pcs",
-      minQuantity: 5,
-      unitPrice: 249.00,
-      location: "Main Warehouse B",
-      status: "Out of Stock",
+      stockQuantity: 0,
+      reorderLevel: 5,
+      price: 249.00,
+      department: "Main Warehouse B",
       description: "Adjustable height standing desk frame (motorized).",
       imageUrl: "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&q=80&w=300"
     }
@@ -225,23 +214,16 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
     },
   });
 
-  // Locations Query
+  // Locations Query (Mapped to Departments)
   const { data: locations = [] } = useQuery({
-    queryKey: ["inventory-locations"],
+    queryKey: ["inventory-departments"],
     queryFn: async () => {
-      const response = await api.get("/stock/inventory/locations");
+      const response = await api.get("/stock/inventory/departments");
       return response.data;
     },
   });
 
-  // Units Query
-  const { data: units = [] } = useQuery({
-    queryKey: ["inventory-units"],
-    queryFn: async () => {
-      const response = await api.get("/stock/inventory/units");
-      return response.data;
-    },
-  });
+
 
   // Mutations
   const createMutation = useMutation({
@@ -251,8 +233,7 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       queryClient.invalidateQueries({ queryKey: ["inventory"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-stats"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-locations"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-units"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-departments"] });
       toast.success("New item added to inventory");
       setIsModalOpen(false);
     },
@@ -265,8 +246,7 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       queryClient.invalidateQueries({ queryKey: ["inventory"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-stats"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-locations"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-units"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-departments"] });
       toast.success("Item updated");
       setIsModalOpen(false);
     },
@@ -278,8 +258,7 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       queryClient.invalidateQueries({ queryKey: ["inventory"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-stats"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-locations"] });
-      queryClient.invalidateQueries({ queryKey: ["inventory-units"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-departments"] });
       toast.success("Item removed from inventory");
     },
   });
@@ -289,12 +268,11 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       name: item.name,
       sku: item.sku || "",
       category: item.category || "Office Supplies",
-      quantity: item.quantity,
-      unit: item.unit || "pcs",
-      minQuantity: item.minQuantity,
-      unitPrice: item.unitPrice || 0,
-      location: item.location || "Warehouse",
-      status: item.status || "In Stock",
+      brand: item.brand || "",
+      stockQuantity: item.stockQuantity || 0,
+      reorderLevel: item.reorderLevel || 0,
+      price: item.price || 0,
+      department: item.department || "General",
       description: item.description || "",
       imageUrl: item.imageUrl || "",
     });
@@ -309,12 +287,11 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       name: item.name,
       sku: item.sku || "",
       category: item.category || "Office Supplies",
-      quantity: item.quantity,
-      unit: item.unit || "pcs",
-      minQuantity: item.minQuantity,
-      unitPrice: item.unitPrice || 0,
-      location: item.location || "Warehouse",
-      status: item.status || "In Stock",
+      brand: item.brand || "",
+      stockQuantity: item.stockQuantity || 0,
+      reorderLevel: item.reorderLevel || 0,
+      price: item.price || 0,
+      department: item.department || "General",
       description: item.description || "",
       imageUrl: item.imageUrl || "",
     });
@@ -344,11 +321,11 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
   };
 
   return (
-    <Layout isDark={isDark} setIsDark={setIsDark} title="Inventory & Stock">
+    <>
       <div className="space-y-8 animate-fade-in max-w-[1600px] mx-auto pb-12">
         {/* Action Bar & Sub Navigation */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-2">
-          <nav className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+          <nav className="flex overflow-x-auto px-2 gap-3 pb-2 scrollbar-hide">
             {[
               { id: "inventory", label: t("inventoryLedger"), icon: <Package size={18} /> },
               { id: "locations", label: t("locationsManagement"), icon: <MapPin size={18} /> },
@@ -514,7 +491,6 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
         handleSubmit={hookSubmit(onFormSubmit)}
         categories={categories}
         locations={locations}
-        units={units}
       />
 
       <ConfirmModal
@@ -523,7 +499,7 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
         onConfirm={confirmDelete}
         message="Are you sure you want to delete this item? This will remove it from the stock records forever."
       />
-    </Layout>
+    </>
   );
 };
 
