@@ -6,6 +6,7 @@ interface InventorySummaryProps {
     valuation: number;
     lowStock: number;
     outOfStock: number;
+    totalItems?: number;
   } | null;
 }
 
@@ -57,15 +58,15 @@ const InventorySummary: React.FC<InventorySummaryProps> = ({ stats }) => {
         </div>
 
         {/* Inventory Summary */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-7 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 dark:border-gray-700/50 relative overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
-          <div className="absolute top-0 right-0 p-32 bg-gradient-to-bl from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16 blur-2xl"></div>
+        <div className="bg-white dark:bg-[#0d1117] rounded-2xl p-7 shadow-sm border border-gray-100 dark:border-white/[0.05] relative overflow-hidden transition-all duration-300 hover:shadow-md">
+          <div className="absolute top-0 right-0 p-32 bg-gradient-to-bl from-indigo-500/10 to-violet-500/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
           <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6 relative z-10">Inventory Summary</h3>
           <div className="space-y-5 relative z-10 h-full flex flex-col justify-center pb-8">
             <div className="flex flex-col group cursor-pointer">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-blue-500 transition-colors">Total Valuation</span>
-              <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">${(stats?.valuation || 0).toLocaleString()}</span>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-indigo-500 transition-colors">Total Valuation</span>
+              <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400">${(stats?.valuation || 0).toLocaleString()}</span>
             </div>
-            <div className="w-full h-px bg-gradient-to-r from-gray-100 to-transparent dark:from-gray-700"></div>
+            <div className="w-full h-px bg-gradient-to-r from-gray-100 to-transparent dark:from-white/[0.05]"></div>
             <div className="flex flex-col group cursor-pointer">
               <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-indigo-500 transition-colors">Pending Inbound (PO)</span>
               <div className="flex items-baseline gap-2">
@@ -81,33 +82,33 @@ const InventorySummary: React.FC<InventorySummaryProps> = ({ stats }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Product Details */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-7 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 dark:border-gray-700/50 flex flex-col sm:flex-row gap-8 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+        <div className="bg-white dark:bg-[#0d1117] rounded-2xl p-7 shadow-sm border border-gray-100 dark:border-white/[0.05] flex flex-col sm:flex-row gap-8 transition-all duration-300 hover:shadow-md">
           <div className="flex-1 space-y-5">
-            <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-gray-700 pb-3 mb-4">Product Health</h3>
+            <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-white/[0.05] pb-3 mb-4">Product Health</h3>
             
-            <div className="flex justify-between items-center group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-750/50 transition-colors">
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-2 group-hover:text-rose-500 transition-colors"><div className="w-2 h-2 rounded-full bg-rose-500"></div> Low Stock Items</span>
-              <span className="text-base font-black text-rose-500">{stats?.lowStock || 0}</span>
+            <div className="flex justify-between items-center group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
+              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-2 group-hover:text-amber-500 transition-colors"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Low Stock Items</span>
+              <span className="text-base font-black text-amber-500">{stats?.lowStock || 0}</span>
             </div>
-            <div className="flex justify-between items-center group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-750/50 transition-colors">
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-2 group-hover:text-red-600 transition-colors"><div className="w-2 h-2 rounded-full bg-red-600"></div> Critical Stock</span>
-              <span className="text-base font-black text-gray-800 dark:text-gray-200">{stats?.outOfStock || 0}</span>
+            <div className="flex justify-between items-center group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
+              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-2 group-hover:text-rose-500 transition-colors"><div className="w-2 h-2 rounded-full bg-rose-500"></div> Critical Stock</span>
+              <span className="text-base font-black text-rose-500">{stats?.outOfStock || 0}</span>
             </div>
-            <div className="flex justify-between items-center group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-750/50 transition-colors">
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-2 group-hover:text-blue-500 transition-colors"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Total Unique SKUs</span>
-              <span className="text-base font-black text-gray-800 dark:text-gray-200">190</span>
+            <div className="flex justify-between items-center group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
+              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-2 group-hover:text-indigo-500 transition-colors"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Total Unique SKUs</span>
+              <span className="text-base font-black text-gray-800 dark:text-gray-200">{stats?.totalItems || 0}</span>
             </div>
-            <div className="flex justify-between items-center group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-750/50 transition-colors">
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-2 group-hover:text-amber-500 transition-colors"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Unconfirmed Items</span>
-              <span className="text-base font-black text-amber-500">121</span>
+            <div className="flex justify-between items-center group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
+              <span className="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-2 group-hover:text-purple-500 transition-colors"><div className="w-2 h-2 rounded-full bg-purple-500"></div> Unconfirmed Items</span>
+              <span className="text-base font-black text-purple-500">121</span>
             </div>
           </div>
           
-          <div className="flex flex-col items-center justify-center shrink-0 min-w-[160px] border-l border-gray-100 dark:border-gray-700 pl-8">
+          <div className="flex flex-col items-center justify-center shrink-0 min-w-[160px] border-l border-gray-100 dark:border-white/[0.05] pl-8">
              <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6">Active Items</span>
-             <div className="relative w-32 h-32 flex items-center justify-center rounded-full shadow-[0_0_20px_rgba(16,185,129,0.2)]" style={{ background: `conic-gradient(#10b981 ${activePercent}%, #f3f4f6 ${activePercent}%)`}}>
-               <div className="absolute w-24 h-24 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-inner">
-                  <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-500 to-emerald-700">{activePercent}%</span>
+             <div className="relative w-32 h-32 flex items-center justify-center rounded-full shadow-[0_0_20px_rgba(99,102,241,0.15)]" style={{ background: `conic-gradient(#6366f1 ${activePercent}%, transparent ${activePercent}%)`}}>
+               <div className="absolute w-24 h-24 bg-white dark:bg-[#0d1117] rounded-full flex items-center justify-center shadow-inner">
+                  <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-violet-600 dark:from-indigo-400 dark:to-violet-400">{activePercent}%</span>
                </div>
              </div>
           </div>

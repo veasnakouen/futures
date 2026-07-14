@@ -216,45 +216,42 @@ const ProductCarousel: React.FC = () => {
   useEffect(() => {
     // Fetch assets with a timeout so it doesn't hang indefinitely
     api
-      .get("/stock/hr/assets", {
-        params: { page: 0, size: 100 },
+      .get("/stock/inventory", {
+        params: { page: 0, size: 10 },
         timeout: 15000,
       })
       .then((res) => {
         const items = res.data?.content || res.data || [];
 
         if (Array.isArray(items) && items.length > 0) {
-          const withImages = items.filter(
-            (item: any) => item.imageUrl && item.imageUrl.trim() !== "",
-          );
-          if (withImages.length > 0) {
-            const mappedItems = withImages.map((asset: any) => ({
-              ...asset,
-              category: asset.assetType || "Equipment",
-              sku: asset.serialNumber,
-              quantity: 1,
-              unit: "Unit",
-              minQuantity: 0,
-              unitPrice: 0,
-              location: asset.employee
-                ? `${asset.employee.firstName} ${asset.employee.lastName}`
-                : "Stock Node",
-              description:
-                asset.status === "Assigned"
-                  ? "Currently deployed to an active custodian."
-                  : "Available in stock node for deployment.",
-            }));
+          // Sort items with images first
+          const sortedItems = [...items].sort((a, b) => {
+            const aHasImg = a.imageUrl && a.imageUrl.trim() !== "";
+            const bHasImg = b.imageUrl && b.imageUrl.trim() !== "";
+            return (bHasImg ? 1 : 0) - (aHasImg ? 1 : 0);
+          });
 
-            setProducts(mappedItems.slice(0, 10));
-            return;
-          }
+          const mappedItems = sortedItems.map((item: any) => ({
+            ...item,
+            category: item.category?.name || "Equipment",
+            sku: item.sku || "N/A",
+            quantity: item.stockQuantity || 0,
+            unit: "pcs",
+            unitPrice: item.price || 0,
+            location: item.department?.name || "Stock Node",
+            description: item.description || "Available in stock node for deployment.",
+            status: item.stockQuantity > 0 ? "Available" : "Out of Stock",
+          }));
+
+          setProducts(mappedItems.slice(0, 10));
+          return;
         }
-        // Avoid showing fake data if no valid items returned
-        setProducts([]);
+        // Fallback to placeholder if no items returned
+        setProducts(FALLBACK_PRODUCTS);
       })
       .catch((err) => {
         console.warn("Failed to fetch assets for carousel:", err.message);
-        setProducts([]);
+        setProducts(FALLBACK_PRODUCTS);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -403,7 +400,7 @@ const ProductCarousel: React.FC = () => {
 
             <div className="pt-2">
               <Link
-                to="/hr"
+                to="/inventory?tab=assets"
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-[9px] font-black uppercase tracking-widest px-5 py-2.5 rounded-md shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Eye size={12} /> Manage Assets

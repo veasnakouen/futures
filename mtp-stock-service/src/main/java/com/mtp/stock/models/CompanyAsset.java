@@ -41,7 +41,7 @@ public class CompanyAsset {
     private EmployeeStub employee;
 
     private LocalDateTime assignedDate;
-    
+
     // Enterprise Tracking Fields
     private String vendor;
     private LocalDate purchaseDate;
@@ -56,19 +56,19 @@ public class CompanyAsset {
     private Boolean isIntangible = false;
     private Boolean isSubscription = false;
     private Boolean isActive = true;
-    
+
     private LocalDate renewalDate;
-    
+
     // --- Cost & Ownership ---
     private String acquisitionType; // Purchased, Donated, Leased
     private String donorOrPartnerName;
     private String costCenter;
     private Integer usefulLifeYears;
-    
+
     // --- Categorization ---
     private String productFamily;
     private String brand;
     private String modelNumber;
-    
+
     private LocalDateTime createdAt = LocalDateTime.now();
 }

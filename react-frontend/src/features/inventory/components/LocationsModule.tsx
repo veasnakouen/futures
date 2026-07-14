@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,12 @@ const LocationsModule = ({ onOpenTransferModal }: LocationsModuleProps) => {
       return res.data || [];
     },
   });
+
+  useEffect(() => {
+    if (locations.length > 0 && !selectedLocation) {
+      setSelectedLocation(locations[0].id);
+    }
+  }, [locations, selectedLocation]);
 
   const { data: locationItems = [], isLoading: itemsLoading } = useQuery({
     queryKey: ["location-items", selectedLocation],
@@ -204,8 +210,8 @@ const LocationsModule = ({ onOpenTransferModal }: LocationsModuleProps) => {
                               {itemLoc.inventoryItem?.name}
                               <span className="block text-[9px] text-gray-400 uppercase tracking-widest">{itemLoc.inventoryItem?.sku || "NO-SKU"}</span>
                             </TableCell>
-                            <TableCell className="text-xs">{itemLoc.inventoryItem?.category}</TableCell>
-                            <TableCell className="text-xs font-mono text-gray-500">${itemLoc.inventoryItem?.unitPrice?.toFixed(2) || '0.00'}</TableCell>
+                            <TableCell className="text-xs">{itemLoc.inventoryItem?.category?.name || 'Uncategorized'}</TableCell>
+                            <TableCell className="text-xs font-mono text-gray-500">${(itemLoc.inventoryItem?.price || itemLoc.inventoryItem?.unitPrice || 0).toFixed(2)}</TableCell>
                             <TableCell>
                               <span className="font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
                                 {itemLoc.quantity} {itemLoc.inventoryItem?.unit}

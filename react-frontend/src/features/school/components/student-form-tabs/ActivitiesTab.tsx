@@ -27,13 +27,13 @@ export default function ActivitiesTab({
           {t("enrollActivitiesDesc")}
         </p>
       </div>
-      {(!extracurricularsData || (extracurricularsData.content ? extracurricularsData.content.length === 0 : extracurricularsData.length === 0)) && (
+      {(!extracurricularsData || ((extracurricularsData as any).content ? (extracurricularsData as any).content.length === 0 : extracurricularsData.length === 0)) && (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center">
           <p className="text-sm text-gray-500 italic">No activities found in the database.</p>
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {(extracurricularsData?.content || (Array.isArray(extracurricularsData) ? extracurricularsData : [])).map((activity: any) => {
+        {((extracurricularsData as any)?.content || (Array.isArray(extracurricularsData) ? extracurricularsData : [])).map((activity: any) => {
           const isSelected = currentExtracurricularIds.includes(activity.id);
           return (
             <div

@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import DataCard from "../components/ui/DataCard";
+import SearchInput from "@/components/common/SearchInput";
 
 const EmployersPage = ({ isDark, setIsDark }: any) => {
   const { t } = useTranslation();
@@ -281,28 +282,12 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30">
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1 group">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors z-10"
-                size={18}
-              />
-              <input
-                type="text"
-                placeholder="Search by company name, contact, or industry..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-10 py-3 bg-white dark:bg-gray-700/50 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => setSearchTerm("")}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10"
-                >
-                  <X size={18} />
-                </button>
-              )}
-            </div>
+            <SearchInput
+                        placeholder="Search by company name, contact, or industry..."
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        containerClassName="flex-1"
+                      />
             <div className="flex items-center gap-2">
               {viewMode === "list" && (
                 <Dropdown

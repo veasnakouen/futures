@@ -79,16 +79,16 @@ public class RetentionController {
             years = Math.round(years * 10.0) / 10.0;
             
             String risk = "Low";
-            int satisfaction = 85 + (int)(Math.random() * 15); // 85-100
+            int satisfaction = 90; 
             String action = "None required";
 
             if (years > 3.0 && years < 5.0) {
                 risk = "High";
-                satisfaction = 60 + (int)(Math.random() * 20); // 60-80
+                satisfaction = 65; 
                 action = "Immediate Care";
             } else if (years < 1.5) {
                 risk = "Medium";
-                satisfaction = 75 + (int)(Math.random() * 15); // 75-90
+                satisfaction = 80; 
                 action = "Schedule Review";
             }
 
@@ -101,7 +101,7 @@ public class RetentionController {
             riskMap.put("satisfaction", satisfaction);
             riskMap.put("action", action);
             return riskMap;
-        }).limit(15).collect(Collectors.toList());
+        }).collect(Collectors.toList());
 
         return ResponseEntity.ok(risks);
     }

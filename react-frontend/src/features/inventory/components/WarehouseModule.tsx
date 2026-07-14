@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {Badge, Button, TextInput, Label, Avatar, Tooltip, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Modal, ModalHeader, ModalBody, ModalFooter, Spinner, Dropdown, DropdownItem, DropdownHeader, DropdownDivider} from '@/lib/flowbite-compat';
 import ModernPagination from '@/components/common/ModernPagination';
+import { DataTable, ColumnDef } from '@/components/common/DataTable';
 import {
    Package, Plus, Search, Download, Edit3, Trash2, Box,
    Activity, Archive, MapPin, DollarSign, Layers, LayoutGrid, List,
@@ -61,6 +62,118 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
       const matchesCat = categoryFilter === 'ALL' || (item.category || 'General') === categoryFilter;
       return matchesSearch && matchesCat;
    });
+
+   
+   const columns: ColumnDef<any>[] = [
+      {
+         header: "Item Specification",
+         accessorKey: "name",
+         sortable: true,
+         cell: (item) => (
+            <div className="flex items-center gap-4">
+               <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-sm overflow-hidden shrink-0">
+                  {item.imageUrl ? (
+                     <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                     <Package size={20} className="text-blue-600" />
+                  )}
+               </div>
+               <div>
+                  <p className="font-black dark:text-white uppercase tracking-tight text-sm">{item.name}</p>
+                  <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{item.location || 'Primary Node'}</p>
+               </div>
+            </div>
+         )
+      },
+      {
+         header: "SKU / ID",
+         accessorKey: "sku",
+         sortable: true,
+         className: "font-mono text-[10px] font-black text-gray-500"
+      },
+      {
+         header: "Category",
+         accessorKey: "category",
+         sortable: true,
+         cell: (item) => (
+            <Badge color="gray" className="rounded-lg px-3 py-1 text-[9px] font-black uppercase">
+               {item.category || 'General'}
+            </Badge>
+         )
+      },
+      {
+         header: "Stock Level",
+         accessorKey: "quantity",
+         sortable: true,
+         cell: (item) => (
+            <div className="flex items-center gap-2">
+               <span className={`text-lg font-black ${item.quantity <= item.minQuantity ?'text-red-500':'text-gray-700 dark:text-white'}`}>
+                  {item.quantity}
+               </span>
+               <span className="text-[9px] font-bold text-gray-400 uppercase">{item.unit || 'pcs'}</span>
+               {item.quantity <= item.minQuantity && (
+                  <Tooltip content="Low Stock Warning">
+                     <Activity size={14} className="text-red-500 animate-pulse" />
+                  </Tooltip>
+               )}
+            </div>
+         )
+      },
+      {
+         header: "Unit Price",
+         accessorKey: "unitPrice",
+         sortable: true,
+         className: "font-black text-blue-600 dark:text-blue-400",
+         cell: (item) => `$${item.unitPrice?.toLocaleString()}`
+      },
+      {
+         header: "Actions",
+         className: "text-right",
+         cell: (item) => (
+            <div className="flex justify-end">
+               <Dropdown placement="bottom-end"
+                  label={
+                     <div className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-400 hover:text-blue-600 cursor-pointer">
+                        <MoreVertical size={18} />
+                     </div>
+                  }
+                  arrowIcon={false}
+                  inline
+                  className="backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 border-none shadow-2xl rounded-xl"
+               >
+                  <DropdownHeader>
+                     <span className="block text-[10px] font-black uppercase tracking-widest text-gray-400 px-2 py-1">Node Actions</span>
+                  </DropdownHeader>
+                  <DropdownItem onClick={() => setTimeout(() => handleOpenTransaction(item), 0)} className="font-bold text-xs text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                     <div className="flex items-center gap-2">
+                        <ArrowRightLeft size={14} />
+                        <span>Stock Movement</span>
+                     </div>
+                  </DropdownItem>
+                  <DropdownItem onClick={() => setTimeout(() => handleOpenDetails(item), 0)} className="font-bold text-xs text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20">
+                     <div className="flex items-center gap-2">
+                        <Eye size={14} />
+                        <span>Audit Details</span>
+                     </div>
+                  </DropdownItem>
+                  <DropdownItem onClick={() => setTimeout(() => handleOpenEdit(item), 0)} className="font-bold text-xs text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20">
+                     <div className="flex items-center gap-2">
+                        <Edit3 size={14} />
+                        <span>Edit Record</span>
+                     </div>
+                  </DropdownItem>
+                  <DropdownDivider />
+                  <DropdownItem onClick={() => setTimeout(() => onDelete(item.id), 0)} className="font-bold text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                     <div className="flex items-center gap-2">
+                        <Trash2 size={14} />
+                        <span>Decommission</span>
+                     </div>
+                  </DropdownItem>
+               </Dropdown>
+            </div>
+         )
+      }
+   ];
 
    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
    const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -233,42 +346,6 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                   </button>
                </div>
             </div>
-
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 lg:flex-none justify-end">
-               <div className="flex items-center gap-2 flex-1 sm:flex-none">
-                  <select
-                     value={categoryFilter}
-                     onChange={(e) => setCategoryFilter(e.target.value)}
-                     className="bg-white dark:bg-gray-800 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-500 shadow-sm py-1.5 h-[34px] focus:ring-1 focus:ring-blue-500 px-3 w-[110px] flex-1 sm:flex-none"
-                  >
-                     {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-
-                  <div className="relative flex-1 min-w-[140px] sm:w-40 lg:w-44 group">
-                     <TextInput
-                        sizing="sm"
-                        placeholder="Search..."
-                        className="rounded-lg shadow-sm pr-10"
-                        icon={Search}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                     />
-                     {searchQuery && (
-                        <button
-                           onClick={() => setSearchQuery('')}
-                           className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg transition-colors focus:outline-none"
-                           title="Clear search"
-                        >
-                           <X size={14} />
-                        </button>
-                     )}
-                  </div>
-               </div>
-
-               <Button outline size="sm" color="blue" onClick={handleOpenAdd} className="rounded-lg shadow-sm font-black uppercase text-[10px] tracking-widest">
-                  <Plus size={14} className="mr-1.5" /> New Item
-               </Button>
-            </div>
          </div>
 
          {loading && safeItems.length === 0 ? (
@@ -277,117 +354,32 @@ const WarehouseModule: React.FC<StockModuleProps> = ({ items, onAdd, onUpdate, o
                <p className="mt-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] animate-pulse">Syncing Warehouse Ledger...</p>
             </div>
          ) : viewMode === 'TABLE' ? (
-            <div className="border-none shadow-sm dark:bg-gray-800 rounded-xl overflow-visible bg-white/50 backdrop-blur-xl">
-               <div className="p-8 border-b bg-gray-50/50 dark:bg-gray-700/20 flex justify-between items-center">
-                  <div>
-                     <h4 className="text-xl font-black dark:text-white uppercase tracking-tight">Enterprise Warehouse Ledger</h4>
-                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Real-time stock auditing across all nodes</p>
-                  </div>
-                  <Button color="light" className="rounded-xl border-none shadow-sm text-[10px] font-black uppercase px-6">
-                     <Download size={16} className="mr-2" /> Export Audit
-                  </Button>
-               </div>
-
-               <div className="w-full overflow-visible">
-                  <Table hoverable className="border-none w-full min-w-[800px] relative">
-                     <TableHead className="bg-gray-50/90 dark:bg-gray-800/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-[1] backdrop-blur-md shadow-sm border-b">
-                        <TableHeadCell className="px-8 py-6">Item Specification</TableHeadCell>
-                        <TableHeadCell className="px-8 py-6">SKU / ID</TableHeadCell>
-                        <TableHeadCell className="px-8 py-6">Category</TableHeadCell>
-                        <TableHeadCell className="px-8 py-6">Stock Level</TableHeadCell>
-                        <TableHeadCell className="px-8 py-6">Unit Price</TableHeadCell>
-                        <TableHeadCell className="px-8 py-6 text-right">Actions</TableHeadCell>
-                     </TableHead>
-                     <TableBody className="divide-y dark:divide-gray-700">
-                        {paginatedItems.map((item) => (
-                           <TableRow key={item.id} className="relative bg-white dark:bg-gray-800 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-700/30 hover:z-[2] focus-within:z-[2]">
-                              <TableCell className="px-8 py-6">
-                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-gray-400 shadow-sm overflow-hidden shrink-0">
-                                       {item.imageUrl ? (
-                                          <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
-                                       ) : (
-                                          <Package size={20} className="text-blue-600" />
-                                       )}
-                                    </div>
-                                    <div>
-                                       <p className="font-black dark:text-white uppercase tracking-tight text-sm">{item.name}</p>
-                                       <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{item.location || 'Primary Node'}</p>
-                                    </div>
-                                 </div>
-                              </TableCell>
-                              <TableCell className="px-8 py-6 font-mono text-[10px] font-black text-gray-500">
-                                 {item.sku}
-                              </TableCell>
-                              <TableCell className="px-8 py-6">
-                                 <Badge color="gray" className="rounded-lg px-3 py-1 text-[9px] font-black uppercase">
-                                    {item.category || 'General'}
-                                 </Badge>
-                              </TableCell>
-                              <TableCell className="px-8 py-6">
-                                 <div className="flex items-center gap-2">
-                                    <span className={`text-lg font-black ${item.quantity <= item.minQuantity ?'text-red-500':'text-gray-700 dark:text-white'}`}>
-                                       {item.quantity}
-                                    </span>
-                                    <span className="text-[9px] font-bold text-gray-400 uppercase">{item.unit || 'pcs'}</span>
-                                    {item.quantity <= item.minQuantity && (
-                                       <Tooltip content="Low Stock Warning">
-                                          <Activity size={14} className="text-red-500 animate-pulse" />
-                                       </Tooltip>
-                                    )}
-                                 </div>
-                              </TableCell>
-                              <TableCell className="px-8 py-6 font-black text-blue-600 dark:text-blue-400">
-                                 ${item.unitPrice?.toLocaleString()}
-                              </TableCell>
-                              <TableCell className="px-8 py-6 text-right">
-                                 <div className="flex justify-end">
-                                    <Dropdown placement="bottom-end"
-                                       label={
-                                          <div className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-400 hover:text-blue-600 cursor-pointer">
-                                             <MoreVertical size={18} />
-                                          </div>
-                                       }
-                                       arrowIcon={false}
-                                       inline
-                                       className="backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 border-none shadow-2xl rounded-xl"
-                                    >
-                                       <DropdownHeader>
-                                          <span className="block text-[10px] font-black uppercase tracking-widest text-gray-400 px-2 py-1">Node Actions</span>
-                                       </DropdownHeader>
-                                       <DropdownItem onClick={() => setTimeout(() => handleOpenTransaction(item), 0)} className="font-bold text-xs text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                                          <div className="flex items-center gap-2">
-                                             <ArrowRightLeft size={14} />
-                                             <span>Stock Movement</span>
-                                          </div>
-                                       </DropdownItem>
-                                       <DropdownItem onClick={() => setTimeout(() => handleOpenDetails(item), 0)} className="font-bold text-xs text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20">
-                                          <div className="flex items-center gap-2">
-                                             <Eye size={14} />
-                                             <span>Audit Details</span>
-                                          </div>
-                                       </DropdownItem>
-                                       <DropdownItem onClick={() => setTimeout(() => handleOpenEdit(item), 0)} className="font-bold text-xs text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20">
-                                          <div className="flex items-center gap-2">
-                                             <Edit3 size={14} />
-                                             <span>Edit Record</span>
-                                          </div>
-                                       </DropdownItem>
-                                       <DropdownDivider />
-                                       <DropdownItem onClick={() => setTimeout(() => onDelete(item.id), 0)} className="font-bold text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
-                                          <div className="flex items-center gap-2">
-                                             <Trash2 size={14} />
-                                             <span>Decommission</span>
-                                          </div>
-                                       </DropdownItem>
-                                    </Dropdown>
-                                 </div>
-                              </TableCell>
-                           </TableRow>
-                        ))}
-                     </TableBody>
-                  </Table>
-               </div>
+            <div className="mt-4">
+               <DataTable
+                  data={paginatedItems}
+                  columns={columns}
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  searchPlaceholder="Search item name or SKU code..."
+                  filters={
+                     <select
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="bg-white dark:bg-[#0d1117] rounded-md text-xs font-bold text-gray-500 shadow-sm h-[42px] border-none focus:ring-1 focus:ring-indigo-500 px-4 min-w-[160px]"
+                     >
+                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                     </select>
+                  }
+                  actions={
+                     <Button size="sm" color="blue" onClick={handleOpenAdd} className="h-[42px] rounded-md shadow-sm font-black uppercase text-xs">
+                        <Plus size={16} className="mr-2" /> New Item
+                     </Button>
+                  }
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  emptyMessage="No inventory nodes found in this sector."
+               />
             </div>
          ) : (
             <div className={`grid gap-8 ${ itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 sm:grid-cols-3 lg:grid-cols-5":"grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>

@@ -38,7 +38,7 @@ const ApplyJobModal = ({
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await api.post("/api/job-applications", {
+      await api.post("/job-applications", {
         vacancyId: vacancy.id,
         clientName: formData.clientName,
         clientEmail: formData.clientEmail,

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -32,7 +33,6 @@ public class EmployeeController {
 
     @Autowired
     private com.mtp.api.repositories.LeaveRequestRepository leaveRequestRepository;
-
 
     @Autowired
     private com.mtp.api.services.ImageUploadService imageUploadService;
@@ -189,7 +189,9 @@ public class EmployeeController {
                 saved.getEmail()));
 
         log.info("Employee created with ID: {} and notification broadcasted", saved.getId());
-        auditLogService.logActivity("Created Employee", saved.getFirstNameEnglish() + " " + saved.getLastNameEnglish() + " (" + saved.getIdNo() + ")", "success");
+        auditLogService.logActivity("Created Employee",
+                saved.getFirstNameEnglish() + " " + saved.getLastNameEnglish() + " (" + saved.getIdNo() + ")",
+                "success");
         return saved;
     }
 
@@ -202,7 +204,9 @@ public class EmployeeController {
             updateEmployeeFromDTO(e, dto);
             Employee saved = employeeRepository.save(e);
             log.info("Employee ID {} updated successfully", id);
-            auditLogService.logActivity("Updated Employee", saved.getFirstNameEnglish() + " " + saved.getLastNameEnglish() + " (" + saved.getIdNo() + ")", "info");
+            auditLogService.logActivity("Updated Employee",
+                    saved.getFirstNameEnglish() + " " + saved.getLastNameEnglish() + " (" + saved.getIdNo() + ")",
+                    "info");
             return ResponseEntity.ok(saved);
         }).orElse(ResponseEntity.notFound().build());
     }

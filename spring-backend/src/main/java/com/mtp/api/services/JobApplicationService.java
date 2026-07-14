@@ -11,5 +11,6 @@ public interface JobApplicationService {
     Page<JobApplicationDto> getApplicationsByVacancyId(Integer vacancyId, Pageable pageable);
     Page<JobApplicationDto> getApplicationsByClientId(Integer clientId, Pageable pageable);
     Page<JobApplicationDto> getApplicationsByEmployerId(Integer employerId, Pageable pageable);
+    Page<JobApplicationDto> getAllApplications(Pageable pageable);
     void deleteApplication(Integer id);
 }

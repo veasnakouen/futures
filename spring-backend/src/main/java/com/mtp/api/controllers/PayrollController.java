@@ -21,6 +21,9 @@ public class PayrollController {
     @Autowired
     private PayrollRecordRepository payrollRecordRepository;
 
+    @Autowired
+    private com.mtp.api.repositories.LeaveRequestRepository leaveRequestRepository;
+
     @GetMapping
     public List<PayrollRecord> getAll() {
         return payrollRecordRepository.findAll();
@@ -30,12 +33,42 @@ public class PayrollController {
     public ResponseEntity<?> processPayroll() {
         List<Employee> employees = employeeRepository.findAll();
         
-        double totalAmount = 0;
+        double totalGross = 0.0;
+        double totalTax = 0.0;
+        double totalNet = 0.0;
         int count = 0;
 
         for (Employee e : employees) {
             if ("Active".equalsIgnoreCase(e.getStatus()) && e.getBasicSalary() != null) {
-                totalAmount += e.getBasicSalary();
+                double basic = e.getBasicSalary();
+                double allowance = e.getAllowances() != null ? e.getAllowances() : 0.0;
+                double deduction = e.getDeductions() != null ? e.getDeductions() : 0.0;
+                double rate = e.getTaxRate() != null ? e.getTaxRate() : 0.0;
+                
+                // Calculate Unpaid Leave deductions
+                List<com.mtp.api.models.LeaveRequest> leaves = leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(e.getId());
+                double unpaidLeaveDeduction = 0.0;
+                for (com.mtp.api.models.LeaveRequest req : leaves) {
+                    if ("APPROVED".equals(req.getStatus()) && "Unpaid".equalsIgnoreCase(req.getLeaveType())) {
+                        double days = 1.0;
+                        if ("HALF_MORNING".equals(req.getDuration()) || "HALF_AFTERNOON".equals(req.getDuration())) {
+                            days = 0.5;
+                        } else if ("FULL_DAY".equals(req.getDuration()) && req.getEndDate() != null && req.getStartDate() != null) {
+                            days = java.time.temporal.ChronoUnit.DAYS.between(req.getStartDate(), req.getEndDate()) + 1;
+                        }
+                        unpaidLeaveDeduction += (basic / 30.0) * days;
+                    }
+                }
+                deduction += unpaidLeaveDeduction;
+
+                double gross = basic + allowance;
+                double taxableIncome = Math.max(0, gross - deduction);
+                double tax = taxableIncome * rate;
+                double net = gross - tax - deduction;
+
+                totalGross += gross;
+                totalTax += tax;
+                totalNet += net;
                 count++;
             }
         }
@@ -43,7 +76,10 @@ public class PayrollController {
         PayrollRecord record = new PayrollRecord();
         record.setProcessedDate(LocalDateTime.now());
         record.setTotalEmployeesProcessed(count);
-        record.setTotalAmount(totalAmount);
+        record.setTotalAmount(totalNet); // legacy compatibility
+        record.setTotalGrossAmount(totalGross);
+        record.setTotalTaxDeducted(totalTax);
+        record.setTotalNetPayable(totalNet);
         record.setStatus("Completed");
 
         return ResponseEntity.ok(payrollRecordRepository.save(record));

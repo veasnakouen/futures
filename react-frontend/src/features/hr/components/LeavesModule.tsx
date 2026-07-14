@@ -16,6 +16,7 @@ import {
 import { format } from "date-fns";
 import { AppCard } from '@/components/ui/AppCard';
 import { DataTable, DataTableColumn } from "../../../components/ui/DataTable";
+import SearchInput from "@/components/common/SearchInput";
 
 interface LeavesModuleProps {
   globalLeaves: any[];
@@ -253,14 +254,12 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
             </button>
           </div>
           <div className="relative w-full md:w-80">
-            <TextInput
-              icon={Search}
-              sizing="sm"
-              placeholder="Search requests by staff name..."
-              className="rounded-md pr-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <SearchInput
+                        placeholder="Search requests by staff name..."
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        containerClassName="rounded-md pr-8"
+                      />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}

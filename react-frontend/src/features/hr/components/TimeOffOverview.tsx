@@ -13,6 +13,7 @@ import {
 import api from '@/services/api';
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import SearchInput from "@/components/common/SearchInput";
 
 const TimeOffOverview: React.FC = () => {
   const [leaves, setLeaves] = useState<any[]>([]);
@@ -41,7 +42,7 @@ const TimeOffOverview: React.FC = () => {
   const handleApprove = async (id: number) => {
     try {
       setProcessing(id);
-      await api.put(`/hr/leaves/${id}/approve`);
+      await api.put(`/hr/leaves/${id}/status`, null, { params: { status: 'APPROVED' } });
       toast.success("Leave request approved");
       fetchLeaves();
     } catch (err) {
@@ -55,7 +56,7 @@ const TimeOffOverview: React.FC = () => {
   const handleReject = async (id: number) => {
     try {
       setProcessing(id);
-      await api.put(`/hr/leaves/${id}/reject`);
+      await api.put(`/hr/leaves/${id}/status`, null, { params: { status: 'REJECTED' } });
       toast.success("Leave request rejected");
       fetchLeaves();
     } catch (err) {
@@ -176,14 +177,12 @@ const TimeOffOverview: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t">
           <div className="relative">
-            <TextInput
-              type="text"
-              placeholder="Search employee or leave type..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              icon={Search}
-              className="w-full"
-            />
+            <SearchInput
+                        placeholder="Search employee or leave type..."
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        containerClassName="w-full"
+                      />
           </div>
           <div>
             <Select

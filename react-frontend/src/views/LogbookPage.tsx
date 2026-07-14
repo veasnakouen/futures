@@ -22,6 +22,7 @@ import api from "../services/api";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import ConfirmModal from "@/components/common/ConfirmModal";
+import SearchInput from "@/components/common/SearchInput";
 
 const LogbookPage = ({ isDark, setIsDark }: any) => {
   const { t } = useTranslation();
@@ -237,34 +238,12 @@ const LogbookPage = ({ isDark, setIsDark }: any) => {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 mb-2">
-          <div className="relative flex-1 group">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors z-10"
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder="Search by note or phone..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(0);
-              }}
-              className="w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-800 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all shadow-sm"
-            />
-            {search && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearch("");
-                  setPage(0);
-                }}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10"
-              >
-                <X size={16} />
-              </button>
-            )}
-          </div>
+          <SearchInput
+                    placeholder="Search by note or phone..."
+                    value={search}
+                    onChange={setSearch}
+                    containerClassName="flex-1"
+                  />
         </div>
 
         <DataTable

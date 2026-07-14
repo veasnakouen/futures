@@ -3,6 +3,7 @@ import { posService, PosProductDto } from '../../../services/posService';
 import { ShoppingCart, Plus, Minus, CreditCard, Search } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 import { toast } from 'react-hot-toast';
+import SearchInput from "@/components/common/SearchInput";
 
 export default function PosDashboard() {
     const [products, setProducts] = useState<PosProductDto[]>([]);
@@ -88,16 +89,11 @@ export default function PosDashboard() {
                         <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-1">POS Terminal</h1>
                         <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Select items to add to the cart</p>
                     </div>
-                    <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-                        <input 
-                            type="text" 
-                            placeholder="Search products..." 
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-11 pr-4 py-2.5 rounded-full bg-white dark:bg-slate-800 border-none shadow-sm focus:ring-2 focus:ring-blue-500 w-72 transition-all duration-300 text-sm font-medium outline-none"
-                        />
-                    </div>
+                    <SearchInput
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={setSearchQuery}
+                    />
                 </div>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">

@@ -20,7 +20,13 @@ public class PayrollRecord {
 
     private Integer totalEmployeesProcessed;
 
-    private Double totalAmount;
+    private Double totalAmount; // legacy alias for gross or net? we'll keep it for compat.
+
+    private Double totalGrossAmount;
+
+    private Double totalTaxDeducted;
+
+    private Double totalNetPayable;
 
     private String status;
 }

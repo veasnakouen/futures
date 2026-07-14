@@ -17,14 +17,16 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class UserController {
 
-    @Autowired
-    private UserRepository repository;
+    private final UserRepository repository;
+    private final com.mtp.api.repositories.RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private com.mtp.api.repositories.RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserController(UserRepository repository, com.mtp.api.repositories.RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER_READ')")

@@ -44,7 +44,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         } else {
             // Check if client exists by email (simplified) or create new
             client = new Client();
-            String[] names = dto.getClientName() != null ? dto.getClientName().split(" ", 2) : new String[]{"Guest", "User"};
+            String[] names = dto.getClientName() != null ? dto.getClientName().split(" ", 2)
+                    : new String[] { "Guest", "User" };
             client.setFirstName(names[0]);
             client.setLastName(names.length > 1 ? names[1] : "");
             client.setEmail(dto.getClientEmail());
@@ -84,10 +85,24 @@ public class JobApplicationServiceImpl implements JobApplicationService {
             }
             placement.setPlacementDate(LocalDateTime.now());
             placement.setPlacementType(application.getVacancy().getContractType());
-            placement.setCompanyName(application.getVacancy().getEmployer() != null ? application.getVacancy().getEmployer().getName() : "");
-            placement.setSalary(application.getVacancy().getSalary() != null ? application.getVacancy().getSalary().toString() : "0");
+            placement.setCompanyName(
+                    application.getVacancy().getEmployer() != null ? application.getVacancy().getEmployer().getName()
+                            : "");
+            placement.setSalary(
+                    application.getVacancy().getSalary() != null ? application.getVacancy().getSalary().toString()
+                            : "0");
             placement.setStatus("Active");
             placementRepository.save(placement);
+
+            // Decrement vacancy positions
+            Vacancy vacancy = application.getVacancy();
+            if (vacancy.getPositionAvailable() > 0) {
+                vacancy.setPositionAvailable(vacancy.getPositionAvailable() - 1);
+                if (vacancy.getPositionAvailable() == 0) {
+                    vacancy.setStatus("Closed");
+                }
+                vacancyRepository.save(vacancy);
+            }
         }
 
         return mapToDto(updated);
@@ -119,6 +134,12 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     }
 
     @Override
+    public Page<JobApplicationDto> getAllApplications(Pageable pageable) {
+        return jobApplicationRepository.findAll(pageable)
+                .map(this::mapToDto);
+    }
+
+    @Override
     public void deleteApplication(Integer id) {
         jobApplicationRepository.deleteById(id);
     }
@@ -126,17 +147,32 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     private JobApplicationDto mapToDto(JobApplication entity) {
         JobApplicationDto dto = new JobApplicationDto();
         dto.setId(entity.getId());
-        dto.setClientId(entity.getClient().getId());
-        dto.setVacancyId(entity.getVacancy().getId());
+        
+        if (entity.getClient() != null) {
+            dto.setClientId(entity.getClient().getId());
+            dto.setClientName(entity.getClient().getFirstName() + " " + entity.getClient().getLastName());
+            dto.setClientEmail(entity.getClient().getEmail());
+        } else {
+            dto.setClientName("Unknown Applicant");
+            dto.setClientEmail("");
+        }
+
+        if (entity.getVacancy() != null) {
+            dto.setVacancyId(entity.getVacancy().getId());
+            dto.setVacancyTitle(
+                    entity.getVacancy().getJobPosition() != null ? entity.getVacancy().getJobPosition().getName() : "");
+            dto.setEmployerName(
+                    entity.getVacancy().getEmployer() != null ? entity.getVacancy().getEmployer().getName() : "");
+        } else {
+            dto.setVacancyTitle("Unknown Position");
+            dto.setEmployerName("Unknown Employer");
+        }
+
         dto.setAppliedDate(entity.getAppliedDate());
         dto.setStatus(entity.getStatus());
         dto.setCoverLetter(entity.getCoverLetter());
         dto.setCvUrl(entity.getCvUrl());
-        
-        dto.setClientName(entity.getClient().getFirstName() + " " + entity.getClient().getLastName());
-        dto.setClientEmail(entity.getClient().getEmail());
-        dto.setVacancyTitle(entity.getVacancy().getJobPosition() != null ? entity.getVacancy().getJobPosition().getName() : "");
-        dto.setEmployerName(entity.getVacancy().getEmployer() != null ? entity.getVacancy().getEmployer().getName() : "");
+
         return dto;
     }
 }

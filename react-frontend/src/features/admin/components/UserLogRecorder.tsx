@@ -14,6 +14,7 @@ import api from '@/services/api';
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import ModernPagination from '@/components/common/ModernPagination';
+import SearchInput from "@/components/common/SearchInput";
 
 const UserLogRecorder: React.FC = () => {
   const { t } = useTranslation();
@@ -110,14 +111,12 @@ const UserLogRecorder: React.FC = () => {
         {/* Filter Toolbar */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 dark:border-gray-700/50 pt-6">
           <div className="relative">
-            <TextInput
-              type="text"
-              placeholder={t("searchUserActionTarget")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              icon={Search}
-              className="w-full"
-            />
+            <SearchInput
+                        placeholder={t("searchUserActionTarget")}
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        containerClassName="w-full"
+                      />
           </div>
 
           <div className="relative">

@@ -55,6 +55,13 @@ public class JobApplicationController {
         return ResponseEntity.ok(jobApplicationService.getApplicationsByEmployerId(employerId, PageRequest.of(page, size)));
     }
 
+    @GetMapping
+    public ResponseEntity<Page<JobApplicationDto>> getAllApplications(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(jobApplicationService.getAllApplications(PageRequest.of(page, size)));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteApplication(@PathVariable Integer id) {
         jobApplicationService.deleteApplication(id);

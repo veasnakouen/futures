@@ -19,9 +19,11 @@ export default function DashboardPage() {
 
       <div className="bg-[#1e293b] border border-gray-700/50 rounded-xl p-6 shadow-sm overflow-hidden">
         <AnalyticsModule
-          demographicsData={demographicsData}
-          deptDistData={deptDistData}
-          stats={analyticsStats}
+          data={{
+            stats: analyticsStats,
+            demographics: demographicsData,
+            deptDist: deptDistData
+          }}
         />
       </div>
     </div>

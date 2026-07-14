@@ -18,10 +18,11 @@ import websocketService from "../services/websocketService";
 import authService from "../services/authService";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
-import { useSearchParams } from '@/lib/react-router-compat';
+import { useSearchParams, useNavigate } from '@/lib/react-router-compat';
 import api from "../services/api";
 
 const ChatPage = ({ isDark, setIsDark }: any) => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const chatWithParam = searchParams.get("chatWith");
 
@@ -45,7 +46,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
     if (!currentUser) {
-      window.location.href = "/login";
+      navigate("/login");
       return;
     }
     setUser(currentUser);

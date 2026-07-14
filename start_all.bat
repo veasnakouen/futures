@@ -3,6 +3,10 @@ echo ==========================================
 echo   MTP MICROSERVICES STARTUP SYSTEM
 echo ==========================================
 
+:: Configure JVM memory constraints for local development (limits memory usage and speeds up boot time)
+:: We must limit Metaspace, CodeCache, and Stack Size because Heap (-Xmx) is only a fraction of total RAM!
+set JAVA_TOOL_OPTIONS=-Xmx256m -Xms128m -XX:MaxMetaspaceSize=256m -XX:ReservedCodeCacheSize=128m -Xss512k -XX:TieredStopAtLevel=1 -Xverify:none
+
 echo [1/4] Starting Discovery Server (Port 8761)...
 start "MTP Discovery Server" cmd /c "cd mtp-discovery-server && .\gradlew.bat bootRun"
 echo Waiting for Discovery Server to wake up...
@@ -27,12 +31,18 @@ start "MTP Stock Service" cmd /c "cd mtp-stock-service && .\gradlew.bat bootRun"
 echo [6/8] Starting Report Service (Port 8086)...
 start "MTP Report Service" cmd /c "cd mtp-report-service && .\gradlew.bat bootRun"
 
-echo [7/8] Starting School, Clinic, Hotel Services (Ports 8087, 8088, 8089)...
+echo [7/10] Starting School, Clinic, Hotel Services (Ports 8087, 8088, 8089)...
 start "MTP School Service" cmd /c "cd mtp-school-service && .\gradlew.bat bootRun"
 start "MTP Clinic Service" cmd /c "cd mtp-clinic-service && .\gradlew.bat bootRun"
 start "MTP Hotel Service" cmd /c "cd mtp-hotel-service && .\gradlew.bat bootRun"
 
-echo [8/8] Starting React Frontend...
+echo [8/10] Starting POS Service (Port 8085)...
+start "MTP POS Service" cmd /c "cd mtp-pos-service && .\gradlew.bat bootRun"
+
+echo [9/10] Starting Billing Service (Port 8083)...
+start "MTP Billing Service" cmd /c "cd mtp-billing-service && .\gradlew.bat bootRun"
+
+echo [10/10] Starting React Frontend...
 start "MTP React Frontend" cmd /c "cd react-frontend && npm run dev"
 
 echo ==========================================

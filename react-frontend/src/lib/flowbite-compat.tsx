@@ -117,7 +117,7 @@ export const TextInput = React.forwardRef(
     return (
       <div className="w-full">
         {addon && (
-          <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border-r-0 rounded-l-md dark:bg-gray-600 dark:text-gray-400">
+          <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border-r-0 rounded-l-lg dark:bg-gray-700 dark:text-gray-300">
             {addon}
           </span>
         )}
@@ -174,7 +174,7 @@ Checkbox.displayName = "Checkbox";
 // 
 export const Label = ({ value, children, className, ...props }: any) => {
   return (
-    <SLabel className={className} {...props}>
+    <SLabel className={cn("text-sm font-semibold text-gray-700 dark:text-gray-300", className)} {...props}>
       {value || children}
     </SLabel>
   );
@@ -276,7 +276,7 @@ export const Select = React.forwardRef(
         <select
           ref={ref}
           className={cn(
-            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-10 w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/30 dark:focus-visible:ring-indigo-400/30 transition-all duration-200 focus:shadow-md disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
             Icon ? "pl-10" : "",
             className
           )}
@@ -355,9 +355,9 @@ export const TableHead = ({ children, className }: any) => (
 export const TableHeadCell = STableHead;
 // Modal mapping
 export const ModalHeader = ({ children, className }: any) => (
-  <SDialogHeader className={cn("modal-header cursor-move select-none", className)}>
+  <SDialogHeader className={cn("modal-header cursor-move select-none border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-10", className)}>
     {" "}
-    <SDialogTitle className="text-xl font-bold px-6 py-4 border-b bg-white dark:bg-gray-800">
+    <SDialogTitle className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white px-6 py-4">
       {" "}
       {children}{" "}
     </SDialogTitle>{" "}
@@ -365,7 +365,7 @@ export const ModalHeader = ({ children, className }: any) => (
 );
 export const ModalBody = ({ children, className }: any) => (
   <div
-    className={`p-6 max-h-[70vh] overflow-y-auto bg-gray-50 dark:bg-gray-900 ${className || ""}`}
+    className={`p-6 max-h-[70vh] overflow-y-auto bg-gray-50/50 dark:bg-[#0a0a0a] ${className || ""}`}
   >
     {" "}
     {children}{" "}
@@ -373,14 +373,14 @@ export const ModalBody = ({ children, className }: any) => (
 );
 export const ModalFooter = ({ children, className }: any) => (
   <SDialogFooter
-    className={`p-6 border-t bg-white dark:bg-gray-800  ${className || ""}`}
+    className={`px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-md flex items-center justify-end gap-3 ${className || ""}`}
   >
     {" "}
     {children}{" "}
   </SDialogFooter>
 );
 export const Modal = Object.assign(
-  ({ show, onClose, size, children, ...props }: any) => {
+  ({ show, onClose, size, dismissible = true, children, ...props }: any) => {
     let maxW = "max-w-2xl";
     if (size === "sm") maxW = "max-w-sm";
     if (size === "md") maxW = "max-w-md";
@@ -390,11 +390,18 @@ export const Modal = Object.assign(
     if (size === "3xl") maxW = "max-w-3xl";
     if (size === "4xl") maxW = "max-w-4xl";
     return (
-      <SDialog open={show} onOpenChange={onClose}>
+      <SDialog open={show} onOpenChange={(open) => {
+        // If dismissible is false, we don't automatically trigger onClose on outside clicks or escape
+        if (!open && dismissible) onClose();
+      }}>
         {" "}
         <SDialogContent
-          className={`${maxW} p-0 [&>button]:hidden border-none gap-0 sm:rounded-xl overflow-hidden flex flex-col max-h-[90vh]`}
+          className={`${maxW} p-0 [&>button]:hidden border border-gray-200/50 dark:border-gray-800/50 shadow-2xl shadow-black/10 dark:shadow-black/40 gap-0 sm:rounded-2xl overflow-hidden flex flex-col max-h-[90vh]`}
           onInteractOutside={(e) => {
+            if (!dismissible) {
+              e.preventDefault();
+              return;
+            }
             const target = e.target as Element;
             if (target && target.closest && (target.closest('.react-select__menu') || target.closest('[class*="react-select"]'))) {
               e.preventDefault();

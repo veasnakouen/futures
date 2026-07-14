@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import PillTabs from "@/components/common/PillTabs";
 import { schoolService, StudentDto, CreateStudentCommand, UpdateStudentCommand } from "../../../services/schoolService";
 import { toast } from "react-hot-toast";
 import CustomModalHeader from "../../../components/common/CustomModalHeader";
@@ -228,8 +229,11 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
       />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col min-h-[65vh] sm:min-h-[600px] max-h-[80vh]">
         <ModalBody className="p-0 flex flex-col flex-1 overflow-hidden">
-          <div className="flex overflow-x-auto whitespace-nowrap bg-gray-100/70 dark:bg-gray-800/70 p-1.5 rounded-xl mx-4 mt-2 mb-2 gap-1 shrink-0 hide-scrollbar shadow-inner">
-            {[
+          <PillTabs
+            className="mx-4 mt-2 mb-2"
+            activeTab={activeTab}
+            onTabChange={(id) => setActiveTab(id as any)}
+            tabs={[
               { id: "basic", label: t("basicInfo") },
               { id: "contact", label: t("contactPlacement") },
               { id: "parents", label: t("parents") },
@@ -237,20 +241,8 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
               { id: "medical", label: t("medical") },
               { id: "outreach", label: "Background" },
               ...(customFields && customFields.length > 0 ? [{ id: "custom", label: t("customFields") }] : [])
-            ].map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 shrink-0 min-w-max py-2 px-4 text-sm font-semibold text-center transition-all duration-300 rounded-lg ${activeTab === tab.id
-                  ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md ring-1 ring-gray-200/50 dark:ring-gray-600/50 transform scale-[1.02]"
-                  : "text-gray-500 hover:text-gray-800 hover:bg-gray-200/50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700/50"
-                  }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+            ]}
+          />
 
           <div className="p-4 space-y-4 overflow-y-auto custom-scrollbar flex-1 min-h-0">
             {activeTab === "basic" && (

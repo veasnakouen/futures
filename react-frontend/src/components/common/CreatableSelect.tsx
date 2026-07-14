@@ -28,8 +28,6 @@ const CreatableSelect: React.FC<CreatableSelectProps> = ({
       value={selectValue}
       onChange={(selected: any) => onChange(selected ? selected.value : '')}
       placeholder={placeholder}
-      menuPosition="fixed"
-      menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
       classNamePrefix="react-select"
       classNames={{
         control: ({ isFocused }) => 
@@ -50,9 +48,6 @@ const CreatableSelect: React.FC<CreatableSelectProps> = ({
         dropdownIndicator: () => "text-muted-foreground hover:text-foreground cursor-pointer p-1",
         indicatorSeparator: () => "bg-border mx-1 my-1",
         valueContainer: () => "gap-1",
-      }}
-      styles={{
-        menuPortal: base => ({ ...base, zIndex: 9999 })
       }}
     />
   );

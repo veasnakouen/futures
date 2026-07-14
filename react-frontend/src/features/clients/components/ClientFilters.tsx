@@ -9,6 +9,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import {Dropdown, DropdownItem} from '@/lib/flowbite-compat';
+import SearchInput from "@/components/common/SearchInput";
 
 interface ClientFiltersProps {
   filters: { search: string; branch: string; status: string };
@@ -38,30 +39,12 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
       <div className="flex flex-col gap-3">
         {/* Top Row: Search & Toggle */}
         <div className="flex gap-3 items-center w-full">
-          <div className="relative flex-1 group">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors z-10"
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder="Search name or registration code..."
-              value={filters.search}
-              onChange={(e) =>
-                setFilters({ ...filters, search: e.target.value })
-              }
-              className="w-full pl-12 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-inner"
-            />
-            {filters.search && (
-              <button
-                type="button"
-                onClick={() => setFilters({ ...filters, search: "" })}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors z-10"
-              >
-                <X size={16} />
-              </button>
-            )}
-          </div>
+          <SearchInput
+                    placeholder="Search name or registration code..."
+                    value={filters.search}
+                    onChange={setFilters}
+                    containerClassName="flex-1"
+                  />
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-md transition-all text-sm font-bold shadow-sm ${isExpanded ?"bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400":"bg-white dark:bg-gray-800  text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}

@@ -44,11 +44,6 @@ public class IntegrationController {
 
     @GetMapping("/sso")
     public ResponseEntity<List<Map<String, String>>> getSsoProviders() {
-        // Mock identity providers config
-        return ResponseEntity.ok(List.of(
-            Map.of("name", "Azure AD (Entra)", "status", "Connected", "icon", "AZ"),
-            Map.of("name", "Okta Identity", "status", "Standby", "icon", "OK"),
-            Map.of("name", "Google Workspace", "status", "Connected", "icon", "GW")
-        ));
+        return ResponseEntity.ok(List.of());
     }
 }

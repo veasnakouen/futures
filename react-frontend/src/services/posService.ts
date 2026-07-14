@@ -55,11 +55,16 @@ export interface PosSaleDto {
 export const posService = {
     getAllProducts: async (): Promise<PosProductDto[]> => {
         const response = await api.get('/pos/products');
-        return response.data;
+        return response.data?.value || response.data || [];
     },
 
     createProduct: async (data: PosProductDto): Promise<PosProductDto> => {
         const response = await api.post('/pos/products', data);
+        return response.data;
+    },
+
+    generateSku: async (): Promise<{sku: string}> => {
+        const response = await api.get('/pos/products/generate-sku');
         return response.data;
     },
 
@@ -74,7 +79,7 @@ export const posService = {
 
     getAllSales: async (): Promise<PosSaleDto[]> => {
         const response = await api.get('/pos/sales');
-        return response.data;
+        return response.data?.value || response.data || [];
     },
 
     createSale: async (data: PosSaleDto): Promise<PosSaleDto> => {
@@ -84,7 +89,7 @@ export const posService = {
 
     getAllCategories: async (): Promise<PosCategoryDto[]> => {
         const response = await api.get('/pos/categories');
-        return response.data;
+        return response.data?.value || response.data || [];
     },
 
     createCategory: async (data: PosCategoryDto): Promise<PosCategoryDto> => {
@@ -94,7 +99,7 @@ export const posService = {
 
     getAllBrands: async (): Promise<PosBrandDto[]> => {
         const response = await api.get('/pos/brands');
-        return response.data;
+        return response.data?.value || response.data || [];
     },
 
     createBrand: async (data: PosBrandDto): Promise<PosBrandDto> => {

@@ -23,14 +23,26 @@ const TransferStockModal: React.FC<TransferStockModalProps> = ({
   const [targetLocationId, setTargetLocationId] = useState<string>("");
   const [quantity, setQuantity] = useState<string>("1");
 
-  // Initialize sourceLocationId when modal opens with default value
+  // Initialize sourceLocationId and itemId when modal opens with default value
   React.useEffect(() => {
     if (isOpen) {
       if (defaultSourceLocationId) {
         setSourceLocationId(defaultSourceLocationId);
+      } else {
+        setSourceLocationId("");
       }
+      
+      if (defaultItemId) {
+        setItemId(defaultItemId.toString());
+      } else {
+        setItemId("");
+      }
+      
+      // Reset target and quantity on open
+      setTargetLocationId("");
+      setQuantity("1");
     }
-  }, [isOpen, defaultSourceLocationId]);
+  }, [isOpen, defaultSourceLocationId, defaultItemId]);
 
   // Fetch all items for dropdown
   const { data: items = [] } = useQuery({
@@ -75,7 +87,7 @@ const TransferStockModal: React.FC<TransferStockModalProps> = ({
     } else {
       // Initial allocation (unallocated global stock)
       const allocatedAmount = itemStocks.reduce((sum: number, s: any) => sum + (s.quantity || 0), 0);
-      maxQuantity = Math.max(0, (selectedItem.quantity || 0) - allocatedAmount);
+      maxQuantity = Math.max(0, (selectedItem.stockQuantity || 0) - allocatedAmount);
     }
   }
 
@@ -134,7 +146,7 @@ const TransferStockModal: React.FC<TransferStockModalProps> = ({
   };
 
   return (
-    <Modal show={isOpen} onClose={onClose} size="md">
+    <Modal show={isOpen} onClose={onClose} size="xl" dismissible={false}>
       <ModalHeader>Allocate or Transfer Stock</ModalHeader>
       <ModalBody>
         <div className="space-y-4">
@@ -149,7 +161,7 @@ const TransferStockModal: React.FC<TransferStockModalProps> = ({
             >
               <option value="">-- Choose Item --</option>
               {items.map((i: any) => (
-                <option key={i.id} value={i.id}>
+                <option key={i.id} value={i.id.toString()}>
                   {i.name} (SKU: {i.sku})
                 </option>
               ))}
@@ -166,7 +178,7 @@ const TransferStockModal: React.FC<TransferStockModalProps> = ({
             >
               <option value="">-- Initial Allocation (Main Pool) --</option>
               {locations.map((loc: any) => (
-                <option key={loc.id} value={loc.id}>
+                <option key={loc.id} value={loc.id.toString()}>
                   {loc.name}
                 </option>
               ))}
@@ -184,7 +196,7 @@ const TransferStockModal: React.FC<TransferStockModalProps> = ({
             >
               <option value="">-- To Location --</option>
               {locations.map((loc: any) => (
-                <option key={loc.id} value={loc.id}>
+                <option key={loc.id} value={loc.id.toString()}>
                   {loc.name}
                 </option>
               ))}

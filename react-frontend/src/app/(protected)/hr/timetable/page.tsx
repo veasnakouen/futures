@@ -267,19 +267,11 @@ export default function TimetablePage() {
       <TimetableFormModal 
         isOpen={isTimetableModalOpen} 
         onClose={() => setIsTimetableModalOpen(false)} 
-        onSave={(data) => {
-          setTimetables([...timetables, { ...data, id: Date.now() }]);
-          setIsTimetableModalOpen(false);
-        }} 
       />
 
       <HolidayFormModal 
         isOpen={isHolidayModalOpen} 
         onClose={() => setIsHolidayModalOpen(false)} 
-        onSave={(data) => {
-          setHolidays([...holidays, { ...data, id: Date.now() }]);
-          setIsHolidayModalOpen(false);
-        }} 
       />
 
       <ScheduleAssignmentModal 

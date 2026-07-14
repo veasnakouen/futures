@@ -1,7 +1,6 @@
 package com.mtp.stock.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -28,7 +27,9 @@ public class InventoryItem {
     @jakarta.validation.constraints.Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
-    private String category;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private AssetCategory category;
     private String brand;
 
     @jakarta.validation.constraints.DecimalMin(value = "0.0", message = "Price cannot be negative")
@@ -40,6 +41,7 @@ public class InventoryItem {
 
     @jakarta.validation.constraints.NotNull(message = "Stock quantity is required")
     @jakarta.validation.constraints.Min(value = 0, message = "Quantity cannot be negative")
+    @Column(name = "quantity")
     private Integer stockQuantity;
 
     @jakarta.validation.constraints.Min(value = 0, message = "Reorder level cannot be negative")
@@ -57,7 +59,7 @@ public class InventoryItem {
 
     private Boolean trackStock = true;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id")
     private com.mtp.stock.models.stubs.DepartmentStub department;
 
@@ -79,12 +81,14 @@ public class InventoryItem {
     // --- Domain Methods ---
 
     public void addStock(int amount) {
-        if (amount < 0) throw new IllegalArgumentException("Cannot add negative stock");
+        if (amount < 0)
+            throw new IllegalArgumentException("Cannot add negative stock");
         this.stockQuantity = (this.stockQuantity == null ? 0 : this.stockQuantity) + amount;
     }
 
     public void removeStock(int amount) {
-        if (amount < 0) throw new IllegalArgumentException("Cannot remove negative stock");
+        if (amount < 0)
+            throw new IllegalArgumentException("Cannot remove negative stock");
         if (this.stockQuantity == null || this.stockQuantity < amount) {
             throw new IllegalStateException("Insufficient stock to fulfill request");
         }
@@ -97,7 +101,8 @@ public class InventoryItem {
     }
 
     public BigDecimal calculateTotalValue() {
-        if (this.stockQuantity == null || this.price == null) return BigDecimal.ZERO;
+        if (this.stockQuantity == null || this.price == null)
+            return BigDecimal.ZERO;
         return this.price.multiply(BigDecimal.valueOf(this.stockQuantity));
     }
 }

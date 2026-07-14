@@ -19,6 +19,7 @@ import {
 import { toast } from "react-hot-toast";
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
+import SearchInput from "@/components/common/SearchInput";
 
 const RoleManagement = () => {
   const { t } = useTranslation();
@@ -229,15 +230,12 @@ const RoleManagement = () => {
             </h2>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <TextInput
-              id="role-search"
-              type="text"
-              icon={Search}
-              placeholder={t("searchPlaceholder")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-64"
-            />
+            <SearchInput
+                        placeholder={t("searchPlaceholder")}
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        containerClassName="w-full md:w-64"
+                      />
             <Button color="blue" onClick={() => setShowCreateRoleModal(true)} className="rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-95">
               <PlusCircle className="w-4 h-4 mr-2" />
               {t("role")}

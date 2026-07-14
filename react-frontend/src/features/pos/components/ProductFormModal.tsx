@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Modal, Spinner, TextInput, Select} from '@/lib/flowbite-compat';
-import { X, Camera, Image as ImageIcon, Plus } from 'lucide-react';
+import { X, Camera, Image as ImageIcon, Plus, Wand2 } from 'lucide-react';
 import { posService, PosProductDto } from '../../../services/posService';
 import { uploadToCloudinary } from '@/utils/cloudinary';
 import ImageCropperModal from "@/components/common/ImageCropperModal";
@@ -27,6 +27,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isGeneratingSku, setIsGeneratingSku] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
     const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -94,6 +95,21 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
             console.error("Failed to save product", error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleGenerateSku = async () => {
+        try {
+            setIsGeneratingSku(true);
+            const res = await posService.generateSku();
+            if (res && res.sku) {
+                setFormData({ ...formData, sku: res.sku });
+                toast.success("SKU Auto-Generated!");
+            }
+        } catch (err) {
+            toast.error("Failed to generate SKU");
+        } finally {
+            setIsGeneratingSku(false);
         }
     };
 
@@ -174,12 +190,25 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit, onSav
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">SKU</label>
-                                    <TextInput 
-                                        required
-                                        value={formData.sku}
-                                        onChange={(e: any) => setFormData({...formData, sku: e.target.value})}
-                                        placeholder="e.g. PPP-100"
-                                    />
+                                    <div className="flex gap-2">
+                                        <div className="flex-1">
+                                            <TextInput 
+                                                value={formData.sku}
+                                                onChange={(e: any) => setFormData({...formData, sku: e.target.value})}
+                                                placeholder="e.g. PPP-100 (Leave blank to auto-generate)"
+                                                disabled={isGeneratingSku}
+                                            />
+                                        </div>
+                                        <button 
+                                            type="button" 
+                                            onClick={handleGenerateSku}
+                                            disabled={isGeneratingSku}
+                                            className="px-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center justify-center disabled:opacity-50"
+                                            title="Auto-generate Smart SKU"
+                                        >
+                                            <Wand2 size={16} className={isGeneratingSku ? "animate-pulse text-indigo-500" : "text-indigo-600 dark:text-indigo-400"} />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Barcode</label>

@@ -1,4 +1,6 @@
 import React from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { useNavigate } from "@/lib/react-router-compat";
 import {Modal, ModalHeader, ModalBody, Badge, Button} from '@/lib/flowbite-compat';
 import {
   TrendingUp,
@@ -15,6 +17,7 @@ interface AnalyticsModalProps {
 }
 
 const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
   return (
     <Modal show={isOpen} onClose={onClose} size="4xl">
       <ModalHeader className="border-none p-0" />
@@ -162,7 +165,10 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose }) => {
             </Button>
             <Button
               color="blue"
-              onClick={() => (window.location.href = "/reports")}
+              onClick={() => {
+                onClose();
+                navigate("/reports");
+              }}
               className="rounded-md shadow-lg shadow-blue-500/20 font-black uppercase text-[10px]"
             >
               Generate Full Report

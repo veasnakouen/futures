@@ -138,6 +138,12 @@ public class Employee {
 
     private Double basicSalary;
 
+    private Double allowances = 0.0;
+    
+    private Double deductions = 0.0;
+    
+    private Double taxRate = 0.0; // percentage e.g. 0.10 for 10%
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PositionId")
     private Position position;

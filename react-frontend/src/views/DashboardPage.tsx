@@ -135,33 +135,36 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
           duration={600}
           triggerOnce={true}
         >
-          <div className="bg-white dark:bg-gray-800/40 dark:backdrop-blur-md px-8 py-5 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="space-y-0.5">
-              <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-                {getGreeting()}, {currentUser?.username || "Guest"}
+          <div className="relative overflow-hidden bg-white dark:bg-[#0d1117] px-7 py-5 rounded-2xl border border-gray-100 dark:border-white/[0.05] shadow-sm dark:shadow-black/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            {/* Decorative gradient orb */}
+            <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-indigo-400/10 to-violet-400/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="space-y-0.5 relative">
+              <h3 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                {getGreeting()},{" "}
+                <span className="gradient-text">{currentUser?.username || "Guest"}</span>
               </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">
+              <p className="text-xs text-gray-500 dark:text-white/40 font-medium">
                 Logged in as{" "}
-                <span className="text-blue-600 dark:text-blue-400 font-extrabold">
+                <span className="text-indigo-600 dark:text-indigo-400 font-bold">
                   {userRole}
                 </span>{" "}
-                • Real-time operational visibility.
+                &middot; Real-time operational visibility.
               </p>
             </div>
-            <div className="flex flex-wrap gap-3 shrink-0">
-              <div className="flex items-center gap-2.5 bg-gray-50/50 dark:bg-gray-900/30 px-3.5 py-1.5 rounded-md">
-                <span className="w-1.5 h-1.5 rounded-md bg-blue-500 animate-pulse"></span>
-                <span className="text-[8px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                  System Impact: {stats?.totalClients?.toLocaleString() ?? 0}
+            <div className="flex flex-wrap gap-2.5 shrink-0 relative">
+              <div className="flex items-center gap-2 bg-gray-50 dark:bg-white/[0.04] px-3.5 py-1.5 rounded-full border border-gray-200/60 dark:border-white/[0.06]">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 dark:text-white/40">
+                  Impact: {stats?.totalClients?.toLocaleString() ?? 0}
                 </span>
               </div>
-              <div className="flex items-center gap-2.5 bg-gray-50/50 dark:bg-gray-900/30 px-3.5 py-1.5 rounded-md">
+              <div className="flex items-center gap-2 bg-gray-50 dark:bg-white/[0.04] px-3.5 py-1.5 rounded-full border border-gray-200/60 dark:border-white/[0.06]">
                 <span
-                  className={`w-1.5 h-1.5 rounded-md ${connectionStatus ==="online"?"bg-emerald-500 animate-pulse":"bg-rose-500"}`}
-                ></span>
-                <span className="text-[8px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-505">
+                  className={`w-1.5 h-1.5 rounded-full ${connectionStatus ==="online"?"bg-emerald-400 animate-pulse":"bg-rose-500"}`}
+                />
+                <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 dark:text-white/40">
                   {connectionStatus === "online"
-                    ? `Gateway Connection: ${latency !== null ? `${latency}ms` : "Checking..."}`
+                    ? `Gateway: ${latency !== null ? `${latency}ms` : "—"}`
                     : "Gateway Offline"}
                 </span>
               </div>
@@ -179,18 +182,19 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
           duration={600}
           triggerOnce={true}
         >
-          <div className="bg-gradient-to-r from-blue-600/10 via-indigo-600/5 to-purple-600/10 border-blue-500/20 dark:border-blue-400/20 rounded-md p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="space-y-1">
+          <div className="relative overflow-hidden bg-gradient-to-r from-indigo-500/[0.07] via-violet-500/[0.04] to-fuchsia-500/[0.07] dark:from-indigo-500/10 dark:via-violet-500/5 dark:to-fuchsia-500/10 border border-indigo-200/40 dark:border-indigo-500/15 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-violet-100/20 dark:to-violet-900/10 pointer-events-none" />
+            <div className="space-y-1 relative">
               <div className="flex items-center gap-2">
                 <Sparkles
-                  className="text-blue-600 dark:text-blue-400"
-                  size={18}
+                  className="text-indigo-500 dark:text-indigo-400"
+                  size={16}
                 />
-                <h4 className="font-black text-sm uppercase tracking-wider dark:text-white">
+                <h4 className="font-extrabold text-[11px] uppercase tracking-[0.15em] text-gray-800 dark:text-white">
                   Sandbox Mode Active
                 </h4>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-bold leading-relaxed">
+              <p className="text-xs text-gray-500 dark:text-white/50 font-medium leading-relaxed max-w-lg">
                 Welcome to the MTP demonstration database. Feel free to add mock
                 clients, trigger biometric logs, run payroll simulations, or
                 post job vacancies to test all system features.
@@ -203,9 +207,11 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
                   { icon: "🎯" },
                 )
               }
-              className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-md shadow-lg shadow-blue-500/20 transition-all shrink-0 hover:scale-105 active:scale-95"
+              className="relative overflow-hidden text-white text-[10px] font-bold uppercase tracking-widest px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-500/20 transition-all shrink-0 hover:-translate-y-px active:translate-y-0 group"
+              style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)" }}
             >
-              Start Guided Tour
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+              <span className="relative">Start Guided Tour</span>
             </button>
           </div>
         </ScrollReveal>
@@ -222,48 +228,56 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
               {
                 label: "Register Candidate",
                 to: "/clients",
-                icon: <Users size={20} />,
-                color:
-                  "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 dark:hover:bg-indigo-500 shadow-indigo-500/10",
+                icon: <Users size={18} />,
+                gradient: "from-indigo-500 to-indigo-600",
+                glow: "shadow-indigo-500/20",
+                bg: "bg-indigo-50 dark:bg-indigo-500/10",
+                text: "text-indigo-600 dark:text-indigo-400",
               },
               {
                 label: "Post Vacancy",
                 to: "/vacancies",
-                icon: <Briefcase size={20} />,
-                color:
-                  "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 dark:hover:bg-emerald-500 shadow-emerald-500/10",
+                icon: <Briefcase size={18} />,
+                gradient: "from-emerald-500 to-teal-500",
+                glow: "shadow-emerald-500/20",
+                bg: "bg-emerald-50 dark:bg-emerald-500/10",
+                text: "text-emerald-600 dark:text-emerald-400",
               },
               {
-                label: "Create Support Ticket",
+                label: "Support Ticket",
                 to: "/support",
-                icon: <LifeBuoy size={20} />,
-                color:
-                  "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 hover:bg-amber-600 dark:hover:bg-amber-500 shadow-amber-500/10",
+                icon: <LifeBuoy size={18} />,
+                gradient: "from-amber-500 to-orange-500",
+                glow: "shadow-amber-500/20",
+                bg: "bg-amber-50 dark:bg-amber-500/10",
+                text: "text-amber-600 dark:text-amber-400",
               },
               {
                 label: "Live Team Chat",
                 to: "/chat",
-                icon: <MessageCircle size={20} />,
-                color:
-                  "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-600 dark:hover:bg-blue-500 shadow-blue-500/10",
+                icon: <MessageCircle size={18} />,
+                gradient: "from-sky-500 to-blue-600",
+                glow: "shadow-sky-500/20",
+                bg: "bg-sky-50 dark:bg-sky-500/10",
+                text: "text-sky-600 dark:text-sky-400",
               },
             ].map((action, idx) => (
               <a
                 key={idx}
                 href={action.to}
-                className="flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 dark:backdrop-blur-md rounded-md shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group"
+                className="group flex items-center gap-3.5 p-4 bg-white dark:bg-[#0d1117] rounded-2xl border border-gray-100 dark:border-white/[0.05] shadow-sm hover:shadow-md dark:hover:shadow-black/30 transition-all duration-200 hover:-translate-y-0.5"
               >
                 <div
-                  className={`p-3 rounded-md transition-colors ${action.color} group-hover:text-white`}
+                  className={`w-10 h-10 rounded-xl ${action.bg} ${action.text} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200`}
                 >
                   {action.icon}
                 </div>
-                <div className="space-y-0.5">
-                  <p className="text-xs font-black dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase tracking-wider">
+                <div className="space-y-0.5 min-w-0">
+                  <p className={`text-[11px] font-bold ${action.text} uppercase tracking-wider leading-none group-hover:opacity-80 transition-opacity truncate`}>
                     {action.label}
                   </p>
-                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
-                    Navigate Module
+                  <p className="text-[9px] font-semibold text-gray-400 dark:text-white/25 uppercase tracking-tighter">
+                    Navigate
                   </p>
                 </div>
               </a>

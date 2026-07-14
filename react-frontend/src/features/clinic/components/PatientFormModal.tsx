@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clinicService, PatientDto } from "../../../services/clinicService";
+import PillTabs from "@/components/common/PillTabs";
 import { toast } from "react-hot-toast";
 import CustomModalHeader from "../../../components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
@@ -109,24 +110,15 @@ export default function PatientFormModal({ isOpen, onClose, itemToEdit }: Props)
       <CustomModalHeader title={isEdit ? "Edit Patient" : "New Patient"} onClose={onClose} icon={null} />
       <form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody className="p-0">
-          <div className="flex border-b">
-            <button
-              type="button"
-              onClick={() => setActiveTab("basic")}
-              className={`flex-1 py-3 text-sm font-medium text-center ${activeTab ==="basic"?"text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500":"text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
-            >
-              Basic Info
-            </button>
-            {customFields && customFields.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setActiveTab("custom")}
-                className={`flex-1 py-3 text-sm font-medium text-center ${activeTab ==="custom"?"text-blue-600 border-b-2 border-blue-600 dark:text-blue-500 dark:border-blue-500":"text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
-              >
-                Custom Fields
-              </button>
-            )}
-          </div>
+          <PillTabs
+            className="mx-4 mt-4"
+            activeTab={activeTab}
+            onTabChange={(id) => setActiveTab(id as any)}
+            tabs={[
+              { id: "basic", label: "Basic Info" },
+              ...(customFields && customFields.length > 0 ? [{ id: "custom", label: "Custom Fields" }] : [])
+            ]}
+          />
           
           <div className="p-6 space-y-4">
             {activeTab === "basic" && (

@@ -165,7 +165,10 @@ export const useCreateDepartment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (name: string) => api.post("/lookups/departments", { name }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["lookups", "departments"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lookups", "departments"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-departments"] });
+    },
   });
 };
 
@@ -173,7 +176,10 @@ export const useDeleteDepartment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (name: string) => api.delete(`/lookups/departments/name/${encodeURIComponent(name)}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["lookups", "departments"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lookups", "departments"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-departments"] });
+    },
   });
 };
 

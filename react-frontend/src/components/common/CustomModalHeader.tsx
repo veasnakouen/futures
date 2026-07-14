@@ -15,25 +15,35 @@ const CustomModalHeader: React.FC<CustomModalHeaderProps> = ({
   icon,
 }) => {
   return (
-    <div className="relative bg-gradient-to-r from-gray-50 to-white dark:from-gray-900/90 dark:to-gray-800/90 px-6 py-5 flex justify-between items-center rounded-t-xl border-b border-gray-100 dark:border-gray-800 shadow-sm">
-      <div className="flex flex-col">
-        <h3 className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
-          {icon && <span className="p-2 bg-blue-100/50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 rounded-lg">{icon}</span>}
-          {title}
-        </h3>
-        {subtitle && (
-          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 ml-1">
-            {subtitle}
-          </p>
+    <div className="relative overflow-hidden bg-white dark:bg-[#0d1117] px-6 py-5 flex justify-between items-start rounded-t-xl border-b border-gray-100 dark:border-white/[0.05]">
+      {/* Subtle top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-400 opacity-90" />
+
+      <div className="flex items-center gap-3.5">
+        {icon && (
+          <span className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-500/10 dark:to-violet-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
+            {icon}
+          </span>
         )}
+        <div className="flex flex-col">
+          <h3 className="text-[15px] font-bold text-gray-900 dark:text-white tracking-tight leading-snug">
+            {title}
+          </h3>
+          {subtitle && (
+            <p className="text-[10px] font-semibold text-gray-400 dark:text-white/30 uppercase tracking-[0.15em] mt-0.5">
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
+
       <button
         type="button"
         onClick={onClose}
-        className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-300 rounded-full p-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+        className="mt-0.5 flex-shrink-0 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/10 rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
         title="Close modal"
       >
-        <X size={20} />
+        <X size={15} strokeWidth={2.5} />
         <span className="sr-only">Close modal</span>
       </button>
     </div>

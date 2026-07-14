@@ -27,6 +27,7 @@ import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
 import authService from '../../../services/authService';
 import { toast } from "react-hot-toast";
+import SearchInput from "@/components/common/SearchInput";
 
 interface User {
   id: string;
@@ -299,15 +300,12 @@ const UserManagement = () => {
             </h2>
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <TextInput
-              id="user-search"
-              type="text"
-              icon={Search}
-              placeholder={t("search")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-64"
-            />
+            <SearchInput
+                        placeholder={t("search")}
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        containerClassName="w-full md:w-64"
+                      />
 
             {/* Column Selector Dropdown */}
             <div className="relative">

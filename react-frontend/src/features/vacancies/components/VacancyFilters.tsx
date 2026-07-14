@@ -1,6 +1,7 @@
 import React from "react";
 import { Search, X, Filter, LayoutGrid, List } from "lucide-react";
 import {Dropdown, DropdownItem} from '@/lib/flowbite-compat';
+import SearchInput from "@/components/common/SearchInput";
 
 interface VacancyFiltersProps {
   searchTerm: string;
@@ -26,28 +27,12 @@ const VacancyFilters: React.FC<VacancyFiltersProps> = ({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30 mb-4">
       <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1 group">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors z-10"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="Search vacancies, companies, or positions..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-10 py-2.5 bg-white dark:bg-gray-700/50 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
-          />
-          {searchTerm && (
-            <button
-              type="button"
-              onClick={() => setSearchTerm("")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors z-10"
-            >
-              <X size={16} />
-            </button>
-          )}
-        </div>
+        <SearchInput
+                placeholder="Search vacancies, companies, or positions..."
+                value={searchTerm}
+                onChange={setSearchTerm}
+                containerClassName="flex-1"
+              />
 
         <div className="flex items-center gap-2">
           {viewMode === "list" && (

@@ -69,13 +69,26 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
         },
       });
       const data = response.data;
-      setCases(
-        Array.isArray(data.content)
-          ? data.content
-          : Array.isArray(data)
-            ? data
-            : [],
-      );
+      const fetchedCases = Array.isArray(data.content)
+        ? data.content
+        : Array.isArray(data)
+          ? data
+          : [];
+          
+      setCases(fetchedCases);
+      
+      // Auto-select first case if none selected or if selected case is not in current view
+      if (fetchedCases.length > 0) {
+        setSelectedCase((prev: any) => {
+          if (!prev || !fetchedCases.find((c: any) => c.id === prev.id)) {
+            return fetchedCases[0];
+          }
+          return prev;
+        });
+      } else {
+        setSelectedCase(null);
+      }
+
       setTotalPages(data.totalPages || 0);
     } catch (err) {
       toast.error("Failed to load cases");

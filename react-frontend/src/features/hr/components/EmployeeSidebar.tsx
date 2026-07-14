@@ -34,7 +34,7 @@ const EmployeeSidebar: React.FC<EmployeeSidebarProps> = ({
       case "Assets & Equipment": return "assets";
       case "Documents": return "documents";
       case "History & Experience": return "history";
-      default: return "profile";
+      default: return item;
     }
   };
 
@@ -96,16 +96,15 @@ const EmployeeSidebar: React.FC<EmployeeSidebarProps> = ({
       {/* Navigation Menu */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mt-2">
         {menuItems.map((item) => {
-          const isActive = activeMenu === item || currentTab === item;
+          const isActive = activeMenu === item || getMenuId(activeMenu) === getMenuId(item);
           return (
             <button
               key={item}
               onClick={() => setActiveMenu(item)}
-              className={`w-full text-left px-6 py-4 font-bold text-sm transition-colors border-b last:border-b-0 border-gray-100 dark:border-gray-700 ${
-                isActive
-                  ? "bg-[#7a2323] text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-              }`}
+              className={`w-full text-left px-6 py-4 font-bold text-sm transition-colors border-b last:border-b-0 border-gray-100 dark:border-gray-700 ${isActive
+                ? "bg-[#7a2323] text-white"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                }`}
             >
               {item}
             </button>

@@ -8,6 +8,7 @@ import ModernPagination from "../../../components/common/ModernPagination";
 import GuestFormModal from "./GuestFormModal";
 import ConfirmModal from "../../../components/common/ConfirmModal";
 import { toast } from "react-hot-toast";
+import SearchInput from "@/components/common/SearchInput";
 
 export default function GuestList() {
   const [page, setPage] = useState(0);
@@ -48,16 +49,12 @@ export default function GuestList() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage hotel guests and profiles</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative flex-1 sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search by name or email..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
-            />
-          </div>
+          <SearchInput
+                    placeholder="Search by name or email..."
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                    containerClassName="flex-1 sm:w-64"
+                  />
           <button
             onClick={() => { setSelectedItem(null); setIsFormOpen(true); }}
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-sm shadow-blue-500/20 whitespace-nowrap"

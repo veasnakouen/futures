@@ -63,6 +63,8 @@ import { toast } from "react-hot-toast";
 import ModernTabs from "@/components/common/ModernTabs";
 import JobWorkspace from "./JobWorkspace";
 import VacancyFormModal from '@/features/vacancies/components/VacancyFormModal';
+import GlobalATSBoard from "./GlobalATSBoard";
+import SearchInput from "@/components/common/SearchInput";
 
 interface RecruitmentModuleProps {
   vacancies: any[];
@@ -97,7 +99,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
 }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<
-    "DASHBOARD" | "VACANCIES" | "CANDIDATES" | "PLACEMENTS"
+    "DASHBOARD" | "VACANCIES" | "CANDIDATES" | "PLACEMENTS" | "APPLICATIONS"
   >("DASHBOARD");
   const [searchQuery, setSearchQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -441,6 +443,11 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                 label: t("placementAudit"),
                 icon: <UserCheck size={14} />,
               },
+              {
+                id: "APPLICATIONS",
+                label: "ATS Pipeline",
+                icon: <CheckCircle size={14} />,
+              },
             ]}
             activeTab={activeTab}
             onTabChange={(id) => setActiveTab(id as any)}
@@ -450,13 +457,12 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto flex-1 xl:flex-none justify-end">
           <div className="relative flex-grow xl:flex-initial xl:w-48">
             {/* <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10" /> */}
-            <TextInput
-              icon={Search}
-              placeholder="Search talent, jobs..."
-              className="pl-10 rounded-md w-full"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <SearchInput
+                        placeholder="Search talent, jobs..."
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        containerClassName="pl-10 rounded-md w-full"
+                      />
           </div>
           <div className="flex gap-2 shrink-0">
             {activeTab !== "PLACEMENTS" && activeTab !== "DASHBOARD" ? (
@@ -495,7 +501,11 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
       </div>
 
       <AnimatePresence mode="wait">
-        {activeTab === "DASHBOARD" && (
+        {activeTab === "APPLICATIONS" && (
+        <GlobalATSBoard />
+      )}
+
+      {activeTab === "DASHBOARD" && (
           <motion.div
             key="dashboard"
             initial={{ opacity: 0, y: 15 }}

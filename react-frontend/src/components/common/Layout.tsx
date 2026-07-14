@@ -146,9 +146,12 @@ const Layout = ({ children, title }: LayoutProps) => {
   const isActive = (path: string) => {
     if (path.includes("?")) {
       const [pathname, search] = path.split("?");
-      return location.pathname === pathname && location.search.includes(search);
+      return location.pathname.startsWith(pathname) && location.search.includes(search);
     }
-    return location.pathname === path && !location.search;
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname === path || location.pathname.startsWith(path + "/");
   };
 
   const handleLogout = () => {
@@ -158,31 +161,31 @@ const Layout = ({ children, title }: LayoutProps) => {
 
   const getSidebarBgClass = () => {
     if (sidebarTheme === "dark")
-      return "bg-gray-900 border-gray-800 text-gray-300";
+      return "bg-gray-950 border-gray-800/60 text-gray-300";
     if (sidebarTheme === "brand")
-      return "bg-indigo-900 border-indigo-800 text-indigo-100";
-    return "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700";
+      return "bg-gradient-to-b from-indigo-950 to-violet-950 border-indigo-800/50 text-indigo-100";
+    return "bg-white/95 dark:bg-[#0d1117] border-gray-200/80 dark:border-white/[0.04]";
   };
 
   const getTopbarBgClass = () => {
     if (topbarTheme === "dark")
-      return "bg-gray-900/95 border-gray-800 text-white";
+      return "bg-gray-950/95 border-gray-800/60 text-white shadow-lg shadow-black/10";
     if (topbarTheme === "brand")
-      return "bg-indigo-900/95 border-indigo-800 text-white";
-    return "bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700";
+      return "bg-gradient-to-r from-indigo-950/95 to-violet-950/95 border-indigo-800/50 text-white shadow-lg";
+    return "bg-white/85 dark:bg-[#0d1117]/90 border-gray-200/80 dark:border-white/[0.04] shadow-sm dark:shadow-black/20";
   };
 
   const getSidebarLinkClass = (active: boolean) => {
     if (active) {
-      if (sidebarTheme === "brand") return "text-white font-semibold shadow-sm";
-      if (sidebarTheme === "dark") return "text-white font-semibold shadow-sm";
-      return "text-blue-600 dark:text-blue-400 font-semibold shadow-sm";
+      if (sidebarTheme === "brand") return "bg-white/20 text-white font-bold shadow-sm rounded-md";
+      if (sidebarTheme === "dark") return "bg-white/10 text-white font-bold shadow-sm rounded-md";
+      return "bg-indigo-100/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm rounded-md";
     }
     if (sidebarTheme === "brand")
-      return "text-indigo-200 hover:bg-indigo-800 hover:text-white";
+      return "text-indigo-200/80 hover:bg-white/10 hover:text-white rounded-md";
     if (sidebarTheme === "dark")
-      return "text-gray-400 hover:bg-gray-800 hover:text-white";
-    return "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50";
+      return "text-gray-400 hover:bg-white/5 hover:text-white rounded-md";
+    return "text-gray-500 dark:text-gray-400 hover:bg-indigo-50/80 dark:hover:bg-white/[0.04] hover:text-indigo-600 dark:hover:text-indigo-300 rounded-md";
   };
 
   const navSections: {
@@ -303,7 +306,7 @@ const Layout = ({ children, title }: LayoutProps) => {
 
   return (
     <div
-      className={`flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-hidden ${sidebarPosition ==="right"?"flex-row-reverse":""}`}
+      className={`flex h-screen bg-[#f4f5f9] dark:bg-[#080c14] transition-colors overflow-hidden ${sidebarPosition ==="right"?"flex-row-reverse":""}`}
     >
       {/* Mobile Backdrop */}
       {isMenuOpen && (
@@ -320,24 +323,30 @@ const Layout = ({ children, title }: LayoutProps) => {
         <div
           className={`p-6 flex items-center ${isSidebarCollapsed ?"justify-center":"justify-between"}`}
         >
-          {!isSidebarCollapsed && (
+        {!isSidebarCollapsed && (
             <div className="flex items-center gap-3">
               {appLogo ? (
                 <img
                   src={appLogo}
                   alt="Logo"
-                  className="max-w-[40px] max-h-[40px] object-contain rounded-md shadow-sm"
+                  className="max-w-[36px] max-h-[36px] object-contain rounded-lg shadow-sm"
                 />
               ) : (
-                <div className="bg-blue-600 p-2 rounded-md text-white shadow-lg shadow-blue-500/20">
-                  <Shield size={24} />
+                <div className="relative">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                    <Shield size={18} />
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900" />
                 </div>
               )}
-              <span
-                className={`font-bold text-xl tracking-tight ${sidebarTheme ==="brand"?"text-white":"dark:text-white"}`}
-              >
-                MTP
-              </span>
+              <div className="flex flex-col">
+                <span
+                  className={`font-extrabold text-base tracking-tight leading-none ${sidebarTheme ==="brand"?"text-white":"dark:text-white text-gray-900"}`}
+                >
+                  MTP
+                </span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-indigo-400 dark:text-indigo-400 leading-none mt-0.5">Platform</span>
+              </div>
             </div>
           )}
           {isSidebarCollapsed &&
@@ -345,15 +354,15 @@ const Layout = ({ children, title }: LayoutProps) => {
               <img
                 src={appLogo}
                 alt="Logo"
-                className="max-w-[40px] max-h-[40px] object-contain rounded-md shadow-sm"
+                className="max-w-[36px] max-h-[36px] object-contain rounded-lg shadow-sm"
                 title="MTP System"
               />
             ) : (
               <div
-                className="bg-blue-600 p-2 rounded-md text-white shadow-lg shadow-blue-500/20"
+                className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30"
                 title="MTP System"
               >
-                <Shield size={24} />
+                <Shield size={18} />
               </div>
             ))}
           <button
@@ -378,14 +387,14 @@ const Layout = ({ children, title }: LayoutProps) => {
               {!isSidebarCollapsed && (
                 <button
                   onClick={() => toggleSection(section.title)}
-                  className="w-full flex items-center justify-between px-4 mb-2 mt-4 group outline-none cursor-pointer"
+                  className="w-full flex items-center justify-between px-3 mb-1 mt-5 group outline-none cursor-pointer"
                 >
-                  <span className="text-[9px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400/70 dark:text-white/25 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
                     {section.title}
                   </span>
                   <ChevronDown
-                    size={14}
-                    className={`text-gray-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-transform duration-300 ${
+                    size={12}
+                    className={`text-gray-400/50 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-transform duration-300 ${
                       !isExpanded ? "-rotate-90" : ""
                     }`}
                   />
@@ -402,24 +411,24 @@ const Layout = ({ children, title }: LayoutProps) => {
                         to={link.to}
                         title={isSidebarCollapsed ? link.label : undefined}
                         onClick={() => setIsMenuOpen(false)}
-                        className={`relative flex items-center ${isSidebarCollapsed ?"justify-center p-3":"px-4 py-2.5"} rounded-md transition-colors ${getSidebarLinkClass(active)}`}
+                        className={`relative flex items-center ${isSidebarCollapsed ?"justify-center p-3":"px-3 py-2"} rounded-xl transition-all duration-200 group ${active ? "font-bold shadow-sm" : "text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50/50 dark:hover:bg-white/[0.02]"}`}
                       >
                         {active && (
                           <motion.div
                             layoutId="active-sidebar-item"
-                            className={`absolute inset-0 rounded-md ${sidebarTheme ==="brand"?"bg-indigo-800": sidebarTheme ==="dark"?"bg-gray-800":"bg-blue-50 dark:bg-blue-900/30"}`}
+                            className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-500/20 to-violet-500/20 dark:from-indigo-500/30 dark:to-violet-500/30 border border-indigo-200 dark:border-indigo-500/30 shadow-inner"
                             initial={false}
                             transition={{
                               type: "spring",
-                              stiffness: 300,
-                              damping: 30,
+                              stiffness: 380,
+                              damping: 35,
                             }}
                           />
                         )}
                         <div className={`relative z-10 flex items-center gap-3`}>
-                          <link.icon size={isSidebarCollapsed ? 22 : 18} />
+                          <link.icon size={isSidebarCollapsed ? 20 : 16} className={active ? "text-indigo-600 dark:text-indigo-400" : "group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"} />
                           {!isSidebarCollapsed && (
-                            <span className="text-xs font-semibold">
+                            <span className={`text-[11.5px] font-semibold tracking-tight ${active ? "text-indigo-700 dark:text-indigo-300 font-extrabold" : "transition-colors"}`}>
                               {link.label}
                             </span>
                           )}
@@ -448,29 +457,29 @@ const Layout = ({ children, title }: LayoutProps) => {
           })}
         </nav>
 
-        <div className="p-4 border-t flex flex-col gap-2 shrink-0">
+        <div className="p-4 border-t border-gray-100 dark:border-white/[0.04] flex flex-col gap-2 shrink-0">
           <button
             onClick={toggleSidebar}
-            className={`flex items-center hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md transition-all text-gray-500 dark:text-gray-400 ${isSidebarCollapsed ?"justify-center p-2.5":"gap-3 px-4 py-2.5"}`}
+            className={`flex items-center hover:bg-indigo-50 dark:hover:bg-white/[0.04] rounded-xl transition-all text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 ${isSidebarCollapsed ?"justify-center p-2.5":"gap-3 px-3 py-2"}`}
             title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isSidebarCollapsed ? (
-              <ChevronRight size={20} />
+              <ChevronRight size={18} />
             ) : (
               <>
-                <ChevronLeft size={18} />
-                <span className="text-xs font-semibold">Collapse Sidebar</span>
+                <ChevronLeft size={16} />
+                <span className="text-[11px] font-semibold">Collapse</span>
               </>
             )}
           </button>
           <div
-            className={`flex items-center ${isSidebarCollapsed ?"justify-center p-2":"gap-3 px-4 py-2"} bg-gray-50 dark:bg-gray-700/50 rounded-md`}
+            className={`flex items-center ${isSidebarCollapsed ?"justify-center p-2":"gap-2.5 px-3 py-2"} bg-emerald-50/60 dark:bg-emerald-500/[0.06] rounded-xl border border-emerald-200/60 dark:border-emerald-500/10`}
             title={isSidebarCollapsed ? "System Operational" : undefined}
           >
-            <div className="w-2 h-2 rounded-md bg-green-500 animate-pulse shrink-0"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             {!isSidebarCollapsed && (
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest truncate">
-                System Operational
+              <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest truncate">
+                All Systems Go
               </span>
             )}
           </div>
@@ -480,7 +489,7 @@ const Layout = ({ children, title }: LayoutProps) => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <header
-          className={`h-16 backdrop-blur-md border-b flex items-center justify-between px-4 lg:px-8 z-20 transition-colors ${getTopbarBgClass()}`}
+          className={`h-14 backdrop-blur-xl border-b flex items-center justify-between px-4 lg:px-6 z-20 transition-all ${getTopbarBgClass()}`}
         >
           <div className="flex items-center gap-3">
               <button
@@ -496,22 +505,22 @@ const Layout = ({ children, title }: LayoutProps) => {
             {/* Tenant switcher dropdown removed per user request */}
             <button
               onClick={() => setIsNetworkOpen(true)}
-              className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-md transition-colors relative"
+              className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-white/[0.05] rounded-xl transition-all relative"
               title="My Network"
             >
-              <Users size={20} />
+              <Users size={18} />
             </button>
             <Dropdown
               arrowIcon={false}
               inline
               label={
                 <div
-                  className="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-md transition-colors relative cursor-pointer"
+                  className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-white/[0.05] rounded-xl transition-all relative cursor-pointer"
                   title="Notifications"
                 >
-                  <Bell size={20} />
+                  <Bell size={18} />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-gray-800">
+                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-md ring-2 ring-white dark:ring-[#0d1117]">
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                   )}
@@ -561,19 +570,19 @@ const Layout = ({ children, title }: LayoutProps) => {
               arrowIcon={false}
               inline
               label={
-                <div className="flex items-center gap-2 p-1.5 pr-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full cursor-pointer transition-all group">
-                  <div className="w-10 h-10 rounded-full shrink-0 bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 border-2 border-white shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2.5 p-1.5 pr-3 hover:bg-gray-100/80 dark:hover:bg-white/[0.05] rounded-xl cursor-pointer transition-all group">
+                  <div className="w-8 h-8 rounded-xl shrink-0 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-500/20 shadow-sm overflow-hidden">
                     {user?.photo ? (
                       <img
                         src={getFaceFocusedUrl(user.photo, 80)}
-                        className="object-cover w-full h-full rounded-full"
+                        className="object-cover w-full h-full rounded-xl"
                       />
                     ) : (
-                      <UserCircle size={20} />
+                      <UserCircle size={18} />
                     )}
                   </div>
                   <div className="hidden sm:block text-left">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase leading-none mb-0.5">
+                    <p className="text-[9px] font-bold text-gray-400 dark:text-white/30 uppercase leading-none mb-0.5 tracking-wider">
                       {Array.isArray(user?.roles) &&
                         user.roles.some((r: any) =>
                           (typeof r === "string" ? r : r?.name || "")
@@ -590,13 +599,13 @@ const Layout = ({ children, title }: LayoutProps) => {
                           ? "Administrator"
                           : "Standard User"}
                     </p>
-                    <p className="text-xs font-black dark:text-white leading-none">
+                    <p className="text-[12px] font-bold dark:text-white text-gray-800 leading-none">
                       {user?.username || "Guest"}
                     </p>
                   </div>
                   <ChevronDown
-                    size={14}
-                    className="text-gray-400 group-hover:text-blue-600 transition-transform duration-300 ml-1 [[aria-expanded=true]_&]:rotate-180"
+                    size={12}
+                    className="text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-transform duration-300 ml-0.5 [[aria-expanded=true]_&]:rotate-180"
                   />
                 </div>
               }
@@ -697,7 +706,7 @@ const Layout = ({ children, title }: LayoutProps) => {
             </Dropdown>
           </div>
         </header>
-        <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900/50 p-4 lg:p-6">
+        <div className="flex-1 overflow-y-auto bg-[#f4f5f9] dark:bg-[#080c14] p-4 lg:p-6">
           {children}
         </div>
         <Chat />

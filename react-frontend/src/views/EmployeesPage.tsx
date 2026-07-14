@@ -645,14 +645,14 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
     setItemToDelete(null);
   };
 
-  const handleUpdateSalary = async (employeeId: number, newSalary: number) => {
+  const handleUpdateSalary = async (employeeId: number, salaryData: any) => {
     try {
       const empRes = await api.get(`/employees/${employeeId}`);
       const currentEmp = empRes.data;
 
       const updatedData = {
         ...currentEmp,
-        basicSalary: newSalary,
+        ...salaryData,
         department: currentEmp.department?.name || currentEmp.department,
         position: currentEmp.position?.name || currentEmp.position,
       };

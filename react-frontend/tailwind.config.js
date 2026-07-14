@@ -8,6 +8,17 @@ export default {
 	],
 	theme: {
 		extend: {
+			borderRadius: {
+				'none': '0',
+				'sm': '0.125rem', // 2px
+				DEFAULT: '0.25rem', // 4px
+				'md': '0.25rem', // 4px
+				'lg': '0.25rem', // 4px
+				'xl': '0.375rem', // 6px
+				'2xl': '0.375rem', // 6px
+				'3xl': '0.5rem', // 8px
+				'full': '9999px',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -66,6 +77,18 @@ export default {
 			fontFamily: {
 				sans: ['Inter', 'sans-serif'],
 				heading: ['Outfit', 'sans-serif'],
+			},
+			fontSize: {
+				xs: 'clamp(0.7rem, 0.65rem + 0.25vw, 0.75rem)',
+				sm: 'clamp(0.8rem, 0.75rem + 0.25vw, 0.875rem)',
+				base: 'clamp(0.9rem, 0.85rem + 0.25vw, 1rem)',
+				lg: 'clamp(1rem, 0.95rem + 0.25vw, 1.125rem)',
+				xl: 'clamp(1.125rem, 1.075rem + 0.25vw, 1.25rem)',
+				'2xl': 'clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem)',
+				'3xl': 'clamp(1.5rem, 1.3rem + 1vw, 1.875rem)',
+				'4xl': 'clamp(1.875rem, 1.625rem + 1.25vw, 2.25rem)',
+				'5xl': 'clamp(2.25rem, 1.875rem + 1.875vw, 3rem)',
+				'6xl': 'clamp(2.75rem, 2.25rem + 2.5vw, 3.75rem)',
 			},
 			keyframes: {
 				'accordion-down': {

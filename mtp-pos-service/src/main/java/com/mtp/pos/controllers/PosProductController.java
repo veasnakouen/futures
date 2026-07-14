@@ -22,6 +22,13 @@ public class PosProductController {
         return ResponseEntity.ok(service.getAllProducts());
     }
 
+    @GetMapping("/generate-sku")
+    public ResponseEntity<java.util.Map<String, String>> generateSku() {
+        java.util.Map<String, String> response = new java.util.HashMap<>();
+        response.put("sku", service.generateSku());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<PosProductDto> createProduct(@RequestBody PosProductDto dto) {
         return ResponseEntity.ok(service.createProduct(dto));

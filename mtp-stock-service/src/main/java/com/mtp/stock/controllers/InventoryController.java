@@ -22,10 +22,26 @@ public class InventoryController {
     @Autowired
     private com.mtp.stock.services.ImageUploadService imageUploadService;
 
+    @Autowired
+    private com.mtp.stock.repositories.InventoryTransactionRepository transactionRepository;
+
+    @Autowired
+    private com.mtp.stock.repositories.AssetCategoryRepository categoryRepository;
+
     @GetMapping
-    @Cacheable(value = "inventory", key = "#category != null ? #category + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort : 'all-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
-    public Page<InventoryItem> getAll(@RequestParam(required = false) String category, Pageable pageable) {
-        if (category != null && !category.isEmpty()) {
+    @Cacheable(value = "inventory", key = "#search + '-' + #category + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
+    public Page<InventoryItem> getAll(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String category,
+            Pageable pageable) {
+        boolean hasSearch = search != null && !search.trim().isEmpty();
+        boolean hasCategory = category != null && !category.trim().isEmpty();
+
+        if (hasSearch && hasCategory) {
+            return inventoryRepository.findBySearchAndCategory(search.trim(), category.trim(), pageable);
+        } else if (hasSearch) {
+            return inventoryRepository.findBySearch(search.trim(), pageable);
+        } else if (hasCategory) {
             return inventoryRepository.findByCategory(category, pageable);
         }
         return inventoryRepository.findAll(pageable);
@@ -34,17 +50,47 @@ public class InventoryController {
     @GetMapping("/stats")
     @Cacheable(value = "inventory", key = "'stats'")
     public ResponseEntity<?> getStats() {
-        List<InventoryItem> all = inventoryRepository.findAll();
-        double valuation = all.stream()
-                .mapToDouble(i -> i.calculateTotalValue().doubleValue()).sum();
-        long lowStock = all.stream().filter(i -> i.getStockQuantity() <= (i.getReorderLevel() != null ? i.getReorderLevel() : 0) && i.getStockQuantity() > 0).count();
-        long outOfStock = all.stream().filter(i -> i.getStockQuantity() <= 0).count();
+        Double valuation = inventoryRepository.sumValuation();
+        Long lowStock = inventoryRepository.countLowStock();
+        Long outOfStock = inventoryRepository.countOutOfStock();
+        long totalItems = inventoryRepository.count();
 
         java.util.Map<String, Object> stats = new java.util.HashMap<>();
-        stats.put("valuation", valuation);
-        stats.put("lowStock", lowStock);
-        stats.put("outOfStock", outOfStock);
+        stats.put("valuation", valuation != null ? valuation : 0.0);
+        stats.put("lowStock", lowStock != null ? lowStock : 0L);
+        stats.put("outOfStock", outOfStock != null ? outOfStock : 0L);
+        stats.put("totalItems", totalItems);
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/generate-sku")
+    public ResponseEntity<java.util.Map<String, String>> generateSku(@RequestParam(required = false) Long categoryId) {
+        String prefix = "ITM";
+        
+        if (categoryId != null) {
+            java.util.Optional<com.mtp.stock.models.AssetCategory> catOpt = categoryRepository.findById(categoryId);
+            if (catOpt.isPresent() && catOpt.get().getPrefixCode() != null && !catOpt.get().getPrefixCode().trim().isEmpty()) {
+                prefix = catOpt.get().getPrefixCode().trim().toUpperCase();
+            }
+        }
+        
+        String maxSku = inventoryRepository.findMaxSkuByPrefix(prefix);
+        String newSku = prefix + "-00001";
+        
+        if (maxSku != null && maxSku.startsWith(prefix + "-")) {
+            try {
+                String numPart = maxSku.substring(prefix.length() + 1);
+                int nextNum = Integer.parseInt(numPart) + 1;
+                newSku = String.format("%s-%05d", prefix, nextNum);
+            } catch (Exception e) {
+                // If parsing fails, stick to default or random
+                newSku = prefix + "-" + System.currentTimeMillis();
+            }
+        }
+        
+        java.util.Map<String, String> response = new java.util.HashMap<>();
+        response.put("sku", newSku);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/categories")
@@ -73,6 +119,11 @@ public class InventoryController {
     @PostMapping
     @CacheEvict(value = { "dashboardStats", "inventory" }, allEntries = true)
     public InventoryItem create(@jakarta.validation.Valid @RequestBody InventoryItem item) {
+        if (item.getSku() == null || item.getSku().trim().isEmpty()) {
+            Long catId = item.getCategory() != null ? item.getCategory().getId() : null;
+            item.setSku(generateSku(catId).getBody().get("sku"));
+        }
+
         if (item.getImageUrl() != null && item.getImageUrl().startsWith("data:image")) {
             try {
                 String url = imageUploadService.uploadBase64Image(item.getImageUrl(), "inventory");
@@ -86,7 +137,20 @@ public class InventoryController {
                 item.setImageUrl(item.getImageUrl());
             }
         }
-        return inventoryRepository.save(item);
+        
+        InventoryItem savedItem = inventoryRepository.save(item);
+        
+        if (savedItem.getStockQuantity() != null && savedItem.getStockQuantity() > 0) {
+            com.mtp.stock.models.InventoryTransaction tx = new com.mtp.stock.models.InventoryTransaction();
+            tx.setItem(savedItem);
+            tx.setType(com.mtp.stock.enums.InventoryTransactionType.ADJUSTMENT);
+            tx.setQuantity(savedItem.getStockQuantity());
+            tx.setRemarks("Initial Stock");
+            tx.setCreatedBy("admin");
+            transactionRepository.save(tx);
+        }
+        
+        return savedItem;
     }
 
     @PutMapping("/{id}")
@@ -102,7 +166,11 @@ public class InventoryController {
             item.setPrice(itemDetails.getPrice());
             item.setCostPrice(itemDetails.getCostPrice());
             item.setDiscountPercentage(itemDetails.getDiscountPercentage());
-            item.setStockQuantity(itemDetails.getStockQuantity());
+            
+            Integer oldStock = item.getStockQuantity() != null ? item.getStockQuantity() : 0;
+            Integer newStock = itemDetails.getStockQuantity() != null ? itemDetails.getStockQuantity() : 0;
+            
+            item.setStockQuantity(newStock);
             item.setReorderLevel(itemDetails.getReorderLevel());
             item.setWeight(itemDetails.getWeight());
             item.setActive(itemDetails.getActive());
@@ -127,7 +195,19 @@ public class InventoryController {
                 item.setImageUrl(itemDetails.getImageUrl());
             }
 
-            return ResponseEntity.ok(inventoryRepository.save(item));
+            InventoryItem savedItem = inventoryRepository.save(item);
+            
+            if (!oldStock.equals(newStock)) {
+                com.mtp.stock.models.InventoryTransaction tx = new com.mtp.stock.models.InventoryTransaction();
+                tx.setItem(savedItem);
+                tx.setType(com.mtp.stock.enums.InventoryTransactionType.ADJUSTMENT);
+                tx.setQuantity(newStock - oldStock);
+                tx.setRemarks("Manual Stock Adjustment via Edit");
+                tx.setCreatedBy("admin");
+                transactionRepository.save(tx);
+            }
+
+            return ResponseEntity.ok(savedItem);
         }).orElse(ResponseEntity.notFound().build());
     }
 

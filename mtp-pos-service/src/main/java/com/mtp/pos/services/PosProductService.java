@@ -21,10 +21,15 @@ public class PosProductService {
     }
 
     public PosProductDto createProduct(PosProductDto dto) {
+        String sku = dto.getSku();
+        if (sku == null || sku.trim().isEmpty()) {
+            sku = generateSku();
+        }
+
         PosProduct product = PosProduct.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
-                .sku(dto.getSku())
+                .sku(sku)
                 .price(dto.getPrice())
                 .stockQuantity(dto.getStockQuantity())
                 .category(dto.getCategory())
@@ -60,6 +65,23 @@ public class PosProductService {
 
     public void deleteProduct(String id) {
         repository.deleteById(id);
+    }
+
+    public String generateSku() {
+        String prefix = "POS";
+        String maxSku = repository.findMaxSkuByPrefix(prefix);
+        String newSku = prefix + "-00001";
+        
+        if (maxSku != null && maxSku.startsWith(prefix + "-")) {
+            try {
+                String numPart = maxSku.substring(prefix.length() + 1);
+                int nextNum = Integer.parseInt(numPart) + 1;
+                newSku = String.format("%s-%05d", prefix, nextNum);
+            } catch (Exception e) {
+                newSku = prefix + "-" + System.currentTimeMillis();
+            }
+        }
+        return newSku;
     }
 
     private PosProductDto mapToDto(PosProduct product) {

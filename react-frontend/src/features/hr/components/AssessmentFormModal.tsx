@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {Modal, ModalBody, Button, TextInput, Textarea, Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Select} from '@/lib/flowbite-compat';
+import { Modal, ModalBody, Button, TextInput, Textarea, Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Select } from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import { X, FileText, Save, Plus, Trash2, Printer } from "lucide-react";
 import toast from "react-hot-toast";
@@ -47,7 +47,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
     title: string;
     message: string;
     onConfirm: () => void;
-  }>({ isOpen: false, title: "", message: "", onConfirm: () => {} });
+  }>({ isOpen: false, title: "", message: "", onConfirm: () => { } });
 
   const [items, setItems] = useState<
     { itemName: string; unitType: string; quantity: number; price: number }[]
@@ -537,7 +537,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
                 {assessments?.map((a: any, i) => (
                   <TableRow
                     key={a.id || i}
-                    className={`hover:bg-blue-50/50 dark:hover:bg-blue-900/20 cursor-pointer ${selectedAssessmentId === a.id ?"bg-blue-50 dark:bg-blue-900/40 border-l-4 border-blue-500":""}`}
+                    className={`hover:bg-blue-50/50 dark:hover:bg-blue-900/20 cursor-pointer ${selectedAssessmentId === a.id ? "bg-blue-50 dark:bg-blue-900/40 border-l-4 border-blue-500" : ""}`}
                     onClick={() => loadAssessment(a)}
                   >
                     <TableCell className="py-2 px-1 text-center font-mono text-blue-600">

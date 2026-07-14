@@ -88,6 +88,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
             @Param("status") String status,
             @Param("contract") String contract,
             Pageable pageable);
+    List<Employee> findByProbationEndDate(java.time.LocalDate endDate);
 
     /**
      * Interface-based projection — Spring Data JPA auto-implements this.

@@ -2367,7 +2367,6 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
             </div>
           </ModalBody>
         </Modal>
-      </div>
       <ClientRegistrationModal
         clientId={Array.isArray(id) ? id[0] : id}
         isOpen={isClientModalOpen}

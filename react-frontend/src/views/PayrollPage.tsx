@@ -23,6 +23,7 @@ import {
 import api from "../services/api";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import SearchInput from "@/components/common/SearchInput";
 
 const PayrollPage = ({ isDark, setIsDark }: any) => {
   const [employees, setEmployees] = useState<any[]>([]);
@@ -183,28 +184,12 @@ const PayrollPage = ({ isDark, setIsDark }: any) => {
               Staff Compensation Ledger
             </h4>
             <div className="flex gap-2">
-              <div className="relative flex items-center group w-64">
-                <Search
-                  className="absolute left-3 text-gray-400 group-focus-within:text-blue-500 transition-colors z-10"
-                  size={16}
-                />
-                <input
-                  type="text"
-                  placeholder="Search name..."
-                  className="w-full text-gray-900 dark:text-white rounded-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm h-10 pl-10 pr-8 bg-white dark:bg-gray-800"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                {search && (
-                  <button
-                    type="button"
-                    onClick={() => setSearch("")}
-                    className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
+              <SearchInput
+                            placeholder="Search name..."
+                            value={search}
+                            onChange={setSearch}
+                            containerClassName="flex items-center w-64"
+                          />
               <Button color="gray" className="rounded-md">
                 <Filter size={18} />
               </Button>

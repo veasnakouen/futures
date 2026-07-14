@@ -6,7 +6,7 @@
 			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="bin/main" path="src/main/resources">
+	<classpathentry excluding="**" kind="src" output="bin/main" path="src/main/resources">
 		<attributes>
 			<attribute name="gradle_scope" value="main"/>
 			<attribute name="gradle_used_by_scope" value="main,test"/>
@@ -19,5 +19,7 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/K-VeaSna/.m2/repository/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" sourcepath="C:/Users/K-VeaSna/.m2/repository/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/K-VeaSna/.m2/repository/commons-fileupload/commons-fileupload/1.5/commons-fileupload-1.5.jar" sourcepath="C:/Users/K-VeaSna/.m2/repository/commons-fileupload/commons-fileupload/1.5/commons-fileupload-1.5-sources.jar"/>
 	<classpathentry kind="output" path="bin/default"/>
 </classpath>

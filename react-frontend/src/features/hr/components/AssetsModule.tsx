@@ -42,6 +42,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { assetSchema, type AssetFormData } from '@/schemas/assetSchema';
 import api from '@/services/api';
+import SearchInput from "@/components/common/SearchInput";
 
 interface AssetsModuleProps {
   globalAssets: any[];
@@ -1866,14 +1867,12 @@ const AssetsModule: React.FC<AssetsModuleProps> = ({
               </Label>
               <div className="relative">
                 <div className="relative">
-                  <TextInput
-                    icon={Search}
-                    placeholder="Search staff..."
-                    className="rounded-md text-xs [&_input]:border-transparent [&_input]:shadow-sm focus:[&_input]:ring-0 focus:[&_input]:border-transparent"
-                    value={assignSearch}
-                    onChange={(e) => setAssignSearch(e.target.value)}
-                    autoComplete="off"
-                  />
+                  <SearchInput
+                                    placeholder="Search staff..."
+                                    value={assignSearch}
+                                    onChange={setAssignSearch}
+                                    containerClassName="rounded-md text-xs [&_input]:border-transparent [&_input]:shadow-sm focus:[&_input]:ring-0 focus:[&_input]:border-transparent"
+                                  />
                 </div>
 
                 {assignSearch.trim().length > 0 && (

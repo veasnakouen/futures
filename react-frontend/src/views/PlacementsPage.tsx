@@ -29,6 +29,7 @@ import { uploadToCloudinary } from "../utils/cloudinary";
 import { Camera } from "lucide-react";
 import ImageCropperModal from "@/components/common/ImageCropperModal";
 import { useDebounce } from "../hooks/useDebounce";
+import SearchInput from "@/components/common/SearchInput";
 
 const PlacementsPage = ({ isDark, setIsDark }: any) => {
   const queryClient = useQueryClient();
@@ -305,28 +306,12 @@ const PlacementsPage = ({ isDark, setIsDark }: any) => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm relative z-30 mb-4">
           <div className="flex flex-col xl:flex-row gap-4">
-            <div className="relative flex-1 group">
-              <Search
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors z-10"
-              />
-              <input
-                type="text"
-                placeholder="Search company or candidate..."
-                className="w-full pl-12 pr-10 py-2.5 bg-white dark:bg-gray-700/50 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-gray-900 dark:text-white transition-all text-sm shadow-sm"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors z-10"
-                >
-                  <X size={16} />
-                </button>
-              )}
-            </div>
+            <SearchInput
+                        placeholder="Search company or candidate..."
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        containerClassName="flex-1"
+                      />
             <div className="flex items-center gap-3 overflow-x-auto pb-1 xl:pb-0 hide-scrollbar">
               <select
                 value={statusFilter}

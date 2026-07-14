@@ -57,7 +57,7 @@ const ImportHistoryPage: React.FC = () => {
   };
 
   return (
-    <> {}} title="Import Control Center">
+    <> 
       <div className="p-8 space-y-8 animate-fade-in">
         <div className="flex justify-between items-center">
           <div>

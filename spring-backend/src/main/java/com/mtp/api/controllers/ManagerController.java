@@ -36,28 +36,24 @@ public class ManagerController {
                 .or(() -> employeeRepository.findByEmailIgnoreCase(username));
     }
 
-    private String getCurrentManagerName(Optional<Employee> currentEmpOpt) {
+    private Optional<String> getCurrentManagerName(Optional<Employee> currentEmpOpt) {
         if (currentEmpOpt.isPresent()) {
             Employee emp = currentEmpOpt.get();
-            return emp.getFirstNameEnglish() + " " + emp.getLastNameEnglish();
+            return Optional.of(emp.getFirstNameEnglish() + " " + emp.getLastNameEnglish());
         }
-        // Fallback
-        return "Manager Name";
+        return Optional.empty();
     }
 
     @GetMapping("/reports")
     public ResponseEntity<List<Employee>> getDirectReports() {
         Optional<Employee> currentEmp = getCurrentEmployee();
+        Optional<String> managerName = getCurrentManagerName(currentEmp);
         
-        // Use a static manager name for testing if current user isn't assigned properly
-        String managerName = getCurrentManagerName(currentEmp);
-        
-        List<Employee> reports = employeeRepository.findByManagerIgnoreCase(managerName);
-        
-        // For demonstration, if no direct reports found, just return first 3 employees
-        if (reports.isEmpty()) {
-            reports = employeeRepository.findAll().stream().limit(3).collect(Collectors.toList());
+        if (managerName.isEmpty()) {
+            return ResponseEntity.ok(List.of());
         }
+        
+        List<Employee> reports = employeeRepository.findByManagerIgnoreCase(managerName.get());
         
         return ResponseEntity.ok(reports);
     }
@@ -65,13 +61,16 @@ public class ManagerController {
     @GetMapping("/leaves/pending")
     public ResponseEntity<List<LeaveRequest>> getPendingLeaves() {
         Optional<Employee> currentEmp = getCurrentEmployee();
-        String managerName = getCurrentManagerName(currentEmp);
+        Optional<String> managerName = getCurrentManagerName(currentEmp);
         
-        List<Employee> reports = employeeRepository.findByManagerIgnoreCase(managerName);
+        if (managerName.isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
         
-        // For demonstration, if no reports found, use all employees to find some leaves
+        List<Employee> reports = employeeRepository.findByManagerIgnoreCase(managerName.get());
+        
         if (reports.isEmpty()) {
-            reports = employeeRepository.findAll();
+            return ResponseEntity.ok(List.of());
         }
         
         List<Integer> reportIds = reports.stream().map(Employee::getId).collect(Collectors.toList());

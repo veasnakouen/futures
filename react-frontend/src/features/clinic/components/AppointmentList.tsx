@@ -8,6 +8,7 @@ import ModernPagination from "../../../components/common/ModernPagination";
 import AppointmentFormModal from "./AppointmentFormModal";
 import ConfirmModal from "../../../components/common/ConfirmModal";
 import { toast } from "react-hot-toast";
+import SearchInput from "@/components/common/SearchInput";
 
 export default function AppointmentList() {
   const [page, setPage] = useState(0);
@@ -56,16 +57,12 @@ export default function AppointmentList() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative flex-1 sm:w-64 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search notes or ID..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
-            />
-          </div>
+          <SearchInput
+                    placeholder="Search notes or ID..."
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                    containerClassName="flex-1 sm:w-64"
+                  />
           <div className="relative group">
             <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
             <select 

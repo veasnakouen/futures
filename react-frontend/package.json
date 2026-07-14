@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--max-http-header-size=16777216 next dev -p 3000",
+    "dev": "cross-env NODE_OPTIONS=--max-http-header-size=16777216 next dev --turbo -p 3000",
     "build": "next build",
     "start": "next start"
   },

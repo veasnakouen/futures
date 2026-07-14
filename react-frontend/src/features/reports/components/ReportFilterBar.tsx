@@ -15,6 +15,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
+import SearchInput from "@/components/common/SearchInput";
 
 interface ReportFilterBarProps {
   REPORT_LIST: { key: string; label: string }[];
@@ -130,14 +131,12 @@ const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
               content={
                 <div className="flex flex-col w-[320px] max-h-[350px] bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl shadow-2xl rounded-sm custom-scrollbar overflow-hidden">
                   <div className="p-2 border-b bg-white/95 dark:bg-gray-800/95 z-10 sticky top-0">
-                    <TextInput
-                      icon={Search}
-                      placeholder="Search reports..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="[&_input]:bg-gray-50 [&_input]:dark:bg-gray-900"
-                      autoFocus
-                    />
+                    <SearchInput
+                                        placeholder="Search reports..."
+                                        value={searchTerm}
+                                        onChange={setSearchTerm}
+                                        containerClassName="[&_input]:bg-gray-50 [&_input]:dark:bg-gray-900"
+                                      />
                   </div>
                   <div className="flex flex-col overflow-y-auto p-2">
                     <button

@@ -1,11 +1,10 @@
 import React from "react";
-import {Button, Badge, Progress} from '@/lib/flowbite-compat';
+import { Button, Badge, Progress } from '@/lib/flowbite-compat';
 import {
   Award,
   Activity,
   TrendingUp,
   Users,
-  DollarSign,
   Calendar,
   FileText,
   Download,

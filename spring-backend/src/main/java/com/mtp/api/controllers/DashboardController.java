@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -109,7 +110,17 @@ public class DashboardController {
             response.put("vacancyStatusDistribution", vacancyStatusDistribution);
 
             response.put("activePlacements", placementRepository.count());
-            response.put("monthlyReports", 128);
+
+            // Monthly tickets count (tickets created this calendar month)
+            LocalDateTime monthStart = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+            LocalDateTime monthEnd = LocalDateTime.now();
+            long monthlyTickets = ticketRepository.findAll().stream()
+                    .filter(t -> t.getCreatedAt() != null
+                            && !t.getCreatedAt().isBefore(monthStart)
+                            && !t.getCreatedAt().isAfter(monthEnd))
+                    .count();
+            response.put("monthlyReports", monthlyTickets);
+            response.put("totalTickets", ticketRepository.count());
 
             return response;
         } catch (Exception e) {
@@ -124,6 +135,7 @@ public class DashboardController {
             fallback.put("ticketsPerPerson", new ArrayList<>());
             fallback.put("activePlacements", 0);
             fallback.put("monthlyReports", 0);
+            fallback.put("totalTickets", 0);
             fallback.put("warning", "Running in fallback mode due to database error");
             
             return fallback;

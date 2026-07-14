@@ -42,4 +42,9 @@ public class InventoryTransactionService {
         itemRepository.save(item);
         return transactionRepository.save(transaction);
     }
+
+    @Transactional(readOnly = true)
+    public java.util.List<InventoryTransaction> getTransactionsByItem(Long itemId) {
+        return transactionRepository.findByItemIdOrderByTransactionDateDesc(itemId);
+    }
 }

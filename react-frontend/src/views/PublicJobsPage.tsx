@@ -5,6 +5,7 @@ import { Briefcase, MapPin, DollarSign, Search, Building } from "lucide-react";
 import api from "../services/api";
 import {TextInput, Spinner, Button, Badge} from '@/lib/flowbite-compat';
 import ModernPagination from "@/components/common/ModernPagination";
+import SearchInput from "@/components/common/SearchInput";
 
 const PublicJobsPage = () => {
   const [search, setSearch] = useState("");
@@ -19,7 +20,7 @@ const PublicJobsPage = () => {
       totalElements: number;
     }> => {
       const res = await api.get(
-        `/api/vacancies/public?page=${currentPage}&size=${pageSize}&search=${search}`,
+        `/vacancies/public?page=${currentPage}&size=${pageSize}&search=${search}`,
       );
       return res.data;
     },
@@ -46,14 +47,12 @@ const PublicJobsPage = () => {
             Browse our open positions and take the next step in your career.
           </p>
           <div className="flex gap-2 max-w-2xl mx-auto">
-            <TextInput
-              icon={Search}
-              placeholder="Search by job title, company, or keywords..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 shadow-lg"
-              sizing="lg"
-            />
+            <SearchInput
+                        placeholder="Search by job title, company, or keywords..."
+                        value={search}
+                        onChange={setSearch}
+                        containerClassName="flex-1 shadow-lg"
+                      />
             <Button
               color="blue"
               size="lg"

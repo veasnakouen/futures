@@ -25,6 +25,7 @@ import toast from "react-hot-toast";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import { DataTable, type DataTableColumn } from "../components/ui/DataTable";
 import ModernPagination from "@/components/common/ModernPagination";
+import SearchInput from "@/components/common/SearchInput";
 
 const SupportPage = ({ isDark, setIsDark }: any) => {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -325,18 +326,12 @@ const SupportPage = ({ isDark, setIsDark }: any) => {
         <div className="bg-white border-none shadow-sm dark:bg-gray-800 rounded-sm p-3">
           <div className="flex flex-col md:flex-row gap-2">
             <div className="flex-1">
-              <TextInput
-                icon={Search}
-                type="text"
-                placeholder="Search by title or ticket ID..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full"
-                sizing="md"
-              />
+              <SearchInput
+                            placeholder="Search by title or ticket ID..."
+                            value={search}
+                            onChange={setSearch}
+                            containerClassName="w-full"
+                          />
             </div>
             <div className="w-1/3">
               <Select
