@@ -23,6 +23,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                             System.out.println("User NOT found in database: " + username);
                             throw new UsernameNotFoundException("User not found: " + username);
                         }));
+        // Initialize lazy collections to prevent LazyInitializationException in JwtRequestFilter
+        user.getRoles().size();
+        user.getRoles().forEach(role -> role.getPermissions().size());
+
         System.out.println("User found in database. Verifying password...");
         return new UserPrincipal(user);
     }

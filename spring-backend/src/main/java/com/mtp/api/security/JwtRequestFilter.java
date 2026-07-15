@@ -41,6 +41,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtils.extractUsername(jwt);
+                // Set tenant identifier from JWT claims for Hibernate multi-tenancy
+                String tenantId = jwtUtils.extractClaim(jwt, claims -> claims.get("tenantId", String.class));
+                if (tenantId != null && !tenantId.isBlank()) {
+                    com.mtp.api.config.TenantResolver.setCurrentTenant(tenantId);
+                }
                 System.out.println("Extracted username from JWT: " + username);
             } catch (Exception e) {
                 System.out.println("JWT token parsing failed: " + e.getMessage());
@@ -63,6 +68,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 System.out.println("Validated request for: " + username + " to " + request.getRequestURI());
             }
         }
-        chain.doFilter(request, response);
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            com.mtp.api.config.TenantResolver.clear();
+        }
     }
 }

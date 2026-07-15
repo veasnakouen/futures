@@ -35,7 +35,7 @@ public class AssessmentForm {
 
     private LocalDate assessmentDate = LocalDate.now();
 
-    @OneToMany(mappedBy = "assessmentForm", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "assessmentForm", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<AssessmentFormItem> items = new ArrayList<>();
 

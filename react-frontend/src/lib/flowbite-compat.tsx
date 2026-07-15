@@ -389,6 +389,9 @@ export const Modal = Object.assign(
     if (size === "2xl") maxW = "max-w-2xl";
     if (size === "3xl") maxW = "max-w-3xl";
     if (size === "4xl") maxW = "max-w-4xl";
+    if (size === "5xl") maxW = "max-w-5xl";
+    if (size === "6xl") maxW = "max-w-6xl";
+    if (size === "7xl") maxW = "max-w-7xl";
     return (
       <SDialog open={show} onOpenChange={(open) => {
         // If dismissible is false, we don't automatically trigger onClose on outside clicks or escape
@@ -403,7 +406,15 @@ export const Modal = Object.assign(
               return;
             }
             const target = e.target as Element;
-            if (target && target.closest && (target.closest('.react-select__menu') || target.closest('[class*="react-select"]'))) {
+            if (
+              target &&
+              target.closest &&
+              (target.closest(".react-select__menu") ||
+                target.closest('[class*="react-select"]') ||
+                target.closest('[role="listbox"]') ||
+                target.closest("[data-radix-popper-content-wrapper]") ||
+                target.hasAttribute("data-radix-focus-guard"))
+            ) {
               e.preventDefault();
             }
           }}

@@ -6,17 +6,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-// @ComponentScan(basePackages = "com.mtp.api")
-@SpringBootApplication
-@Configuration
+@SpringBootApplication(scanBasePackages = "com.mtp")
+@org.springframework.boot.autoconfigure.domain.EntityScan("com.mtp")
+@org.springframework.data.jpa.repository.config.EnableJpaRepositories("com.mtp")
 @org.springframework.cache.annotation.EnableCaching
 @org.springframework.scheduling.annotation.EnableAsync
 @org.springframework.scheduling.annotation.EnableScheduling
-@org.springframework.cloud.client.discovery.EnableDiscoveryClient
-@org.springframework.cloud.openfeign.EnableFeignClients
 public class ApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ApiApplication.class, args);

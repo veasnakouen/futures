@@ -9,8 +9,10 @@ import PatientFormModal from "./PatientFormModal";
 import ConfirmModal from "../../../components/common/ConfirmModal";
 import { toast } from "react-hot-toast";
 import SearchInput from "@/components/common/SearchInput";
+import { useNavigate } from "@/lib/react-router-compat";
 
 export default function PatientList() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [size] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,14 +57,14 @@ export default function PatientList() {
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-widest">Manage clinical demographics</p>
           </div>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <SearchInput
-                    placeholder="Search patients..."
-                    value={searchTerm}
-                    onChange={setSearchTerm}
-                    containerClassName="flex-1 sm:w-64"
-                  />
+            placeholder="Search patients..."
+            value={searchTerm}
+            onChange={setSearchTerm}
+            containerClassName="flex-1 sm:w-64"
+          />
           <div className="relative group">
             <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
             <select
@@ -105,7 +107,7 @@ export default function PatientList() {
                 <tr><td colSpan={5} className="px-6 py-16 text-center text-gray-500 font-medium">No patients found. Create one to get started.</td></tr>
               ) : (
                 filteredData.map((item: PatientDto) => (
-                  <tr key={item.id} className="hover:bg-white/60 dark:hover:bg-gray-800/40 transition-colors group">
+                  <tr key={item.id} className="hover:bg-white/60 dark:hover:bg-gray-800/40 transition-colors group cursor-pointer" onClick={() => navigate(`/clinic/patients/${item.id}`)}>
                     <td className="px-8 py-5 font-bold text-gray-900 dark:text-white flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs shadow-md">
                         {item.firstName.charAt(0)}{item.lastName.charAt(0)}
@@ -121,8 +123,8 @@ export default function PatientList() {
                     <td className="px-6 py-5 font-medium">{item.contactNumber}</td>
                     <td className="px-8 py-5 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => { setSelectedItem(item); setIsFormOpen(true); }} className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"><Edit2 size={18} /></button>
-                        <button onClick={() => { setSelectedItem(item); setIsConfirmOpen(true); }} className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"><Trash2 size={18} /></button>
+                        <button onClick={(e) => { e.stopPropagation(); setSelectedItem(item); setIsFormOpen(true); }} className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"><Edit2 size={18} /></button>
+                        <button onClick={(e) => { e.stopPropagation(); setSelectedItem(item); setIsConfirmOpen(true); }} className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"><Trash2 size={18} /></button>
                       </div>
                     </td>
                   </tr>

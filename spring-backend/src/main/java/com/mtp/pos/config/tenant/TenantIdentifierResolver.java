@@ -1,0 +1,1 @@
+package com.mtp.pos.config.tenant;

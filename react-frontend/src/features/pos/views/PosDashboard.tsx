@@ -4,11 +4,13 @@ import { ShoppingCart, Plus, Minus, CreditCard, Search } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 import { toast } from 'react-hot-toast';
 import SearchInput from "@/components/common/SearchInput";
+import CheckoutModal from '../components/CheckoutModal';
 
 export default function PosDashboard() {
     const [products, setProducts] = useState<PosProductDto[]>([]);
     const [cart, setCart] = useState<{ product: PosProductDto, quantity: number }[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
     const { user } = useAuthStore();
 
     useEffect(() => {
@@ -48,8 +50,12 @@ export default function PosDashboard() {
     const tax = subtotal * 0.10; // 10% tax
     const total = subtotal + tax;
 
-    const handleCheckout = async () => {
+    const handleCheckout = () => {
         if (cart.length === 0) return;
+        setIsCheckoutModalOpen(true);
+    };
+
+    const processCheckout = async (paymentMethod: 'CASH' | 'QR_CODE') => {
         try {
             const saleItems = cart.map(item => ({
                 id: '',
@@ -64,17 +70,17 @@ export default function PosDashboard() {
             await posService.createSale({
                 id: '',
                 cashierId: (user as any)?.id || 'Unknown',
-                paymentMethod: 'CASH',
+                paymentMethod: paymentMethod,
                 totalAmount: total,
                 receiptNumber: 'REC-' + Date.now(),
                 transactionDate: new Date().toISOString(),
                 items: saleItems
             });
-            alert("Checkout Successful!");
+            toast.success(`Checkout Successful via ${paymentMethod === 'QR_CODE' ? 'KHQR' : 'Cash'}!`);
             setCart([]);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Checkout failed", error);
-            alert("Checkout Failed");
+            toast.error(error.response?.data?.message || "Checkout Failed");
         }
     };
 
@@ -90,17 +96,17 @@ export default function PosDashboard() {
                         <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Select items to add to the cart</p>
                     </div>
                     <SearchInput
-                      placeholder="Search products..."
-                      value={searchQuery}
-                      onChange={setSearchQuery}
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={setSearchQuery}
                     />
                 </div>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                         {filteredProducts.map(product => (
-                            <div 
-                                key={product.id} 
+                            <div
+                                key={product.id}
                                 onClick={() => addToCart(product)}
                                 className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group flex flex-col"
                             >
@@ -110,7 +116,7 @@ export default function PosDashboard() {
                                     ) : (
                                         <span className="opacity-30">🛒</span>
                                     )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"/>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                                 </div>
                                 <div className="p-4 flex flex-col flex-1">
                                     <h3 className="font-bold text-slate-800 dark:text-slate-100 tracking-tight leading-tight line-clamp-2 mb-1">{product.name}</h3>
@@ -182,8 +188,8 @@ export default function PosDashboard() {
                             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">${total.toFixed(2)}</span>
                         </div>
                     </div>
-                    
-                    <button 
+
+                    <button
                         onClick={handleCheckout}
                         disabled={cart.length === 0}
                         className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-300 disabled:to-slate-400 disabled:dark:from-slate-700 disabled:dark:to-slate-800 disabled:cursor-not-allowed disabled:text-slate-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 shadow-xl shadow-blue-500/25 active:scale-[0.98]"
@@ -192,6 +198,13 @@ export default function PosDashboard() {
                     </button>
                 </div>
             </div>
+
+            <CheckoutModal
+                isOpen={isCheckoutModalOpen}
+                onClose={() => setIsCheckoutModalOpen(false)}
+                totalAmount={total}
+                onConfirm={processCheckout}
+            />
         </div>
     );
 }

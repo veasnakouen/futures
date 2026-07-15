@@ -19,6 +19,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     List<Employee> findByManagerIgnoreCase(String manager);
 
+    List<Employee> findByDepartmentId(Integer departmentId);
+
     @Query("SELECT e FROM Employee e WHERE CONCAT(e.firstNameEnglish, ' ', e.lastNameEnglish) = :fullName")
     Optional<Employee> findByFullNameIgnoreCase(@Param("fullName") String fullName);
 

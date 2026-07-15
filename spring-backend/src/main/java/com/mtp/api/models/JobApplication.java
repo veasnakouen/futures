@@ -43,5 +43,13 @@ public class JobApplication {
     private String coverLetter;
 
     @Size(max = 500)
-    private String cvUrl;
+    private String resumeUrl;
+
+    @OneToMany(mappedBy = "jobApplication", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
+    private java.util.List<InterviewSchedule> interviews;
+
+    @OneToOne(mappedBy = "jobApplication", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
+    private OfferLetter offerLetter;
 }

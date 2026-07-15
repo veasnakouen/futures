@@ -28,5 +28,10 @@ public class PayrollRecord {
 
     private Double totalNetPayable;
 
-    private String status;
+    @jakarta.validation.constraints.Size(max = 50)
+    private String status; // Pending, Processing, Completed
+
+    @OneToMany(mappedBy = "payrollRecord", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
+    private java.util.List<Payslip> payslips;
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "EmployeeCourses")
@@ -34,6 +35,13 @@ public class EmployeeCourse {
     @NotNull
     @Size(max = 50)
     private String difficulty; // Beginner, Intermediate, Advanced
+
+    private LocalDate completionDate;
+
+    @Size(max = 50)
+    private String status; // ENROLLED, IN_PROGRESS, COMPLETED, DROPPED
+
+    private Integer completionPercentage = 0;
 
     @Column(columnDefinition = "NVARCHAR(MAX)")
     @JdbcTypeCode(SqlTypes.LONGNVARCHAR)

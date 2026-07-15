@@ -49,7 +49,14 @@ public class LeaveRequest {
     @Size(max = 50)
     private String duration; // FULL_DAY, HALF_MORNING, HALF_AFTERNOON
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+
+    @Column(name = "approved_by_manager_id")
+    private Integer approvedByManagerId;
+
+    @Column(name = "approved_by_hr_id")
+    private Integer approvedByHrId;
+
+    @Column(name = "attachment_url", columnDefinition = "NVARCHAR(MAX)")
     private String attachmentUrl;
 
     private LocalDateTime createdAt = LocalDateTime.now();

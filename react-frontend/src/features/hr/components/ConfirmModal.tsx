@@ -31,7 +31,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 p-2 rounded-md shadow-sm"
+          className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full shadow-sm flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-gray-200"
+          style={{ width: "32px", height: "32px", minWidth: "32px", minHeight: "32px", padding: 0, boxSizing: "border-box" }}
         >
           <X size={20} />
         </button>

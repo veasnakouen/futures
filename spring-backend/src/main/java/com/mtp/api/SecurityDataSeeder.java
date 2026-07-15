@@ -29,6 +29,7 @@ public class SecurityDataSeeder implements CommandLineRunner {
     private PasswordEncoder passwordEncoder;
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public void run(String... args) throws Exception {
         // 1. Create Permissions
         Permission userRead = createPermissionIfNotFound("USER_READ", "Read user data");
@@ -37,26 +38,28 @@ public class SecurityDataSeeder implements CommandLineRunner {
         Permission systemConfig = createPermissionIfNotFound("SYSTEM_CONFIG", "Manage system-wide configurations");
 
         // 2. Create Roles
-        Role superAdminRole = createRoleIfNotFound("SUPERADMIN", Set.of(userRead, userWrite, roleManage, systemConfig));
-        Role adminRole = createRoleIfNotFound("ADMIN", Set.of(userRead, userWrite, roleManage));
-        Role userRole = createRoleIfNotFound("USER", Set.of(userRead));
+        Role superAdminRole = createRoleIfNotFound("SUPERADMIN",
+                new java.util.HashSet<>(Set.of(userRead, userWrite, roleManage, systemConfig)));
+        Role adminRole = createRoleIfNotFound("ADMIN",
+                new java.util.HashSet<>(Set.of(userRead, userWrite, roleManage)));
+        Role userRole = createRoleIfNotFound("USER", new java.util.HashSet<>(Set.of(userRead)));
 
         // 3. Ensure a SuperAdmin user exists
         User sa = userRepository.findAll().stream()
-            .filter(u -> "superadmin".equals(u.getUserName()))
-            .findFirst()
-            .orElseGet(() -> {
-            User newUser = new User();
-            newUser.setUserName("superadmin");
-            newUser.setFirstName("Super");
-            newUser.setLastName("Admin");
-            newUser.setBranch("Central");
-            newUser.setEmail("superadmin@mtp.com");
-            newUser.setPasswordHash(passwordEncoder.encode("Super123!"));
-            newUser.setPasswordText("Super123!");
-            return userRepository.save(newUser);
-        });
-        
+                .filter(u -> "superadmin".equals(u.getUserName()))
+                .findFirst()
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUserName("superadmin");
+                    newUser.setFirstName("Super");
+                    newUser.setLastName("Admin");
+                    newUser.setBranch("Central");
+                    newUser.setEmail("superadmin@mtp.com");
+                    newUser.setPasswordHash(passwordEncoder.encode("Super123!"));
+                    newUser.setPasswordText("Super123!");
+                    return userRepository.save(newUser);
+                });
+
         if (!sa.getRoles().contains(superAdminRole)) {
             sa.getRoles().add(superAdminRole);
             userRepository.save(sa);
@@ -65,20 +68,20 @@ public class SecurityDataSeeder implements CommandLineRunner {
 
         // 4. Ensure an Admin user exists
         User admin = userRepository.findAll().stream()
-            .filter(u -> "admin".equals(u.getUserName()))
-            .findFirst()
-            .orElseGet(() -> {
-            User newUser = new User();
-            newUser.setUserName("admin");
-            newUser.setFirstName("System");
-            newUser.setLastName("Administrator");
-            newUser.setBranch("Headquarters");
-            newUser.setEmail("admin@mtp.com");
-            newUser.setPasswordHash(passwordEncoder.encode("Admin123!"));
-            newUser.setPasswordText("Admin123!");
-            return userRepository.save(newUser);
-        });
-        
+                .filter(u -> "admin".equals(u.getUserName()))
+                .findFirst()
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUserName("admin");
+                    newUser.setFirstName("System");
+                    newUser.setLastName("Administrator");
+                    newUser.setBranch("Headquarters");
+                    newUser.setEmail("admin@mtp.com");
+                    newUser.setPasswordHash(passwordEncoder.encode("Admin123!"));
+                    newUser.setPasswordText("Admin123!");
+                    return userRepository.save(newUser);
+                });
+
         if (!admin.getRoles().contains(adminRole)) {
             admin.getRoles().add(adminRole);
             userRepository.save(admin);

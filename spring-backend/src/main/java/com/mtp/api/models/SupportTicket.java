@@ -17,6 +17,9 @@ public class SupportTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @NotNull
     private String title;
 
@@ -29,16 +32,12 @@ public class SupportTicket {
 
     private String category; // IT, Facility, HR, Finance
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ReporterId", columnDefinition = "nvarchar(128)")
     private User reporter;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "ticket_assignees",
-        joinColumns = @JoinColumn(name = "ticket_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id", columnDefinition = "nvarchar(128)")
-    )
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "ticket_assignees", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "user_id", columnDefinition = "nvarchar(128)"))
     private java.util.Set<User> assignees = new java.util.HashSet<>();
 
     private LocalDateTime createdAt = LocalDateTime.now();

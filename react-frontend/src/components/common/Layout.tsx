@@ -38,7 +38,7 @@ import {
   Bed,
   MapPin,
 } from "lucide-react";
-import {Dropdown, DropdownItem, DropdownHeader, DropdownDivider} from '@/lib/flowbite-compat';
+import { Dropdown, DropdownItem, DropdownHeader, DropdownDivider } from '@/lib/flowbite-compat';
 import { useTranslation } from "react-i18next";
 import authService from '../../services/authService';
 import Chat from "../../features/chat/components/Chat";
@@ -213,61 +213,63 @@ const Layout = ({ children, title }: LayoutProps) => {
       {
         title: t("humanResources"),
         links: [
-          { to: "/employees", icon: Users, label: t("teamDirectory") },
+          { to: "/employees", icon: Users, label: t("Hr") },
           { to: "/leaves", icon: Briefcase, label: t("leaveManagement") },
         ],
       },
-        {
-          title: t("schoolManagement"),
-          links: [
-            { to: "/school/branches", icon: MapPin, label: t("branches") },
-            { to: "/school/students", icon: Users, label: t("students") },
-            { to: "/school/outreach", icon: MapPin, label: t("outreach") },
-            { to: "/school/case-management", icon: Briefcase, label: t("caseManagement") },
-            { to: "/school/departments", icon: Building2, label: t("departments") },
-            { to: "/school/department-inbox", icon: Inbox, label: t("departmentInbox") },
-            { to: "/school/teachers", icon: Briefcase, label: t("teachers") },
-            { to: "/school/courses", icon: BookOpen, label: t("courses") },
-            { to: "/school/enrollments", icon: GraduationCap, label: t("enrollments") },
-            { to: "/school/parents", icon: Users, label: t("parents") },
-            { to: "/school/extracurriculars", icon: Activity, label: t("activities") },
-          ],
-        },
-        {
-          title: t("clinicManagement"),
-          links: [
-            { to: "/clinic/patients", icon: Users, label: t("patients") },
-            { to: "/clinic/appointments", icon: History, label: t("appointments") },
-            { to: "/clinic/doctors", icon: Briefcase, label: t("doctors") },
-            { to: "/clinic/prescriptions", icon: Stethoscope, label: t("prescriptions") },
-            { to: "/clinic/lab-orders", icon: Activity, label: t("labOrders") },
-            { to: "/clinic/medical-records", icon: BookOpen, label: t("medicalRecords") },
-          ],
-        },
-        {
-          title: t("billingAndFinance"),
-          links: [
-            { to: "/billing/invoices", icon: Receipt, label: t("invoices") },
-            { to: "/billing/payments", icon: CreditCard, label: t("payments") },
-          ],
-        },
-        {
-          title: t("hospitalityAndHotel"),
-          links: [
-            { to: "/hotel/bookings", icon: History, label: t("bookings") },
-            { to: "/hotel/guests", icon: Users, label: t("guests") },
-            { to: "/hotel/rooms", icon: Bed, label: t("rooms") },
-            { to: "/hotel/housekeeping", icon: Package, label: t("housekeeping") },
-          ],
-        },
-        {
-          title: t("retailAndPos"),
-          links: [
-            { to: "/pos", icon: Monitor, label: t("posTerminal") },
-            { to: "/pos/products", icon: Package, label: t("products") },
-            { to: "/pos/sales", icon: Receipt, label: t("salesHistory") },
-          ],
-        },
+      {
+        title: t("schoolManagement"),
+        links: [
+          { to: "/school/branches", icon: MapPin, label: t("branches") },
+          { to: "/school/students", icon: Users, label: t("students") },
+          { to: "/school/outreach", icon: MapPin, label: t("outreach") },
+          { to: "/school/case-management", icon: Briefcase, label: t("caseManagement") },
+          { to: "/school/departments", icon: Building2, label: t("departments") },
+          { to: "/school/department-inbox", icon: Inbox, label: t("departmentInbox") },
+          { to: "/school/teachers", icon: Briefcase, label: t("teachers") },
+          { to: "/school/courses", icon: BookOpen, label: t("courses") },
+          { to: "/school/enrollments", icon: GraduationCap, label: t("enrollments") },
+          { to: "/school/parents", icon: Users, label: t("parents") },
+          { to: "/school/extracurriculars", icon: Activity, label: t("activities") },
+        ],
+      },
+      {
+        title: t("clinicManagement"),
+        links: [
+          { to: "/clinic", icon: LayoutDashboard, label: t("dashboard") },
+          { to: "/clinic/ipd", icon: Bed, label: "IPD Wards" },
+          { to: "/clinic/patients", icon: Users, label: t("patients") },
+          { to: "/clinic/appointments", icon: History, label: t("appointments") },
+          { to: "/clinic/doctors", icon: Briefcase, label: t("doctors") },
+          { to: "/clinic/prescriptions", icon: Stethoscope, label: t("prescriptions") },
+          { to: "/clinic/lab-orders", icon: Activity, label: t("labOrders") },
+          { to: "/clinic/medical-records", icon: BookOpen, label: t("medicalRecords") },
+        ],
+      },
+      {
+        title: t("billingAndFinance"),
+        links: [
+          { to: "/billing/invoices", icon: Receipt, label: t("invoices") },
+          { to: "/billing/payments", icon: CreditCard, label: t("payments") },
+        ],
+      },
+      {
+        title: t("hospitalityAndHotel"),
+        links: [
+          { to: "/hotel/bookings", icon: History, label: t("bookings") },
+          { to: "/hotel/guests", icon: Users, label: t("guests") },
+          { to: "/hotel/rooms", icon: Bed, label: t("rooms") },
+          { to: "/hotel/housekeeping", icon: Package, label: t("housekeeping") },
+        ],
+      },
+      {
+        title: t("retailAndPos"),
+        links: [
+          { to: "/pos", icon: Monitor, label: t("posTerminal") },
+          { to: "/pos/products", icon: Package, label: t("products") },
+          { to: "/pos/sales", icon: Receipt, label: t("salesHistory") },
+        ],
+      },
       {
         title: t("systemAndCore"),
         links: [
@@ -306,7 +308,7 @@ const Layout = ({ children, title }: LayoutProps) => {
 
   return (
     <div
-      className={`flex h-screen bg-[#f4f5f9] dark:bg-[#080c14] transition-colors overflow-hidden ${sidebarPosition ==="right"?"flex-row-reverse":""}`}
+      className={`flex h-screen bg-[#f4f5f9] dark:bg-[#080c14] transition-colors overflow-hidden ${sidebarPosition === "right" ? "flex-row-reverse" : ""}`}
     >
       {/* Mobile Backdrop */}
       {isMenuOpen && (
@@ -318,18 +320,18 @@ const Layout = ({ children, title }: LayoutProps) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 ${sidebarPosition ==="right"?"right-0 border-l":"left-0 border-r"} z-40 ${getSidebarBgClass()} transform transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMenuOpen ?"translate-x-0": sidebarPosition ==="right"?"translate-x-full":"-translate-x-full"} ${isSidebarCollapsed ?"w-20":"w-64"} flex flex-col`}
+        className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0 border-l" : "left-0 border-r"} z-40 ${getSidebarBgClass()} transform transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMenuOpen ? "translate-x-0" : sidebarPosition === "right" ? "translate-x-full" : "-translate-x-full"} ${isSidebarCollapsed ? "w-20" : "w-64"} flex flex-col`}
       >
         <div
-          className={`p-6 flex items-center ${isSidebarCollapsed ?"justify-center":"justify-between"}`}
+          className={`p-6 flex items-center ${isSidebarCollapsed ? "justify-center" : "justify-between"}`}
         >
-        {!isSidebarCollapsed && (
+          {!isSidebarCollapsed && (
             <div className="flex items-center gap-3">
               {appLogo ? (
                 <img
                   src={appLogo}
                   alt="Logo"
-                  className="max-w-[36px] max-h-[36px] object-contain rounded-lg shadow-sm"
+                  className="max-w-[36px] max-h-[36px] object-contain rounded-xl shadow-sm hover:scale-110 transition-transform duration-300 cursor-pointer"
                 />
               ) : (
                 <div className="relative">
@@ -341,7 +343,7 @@ const Layout = ({ children, title }: LayoutProps) => {
               )}
               <div className="flex flex-col">
                 <span
-                  className={`font-extrabold text-base tracking-tight leading-none ${sidebarTheme ==="brand"?"text-white":"dark:text-white text-gray-900"}`}
+                  className={`font-extrabold text-base tracking-tight leading-none ${sidebarTheme === "brand" ? "text-white" : "dark:text-white text-gray-900"}`}
                 >
                   MTP
                 </span>
@@ -366,12 +368,12 @@ const Layout = ({ children, title }: LayoutProps) => {
               </div>
             ))}
           <button
-            className={`lg:hidden ${sidebarTheme ==="brand"?"text-white":"dark:text-white"} ${isSidebarCollapsed ?"hidden":""}`}
+            className={`lg:hidden ${sidebarTheme === "brand" ? "text-white" : "dark:text-white"} ${isSidebarCollapsed ? "hidden" : ""}`}
             onClick={() => setIsMenuOpen(false)}
           >
             <LogOut
               size={20}
-              className={sidebarPosition === "right"?"" :"rotate-180"}
+              className={sidebarPosition === "right" ? "" : "rotate-180"}
             />
           </button>
         </div>
@@ -383,76 +385,75 @@ const Layout = ({ children, title }: LayoutProps) => {
           {navSections.map((section) => {
             const isExpanded = expandedSections[section.title] !== false; // Default to expanded
             return (
-            <div key={section.title} className="space-y-1 mb-2">
-              {!isSidebarCollapsed && (
-                <button
-                  onClick={() => toggleSection(section.title)}
-                  className="w-full flex items-center justify-between px-3 mb-1 mt-5 group outline-none cursor-pointer"
-                >
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400/70 dark:text-white/25 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
-                    {section.title}
-                  </span>
-                  <ChevronDown
-                    size={12}
-                    className={`text-gray-400/50 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-transform duration-300 ${
-                      !isExpanded ? "-rotate-90" : ""
-                    }`}
-                  />
-                </button>
-              )}
-              {isSidebarCollapsed && <div className="h-4"></div>}
-              
-              <div className={`space-y-1 overflow-hidden transition-all duration-300 ${!isExpanded && !isSidebarCollapsed ? "max-h-0 opacity-0" : "max-h-[1000px] opacity-100"}`}>
-                {section.links.map((link) => {
-                  const active = isActive(link.to);
-                  return (
-                    <div key={link.to} className="flex flex-col">
-                      <Link
-                        to={link.to}
-                        title={isSidebarCollapsed ? link.label : undefined}
-                        onClick={() => setIsMenuOpen(false)}
-                        className={`relative flex items-center ${isSidebarCollapsed ?"justify-center p-3":"px-3 py-2"} rounded-xl transition-all duration-200 group ${active ? "font-bold shadow-sm" : "text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50/50 dark:hover:bg-white/[0.02]"}`}
-                      >
-                        {active && (
-                          <motion.div
-                            layoutId="active-sidebar-item"
-                            className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-500/20 to-violet-500/20 dark:from-indigo-500/30 dark:to-violet-500/30 border border-indigo-200 dark:border-indigo-500/30 shadow-inner"
-                            initial={false}
-                            transition={{
-                              type: "spring",
-                              stiffness: 380,
-                              damping: 35,
-                            }}
-                          />
-                        )}
-                        <div className={`relative z-10 flex items-center gap-3`}>
-                          <link.icon size={isSidebarCollapsed ? 20 : 16} className={active ? "text-indigo-600 dark:text-indigo-400" : "group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"} />
-                          {!isSidebarCollapsed && (
-                            <span className={`text-[11.5px] font-semibold tracking-tight ${active ? "text-indigo-700 dark:text-indigo-300 font-extrabold" : "transition-colors"}`}>
-                              {link.label}
-                            </span>
+              <div key={section.title} className="space-y-1 mb-2">
+                {!isSidebarCollapsed && (
+                  <button
+                    onClick={() => toggleSection(section.title)}
+                    className="w-full flex items-center justify-between px-3 mb-1 mt-5 group outline-none cursor-pointer"
+                  >
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400/70 dark:text-white/25 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
+                      {section.title}
+                    </span>
+                    <ChevronDown
+                      size={12}
+                      className={`text-gray-400/50 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-transform duration-300 ${!isExpanded ? "-rotate-90" : ""
+                        }`}
+                    />
+                  </button>
+                )}
+                {isSidebarCollapsed && <div className="h-4"></div>}
+
+                <div className={`space-y-1 overflow-hidden transition-all duration-300 ${!isExpanded && !isSidebarCollapsed ? "max-h-0 opacity-0" : "max-h-[1000px] opacity-100"}`}>
+                  {section.links.map((link) => {
+                    const active = isActive(link.to);
+                    return (
+                      <div key={link.to} className="flex flex-col">
+                        <Link
+                          to={link.to}
+                          title={isSidebarCollapsed ? link.label : undefined}
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`relative flex items-center ${isSidebarCollapsed ? "justify-center p-3" : "px-3 py-2"} rounded-xl transition-all duration-200 group ${active ? "font-bold shadow-sm" : "text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50/50 dark:hover:bg-white/[0.02]"}`}
+                        >
+                          {active && (
+                            <motion.div
+                              layoutId="active-sidebar-item"
+                              className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-500/20 to-violet-500/20 dark:from-indigo-500/30 dark:to-violet-500/30 shadow-inner"
+                              initial={false}
+                              transition={{
+                                type: "spring",
+                                stiffness: 380,
+                                damping: 35,
+                              }}
+                            />
                           )}
-                        </div>
-                      </Link>
-                      {link.subLinks && !isSidebarCollapsed && (
-                        <div className="ml-10 mt-1 flex flex-col space-y-1">
-                          {link.subLinks.map((subLink: any) => (
-                            <Link
-                              key={subLink.to}
-                              to={subLink.to}
-                              onClick={() => setIsMenuOpen(false)}
-                              className="text-xs text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 py-1"
-                            >
-                              {subLink.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                          <div className={`relative z-10 flex items-center gap-3`}>
+                            <link.icon size={isSidebarCollapsed ? 20 : 16} className={active ? "text-indigo-600 dark:text-indigo-400" : "group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"} />
+                            {!isSidebarCollapsed && (
+                              <span className={`text-[11.5px] font-semibold tracking-tight ${active ? "text-indigo-700 dark:text-indigo-300 font-extrabold" : "transition-colors"}`}>
+                                {link.label}
+                              </span>
+                            )}
+                          </div>
+                        </Link>
+                        {link.subLinks && !isSidebarCollapsed && (
+                          <div className="ml-10 mt-1 flex flex-col space-y-1">
+                            {link.subLinks.map((subLink: any) => (
+                              <Link
+                                key={subLink.to}
+                                to={subLink.to}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-xs text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 py-1"
+                              >
+                                {subLink.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
             );
           })}
         </nav>
@@ -460,7 +461,7 @@ const Layout = ({ children, title }: LayoutProps) => {
         <div className="p-4 border-t border-gray-100 dark:border-white/[0.04] flex flex-col gap-2 shrink-0">
           <button
             onClick={toggleSidebar}
-            className={`flex items-center hover:bg-indigo-50 dark:hover:bg-white/[0.04] rounded-xl transition-all text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 ${isSidebarCollapsed ?"justify-center p-2.5":"gap-3 px-3 py-2"}`}
+            className={`flex items-center hover:bg-indigo-50 dark:hover:bg-white/[0.04] rounded-xl transition-all text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 ${isSidebarCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2"}`}
             title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isSidebarCollapsed ? (
@@ -473,7 +474,7 @@ const Layout = ({ children, title }: LayoutProps) => {
             )}
           </button>
           <div
-            className={`flex items-center ${isSidebarCollapsed ?"justify-center p-2":"gap-2.5 px-3 py-2"} bg-emerald-50/60 dark:bg-emerald-500/[0.06] rounded-xl border border-emerald-200/60 dark:border-emerald-500/10`}
+            className={`flex items-center ${isSidebarCollapsed ? "justify-center p-2" : "gap-2.5 px-3 py-2"} bg-emerald-50/60 dark:bg-emerald-500/[0.06] rounded-xl border border-emerald-200/60 dark:border-emerald-500/10`}
             title={isSidebarCollapsed ? "System Operational" : undefined}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
@@ -492,12 +493,12 @@ const Layout = ({ children, title }: LayoutProps) => {
           className={`h-14 backdrop-blur-xl border-b flex items-center justify-between px-4 lg:px-6 z-20 transition-all ${getTopbarBgClass()}`}
         >
           <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsMenuOpen(true)}
-                className="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"
-              >
-                <LayoutDashboard size={24} />
-              </button>
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"
+            >
+              <LayoutDashboard size={24} />
+            </button>
             {/* Title removed per user request */}
           </div>
 
@@ -519,23 +520,50 @@ const Layout = ({ children, title }: LayoutProps) => {
                   title="Notifications"
                 >
                   <Bell size={18} />
-                  {unreadCount > 0 && (
+                  {unreadCount > 0 ? (
                     <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-md ring-2 ring-white dark:ring-[#0d1117]">
                       {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  ) : (
+                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-200 dark:bg-white/[0.1] text-gray-500 dark:text-gray-400 text-[9px] font-bold shadow-md ring-2 ring-white dark:ring-[#0d1117]">
+                      0
                     </span>
                   )}
                 </div>
               }
             >
-              <DropdownHeader>
-                <span className="block text-sm font-black dark:text-white">
-                  Notifications
-                </span>
+              <DropdownHeader className="px-4 py-3 bg-gray-50/50 dark:bg-white/[0.02] border-b border-gray-100 dark:border-white/[0.05]">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-gray-800 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                    <Bell size={14} className="text-indigo-500" />
+                    Notifications
+                  </span>
+                  {unreadCount > 0 && (
+                    <span className="text-[9px] font-bold bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      {unreadCount} New
+                    </span>
+                  )}
+                </div>
               </DropdownHeader>
-              <div className="max-h-80 overflow-y-auto custom-scrollbar w-72">
+              <div className="max-h-[400px] overflow-y-auto custom-scrollbar w-80">
                 {notifications.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-gray-500">
-                    No notifications yet
+                  <div className="px-6 py-10 flex flex-col items-center justify-center text-center gap-4 bg-white dark:bg-[#0d1117] animate-fade-in-up">
+                    <div className="relative group cursor-default">
+                      <div className="absolute inset-0 bg-indigo-500/20 dark:bg-indigo-500/10 rounded-full animate-ping [animation-duration:3s]" />
+                      <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 flex items-center justify-center shadow-inner shadow-indigo-100 dark:shadow-indigo-900/20 transform transition-transform group-hover:scale-110 group-hover:-rotate-3 duration-500">
+                        <Inbox size={26} strokeWidth={1.5} className="text-indigo-500 dark:text-indigo-400" />
+                        <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_8px_rgba(129,140,248,0.8)]" />
+                        <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse [animation-delay:500ms] shadow-[0_0_8px_rgba(167,139,250,0.8)]" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs font-black bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent uppercase tracking-[0.2em] mt-2">
+                        All caught up!
+                      </p>
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium px-4 leading-relaxed">
+                        Your inbox is clear. New alerts will magically appear here when they arrive.
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   notifications.map((n) => (
@@ -544,21 +572,23 @@ const Layout = ({ children, title }: LayoutProps) => {
                       onClick={() => {
                         if (!n.read) markAsRead(n.id);
                       }}
+                      className={`px-4 py-3 border-b border-gray-50 dark:border-white/[0.02] last:border-0 hover:bg-indigo-50/50 dark:hover:bg-white/[0.04] transition-colors ${!n.read ? "bg-blue-50/30 dark:bg-blue-900/10" : ""}`}
                     >
-                      <div
-                        className={`flex flex-col gap-1 w-full text-left ${!n.read ?"font-bold":"opacity-75"}`}
-                      >
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="text-xs text-blue-600 dark:text-blue-400 truncate">
-                            {n.title}
-                          </span>
-                          <span className="text-[9px] text-gray-400 shrink-0">
-                            {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
+                      <div className="flex gap-3 w-full">
+                        <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${!n.read ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" : "bg-transparent"}`} />
+                        <div className={`flex flex-col gap-1 w-full text-left ${!n.read ? "opacity-100" : "opacity-60 hover:opacity-100 transition-opacity"}`}>
+                          <div className="flex justify-between items-start gap-2">
+                            <span className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">
+                              {n.title}
+                            </span>
+                            <span className="text-[9px] font-bold text-indigo-500 shrink-0 uppercase tracking-wider">
+                              {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                            {n.message}
+                          </p>
                         </div>
-                        <p className="text-xs truncate dark:text-gray-300">
-                          {n.message}
-                        </p>
                       </div>
                     </DropdownItem>
                   ))
@@ -570,15 +600,15 @@ const Layout = ({ children, title }: LayoutProps) => {
               arrowIcon={false}
               inline
               label={
-                <div className="flex items-center gap-2.5 p-1.5 pr-3 hover:bg-gray-100/80 dark:hover:bg-white/[0.05] rounded-xl cursor-pointer transition-all group">
-                  <div className="w-8 h-8 rounded-xl shrink-0 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-500/20 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2.5 p-1 pr-3 hover:bg-indigo-50 dark:hover:bg-white/[0.05] rounded-full cursor-pointer transition-all duration-300 group active:scale-95 border border-transparent hover:border-indigo-100 dark:hover:border-white/[0.05] hover:shadow-sm">
+                  <div className="w-8 h-8 rounded-full shrink-0 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border-2 border-transparent group-hover:border-indigo-400 shadow-sm overflow-hidden transition-all duration-300 relative">
                     {user?.photo ? (
                       <img
                         src={getFaceFocusedUrl(user.photo, 80)}
-                        className="object-cover w-full h-full rounded-xl"
+                        className="object-cover w-full h-full rounded-full transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
-                      <UserCircle size={18} />
+                      <UserCircle size={18} className="transition-transform duration-500 group-hover:scale-110" />
                     )}
                   </div>
                   <div className="hidden sm:block text-left">
@@ -634,7 +664,7 @@ const Layout = ({ children, title }: LayoutProps) => {
               </div>
               <DropdownItem onClick={() => setTheme("light")}>
                 <div
-                  className={`flex items-center gap-2 ${theme ==="light"?"text-blue-600 font-bold":""}`}
+                  className={`flex items-center gap-2 ${theme === "light" ? "text-blue-600 font-bold" : ""}`}
                 >
                   <Sun size={16} />
                   <span>Light Mode</span>
@@ -642,7 +672,7 @@ const Layout = ({ children, title }: LayoutProps) => {
               </DropdownItem>
               <DropdownItem onClick={() => setTheme("dark")}>
                 <div
-                  className={`flex items-center gap-2 ${theme ==="dark"?"text-blue-600 font-bold":""}`}
+                  className={`flex items-center gap-2 ${theme === "dark" ? "text-blue-600 font-bold" : ""}`}
                 >
                   <Moon size={16} />
                   <span>Dark Mode (Default)</span>
@@ -650,7 +680,7 @@ const Layout = ({ children, title }: LayoutProps) => {
               </DropdownItem>
               <DropdownItem onClick={() => setTheme("antigravity")}>
                 <div
-                  className={`flex items-center gap-2 ${theme ==="antigravity"?"text-blue-600 font-bold":""}`}
+                  className={`flex items-center gap-2 ${theme === "antigravity" ? "text-blue-600 font-bold" : ""}`}
                 >
                   <Monitor size={16} />
                   <span>Antigravity Theme</span>
@@ -666,7 +696,7 @@ const Layout = ({ children, title }: LayoutProps) => {
                         e.stopPropagation();
                         i18n.changeLanguage("en");
                       }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language ==="en"?"bg-blue-600 text-white":"bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
+                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "en" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
                     >
                       EN
                     </div>
@@ -675,7 +705,7 @@ const Layout = ({ children, title }: LayoutProps) => {
                         e.stopPropagation();
                         i18n.changeLanguage("fr");
                       }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language ==="fr"?"bg-blue-600 text-white":"bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
+                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "fr" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
                     >
                       FR
                     </div>
@@ -684,7 +714,7 @@ const Layout = ({ children, title }: LayoutProps) => {
                         e.stopPropagation();
                         i18n.changeLanguage("km");
                       }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language ==="km"?"bg-blue-600 text-white":"bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
+                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "km" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
                     >
                       KM
                     </div>

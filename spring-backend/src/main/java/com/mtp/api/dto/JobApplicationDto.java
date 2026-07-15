@@ -15,7 +15,8 @@ public class JobApplicationDto {
     private LocalDateTime appliedDate;
     private String status;
     private String coverLetter;
-    private String cvUrl;
+    @jakarta.validation.constraints.Size(max = 500)
+    private String resumeUrl;
     
     // Additional helpful fields for UI
     private String clientName;

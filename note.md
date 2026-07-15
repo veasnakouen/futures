@@ -18,6 +18,7 @@ Here is what you need to do:
 1. act as experience professional full stack web app and devop,please analy my inventory page is that any required to make this page be fully inventory management system.
 
 2. to run all service 
+
    ```
    .\start_all.bats
 

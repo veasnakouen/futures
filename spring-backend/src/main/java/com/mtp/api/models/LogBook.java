@@ -17,6 +17,11 @@ public class LogBook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EmployeeId")
+    @com.fasterxml.jackson.annotation.JsonBackReference
+    private Employee employee;
+
     @Size(max = 6)
     private String gender;
 

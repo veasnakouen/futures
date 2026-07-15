@@ -30,7 +30,7 @@ const SuccessionModule: React.FC = () => {
       setPipelines(pipelinesRes.data || []);
     } catch (err) {
       console.error("Failed to fetch succession data", err);
-      toast.error("Failed to connect to succession AI engine");
+      toast.error("Failed to connect to succession AI engine", { id: 'err-succession-api' });
     } finally {
       setLoading(false);
     }

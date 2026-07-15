@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {Spinner} from '@/lib/flowbite-compat';
+import { Spinner } from '@/lib/flowbite-compat';
 import {
   Shield,
   Sparkles,
@@ -41,18 +41,18 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
   const currentUser = authService.getCurrentUser();
   const userRole =
     Array.isArray(currentUser?.roles) &&
-    currentUser.roles.some((r: any) =>
-      (typeof r === "string" ? r : r?.name || "")
-        .toUpperCase()
-        .includes("SUPERADMIN"),
-    )
+      currentUser.roles.some((r: any) =>
+        (typeof r === "string" ? r : r?.name || "")
+          .toUpperCase()
+          .includes("SUPERADMIN"),
+      )
       ? "Super Admin"
       : Array.isArray(currentUser?.roles) &&
-          currentUser.roles.some((r: any) =>
-            (typeof r === "string" ? r : r?.name || "")
-              .toUpperCase()
-              .includes("ADMIN"),
-          )
+        currentUser.roles.some((r: any) =>
+          (typeof r === "string" ? r : r?.name || "")
+            .toUpperCase()
+            .includes("ADMIN"),
+        )
         ? "Administrator"
         : "Standard User";
 
@@ -160,7 +160,7 @@ const DashboardPage = ({ isDark, setIsDark }: any) => {
               </div>
               <div className="flex items-center gap-2 bg-gray-50 dark:bg-white/[0.04] px-3.5 py-1.5 rounded-full border border-gray-200/60 dark:border-white/[0.06]">
                 <span
-                  className={`w-1.5 h-1.5 rounded-full ${connectionStatus ==="online"?"bg-emerald-400 animate-pulse":"bg-rose-500"}`}
+                  className={`w-1.5 h-1.5 rounded-full ${connectionStatus === "online" ? "bg-emerald-400 animate-pulse" : "bg-rose-500"}`}
                 />
                 <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 dark:text-white/40">
                   {connectionStatus === "online"

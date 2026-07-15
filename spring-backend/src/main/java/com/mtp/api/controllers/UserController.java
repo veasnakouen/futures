@@ -1,8 +1,8 @@
 package com.mtp.api.controllers;
 
 import com.mtp.api.models.User;
+import com.mtp.api.repositories.RoleRepository;
 import com.mtp.api.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,16 +17,20 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class UserController {
 
+    // depandancy injection
     private final UserRepository repository;
-    private final com.mtp.api.repositories.RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserRepository repository, com.mtp.api.repositories.RoleRepository roleRepository,
+    // constructor
+    public UserController(UserRepository repository, RoleRepository roleRepository,
             PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
+    // routes
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER_READ')")
@@ -65,6 +69,7 @@ public class UserController {
         return ResponseEntity.ok(repository.save(user));
     }
 
+    // http put
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_WRITE')")
     @CacheEvict(value = "users", allEntries = true)
@@ -88,12 +93,14 @@ public class UserController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    // Get roles
     @GetMapping("/roles")
     @PreAuthorize("hasAuthority('ROLE_MANAGE')")
     public ResponseEntity<?> getRoles() {
         return ResponseEntity.ok(roleRepository.findAll());
     }
 
+    // Get by id
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_WRITE')")
     @CacheEvict(value = "users", allEntries = true)

@@ -34,7 +34,7 @@ const EngagementModule: React.FC = () => {
       setMetrics(metRes.data || {});
     } catch (err) {
       console.error("Failed to fetch culture data", err);
-      toast.error("Failed to connect to Engagement API");
+      toast.error("Failed to connect to Engagement API", { id: 'err-engagement-api' });
     } finally {
       setLoading(false);
     }

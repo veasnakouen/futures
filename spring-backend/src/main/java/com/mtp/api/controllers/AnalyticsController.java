@@ -32,10 +32,24 @@ public class AnalyticsController {
                 .filter(e -> e.getJoinDate() != null && e.getJoinDate().getMonth() == LocalDate.now().getMonth())
                 .count();
 
+        long terminatedThisYear = employees.stream()
+                .filter(e -> "Terminated".equalsIgnoreCase(e.getStatus()) || "Resigned".equalsIgnoreCase(e.getStatus()))
+                .filter(e -> e.getResignationDate() != null && e.getResignationDate().getYear() == LocalDate.now().getYear())
+                .count();
+
+        double averageHeadcount = (totalHeadcount + activeEmployees) / 2.0;
+        double turnoverRate = averageHeadcount > 0 ? (terminatedThisYear / averageHeadcount) * 100.0 : 0.0;
+
+        double totalLeaveLiability = employees.stream()
+                .filter(e -> "Active".equalsIgnoreCase(e.getStatus()) && e.getBasicSalary() != null)
+                .mapToDouble(e -> (e.getBasicSalary() / 30.0) * (e.getAnnualLeaveBalance() != null ? e.getAnnualLeaveBalance() : 0.0))
+                .sum();
+
         stats.put("totalHeadcount", totalHeadcount);
         stats.put("activeEmployees", activeEmployees);
         stats.put("newHiresThisMonth", newHiresThisMonth);
-        stats.put("turnoverRate", 5.2); // Placeholder for complex calc
+        stats.put("turnoverRate", Math.round(turnoverRate * 100.0) / 100.0);
+        stats.put("totalLeaveLiability", Math.round(totalLeaveLiability * 100.0) / 100.0);
 
         return stats;
     }

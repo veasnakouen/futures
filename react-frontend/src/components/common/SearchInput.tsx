@@ -19,7 +19,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   ...props
 }) => {
   return (
-    <div className={`relative flex-1 group ${containerClassName}`}>
+    <div className={`relative flex-1 min-w-[200px] group ${containerClassName}`}>
       <Search
         className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors z-10"
         size={18}

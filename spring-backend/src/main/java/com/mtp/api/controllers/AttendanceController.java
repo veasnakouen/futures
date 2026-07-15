@@ -5,6 +5,7 @@ import com.mtp.api.dto.ManualAttendanceRequest;
 import com.mtp.api.models.Attendance;
 import com.mtp.api.models.BiometricDevice;
 import com.mtp.api.services.AttendanceService;
+import com.mtp.api.services.QRCodeService;
 import com.mtp.api.repositories.AttendanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,12 @@ public class AttendanceController {
 
     @Autowired
     private AttendanceService attendanceService;
+
+    @Autowired
+    private QRCodeService qrCodeService;
+
+    @Autowired
+    private com.mtp.api.repositories.EmployeeRepository employeeRepository;
 
     @Autowired
     private AttendanceRepository attendanceRepository;
@@ -77,6 +84,7 @@ public class AttendanceController {
     public ResponseEntity<Attendance> submitManualLog(@Valid @RequestBody ManualAttendanceRequest request) {
         return ResponseEntity.ok(attendanceService.submitManualLog(request));
     }
+
     @GetMapping("/test-connection")
     public ResponseEntity<Boolean> testConnection(@RequestParam String ipAddress, @RequestParam int port) {
         System.out.println(">>> INCOMING TEST REQUEST: " + ipAddress + ":" + port);
@@ -91,7 +99,7 @@ public class AttendanceController {
         } catch (Exception e) {
             log.error("Sync failed for {}: {}", ipAddress, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Hardware Sync Error: " + e.getMessage());
+                    .body("Hardware Sync Error: " + e.getMessage());
         }
     }
 
@@ -126,5 +134,45 @@ public class AttendanceController {
     @GetMapping("/probe-device")
     public ResponseEntity<String> probeDevice(@RequestParam String ipAddress, @RequestParam int port) {
         return ResponseEntity.ok(attendanceService.probeDevice(ipAddress, port));
+    }
+
+    @PostMapping("/biometric/push")
+    public ResponseEntity<?> receiveBiometricData(@RequestBody java.util.List<java.util.Map<String, Object>> payloads) {
+        for (java.util.Map<String, Object> payload : payloads) {
+            String empIdNo = (String) payload.get("employeeId");
+            String timestampStr = (String) payload.get("timestamp");
+            // Find employee by idNo
+            java.util.Optional<com.mtp.api.models.Employee> empOpt = employeeRepository.findByIdNo(empIdNo);
+            if (empOpt.isPresent()) {
+                com.mtp.api.models.Attendance attendance = new com.mtp.api.models.Attendance();
+                attendance.setEmployee(empOpt.get());
+                attendance.setClockIn(java.time.LocalDateTime.parse(timestampStr));
+                attendance.setStatus("PRESENT");
+                attendanceRepository.save(attendance);
+            }
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/department/{id}/qr")
+    public ResponseEntity<String> getDepartmentQrToken(@PathVariable Integer id) {
+        String token = qrCodeService.generateDepartmentQrToken(id);
+        return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/scan-qr")
+    public ResponseEntity<?> scanQrCode(@RequestParam String token, @RequestParam Integer employeeId) {
+        try {
+            Integer departmentId = qrCodeService.validateAndGetDepartmentId(token);
+            if (departmentId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired QR code.");
+            }
+            
+            // In a real application, we'd verify the employee actually belongs to this department, 
+            // but for this demo we'll assume they just clock in at the department location.
+            return ResponseEntity.ok(attendanceService.clockIn(employeeId, "Department " + departmentId + " QR Scan", "QR Clock-In"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

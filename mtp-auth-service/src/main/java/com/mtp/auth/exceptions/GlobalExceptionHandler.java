@@ -68,6 +68,13 @@ public class GlobalExceptionHandler {
                 body(404, "Not Found", "Endpoint not found: " + ex.getResourcePath(), req.getRequestURI()));
     }
 
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<?> handleResponseStatus(org.springframework.web.server.ResponseStatusException ex, HttpServletRequest req) {
+        log.warn("Response status exception on [{}]: {}", req.getRequestURI(), ex.getMessage());
+        return ResponseEntity.status(ex.getStatusCode()).body(
+                body(ex.getStatusCode().value(), ex.getStatusCode().toString(), ex.getReason(), req.getRequestURI()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAll(Exception ex, HttpServletRequest req) {
         log.error("Unhandled exception on [{}]: {}", req.getRequestURI(), ex.getMessage(), ex);

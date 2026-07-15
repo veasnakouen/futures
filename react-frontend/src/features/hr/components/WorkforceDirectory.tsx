@@ -346,10 +346,10 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                             img={emp.photo}
                             rounded
                             size="md"
-                            className="ring-2 ring-gray-100 dark:ring-gray-700"
+                            className="ring-2 ring-gray-100 dark:ring-gray-700 rounded-full"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center ring-2 ring-gray-100 dark:ring-gray-700">
+                          <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center ring-2 ring-gray-100 dark:ring-gray-700">
                             <Users size={20} className="text-gray-400" />
                           </div>
                         )}
@@ -514,7 +514,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                                 img={emp.photo}
                                 rounded
                                 size="md"
-                                className="transition-all duration-300 group-hover/avatar:scale-110 ring-2 ring-gray-100 dark:ring-gray-700 group-hover/avatar:ring-blue-200 dark:group-hover/avatar:ring-blue-900"
+                                className="transition-all duration-300 group-hover/avatar:scale-110 ring-2 ring-gray-100 dark:ring-gray-700 group-hover/avatar:ring-blue-200 dark:group-hover/avatar:ring-blue-900 rounded-full"
                               />
                               {emp.status === "Active" && (
                                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full z-10"></div>

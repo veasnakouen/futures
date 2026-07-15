@@ -15,6 +15,9 @@ export interface ColumnDef<T> {
 export interface DataTableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
+  // Loading State
+  isLoading?: boolean;
+  isFetching?: boolean;
   // Search
   searchPlaceholder?: string;
   searchQuery?: string;
@@ -42,6 +45,8 @@ export interface DataTableProps<T> {
 export function DataTable<T>({
   data,
   columns,
+  isLoading = false,
+  isFetching = false,
   searchPlaceholder = "Search...",
   searchQuery,
   onSearchChange,
@@ -104,7 +109,12 @@ export function DataTable<T>({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-100 dark:border-white/[0.05] bg-white dark:bg-[#0d1117] shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none">
+      <div className="overflow-hidden rounded-xl border border-gray-100 dark:border-white/[0.05] bg-white dark:bg-[#0d1117] shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none relative">
+        {isFetching && !isLoading && (
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-indigo-50/50 dark:bg-indigo-900/20 overflow-hidden z-20">
+            <div className="h-full bg-indigo-500 w-full animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
+          </div>
+        )}
         <div className="overflow-x-auto">
           <Table hoverable className="border-none w-full text-left">
             <TableHead className="bg-gray-50/80 dark:bg-white/[0.02] text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-white/[0.05]">
@@ -126,7 +136,17 @@ export function DataTable<T>({
               ))}
             </TableHead>
             <TableBody className="divide-y divide-gray-50 dark:divide-white/[0.05]">
-              {data.length === 0 ? (
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, rowIndex) => (
+                  <TableRow key={`skeleton-${rowIndex}`} className="animate-pulse bg-transparent">
+                    {columns.map((col, colIndex) => (
+                      <TableCell key={`skeleton-col-${colIndex}`} className={`px-6 py-4 ${col.className || ''}`}>
+                        <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded-md w-3/4"></div>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : data.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="py-24 text-center">
                     <div className="w-16 h-16 bg-gray-50 dark:bg-white/[0.03] rounded-full flex items-center justify-center mx-auto mb-4">

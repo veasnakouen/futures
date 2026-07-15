@@ -401,13 +401,8 @@ const ClientsPage = ({ isDark, setIsDark, hideLayout = false }: any) => {
     });
   };
 
-  const ConditionalLayout = ({ hideLayout, children, ...props }: any) => {
-    if (hideLayout) return <>{children}</>;
-    return <>{children}</>;
-  };
-
   return (
-    <ConditionalLayout hideLayout={hideLayout} isDark={isDark} setIsDark={setIsDark} title="Client Registry">
+    <>
       <div className="space-y-4 animate-fade-in max-w-[1600px] mx-auto">
         <header className="bg-white dark:bg-gray-800 p-6 rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
@@ -755,7 +750,7 @@ const ClientsPage = ({ isDark, setIsDark, hideLayout = false }: any) => {
           message="Are you sure you want to delete this client? This action is immutable and will remove all associated case data."
         />
       </div>
-    </ConditionalLayout>
+    </>
   );
 };
 

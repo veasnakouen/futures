@@ -12,82 +12,88 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.HashSet;
 import java.util.Set;
 
-@Configuration
-public class DataInitializer {
+@org.springframework.stereotype.Component
+public class DataInitializer implements CommandLineRunner {
 
-    @Bean
-    public CommandLineRunner initData(UserRepository userRepository, RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder) {
-        return args -> {
-            // Ensure ADMIN and SUPERADMIN roles exist
-            Role adminRole = roleRepository.findByName("ADMIN")
-                    .orElseGet(() -> {
-                        Role role = new Role();
-                        role.setName("ADMIN");
-                        return roleRepository.save(role);
-                    });
+    @org.springframework.beans.factory.annotation.Autowired
+    private UserRepository userRepository;
 
-            Role superAdminRole = roleRepository.findByName("SUPERADMIN")
-                    .orElseGet(() -> {
-                        Role role = new Role();
-                        role.setName("SUPERADMIN");
-                        return roleRepository.save(role);
-                    });
+    @org.springframework.beans.factory.annotation.Autowired
+    private RoleRepository roleRepository;
 
-            // Ensure superuser exists
-            String adminEmail = "admin@mtp.com";
-            User existingAdmin = userRepository.findAll().stream()
-                .filter(u -> adminEmail.equals(u.getUserName()))
-                .findFirst()
-                .orElse(null);
-            
-            if (existingAdmin == null) {
-                User admin = new User();
-                admin.setUserName(adminEmail);
-                admin.setEmail(adminEmail);
-                admin.setFirstName("Super");
-                admin.setLastName("Admin");
-                admin.setBranch("HQ");
-                admin.setPasswordHash(passwordEncoder.encode("admin123"));
-                admin.setPasswordText("admin123");
+    @org.springframework.beans.factory.annotation.Autowired
+    private PasswordEncoder passwordEncoder;
 
-                Set<Role> roles = new HashSet<>();
-                roles.add(adminRole);
-                roles.add(superAdminRole);
-                admin.setRoles(roles);
+    @Override
+    @org.springframework.transaction.annotation.Transactional
+    public void run(String... args) throws Exception {
+        // Ensure ADMIN and SUPERADMIN roles exist
+        Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseGet(() -> {
+                    Role role = new Role();
+                    role.setName("ADMIN");
+                    return roleRepository.save(role);
+                });
 
-                userRepository.save(admin);
-                System.out.println("Superuser created: " + adminEmail + " / admin123");
-            }
+        Role superAdminRole = roleRepository.findByName("SUPERADMIN")
+                .orElseGet(() -> {
+                    Role role = new Role();
+                    role.setName("SUPERADMIN");
+                    return roleRepository.save(role);
+                });
 
-            // Ensure mloptapang superuser exists
-            // Ensure mloptapang superuser exists and has correct password
-            String mlopEmail = "superadmin@mloptapang.org";
-            User mlopAdmin = userRepository.findAll().stream()
-                .filter(u -> mlopEmail.equals(u.getUserName()))
-                .findFirst()
-                .orElse(new User());
-            if (mlopAdmin.getId() == null) {
-                mlopAdmin.setUserName(mlopEmail);
-                mlopAdmin.setEmail(mlopEmail);
-                mlopAdmin.setFirstName("Mlop");
-                mlopAdmin.setLastName("Admin");
-                mlopAdmin.setBranch("HQ");
-            }
+        // Ensure superuser exists
+        String adminEmail = "admin@mtp.com";
+        User existingAdmin = userRepository.findAll().stream()
+            .filter(u -> adminEmail.equals(u.getUserName()))
+            .findFirst()
+            .orElse(null);
+        
+        if (existingAdmin == null) {
+            User admin = new User();
+            admin.setUserName(adminEmail);
+            admin.setEmail(adminEmail);
+            admin.setFirstName("Super");
+            admin.setLastName("Admin");
+            admin.setBranch("HQ");
+            admin.setPasswordHash(passwordEncoder.encode("admin123"));
+            admin.setPasswordText("admin123");
 
-            // Force reset password every startup to ensure login access
-            mlopAdmin.setPasswordHash(passwordEncoder.encode("admin123"));
-            mlopAdmin.setPasswordText("admin123");
+            Set<Role> roles = new HashSet<>();
+            roles.add(adminRole);
+            roles.add(superAdminRole);
+            admin.setRoles(roles);
 
-            // Safely assign roles without duplicates
-            if (mlopAdmin.getRoles() == null) {
-                mlopAdmin.setRoles(new HashSet<>());
-            }
-            mlopAdmin.getRoles().add(adminRole);
-            mlopAdmin.getRoles().add(superAdminRole);
+            userRepository.save(admin);
+            System.out.println("Superuser created: " + adminEmail + " / admin123");
+        }
 
-            userRepository.save(mlopAdmin);
-            System.out.println(">>> SECURITY: Mlop Superuser ready with 'admin123' at: " + mlopEmail);
-        };
+        // Ensure mloptapang superuser exists
+        String mlopEmail = "superadmin@mloptapang.org";
+        User mlopAdmin = userRepository.findAll().stream()
+            .filter(u -> mlopEmail.equals(u.getUserName()))
+            .findFirst()
+            .orElse(new User());
+        if (mlopAdmin.getId() == null) {
+            mlopAdmin.setUserName(mlopEmail);
+            mlopAdmin.setEmail(mlopEmail);
+            mlopAdmin.setFirstName("Mlop");
+            mlopAdmin.setLastName("Admin");
+            mlopAdmin.setBranch("HQ");
+        }
+
+        // Force reset password every startup to ensure login access
+        mlopAdmin.setPasswordHash(passwordEncoder.encode("admin123"));
+        mlopAdmin.setPasswordText("admin123");
+
+        // Safely assign roles without duplicates
+        if (mlopAdmin.getRoles() == null) {
+            mlopAdmin.setRoles(new HashSet<>());
+        }
+        mlopAdmin.getRoles().add(adminRole);
+        mlopAdmin.getRoles().add(superAdminRole);
+
+        userRepository.save(mlopAdmin);
+        System.out.println(">>> SECURITY: Mlop Superuser ready with 'admin123' at: " + mlopEmail);
     }
 }

@@ -144,11 +144,30 @@ public class Employee {
     
     private Double taxRate = 0.0; // percentage e.g. 0.10 for 10%
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    private LocalDate resignationDate;
+    private Double annualLeaveBalance = 0.0;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<LogBook> logBooks;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<EmergencyContact> emergencyContacts;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<EmployeeDocument> documents;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<EmployeeAsset> assets;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PositionId")
     private Position position;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DepartmentId")
     private Department department;
 

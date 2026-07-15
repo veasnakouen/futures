@@ -120,5 +120,32 @@ public class DatabaseMigrationRunner implements CommandLineRunner {
             System.out.println("Employees biometric columns migration details: " + e.getMessage());
         }
 
+        try {
+            System.out.println("Running Database Migration: Adding new payroll and leave fields to Employees");
+            try {
+                jdbcTemplate.execute("ALTER TABLE Employees ADD annualLeaveBalance float NULL");
+            } catch (Exception ex) {
+            }
+            try {
+                jdbcTemplate.execute("ALTER TABLE Employees ADD allowances float NULL");
+            } catch (Exception ex) {
+            }
+            try {
+                jdbcTemplate.execute("ALTER TABLE Employees ADD deductions float NULL");
+            } catch (Exception ex) {
+            }
+            try {
+                jdbcTemplate.execute("ALTER TABLE Employees ADD resignationDate date NULL");
+            } catch (Exception ex) {
+            }
+            try {
+                jdbcTemplate.execute("ALTER TABLE Employees ADD taxRate float NULL");
+            } catch (Exception ex) {
+            }
+            System.out.println("Employees new payroll columns migration completed.");
+        } catch (Exception e) {
+            System.out.println("Employees new payroll columns migration details: " + e.getMessage());
+        }
+
     }
 }

@@ -6,6 +6,8 @@ import { HolidayFormModal } from "@/features/hr/components/HolidayFormModal";
 import { ScheduleAssignmentModal } from "@/features/hr/components/ScheduleAssignmentModal";
 import { useTimetable } from "@/hooks/useTimetable";
 import { useHoliday } from "@/hooks/useHoliday";
+import { useScheduling } from "@/hooks/useScheduling";
+import { ShiftScheduleDto } from "@/services/scheduleService";
 
 export default function TimetablePage() {
   const [activeTab, setActiveTab] = useState("maintenance");
@@ -21,9 +23,42 @@ export default function TimetablePage() {
   const { useHolidays } = useHoliday();
   const { data: holidays = [] } = useHolidays();
 
-  const [schedules, setSchedules] = useState([
-    { id: 1, employeeId: "EMP-001", employeeName: "Koeun Veasna", shiftId: "SHIFT-3", shiftName: "Full Day", dateFrom: "2026-07-01", dateTo: "2026-07-31" }
-  ]);
+  const { useCurrentWeekSchedules, useCreateSchedule, useCreateDepartmentSchedule, useDeleteSchedule } = useScheduling();
+  const { data: schedules = [] } = useCurrentWeekSchedules();
+  const createSchedule = useCreateSchedule();
+  const createDepartmentSchedule = useCreateDepartmentSchedule();
+  const deleteSchedule = useDeleteSchedule();
+
+  const parseShift = (shiftStr?: string) => {
+    if (!shiftStr) return { am: "Off", pm: "Off" };
+    if (shiftStr.startsWith("AM:")) {
+      const parts = shiftStr.split(" | PM: ");
+      return {
+        am: parts[0].replace("AM: ", "").trim(),
+        pm: parts[1] ? parts[1].trim() : "Off"
+      };
+    }
+    // Fallback for old data
+    return { am: shiftStr, pm: shiftStr };
+  };
+
+  const renderDayShift = (dayName: string, shiftStr?: string) => {
+    const parsed = parseShift(shiftStr);
+    const isOffAM = parsed.am === "Off" || parsed.am === "";
+    const isOffPM = parsed.pm === "Off" || parsed.pm === "";
+    
+    if (isOffAM && isOffPM) return null;
+
+    return (
+      <div className="flex flex-col gap-1 min-w-[100px] p-2 bg-[#0f172a] rounded-lg border border-gray-700/50">
+        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{dayName}</span>
+        <div className="flex gap-1.5 text-[10px] font-bold">
+          {!isOffAM && <span className="bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20" title={parsed.am}>AM</span>}
+          {!isOffPM && <span className="bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded border border-rose-500/20" title={parsed.pm}>PM</span>}
+        </div>
+      </div>
+    );
+  };
 
   const tabs = [
     { id: "maintenance", label: "Shift Timetable Maintenance", icon: Clock },
@@ -182,9 +217,8 @@ export default function TimetablePage() {
                 <thead>
                   <tr className="bg-[#0f172a]/50 border-b border-gray-700/50">
                     <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Employee</th>
-                    <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Assigned Shift</th>
-                    <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Valid From</th>
-                    <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Valid To</th>
+                    <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Week Start (Mon)</th>
+                    <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Daily Shifts (AM/PM)</th>
                     <th className="px-5 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
@@ -195,16 +229,37 @@ export default function TimetablePage() {
                         <div className="font-bold text-white text-sm">{s.employeeName}</div>
                         <div className="text-xs text-gray-500 mt-1">{s.employeeId}</div>
                       </td>
+                      <td className="px-5 py-4 font-bold text-sm text-gray-300">{s.weekStartDate}</td>
                       <td className="px-5 py-4">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">
-                          <Layers size={12} /> {s.shiftName}
-                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {renderDayShift("Mon", s.mondayShift)}
+                          {renderDayShift("Tue", s.tuesdayShift)}
+                          {renderDayShift("Wed", s.wednesdayShift)}
+                          {renderDayShift("Thu", s.thursdayShift)}
+                          {renderDayShift("Fri", s.fridayShift)}
+                          {renderDayShift("Sat", s.saturdayShift)}
+                          {renderDayShift("Sun", s.sundayShift)}
+                          
+                          {/* If completely off all week */}
+                          {(!s.mondayShift || s.mondayShift.includes("Off | PM: Off")) &&
+                           (!s.tuesdayShift || s.tuesdayShift.includes("Off | PM: Off")) &&
+                           (!s.wednesdayShift || s.wednesdayShift.includes("Off | PM: Off")) &&
+                           (!s.thursdayShift || s.thursdayShift.includes("Off | PM: Off")) &&
+                           (!s.fridayShift || s.fridayShift.includes("Off | PM: Off")) &&
+                           (!s.saturdayShift || s.saturdayShift.includes("Off | PM: Off")) &&
+                           (!s.sundayShift || s.sundayShift.includes("Off | PM: Off")) && (
+                             <span className="text-xs text-gray-500 font-bold italic">No active shifts</span>
+                           )}
+                        </div>
                       </td>
-                      <td className="px-5 py-4 font-bold text-sm text-gray-300">{s.dateFrom}</td>
-                      <td className="px-5 py-4 font-bold text-sm text-gray-300">{s.dateTo}</td>
                       <td className="px-5 py-4 text-right">
                         <button className="text-gray-400 hover:text-white mr-3 transition-colors"><Edit2 size={16}/></button>
-                        <button className="text-gray-400 hover:text-rose-500 transition-colors"><Trash2 size={16}/></button>
+                        <button 
+                          className="text-gray-400 hover:text-rose-500 transition-colors"
+                          onClick={() => s.id && deleteSchedule.mutate(s.id)}
+                        >
+                          <Trash2 size={16}/>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -277,13 +332,12 @@ export default function TimetablePage() {
       <ScheduleAssignmentModal 
         isOpen={isScheduleModalOpen} 
         onClose={() => setIsScheduleModalOpen(false)} 
-        onSave={(data) => {
-          setSchedules([...schedules, { 
-            id: Date.now(), 
-            ...data, 
-            employeeName: "Mock Employee", 
-            shiftName: "Mock Shift" 
-          }]);
+        onSave={(data: any, assignmentType: "employee" | "department") => {
+          if (assignmentType === "employee") {
+            createSchedule.mutate(data);
+          } else {
+            createDepartmentSchedule.mutate(data);
+          }
           setIsScheduleModalOpen(false);
         }} 
       />

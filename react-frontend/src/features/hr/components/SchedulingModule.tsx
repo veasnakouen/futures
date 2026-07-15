@@ -25,7 +25,7 @@ const SchedulingModule: React.FC = () => {
       setShifts(res.data || []);
     } catch (err) {
       console.error("Failed to fetch schedule data", err);
-      toast.error("Failed to connect to scheduling node");
+      toast.error("Failed to connect to scheduling node", { id: 'err-scheduling-api' });
     } finally {
       setLoading(false);
     }

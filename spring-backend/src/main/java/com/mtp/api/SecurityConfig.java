@@ -63,6 +63,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/hr/attendance/sync-device").permitAll()
                         .requestMatchers("/api/hr/attendance/device-users").permitAll()
                         .requestMatchers("/api/hr/attendance/test-connection").permitAll()
+                        .requestMatchers("/api/pos/products/test-error").permitAll()
+                        .requestMatchers("/api/pos/sales/test-error").permitAll()
                         .requestMatchers("/api/vacancies/public/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/job-applications").permitAll()
                         .requestMatchers("/error").permitAll()

@@ -27,6 +27,7 @@ import {
   X,
   ChevronDown,
   MessageSquare,
+  CreditCard,
 } from "lucide-react";
 
 import ChatbotSettingsTab from '@/features/admin/components/ChatbotSettingsTab';
@@ -60,6 +61,8 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
   } = useTheme();
 
   const [hrStaffIdFormat, setHrStaffIdFormat] = useState("EMP-{YYYY}-{SEQ}");
+  const [khqrBakongId, setKhqrBakongId] = useState("");
+  const [khqrMerchantName, setKhqrMerchantName] = useState("");
   const [maxImageUploadSize, setMaxImageUploadSize] = useState("1");
   const [enableDdosProtection, setEnableDdosProtection] = useState(false);
   const [maxRequestsPerMinute, setMaxRequestsPerMinute] = useState("60");
@@ -296,6 +299,14 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
         .then((res) => setReverseProxyUrl(res.data.value))
         .catch(() => setReverseProxyUrl(""));
     }
+    if (activeTab === "pos") {
+      api.get("/settings/KHQR_BAKONG_ID")
+        .then((res) => setKhqrBakongId(res.data.value))
+        .catch(() => setKhqrBakongId(""));
+      api.get("/settings/KHQR_MERCHANT_NAME")
+        .then((res) => setKhqrMerchantName(res.data.value))
+        .catch(() => setKhqrMerchantName(""));
+    }
   }, [activeTab]);
 
   const handleSaveHrSettings = async (e: any) => {
@@ -371,6 +382,27 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError("Failed to update System settings.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSavePosSettings = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await api.post("/settings", {
+        key: "KHQR_BAKONG_ID",
+        value: khqrBakongId,
+      });
+      await api.post("/settings", {
+        key: "KHQR_MERCHANT_NAME",
+        value: khqrMerchantName,
+      });
+      setSuccess("POS settings updated successfully.");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError("Failed to update POS settings.");
     } finally {
       setLoading(false);
     }
@@ -513,6 +545,11 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                     id: "system",
                     icon: <Server size={18} />,
                     label: t("systemConfig"),
+                  },
+                  {
+                    id: "pos",
+                    icon: <CreditCard size={18} />,
+                    label: "POS & Payment",
                   },
                   {
                     id: "security_logs",
@@ -682,6 +719,58 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
                         <Save size={18} className="mr-2" />
                       )}
                       Save HR Settings
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {activeTab === "pos" && (
+              <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-xl border border-slate-200/50 dark:border-slate-800/50 p-8 animate-fade-in">
+                <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-6 flex items-center gap-2">
+                  <CreditCard size={24} className="text-emerald-600" /> POS & Payment Configuration
+                </h2>
+                <form onSubmit={handleSavePosSettings} className="space-y-6">
+                  <div className="max-w-md space-y-4">
+                    <div>
+                      <Label htmlFor="khqrBakongId">Bakong Account ID</Label>
+                      <TextInput
+                        id="khqrBakongId"
+                        className="mt-1"
+                        placeholder="e.g. sokha@aba.kh"
+                        value={khqrBakongId}
+                        onChange={(e) => setKhqrBakongId(e.target.value)}
+                      />
+                      <p className="text-xs text-gray-500 mt-2">
+                        The merchant account ID associated with your Bakong or ABA KHQR setup.
+                      </p>
+                    </div>
+                    <div>
+                      <Label htmlFor="khqrMerchantName">Merchant Name</Label>
+                      <TextInput
+                        id="khqrMerchantName"
+                        className="mt-1"
+                        placeholder="e.g. Sokha Shop"
+                        value={khqrMerchantName}
+                        onChange={(e) => setKhqrMerchantName(e.target.value)}
+                      />
+                      <p className="text-xs text-gray-500 mt-2">
+                        The display name that will appear when customers scan the QR code.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="pt-6 border-t border-slate-200/50 dark:border-slate-700/50">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-bold px-8 py-3.5 rounded-xl flex items-center justify-center transition-all duration-300 shadow-xl shadow-blue-500/25 active:scale-[0.98]"
+                    >
+                      {loading ? (
+                        <Spinner size="sm" className="mr-2" />
+                      ) : (
+                        <Save size={18} className="mr-2" />
+                      )}
+                      Save POS Settings
                     </button>
                   </div>
                 </form>

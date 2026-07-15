@@ -62,7 +62,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         application.setAppliedDate(LocalDateTime.now());
         application.setStatus("PENDING");
         application.setCoverLetter(dto.getCoverLetter());
-        application.setCvUrl(dto.getCvUrl());
+        application.setResumeUrl(dto.getResumeUrl());
 
         JobApplication saved = jobApplicationRepository.save(application);
         return mapToDto(saved);
@@ -171,7 +171,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         dto.setAppliedDate(entity.getAppliedDate());
         dto.setStatus(entity.getStatus());
         dto.setCoverLetter(entity.getCoverLetter());
-        dto.setCvUrl(entity.getCvUrl());
+        dto.setResumeUrl(entity.getResumeUrl());
 
         return dto;
     }

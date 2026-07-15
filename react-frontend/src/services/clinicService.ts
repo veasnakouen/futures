@@ -112,6 +112,8 @@ export const clinicService = {
   getPrescriptions: (page = 0, size = 10) =>
     api.get(`/clinic/prescriptions?page=${page}&size=${size}`),
   getPrescriptionById: (id: string) => api.get(`/clinic/prescriptions/${id}`),
+  getPrescriptionsByPatient: (patientId: string) =>
+    api.get(`/clinic/prescriptions/patient/${patientId}`),
   createPrescription: (data: CreatePrescriptionCommand) =>
     api.post(`/clinic/prescriptions`, data),
   updatePrescription: (id: string, data: UpdatePrescriptionCommand) =>
@@ -154,11 +156,15 @@ export const clinicService = {
 
   // --- Medical Records ---
   getMedicalRecords: (page = 0, size = 10) =>
-    api.get(`/clinic/medical-records?page=${page}&size=${size}`),
-  getMedicalRecordById: (id: string) => api.get(`/clinic/medical-records/${id}`),
-  createMedicalRecord: (data: any) => api.post(`/clinic/medical-records`, data),
-  updateMedicalRecord: (id: string, data: any) => api.put(`/clinic/medical-records/${id}`, data),
-  deleteMedicalRecord: (id: string) => api.delete(`/clinic/medical-records/${id}`),
+    api.get(`/clinic/records?page=${page}&size=${size}`),
+  getMedicalRecordById: (id: string) => api.get(`/clinic/records/${id}`),
+  getMedicalRecordsByPatient: (patientId: string, page = 0, size = 10) =>
+    api.get(`/clinic/records/patient/${patientId}?page=${page}&size=${size}`),
+  getTodayMedicalRecords: (page = 0, size = 100) =>
+    api.get(`/clinic/records/today?page=${page}&size=${size}`),
+  createMedicalRecord: (data: any) => api.post(`/clinic/records`, data),
+  updateMedicalRecord: (id: string, data: any) => api.put(`/clinic/records/${id}`, data),
+  deleteMedicalRecord: (id: string) => api.delete(`/clinic/records/${id}`),
 
   // --- Diagnosis Templates ---
   getDiagnosisTemplates: (page = 0, size = 100) =>
@@ -169,5 +175,9 @@ export const clinicService = {
   // --- Custom Fields ---
   getCustomFields: (entityType: string) => 
     api.get(`/clinic/custom-fields?entityType=${entityType}`),
+
+  // --- Dashboard ---
+  getDashboardStats: () => api.get(`/clinic/dashboard/stats`),
+  getDashboardChartData: () => api.get(`/clinic/dashboard/chart-data`),
 };
 

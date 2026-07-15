@@ -16,7 +16,7 @@ public class ShiftSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EmployeeId")
     private Employee employee;
 
@@ -27,4 +27,6 @@ public class ShiftSchedule {
     private String wednesdayShift;
     private String thursdayShift;
     private String fridayShift;
+    private String saturdayShift;
+    private String sundayShift;
 }

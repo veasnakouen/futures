@@ -24,7 +24,10 @@ public class UpdateInvoiceCommand {
     private String paymentLink;
 
     private BigDecimal subTotal;
+    private BigDecimal taxRate;
     private BigDecimal taxTotal;
+    private BigDecimal promotionDiscount;
+    private BigDecimal poorIdDiscount;
     private BigDecimal discountTotal;
     private BigDecimal grandTotal;
 

@@ -21,6 +21,7 @@ java {
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -43,8 +44,7 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// Microservices (Spring Cloud)
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 
 	// Security & JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
@@ -62,14 +62,25 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	implementation 'com.cloudinary:cloudinary-http5:2.1.0'
 	
+	// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+	
+	// RabbitMQ / AMQP
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	
+	
 	// Cloud Storage
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.720'
 	
-	// Excel Processing
+	// Excel Processing & Reports
 	implementation 'org.apache.poi:poi:5.2.2'
 	implementation 'org.apache.poi:poi-ooxml:5.2.2'
 	implementation 'org.apache.poi:poi-ooxml-full:5.2.2'
 	implementation 'org.apache.commons:commons-collections4:4.4'
+	implementation 'com.github.librepdf:openpdf:1.3.30'
+	implementation 'com.opencsv:opencsv:5.7.1'
 
 	// Testing
 	// testImplementation 'io.projectreactor:reactor-test'

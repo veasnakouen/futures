@@ -33,7 +33,7 @@ const IntegrationModule: React.FC = () => {
       setSsoProviders(ssoRes.data || []);
     } catch (err) {
       console.error("Failed to fetch integration data", err);
-      toast.error("Failed to connect to Integration Hub");
+      toast.error("Failed to connect to Integration Hub", { id: 'err-integration-hub' });
     } finally {
       setLoading(false);
     }

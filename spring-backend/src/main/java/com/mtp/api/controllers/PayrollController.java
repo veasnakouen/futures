@@ -24,6 +24,9 @@ public class PayrollController {
     @Autowired
     private com.mtp.api.repositories.LeaveRequestRepository leaveRequestRepository;
 
+    @Autowired
+    private com.mtp.api.repositories.PayslipRepository payslipRepository;
+
     @GetMapping
     public List<PayrollRecord> getAll() {
         return payrollRecordRepository.findAll();
@@ -82,6 +85,52 @@ public class PayrollController {
         record.setTotalNetPayable(totalNet);
         record.setStatus("Completed");
 
-        return ResponseEntity.ok(payrollRecordRepository.save(record));
+        PayrollRecord savedRecord = payrollRecordRepository.save(record);
+
+        // Generate individual payslips
+        for (Employee e : employees) {
+            if ("Active".equalsIgnoreCase(e.getStatus()) && e.getBasicSalary() != null) {
+                double basic = e.getBasicSalary();
+                double allowance = e.getAllowances() != null ? e.getAllowances() : 0.0;
+                double rate = e.getTaxRate() != null ? e.getTaxRate() : 0.0;
+                double otherDeductions = e.getDeductions() != null ? e.getDeductions() : 0.0;
+                
+                double unpaidLeaveDeduction = 0.0;
+                List<com.mtp.api.models.LeaveRequest> leaves = leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(e.getId());
+                for (com.mtp.api.models.LeaveRequest req : leaves) {
+                    if ("APPROVED".equals(req.getStatus()) && "Unpaid".equalsIgnoreCase(req.getLeaveType())) {
+                        double days = 1.0;
+                        if ("HALF_MORNING".equals(req.getDuration()) || "HALF_AFTERNOON".equals(req.getDuration())) {
+                            days = 0.5;
+                        } else if ("FULL_DAY".equals(req.getDuration()) && req.getEndDate() != null && req.getStartDate() != null) {
+                            days = java.time.temporal.ChronoUnit.DAYS.between(req.getStartDate(), req.getEndDate()) + 1;
+                        }
+                        unpaidLeaveDeduction += (basic / 30.0) * days;
+                    }
+                }
+
+                double gross = basic + allowance;
+                double taxableIncome = Math.max(0, gross - otherDeductions - unpaidLeaveDeduction);
+                double tax = taxableIncome * rate;
+                double net = gross - tax - otherDeductions - unpaidLeaveDeduction;
+
+                com.mtp.api.models.Payslip payslip = new com.mtp.api.models.Payslip();
+                payslip.setEmployee(e);
+                payslip.setPayrollRecord(savedRecord);
+                payslip.setBasicSalary(basic);
+                payslip.setAllowances(allowance);
+                payslip.setGrossPay(gross);
+                payslip.setUnpaidLeaveDeduction(unpaidLeaveDeduction);
+                payslip.setOtherDeductions(otherDeductions);
+                payslip.setTaxableIncome(taxableIncome);
+                payslip.setTaxDeducted(tax);
+                payslip.setNetPay(net);
+                payslip.setCurrency("USD");
+                
+                payslipRepository.save(payslip);
+            }
+        }
+
+        return ResponseEntity.ok(savedRecord);
     }
 }

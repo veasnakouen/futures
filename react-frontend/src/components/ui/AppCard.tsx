@@ -1,5 +1,5 @@
 import React from "react";
-import {Dropdown} from '@/lib/flowbite-compat';
+import { Dropdown } from '@/lib/flowbite-compat';
 import { MoreVertical } from "lucide-react";
 
 export interface AppCardProps {
@@ -32,15 +32,15 @@ export const AppCard: React.FC<AppCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white dark:bg-gray-800 shadow-sm rounded-sm overflow-hidden transition-all group border-t-8 flex flex-col ${borderColor} ${onClick ?"cursor-pointer hover:shadow-md":"hover:shadow-md"} ${className}`}
+      className={`bg-white dark:bg-gray-800 shadow-sm rounded-sm overflow-visible transition-all group border-t-8 flex flex-col ${borderColor} ${onClick ? "cursor-pointer hover:shadow-md" : "hover:shadow-md"} ${className}`}
     >
       <div className="p-6 flex-1 flex flex-col">
         {(headerLeft || headerRight || actions) && (
           <div className="flex flex-col gap-4 mb-6">
             <div className="flex justify-between items-start">
-              <div className="flex-1">{headerLeft}</div>
+              <div className="flex-1 min-w-0">{headerLeft}</div>
               <div
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 shrink-0"
                 onClick={(e) => (actions ? e.stopPropagation() : undefined)}
               >
                 {headerRight}
@@ -49,7 +49,7 @@ export const AppCard: React.FC<AppCardProps> = ({
                     arrowIcon={false}
                     inline
                     label={
-                      <div className="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 outline-none cursor-pointer">
+                      <div className="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 outline-none cursor-pointer shrink-0 flex items-center justify-center">
                         <MoreVertical size={16} />
                       </div>
                     }

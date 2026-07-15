@@ -36,7 +36,7 @@ const RetentionModule: React.FC = () => {
       setRisks(risksRes.data || []);
     } catch (err) {
       console.error("Failed to fetch retention data", err);
-      toast.error("Failed to connect to retention AI engine");
+      toast.error("Failed to connect to retention AI engine", { id: 'err-retention-api' });
     } finally {
       setLoading(false);
     }

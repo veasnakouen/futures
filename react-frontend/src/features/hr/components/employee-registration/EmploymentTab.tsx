@@ -11,6 +11,7 @@ import {
 import { Check, X, Wand2 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from '../../../../services/api';
+import { Briefcase, Building2, FileText, UserSquare } from "lucide-react";
 
 interface EmploymentTabProps {
   formMethods: UseFormReturn<EmployeeFormData>;
@@ -110,8 +111,15 @@ const EmploymentTab: React.FC<EmploymentTabProps> = ({ formMethods }) => {
   const posRegister = register("position");
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-2 gap-6">
+    <div className="space-y-8 animate-fade-in pb-4">
+      
+      {/* Section 1: Identification */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05] shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
+        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-indigo-500 to-violet-500 opacity-50" />
+        <h4 className="text-xs font-black uppercase tracking-widest text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+          <UserSquare size={14} className="text-indigo-500" /> Identification & Timing
+        </h4>
+        <div className="grid grid-cols-2 gap-6">
         <div>
           <Label className="mb-1 block font-bold text-[10px] uppercase text-gray-400">
             Official Staff ID
@@ -142,8 +150,16 @@ const EmploymentTab: React.FC<EmploymentTabProps> = ({ formMethods }) => {
           )}
         </div>
         <DatePickerField label="Join Date" field="joinDate" control={control} />
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-6">
+
+      {/* Section 2: Department & Position */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05] shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
+        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-violet-500 to-fuchsia-500 opacity-50" />
+        <h4 className="text-xs font-black uppercase tracking-widest text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+          <Building2 size={14} className="text-violet-500" /> Organizational Placement
+        </h4>
+        <div className="grid grid-cols-2 gap-6">
         <div>
           <Label className="mb-1 block font-bold text-[10px] uppercase text-gray-400">
             Department
@@ -293,8 +309,16 @@ const EmploymentTab: React.FC<EmploymentTabProps> = ({ formMethods }) => {
             </>
           )}
         </div>
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-6">
+
+      {/* Section 3: Contract & Status */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.05] shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
+        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-fuchsia-500 to-pink-500 opacity-50" />
+        <h4 className="text-xs font-black uppercase tracking-widest text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+          <FileText size={14} className="text-fuchsia-500" /> Contract Details
+        </h4>
+        <div className="grid grid-cols-2 gap-6 mb-6">
         <div>
           <Label className="mb-1 block font-bold text-[10px] uppercase text-gray-400">
             Contract Type
@@ -317,8 +341,8 @@ const EmploymentTab: React.FC<EmploymentTabProps> = ({ formMethods }) => {
             <option>Terminated</option>
           </Select>
         </div>
-      </div>
-      <div className="grid grid-cols-3 gap-6">
+        </div>
+        <div className="grid grid-cols-3 gap-6 mb-6">
         <DatePickerField
           label="Contract Start Date"
           field="contractStartDate"
@@ -348,7 +372,8 @@ const EmploymentTab: React.FC<EmploymentTabProps> = ({ formMethods }) => {
         <Label className="mb-1 block font-bold text-[10px] uppercase text-gray-400">
           Internal Notes
         </Label>
-        <Textarea {...register("note")} placeholder="Confidential notes..." />
+        <Textarea {...register("note")} placeholder="Confidential notes..." className="min-h-[100px]" />
+      </div>
       </div>
     </div>
   );

@@ -49,60 +49,36 @@ spring:
           enabled: true
           lowerCaseServiceId: true
       routes:
-        - id: stock-service
-          uri: lb://MTP-STOCK-SERVICE
-          predicates:
-            - Path=/api/stock/**
         - id: auth-service
-          uri: lb://MTP-AUTH-SERVICE
+          uri: http://localhost:8082
           predicates:
             - Path=/api/auth/**
-        - id: report-builder-service
-          uri: lb://MTP-REPORT-SERVICE
-          predicates:
-            - Path=/api/report-builder/**, /api/custom-reports/**
         - id: school-service
-          uri: lb://MTP-SCHOOL-SERVICE
+          uri: http://localhost:8087
           predicates:
             - Path=/api/school/**
-        - id: clinic-service
-          uri: lb://MTP-CLINIC-SERVICE
-          predicates:
-            - Path=/api/clinic/**
-        - id: hotel-service
-          uri: lb://MTP-HOTEL-SERVICE
-          predicates:
-            - Path=/api/hotel/**
-        - id: future-service
-          uri: lb://MTP-FUTURE-SERVICE
-          predicates:
-            - Path=/api/future/**
-        - id: pos-service
-          uri: lb://MTP-POS-SERVICE
-          predicates:
-            - Path=/api/pos/**
-        - id: hr-service
-          uri: lb://MTP-HR-SERVICE
+        - id: core-service
+          uri: http://localhost:8081
           predicates:
             - Path=/api/**, /ws/**
 
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+    enabled: false
 
 resilience4j:
   circuitbreaker:
     instances:
       backendCircuitBreaker:
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 20           # Need 20 calls before evaluating
+        failureRateThreshold: 60        # 60% failure rate to trip
+        waitDurationInOpenState: 5s     # Recover faster (was 10s)
+        permittedNumberOfCallsInHalfOpenState: 5
+        minimumNumberOfCalls: 5         # Need at least 5 calls to evaluate
   timelimiter:
     instances:
       backendCircuitBreaker:
-        timeoutDuration: 15s
+        timeoutDuration: 30s            # Allow slow first-requests after restart (was 15s)
 
 jwt:
   secret: ${JWT_SECRET:MTB_SECRET_KEY_2026_MODERN_SYSTEM_SECURE_KEY_1234567890}

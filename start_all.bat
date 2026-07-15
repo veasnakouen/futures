@@ -1,53 +1,41 @@
 @echo off
 echo ==========================================
-echo   MTP MICROSERVICES STARTUP SYSTEM
+echo   MTP FLYWEIGHT MICROSERVICES SYSTEM
 echo ==========================================
 
-:: Configure JVM memory constraints for local development (limits memory usage and speeds up boot time)
-:: We must limit Metaspace, CodeCache, and Stack Size because Heap (-Xmx) is only a fraction of total RAM!
-set JAVA_TOOL_OPTIONS=-Xmx256m -Xms128m -XX:MaxMetaspaceSize=256m -XX:ReservedCodeCacheSize=128m -Xss512k -XX:TieredStopAtLevel=1 -Xverify:none
-
-echo [1/4] Starting Discovery Server (Port 8761)...
-start "MTP Discovery Server" cmd /c "cd mtp-discovery-server && .\gradlew.bat bootRun"
-echo Waiting for Discovery Server to wake up...
-timeout /t 20 /nobreak
-
-echo [2/4] Starting API Gateway (Port 8080)...
+echo [1/4] Starting API Gateway (Port 8080)...
+:: Gateway is lightweight - minimal memory
+set JAVA_TOOL_OPTIONS=-Xmx192m -Xms96m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -Xss512k -XX:TieredStopAtLevel=1
 start "MTP API Gateway" cmd /c "cd mtp-api-gateway && .\gradlew.bat bootRun"
 echo Waiting for Gateway to initialize...
-timeout /t 10 /nobreak
+timeout /t 12 /nobreak
 
-echo [3/8] Starting Auth Service (Port 8082)...
+echo [2/4] Starting Auth Service (Port 8082)...
+:: Auth service is lightweight - minimal memory
+set JAVA_TOOL_OPTIONS=-Xmx192m -Xms96m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -Xss512k -XX:TieredStopAtLevel=1
 start "MTP Auth Service" cmd /c "cd mtp-auth-service && .\gradlew.bat bootRun"
 timeout /t 5 /nobreak
 
-echo [4/8] Starting HR Service Backend (Port 8081)...
-start "MTP HR Service" cmd /c "cd spring-backend && .\gradlew.bat bootRun"
+echo [3/4] Starting Core Service (Port 8081)...
+:: Core (spring-backend monolith) needs more memory for all sub-modules
+set JAVA_TOOL_OPTIONS=-Xmx512m -Xms256m -XX:MaxMetaspaceSize=384m -XX:ReservedCodeCacheSize=128m -Xss512k -XX:TieredStopAtLevel=1
+start "MTP Core Service" cmd /c "cd spring-backend && .\gradlew.bat bootRun"
+timeout /t 15 /nobreak
+
+echo [4/5] Starting School Service (Port 8087)...
+:: School service is lightweight - minimal memory
+set JAVA_TOOL_OPTIONS=-Xmx192m -Xms96m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -Xss512k -XX:TieredStopAtLevel=1
+start "MTP School Service" cmd /c "cd mtp-school-service && .\gradlew.bat bootRun"
 timeout /t 5 /nobreak
 
-echo [5/8] Starting Stock Service (Port 8084)...
-start "MTP Stock Service" cmd /c "cd mtp-stock-service && .\gradlew.bat bootRun"
-
-echo [6/8] Starting Report Service (Port 8086)...
-start "MTP Report Service" cmd /c "cd mtp-report-service && .\gradlew.bat bootRun"
-
-echo [7/10] Starting School, Clinic, Hotel Services (Ports 8087, 8088, 8089)...
-start "MTP School Service" cmd /c "cd mtp-school-service && .\gradlew.bat bootRun"
-start "MTP Clinic Service" cmd /c "cd mtp-clinic-service && .\gradlew.bat bootRun"
-start "MTP Hotel Service" cmd /c "cd mtp-hotel-service && .\gradlew.bat bootRun"
-
-echo [8/10] Starting POS Service (Port 8085)...
-start "MTP POS Service" cmd /c "cd mtp-pos-service && .\gradlew.bat bootRun"
-
-echo [9/10] Starting Billing Service (Port 8083)...
-start "MTP Billing Service" cmd /c "cd mtp-billing-service && .\gradlew.bat bootRun"
-
-echo [10/10] Starting React Frontend...
+echo [5/5] Starting React Frontend...
+:: Clear JAVA_TOOL_OPTIONS so Node/npm is not affected
+set JAVA_TOOL_OPTIONS=
 start "MTP React Frontend" cmd /c "cd react-frontend && npm run dev"
 
 echo ==========================================
-echo   ALL SYSTEMS ARE STARTING! 🚀
-echo   Please wait a moment for the windows 
-echo   to finish loading.
+echo   ALL FLYWEIGHT SYSTEMS ARE STARTING!
+echo   Please wait ~60 seconds for all windows
+echo   to finish loading before using the app.
 echo ==========================================
 pause

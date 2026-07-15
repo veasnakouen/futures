@@ -326,8 +326,11 @@ public class AttendanceServiceImpl implements AttendanceService {
     /**
      * Real-Time Background Sync
      * Runs every 15 minutes to pull fresh data from all hardware nodes.
+     * Uses @Async to run on a dedicated thread, never blocking web request threads.
+     * initialDelay = 60s so it doesn't fire during app startup.
      */
-    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 900000) // 15 mins
+    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 900000, initialDelay = 60000)
+    @org.springframework.scheduling.annotation.Async("asyncExecutor")
     public void scheduledSync() {
         List<BiometricDevice> devices = deviceRepository.findAll();
         if (devices.isEmpty()) return;
