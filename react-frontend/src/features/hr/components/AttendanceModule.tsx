@@ -50,6 +50,7 @@ import { ScheduleAssignmentModal } from "./ScheduleAssignmentModal";
 import { HolidayFormModal } from "./HolidayFormModal";
 import { useTimetable } from "@/hooks/useTimetable";
 import { useHoliday } from "@/hooks/useHoliday";
+import { DataTable, ColumnDef } from "@/components/common/DataTable";
 
 interface AttendanceModuleProps {
   globalAttendance: any[];
@@ -87,6 +88,11 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
   const [statusFilter, setStatusFilter] = useState("");
   const [unmappedOnly, setUnmappedOnly] = useState(false);
   const [isHolidayModalOpen, setIsHolidayModalOpen] = React.useState(false);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortField, setSortField] = useState<string>("clockIn");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [isTimetableModalOpen, setIsTimetableModalOpen] = useState(false);
   const [isAssignScheduleModalOpen, setIsAssignScheduleModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
@@ -202,7 +208,8 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 <SectionLabel><span className="flex items-center gap-2 text-gray-500"><TrendingUp size={14} className="text-[#c53030]" /> Weekly Presence Trends</span></SectionLabel>
                 <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-[9px] font-black uppercase tracking-widest">Last 7 Days</span>
               </div>
-              <ResponsiveContainer width="100%" height="80%" minWidth={1} minHeight={1}>
+              <div style={{ width: '100%', height: 250 }}>
+                <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={[
                   { day: "Mon", count: 42 }, { day: "Tue", count: 38 }, { day: "Wed", count: 45 },
                   { day: "Thu", count: 40 }, { day: "Fri", count: 35 }, { day: "Sat", count: 12 }, { day: "Sun", count: 8 }
@@ -217,6 +224,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              </div>
             </InfoCard>
 
             <div className="flex flex-col gap-4">
@@ -244,138 +252,187 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                   <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-md"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Late</span>
                 </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <div className="relative group flex-1 sm:w-64">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search personnel..."
-                    className="w-full h-9 pl-9 pr-8 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-[#c53030] focus:ring-1 focus:ring-[#c53030] outline-none text-sm font-medium transition-all"
-                    value={matrixSearch}
-                    onChange={(e) => setMatrixSearch(e.target.value)}
-                  />
-                </div>
-                <Select sizing="sm" className="w-full sm:w-36 h-9" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                  <option value="">All Statuses</option>
-                  <option value="Present">Present</option>
-                  <option value="Late">Late</option>
-                  <option value="Absent">Absent</option>
-                </Select>
-                <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg shrink-0">
-                  <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-[#c53030]" : "text-gray-400"}`}><LayoutGrid size={14} /></button>
-                  <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-[#c53030]" : "text-gray-400"}`}><List size={14} /></button>
-                </div>
-              </div>
             </div>
 
-            <div className="overflow-x-auto min-h-[300px]">
-              {viewMode === "list" ? (
-                <Table hoverable className="border-none w-full min-w-[800px]">
-                  <TableHead className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-                    <TableHeadCell className="text-[10px] font-black text-gray-400 uppercase tracking-widest py-4">Personnel</TableHeadCell>
-                    <TableHeadCell className="text-[10px] font-black text-gray-400 uppercase tracking-widest py-4">Shift</TableHeadCell>
-                    <TableHeadCell className="text-[10px] font-black text-gray-400 uppercase tracking-widest py-4">Clock In</TableHeadCell>
-                    <TableHeadCell className="text-[10px] font-black text-gray-400 uppercase tracking-widest py-4">Method</TableHeadCell>
-                    <TableHeadCell className="text-[10px] font-black text-gray-400 uppercase tracking-widest py-4">Status</TableHeadCell>
-                    <TableHeadCell className="text-[10px] font-black text-gray-400 uppercase tracking-widest py-4 text-right">Location</TableHeadCell>
-                  </TableHead>
-                  <TableBody className="divide-y divide-gray-50 dark:divide-gray-800/50">
-                    {(globalAttendance || [])
-                      .filter((log) => {
-                        const fullName = log.employee ? `${log.employee.firstNameEnglish} ${log.employee.lastNameEnglish}` : log.employeeName || "";
-                        return fullName.toLowerCase().includes(matrixSearch.toLowerCase());
-                      })
-                      .filter((log) => statusFilter === "" || log.status === statusFilter)
-                      .filter((log) => !unmappedOnly || !log.employee)
-                      .map((log, i) => (
-                        <TableRow key={i} className="bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                          <TableCell className="py-3">
-                            <div className="flex items-center gap-3">
-                              <Avatar rounded size="sm" />
-                              <span className="font-bold text-sm text-gray-900 dark:text-white">
-                                {log.employee ? `${log.employee.firstNameEnglish} ${log.employee.lastNameEnglish}` : log.employeeName}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-3"><span className="text-[10px] font-bold text-gray-400 uppercase">Day Shift</span></TableCell>
-                          <TableCell className="py-3">
-                            {log.clockIn ? (
-                              <span className="font-mono text-gray-800 dark:text-gray-200 font-bold text-xs">{format(new Date(log.clockIn), "hh:mm a")}</span>
-                            ) : (<span className="text-gray-300 font-mono text-xs">—</span>)}
-                          </TableCell>
-                          <TableCell className="py-3">
-                            <div className="flex items-center gap-1.5 text-emerald-500">
-                              <Zap size={12} fill="currentColor" />
-                              <span className="text-[9px] font-black uppercase tracking-wider">Verified</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-3">
-                            <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${
-                              log.status === "Present" ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400" 
-                              : "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
-                            }`}>
-                              {log.status}
-                            </span>
-                          </TableCell>
-                          <TableCell className="py-3 text-right">
-                            <div className="flex items-center justify-end gap-1.5 text-gray-500 text-[10px] font-bold">
-                              <MapPin size={12} /> {log.location}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 p-5 bg-gray-50/30 dark:bg-gray-900/30">
-                  {(globalAttendance || [])
-                    .filter((log) => {
-                      const fullName = log.employee ? `${log.employee.firstNameEnglish} ${log.employee.lastNameEnglish}` : log.employeeName || "";
-                      return fullName.toLowerCase().includes(matrixSearch.toLowerCase());
-                    })
-                    .filter((log) => statusFilter === "" || log.status === statusFilter)
-                    .filter((log) => !unmappedOnly || !log.employee)
-                    .slice(0, 12)
-                    .map((log, i) => (
-                      <div key={i} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex items-center gap-3">
-                            <Avatar rounded size="md" />
-                            <div>
-                              <h4 className="font-bold text-sm text-gray-900 dark:text-white tracking-tight line-clamp-1">
-                                {log.employee ? `${log.employee.firstNameEnglish} ${log.employee.lastNameEnglish}` : log.employeeName}
-                              </h4>
-                              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Day Shift</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="space-y-2 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg mb-3">
-                          <div className="flex items-center justify-between text-[10px] font-bold uppercase">
-                            <span className="text-gray-400 flex items-center gap-1"><Clock size={12} /> In</span>
-                            <span className="text-gray-800 dark:text-gray-200">{log.clockIn ? format(new Date(log.clockIn), "hh:mm a") : "—"}</span>
-                          </div>
-                          <div className="flex items-center justify-between text-[10px] font-bold uppercase">
-                            <span className="text-gray-400 flex items-center gap-1"><MapPin size={12} /> Loc</span>
-                            <span className="text-gray-800 dark:text-gray-200">{log.location}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 text-emerald-500">
-                            <Zap size={10} fill="currentColor" />
-                            <span className="text-[8px] font-black uppercase tracking-widest">Biometric</span>
-                          </div>
-                          <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${
-                            log.status === "Present" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" 
-                            : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                          }`}>
-                            {log.status}
-                          </span>
+            <div className="p-4">
+              {(() => {
+                const columns: ColumnDef<any>[] = [
+                  {
+                    header: "Personnel",
+                    accessorKey: "employee",
+                    sortable: true,
+                    cell: (log) => (
+                      <div className="flex items-center gap-3">
+                        <Avatar rounded size="sm" />
+                        <span className="font-bold text-sm text-gray-900 dark:text-white">
+                          {log.employee ? `${log.employee.firstNameEnglish} ${log.employee.lastNameEnglish}` : log.employeeName}
+                        </span>
+                      </div>
+                    )
+                  },
+                  {
+                    header: "Shift",
+                    accessorKey: "shift",
+                    cell: () => <span className="text-[10px] font-bold text-gray-400 uppercase">Day Shift</span>
+                  },
+                  {
+                    header: "Clock In",
+                    accessorKey: "clockIn",
+                    sortable: true,
+                    cell: (log) => log.clockIn ? (
+                      <span className="font-mono text-gray-800 dark:text-gray-200 font-bold text-xs">{format(new Date(log.clockIn), "hh:mm a")}</span>
+                    ) : (<span className="text-gray-300 font-mono text-xs">—</span>)
+                  },
+                  {
+                    header: "Method",
+                    accessorKey: "method",
+                    cell: () => (
+                      <div className="flex items-center gap-1.5 text-emerald-500">
+                        <Zap size={12} fill="currentColor" />
+                        <span className="text-[9px] font-black uppercase tracking-wider">Verified</span>
+                      </div>
+                    )
+                  },
+                  {
+                    header: "Status",
+                    accessorKey: "status",
+                    sortable: true,
+                    cell: (log) => (
+                      <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${
+                        log.status === "Present" ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400" 
+                        : "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
+                      }`}>
+                        {log.status}
+                      </span>
+                    )
+                  },
+                  {
+                    header: "Location",
+                    accessorKey: "location",
+                    sortable: true,
+                    cell: (log) => (
+                      <div className="flex items-center gap-1.5 text-gray-500 text-[10px] font-bold">
+                        <MapPin size={12} /> {log.location}
+                      </div>
+                    )
+                  }
+                ];
+
+                const handleSort = (field: string) => {
+                  if (sortField === field) {
+                    setSortDir(sortDir === "asc" ? "desc" : "asc");
+                  } else {
+                    setSortField(field);
+                    setSortDir("desc");
+                  }
+                };
+
+                const filteredAttendance = (globalAttendance || [])
+                  .filter((log) => {
+                    const fullName = log.employee ? `${log.employee.firstNameEnglish} ${log.employee.lastNameEnglish}` : log.employeeName || "";
+                    return fullName.toLowerCase().includes(matrixSearch.toLowerCase());
+                  })
+                  .filter((log) => statusFilter === "" || log.status === statusFilter)
+                  .filter((log) => !unmappedOnly || !log.employee);
+
+                const sortedAttendance = [...filteredAttendance].sort((a, b) => {
+                  if (sortField === "clockIn") {
+                    const valA = a.clockIn ? new Date(a.clockIn).getTime() : 0;
+                    const valB = b.clockIn ? new Date(b.clockIn).getTime() : 0;
+                    return sortDir === "asc" ? valA - valB : valB - valA;
+                  }
+                  if (sortField === "status") {
+                    return sortDir === "asc" ? (a.status || "").localeCompare(b.status || "") : (b.status || "").localeCompare(a.status || "");
+                  }
+                  if (sortField === "employee") {
+                    const nameA = a.employee ? `${a.employee.firstNameEnglish} ${a.employee.lastNameEnglish}` : a.employeeName || "";
+                    const nameB = b.employee ? `${b.employee.firstNameEnglish} ${b.employee.lastNameEnglish}` : b.employeeName || "";
+                    return sortDir === "asc" ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+                  }
+                  if (sortField === "location") {
+                    const locA = a.location || "";
+                    const locB = b.location || "";
+                    return sortDir === "asc" ? locA.localeCompare(locB) : locB.localeCompare(locA);
+                  }
+                  return 0;
+                });
+
+                const totalItems = sortedAttendance.length;
+                const totalPages = Math.ceil(totalItems / pageSize);
+                const paginatedAttendance = sortedAttendance.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+                const renderGridCard = (log: any) => (
+                  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center gap-3">
+                        <Avatar rounded size="md" />
+                        <div>
+                          <h4 className="font-bold text-sm text-gray-900 dark:text-white tracking-tight line-clamp-1">
+                            {log.employee ? `${log.employee.firstNameEnglish} ${log.employee.lastNameEnglish}` : log.employeeName}
+                          </h4>
+                          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Day Shift</p>
                         </div>
                       </div>
-                    ))}
-                </div>
-              )}
+                    </div>
+                    <div className="space-y-2 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg mb-3">
+                      <div className="flex items-center justify-between text-[10px] font-bold uppercase">
+                        <span className="text-gray-400 flex items-center gap-1"><Clock size={12} /> In</span>
+                        <span className="text-gray-800 dark:text-gray-200">{log.clockIn ? format(new Date(log.clockIn), "hh:mm a") : "—"}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] font-bold uppercase">
+                        <span className="text-gray-400 flex items-center gap-1"><MapPin size={12} /> Loc</span>
+                        <span className="text-gray-800 dark:text-gray-200">{log.location}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-emerald-500">
+                        <Zap size={10} fill="currentColor" />
+                        <span className="text-[8px] font-black uppercase tracking-widest">Biometric</span>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${
+                        log.status === "Present" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" 
+                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                      }`}>
+                        {log.status}
+                      </span>
+                    </div>
+                  </div>
+                );
+
+                return (
+                  <DataTable
+                    data={paginatedAttendance}
+                    columns={columns}
+                    searchQuery={matrixSearch}
+                    onSearchChange={setMatrixSearch}
+                    searchPlaceholder="Search personnel..."
+                    filters={
+                      <Select sizing="sm" className="w-full sm:w-36 h-9" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                        <option value="">All Statuses</option>
+                        <option value="Present">Present</option>
+                        <option value="Late">Late</option>
+                        <option value="Absent">Absent</option>
+                      </Select>
+                    }
+                    enableViewToggle={true}
+                    enableColumnToggle={true}
+                    renderGridCard={renderGridCard}
+                    gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    pageSize={pageSize}
+                    onPageSizeChange={(size) => {
+                      setPageSize(size);
+                      setCurrentPage(1); // Reset to first page
+                    }}
+                    totalItems={totalItems}
+                    sortField={sortField}
+                    sortDir={sortDir}
+                    onSort={handleSort}
+                  />
+                );
+              })()}
             </div>
           </InfoCard>
         </div>

@@ -20,6 +20,6 @@ Here is what you need to do:
 2. to run all service 
 
    ```
-   .\start_all.bats
+   .\start_all.bat
 
    ```

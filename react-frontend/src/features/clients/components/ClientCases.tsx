@@ -100,7 +100,7 @@ const ClientCases: React.FC<ClientCasesProps> = ({ clientId }) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-6 animate-fade-in">
+    <div className="w-full h-auto lg:h-full flex flex-col gap-6 animate-fade-in">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex justify-between items-center">
         <div>
           <h3 className="font-bold text-gray-900 dark:text-white">Case Management</h3>

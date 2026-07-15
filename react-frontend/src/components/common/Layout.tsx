@@ -601,7 +601,7 @@ const Layout = ({ children, title }: LayoutProps) => {
               inline
               label={
                 <div className="flex items-center gap-2.5 p-1 pr-3 hover:bg-indigo-50 dark:hover:bg-white/[0.05] rounded-full cursor-pointer transition-all duration-300 group active:scale-95 border border-transparent hover:border-indigo-100 dark:hover:border-white/[0.05] hover:shadow-sm">
-                  <div className="w-8 h-8 rounded-full shrink-0 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border-2 border-transparent group-hover:border-indigo-400 shadow-sm overflow-hidden transition-all duration-300 relative">
+                  <div className="w-8 h-8 min-w-[2rem] min-h-[2rem] aspect-square rounded-full shrink-0 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border-2 border-transparent group-hover:border-indigo-400 shadow-sm overflow-hidden transition-all duration-300 relative">
                     {user?.photo ? (
                       <img
                         src={getFaceFocusedUrl(user.photo, 80)}

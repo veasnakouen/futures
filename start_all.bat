@@ -3,30 +3,28 @@ echo ==========================================
 echo   MTP FLYWEIGHT MICROSERVICES SYSTEM
 echo ==========================================
 
+:: Enable Lazy Initialization globally to drastically speed up startup time
+set SPRING_MAIN_LAZY_INITIALIZATION=true
+
 echo [1/4] Starting API Gateway (Port 8080)...
 :: Gateway is lightweight - minimal memory
 set JAVA_TOOL_OPTIONS=-Xmx192m -Xms96m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -Xss512k -XX:TieredStopAtLevel=1
 start "MTP API Gateway" cmd /c "cd mtp-api-gateway && .\gradlew.bat bootRun"
-echo Waiting for Gateway to initialize...
-timeout /t 12 /nobreak
 
 echo [2/4] Starting Auth Service (Port 8082)...
 :: Auth service is lightweight - minimal memory
 set JAVA_TOOL_OPTIONS=-Xmx192m -Xms96m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -Xss512k -XX:TieredStopAtLevel=1
 start "MTP Auth Service" cmd /c "cd mtp-auth-service && .\gradlew.bat bootRun"
-timeout /t 5 /nobreak
 
 echo [3/4] Starting Core Service (Port 8081)...
 :: Core (spring-backend monolith) needs more memory for all sub-modules
 set JAVA_TOOL_OPTIONS=-Xmx512m -Xms256m -XX:MaxMetaspaceSize=384m -XX:ReservedCodeCacheSize=128m -Xss512k -XX:TieredStopAtLevel=1
 start "MTP Core Service" cmd /c "cd spring-backend && .\gradlew.bat bootRun"
-timeout /t 15 /nobreak
 
 echo [4/5] Starting School Service (Port 8087)...
 :: School service is lightweight - minimal memory
 set JAVA_TOOL_OPTIONS=-Xmx192m -Xms96m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -Xss512k -XX:TieredStopAtLevel=1
 start "MTP School Service" cmd /c "cd mtp-school-service && .\gradlew.bat bootRun"
-timeout /t 5 /nobreak
 
 echo [5/5] Starting React Frontend...
 :: Clear JAVA_TOOL_OPTIONS so Node/npm is not affected

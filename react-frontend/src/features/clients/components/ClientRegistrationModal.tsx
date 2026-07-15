@@ -205,7 +205,7 @@ const ClientRegistrationModal: React.FC<ClientRegistrationModalProps> = ({
                   }}
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm ${isActive ?"bg-blue-600 text-white shadow-blue-500/30": isCompleted ?"bg-emerald-500 text-white shadow-emerald-500/30":"bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
+                    className={`w-8 h-8 shrink-0 aspect-square min-w-[2rem] min-h-[2rem] rounded-full flex items-center justify-center font-bold text-xs shadow-sm ${isActive ?"bg-blue-600 text-white shadow-blue-500/30": isCompleted ?"bg-emerald-500 text-white shadow-emerald-500/30":"bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
                   >
                     {isCompleted && !isActive ? (
                       <Check size={14} />

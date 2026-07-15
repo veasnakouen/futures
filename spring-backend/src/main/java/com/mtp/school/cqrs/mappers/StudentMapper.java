@@ -7,11 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(
-    componentModel = "spring", 
-    unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    uses = {StudentParentMapper.class, ExtracurricularMapper.class}
-)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { StudentParentMapper.class,
+        ExtracurricularMapper.class })
 public interface StudentMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "isActive", constant = "true")

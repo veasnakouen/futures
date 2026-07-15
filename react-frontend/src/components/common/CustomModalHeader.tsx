@@ -37,16 +37,6 @@ const CustomModalHeader: React.FC<CustomModalHeaderProps> = ({
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onClose}
-        className="flex-shrink-0 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white bg-gray-50 hover:bg-gray-100 dark:bg-white/[0.03] dark:hover:bg-white/10 rounded-full transition-all duration-300 hover:rotate-90 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-white/10"
-        style={{ width: "32px", height: "32px", minWidth: "32px", minHeight: "32px", padding: 0, boxSizing: "border-box" }}
-        title="Close modal"
-      >
-        <X size={16} strokeWidth={2.5} />
-        <span className="sr-only">Close modal</span>
-      </button>
     </div>
   );
 };

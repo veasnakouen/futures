@@ -394,12 +394,19 @@ export const Modal = Object.assign(
     if (size === "7xl") maxW = "max-w-7xl";
     return (
       <SDialog open={show} onOpenChange={(open) => {
-        // If dismissible is false, we don't automatically trigger onClose on outside clicks or escape
-        if (!open && dismissible) onClose();
+        // Only ignore if it's an outside click (which is handled by onInteractOutside)
+        // If Radix triggers onOpenChange(false), it means the close button was clicked or Escape was pressed.
+        // We should always allow the close button to close it.
+        if (!open && onClose) onClose();
       }}>
         {" "}
         <SDialogContent
-          className={`${maxW} p-0 [&>button]:hidden border border-gray-200/50 dark:border-gray-800/50 shadow-2xl shadow-black/10 dark:shadow-black/40 gap-0 sm:rounded-2xl overflow-hidden flex flex-col max-h-[90vh]`}
+          className={`${maxW} p-0 border border-gray-200/50 dark:border-gray-800/50 shadow-2xl shadow-black/10 dark:shadow-black/40 gap-0 sm:rounded-2xl overflow-hidden flex flex-col max-h-[90vh]`}
+          onEscapeKeyDown={(e) => {
+            if (!dismissible) {
+              e.preventDefault();
+            }
+          }}
           onInteractOutside={(e) => {
             if (!dismissible) {
               e.preventDefault();

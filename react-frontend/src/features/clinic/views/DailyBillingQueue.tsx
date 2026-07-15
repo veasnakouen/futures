@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { clinicService } from "../../../../services/clinicService";
+import { clinicService } from "@/services/clinicService";
 import { Calendar, Search, CreditCard, Activity, DollarSign, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import GenerateInvoiceModal from "../../components/GenerateInvoiceModal";
+import GenerateInvoiceModal from "@/features/clinic/components/GenerateInvoiceModal";
 
 export default function DailyBillingQueue() {
   const [searchTerm, setSearchTerm] = useState("");

@@ -18,13 +18,18 @@ public class GetAllStudentsQueryHandler {
 
     public Page<StudentQueryResultDto> handle(GetAllStudentsQuery query) {
         PageRequest pageRequest = PageRequest.of(query.getPage(), query.getSize());
-        
-        if (query.getOutreachWorkerName() != null && !query.getOutreachWorkerName().trim().isEmpty()) {
-            return studentRepository.findByOutreachWorkerNameContainingIgnoreCase(query.getOutreachWorkerName(), pageRequest)
+
+        if (query.getOutreachWorkerName() != null && !query
+                .getOutreachWorkerName()
+                .trim()
+                .isEmpty()) {
+            return studentRepository
+                    .findByOutreachWorkerNameContainingIgnoreCase(query.getOutreachWorkerName(), pageRequest)
                     .map(studentMapper::toDto);
         }
-        
-        return studentRepository.findAll(pageRequest)
+
+        return studentRepository
+                .findAll(pageRequest)
                 .map(studentMapper::toDto);
     }
 }

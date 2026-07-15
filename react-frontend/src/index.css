@@ -1123,8 +1123,16 @@ div:has(> ul[role="menu"]) {
 }
 
 
-[data-testid="flowbite-dropdown-target"]+div {
+[data-testid="flowbite-dropdown-target"]+div,
+div[role="menu"] {
   z-index: 60 !important;
+  animation: dropdownAnim 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: top right;
+}
+
+@keyframes dropdownAnim {
+  from { opacity: 0; transform: scale(0.95) translateY(-5px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(5px); }

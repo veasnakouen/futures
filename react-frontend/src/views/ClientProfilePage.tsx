@@ -793,13 +793,19 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
     );
   }
 
-  const { client, cases, placements, socialSupports, educations } = data;
+  const { client, cases, placements, socialSupports, educations, familyMembers, healthRecords, documents } = data;
 
 
   return (
     <>
-        <div className="flex flex-col lg:flex-row gap-6 mt-6 pb-20 px-4">
-          <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 pt-2 pb-6 px-1 lg:px-2 min-h-[calc(100vh-6rem)] lg:h-[calc(100vh-6rem)]">
+          <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 h-auto lg:h-full lg:overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-2">
+            <button 
+              onClick={() => navigate('/clients')} 
+              className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors w-fit px-2"
+            >
+              <ArrowLeft size={16} /> Back to Clients
+            </button>
             <ClientSidebar 
               client={client} 
               activeMenu={activeMenu} 
@@ -829,9 +835,16 @@ const ClientProfilePage = ({ isDark, setIsDark }: any) => {
               staffsCount={0}
             />
           </div>
-          <div className="flex-1 w-full min-w-0">
+          <div className="flex-1 w-full min-w-0 h-auto lg:h-full lg:overflow-hidden">
             {activeMenu === "Client / Referral" && (
-              <ClientInfoTabs client={client} educations={educations} />
+              <ClientInfoTabs 
+                client={client} 
+                educations={educations} 
+                familyMembers={familyMembers}
+                healthRecords={healthRecords}
+                cases={cases}
+                documents={documents}
+              />
             )}
             {activeMenu === "Case Management" && (
               <ClientCases clientId={client.id} />

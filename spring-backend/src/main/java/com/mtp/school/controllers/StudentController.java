@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/school/students")
 @RequiredArgsConstructor
+// public class StudentController implements Studentservice {
 public class StudentController {
 
     private final CreateStudentCommandHandler createHandler;
@@ -27,7 +28,8 @@ public class StudentController {
     public Page<StudentQueryResultDto> getAll(
             Pageable pageable,
             @RequestParam(required = false) String outreachWorkerName) {
-        return getAllHandler.handle(new GetAllStudentsQuery(pageable.getPageNumber(), pageable.getPageSize(), outreachWorkerName));
+        return getAllHandler
+                .handle(new GetAllStudentsQuery(pageable.getPageNumber(), pageable.getPageSize(), outreachWorkerName));
     }
 
     @GetMapping("/{id}")
@@ -43,7 +45,8 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StudentQueryResultDto> update(@PathVariable String id, @Valid @RequestBody UpdateStudentCommand command) {
+    public ResponseEntity<StudentQueryResultDto> update(@PathVariable String id,
+            @Valid @RequestBody UpdateStudentCommand command) {
         command.setId(id);
         return updateHandler.handle(command)
                 .map(ResponseEntity::ok)

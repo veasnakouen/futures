@@ -12,6 +12,9 @@ import com.mtp.api.models.Beneficiary;
 import com.mtp.api.models.JobExpectation;
 import com.mtp.api.models.Monitoring;
 import com.mtp.api.models.Personality;
+import com.mtp.api.models.ClientFamilyMember;
+import com.mtp.api.models.ClientHealthRecord;
+import com.mtp.api.models.ClientDocument;
 import lombok.Data;
 import java.util.List;
 
@@ -29,4 +32,9 @@ public class ClientProfileDto {
     private List<JobExpectation> jobExpectations;
     private List<Monitoring> monitorings;
     private List<Personality> personalities;
+    
+    // New tab fields
+    private List<ClientFamilyMember> familyMembers;
+    private List<ClientHealthRecord> healthRecords;
+    private List<ClientDocument> documents;
 }

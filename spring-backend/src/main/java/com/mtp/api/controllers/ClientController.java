@@ -66,6 +66,15 @@ public class ClientController {
     @Autowired
     private PersonalityRepository personalityRepository;
 
+    @Autowired
+    private ClientFamilyMemberRepository familyMemberRepository;
+
+    @Autowired
+    private ClientHealthRecordRepository healthRecordRepository;
+
+    @Autowired
+    private ClientDocumentRepository documentRepository;
+
     @GetMapping
     public Page<ClientSummaryDto> getAllClients(
             @RequestParam(required = false) String name,
@@ -99,6 +108,10 @@ public class ClientController {
             dto.setJobExpectations(jobExpectationRepository.findByClientId(id));
             dto.setMonitorings(monitoringRepository.findByClientId(id));
             dto.setPersonalities(personalityRepository.findByClientId(id));
+
+            dto.setFamilyMembers(familyMemberRepository.findByClientId(Long.valueOf(id)));
+            dto.setHealthRecords(healthRecordRepository.findByClientId(Long.valueOf(id)));
+            dto.setDocuments(documentRepository.findByClientId(Long.valueOf(id)));
             return ResponseEntity.ok(dto);
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -140,5 +153,32 @@ public class ClientController {
         log.warn("Deleting client ID: {}", id);
         clientCommandService.deleteClient(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/family")
+    @Transactional
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> addFamilyMember(@PathVariable Long id, @RequestBody com.mtp.api.models.ClientFamilyMember member) {
+        member.setClientId(id);
+        return ResponseEntity.ok(familyMemberRepository.save(member));
+    }
+
+    @PostMapping("/{id}/health")
+    @Transactional
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> addHealthRecord(@PathVariable Long id, @RequestBody com.mtp.api.models.ClientHealthRecord record) {
+        record.setClientId(id);
+        return ResponseEntity.ok(healthRecordRepository.save(record));
+    }
+
+    @PostMapping("/{id}/documents")
+    @Transactional
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> addDocument(@PathVariable Long id, @RequestBody com.mtp.api.models.ClientDocument document) {
+        document.setClientId(id);
+        if (document.getFileUrl() == null || document.getFileUrl().isEmpty()) {
+            document.setFileUrl("/files/mock-" + System.currentTimeMillis() + ".pdf");
+        }
+        return ResponseEntity.ok(documentRepository.save(document));
     }
 }

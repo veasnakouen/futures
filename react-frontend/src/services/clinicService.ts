@@ -57,6 +57,7 @@ export interface PatientDto {
   contactNumber: string;
   email?: string;
   medicalRecordNumber?: string;
+  poorId?: string;
   bloodType?: string;
   address?: {
     street: string;
