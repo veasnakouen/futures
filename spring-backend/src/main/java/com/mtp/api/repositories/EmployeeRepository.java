@@ -22,7 +22,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findByDepartmentId(Integer departmentId);
 
     @Query("SELECT e FROM Employee e WHERE CONCAT(e.firstNameEnglish, ' ', e.lastNameEnglish) = :fullName")
-    Optional<Employee> findByFullNameIgnoreCase(@Param("fullName") String fullName);
+    List<Employee> findByFullNameIgnoreCase(@Param("fullName") String fullName);
 
     @Query("SELECT COALESCE(MAX(e.id), 0) FROM Employee e")
     Integer findMaxId();

@@ -122,7 +122,16 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
     enabled: isOpen && !!selectedEmployee?.id && portalTab === "leave",
   });
 
-  const loadingData = isLoadingAttendance || isLoadingLeave;
+  const { data: balanceData, isLoading: isLoadingBalance } = useQuery<any>({
+    queryKey: ['employeeLeaveBalance', selectedEmployee?.id, new Date().getFullYear()],
+    queryFn: async () => {
+      const res = await api.get(`/hr/leaves/employee/${selectedEmployee?.id}/balance/${new Date().getFullYear()}`);
+      return res.data;
+    },
+    enabled: isOpen && !!selectedEmployee?.id && portalTab === "leave",
+  });
+
+  const loadingData = isLoadingAttendance || isLoadingLeave || isLoadingBalance;
 
   const parsedCustomFields = React.useMemo(() => {
     try {
@@ -227,9 +236,9 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="flex h-8 w-8 min-w-[2rem] min-h-[2rem] shrink-0 aspect-square items-center justify-center rounded-full p-0 bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-900 hover:rotate-90 hover:scale-110 active:scale-95 transition-all duration-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
             >
-              <X size={18} />
+            <X size={18} />
             </button>
           </div>
         </div>
@@ -373,21 +382,35 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
               {portalTab === "leave" && (
                 <div className="space-y-6 animate-fade-in">
                   <div className="grid grid-cols-3 gap-4">
-                    {[
-                      { label: "Annual Leave", val: 14, total: 18, color: "#3b82f6" },
-                      { label: "Sick Leave", val: 2, total: 10, color: "#f43f5e" },
-                      { label: "Emergency", val: 0, total: 5, color: "#f59e0b" },
+                    {balanceData && [
+                      { 
+                        label: "Annual Leave", 
+                        val: balanceData.usedAnnualLeave || 0, 
+                        total: (balanceData.totalAnnualLeave || 18) + (balanceData.carriedOverAnnualLeave || 0), 
+                        color: "#3b82f6",
+                        subtext: balanceData.carriedOverAnnualLeave > 0 ? `(Includes ${balanceData.carriedOverAnnualLeave} days carried over)` : ""
+                      },
+                      { label: "Sick Leave", val: balanceData.usedSickLeave || 0, total: balanceData.totalSickLeave || 14, color: "#f43f5e", subtext: "" },
+                      { label: "Special Leave", val: balanceData.usedSpecialLeave || 0, total: balanceData.totalSpecialLeave || 7, color: "#f59e0b", subtext: "" },
                     ].map((l) => (
-                      <div key={l.label} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm p-5 text-center">
-                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">{l.label}</p>
-                        <p className="text-2xl font-black" style={{ color: l.color }}>{l.val}</p>
-                        <p className="text-[10px] text-gray-400 font-semibold mt-1">of {l.total} days</p>
-                        <div className="mt-2 w-full h-1.5 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                      <div key={l.label} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm p-5 text-center flex flex-col justify-between">
+                        <div>
+                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">{l.label}</p>
+                          <p className="text-2xl font-black" style={{ color: l.color }}>{l.val}</p>
+                          <p className="text-[10px] text-gray-400 font-semibold mt-1">of {l.total} days used</p>
+                          {l.subtext && <p className="text-[8px] text-blue-400 mt-1">{l.subtext}</p>}
+                        </div>
+                        <div className="mt-3 w-full h-1.5 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
                           <div className="h-full rounded-full transition-all duration-700"
-                            style={{ width: `${(l.val / l.total) * 100}%`, backgroundColor: l.color }} />
+                            style={{ width: `${Math.min((l.val / l.total) * 100, 100)}%`, backgroundColor: l.color }} />
                         </div>
                       </div>
                     ))}
+                    {!balanceData && !loadingData && (
+                      <div className="col-span-3 text-center py-6 text-gray-400">
+                        <p className="text-xs font-bold uppercase">No balance configured for current year</p>
+                      </div>
+                    )}
                   </div>
 
                   <InfoCard>

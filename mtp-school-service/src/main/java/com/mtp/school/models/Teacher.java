@@ -14,6 +14,18 @@ import java.util.List;
 public class Teacher extends Employee {
     private String subject;
     private Address address;
+    
+    @Column(name = "facebook_link")
+    private String facebookLink;
+    
+    @Column(name = "instagram_link")
+    private String instagramLink;
+    
+    @Column(name = "twitter_link")
+    private String twitterLink;
+    
+    @Column(name = "linkedin_link")
+    private String linkedinLink;
 
     @OneToMany(mappedBy = "teacher")
     private List<Course> courses;

@@ -26,12 +26,12 @@ export default function BackgroundTab({
 
         {watch("isIdPoor") && (
           <div className="ml-8 animate-fade-in">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
               ID Poor Number
             </label>
             <input
               {...register("idPoorNumber")}
-              className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 border border-gray-200 dark:border-gray-600"
+              className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
               placeholder="Enter ID Poor Number..."
             />
           </div>
@@ -55,7 +55,7 @@ export default function BackgroundTab({
         {watch("broughtByOutreachWorker") && (
           <div className="ml-8 space-y-4 animate-fade-in">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 Outreach Worker Name
               </label>
               {usersLoading ? (
@@ -63,7 +63,7 @@ export default function BackgroundTab({
               ) : (
                 <select
                   {...register("outreachWorkerName")}
-                  className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 border border-gray-200 dark:border-gray-600"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 >
                   <option value="">Select an outreach worker...</option>
                   {usersData?.map((u: any) => (
@@ -75,12 +75,12 @@ export default function BackgroundTab({
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 Outreach Organization
               </label>
               <input
                 {...register("outreachOrganization")}
-                className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 border border-gray-200 dark:border-gray-600"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="Organization name..."
               />
             </div>

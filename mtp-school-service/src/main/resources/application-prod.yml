@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    # Use environment variables so DevOps can inject the real database securely
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/mtp_prod}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: update # Usually 'validate' in strict production, but 'update' is fine for early stage
+    database-platform: ${SPRING_JPA_PLATFORM:org.hibernate.dialect.PostgreSQLDialect}
+    show-sql: false

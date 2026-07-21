@@ -17,14 +17,17 @@ public class GetAllStudentsQueryHandler {
     private final StudentMapper studentMapper;
 
     public Page<StudentQueryResultDto> handle(GetAllStudentsQuery query) {
-        PageRequest pageRequest = PageRequest.of(query.getPage(), query.getSize());
-        
-        if (query.getOutreachWorkerName() != null && !query.getOutreachWorkerName().trim().isEmpty()) {
-            return studentRepository.findByOutreachWorkerNameContainingIgnoreCase(query.getOutreachWorkerName(), pageRequest)
+        if (query.getSearch() != null && !query.getSearch().trim().isEmpty()) {
+            return studentRepository.searchAllFields(query.getSearch(), query.getPageable())
                     .map(studentMapper::toDto);
         }
         
-        return studentRepository.findAll(pageRequest)
+        if (query.getOutreachWorkerName() != null && !query.getOutreachWorkerName().trim().isEmpty()) {
+            return studentRepository.findByOutreachWorkerNameContainingIgnoreCase(query.getOutreachWorkerName(), query.getPageable())
+                    .map(studentMapper::toDto);
+        }
+        
+        return studentRepository.findAll(query.getPageable())
                 .map(studentMapper::toDto);
     }
 }

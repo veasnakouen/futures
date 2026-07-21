@@ -113,12 +113,12 @@ export default function BranchFormModal({ isOpen, onClose, branchToEdit }: Props
             onChange={(url) => setValue("imageUrl", url)}
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
               {t("branchName")}
             </label>
             <input
               {...register("branchName")}
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
               placeholder="Main Campus"
             />
             {errors.branchName && (
@@ -128,23 +128,23 @@ export default function BranchFormModal({ isOpen, onClose, branchToEdit }: Props
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("phoneNumber")}
               </label>
               <input
                 {...register("phoneNumber")}
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="(555) 123-4567"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("emailAddress")}
               </label>
               <input
                 {...register("email")}
                 type="email"
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="contact@campus.com"
               />
               {errors.email && (

@@ -56,27 +56,30 @@ export default function ImageUploadField({
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>}
       <div className="flex items-center gap-4">
-        <div 
-          className={`relative overflow-hidden bg-gray-100 dark:bg-gray-800 border-2  flex items-center justify-center ${isAvatar ?'w-24 h-24 rounded-full':'w-32 h-32 rounded-xl'}`}
-        >
-          {isUploading ? (
-            <Spinner className="text-blue-500" size="md" />
-          ) : value ? (
-            <>
+        <div className="relative inline-block group">
+          <div 
+            className={`overflow-hidden bg-gray-50 dark:bg-gray-800 flex items-center justify-center ${isAvatar ?'w-24 h-24 rounded-full shadow-sm':'w-32 h-32 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm'}`}
+          >
+            {isUploading ? (
+              <Spinner className="text-orange-500" size="md" />
+            ) : value ? (
               <img src={value} alt="Uploaded" className="w-full h-full object-cover" />
-              <button
-                type="button"
-                onClick={handleRemove}
-                className="absolute top-1 right-1 bg-white dark:bg-gray-900 rounded-full p-1 shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors"
-                title="Remove image"
-              >
-                <X size={14} />
-              </button>
-            </>
-          ) : (
-            <div className="text-gray-400 dark:text-gray-500 flex flex-col items-center">
-              <Camera size={24} className="mb-1" />
-            </div>
+            ) : (
+              <div className="text-gray-400 dark:text-gray-500 flex flex-col items-center">
+                <Camera size={24} className="mb-1 text-gray-300" />
+              </div>
+            )}
+          </div>
+          
+          {value && !isUploading && (
+            <button
+              type="button"
+              onClick={handleRemove}
+              className="absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all shadow-md border border-gray-100 z-10"
+              title="Remove image"
+            >
+              <X size={14} />
+            </button>
           )}
         </div>
         

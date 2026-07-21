@@ -7,7 +7,8 @@ import java.time.LocalDate;
 public class SystemHolidayDto {
     private Integer id;
     private String name;
-    private LocalDate eventDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String category;
     private String description;
 }

@@ -94,6 +94,7 @@ export const useLookups = (type: string) => {
   return useQuery({
     queryKey: ["lookups", type],
     queryFn: async () => {
+      if (type === "clients" || type === "users") return [];
       const { data } = await api.get(`/lookups/${type}`);
       return data;
     },

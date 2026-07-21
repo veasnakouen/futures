@@ -12,7 +12,8 @@ import {
   Briefcase,
   Hash,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  X
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -59,6 +60,7 @@ export interface HumanPortfolioProps {
   };
   actions?: React.ReactNode;
   children?: React.ReactNode;
+  onClose?: () => void;
 }
 
 export default function HumanPortfolio({
@@ -66,6 +68,7 @@ export default function HumanPortfolio({
   data,
   actions,
   children,
+  onClose
 }: HumanPortfolioProps) {
   const fullName = `${data.firstName} ${data.lastName || ""}`.trim();
 
@@ -88,19 +91,40 @@ export default function HumanPortfolio({
   const config = getEntityConfig(entityType);
 
   return (
-    <div className="bg-transparent overflow-hidden">
-      <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center lg:items-start p-6 sm:p-10">
-        
+    <div className="bg-transparent overflow-hidden relative group/portfolio">
+      {/* Floating Close Button */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-50 p-2 bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shadow-sm"
+        >
+          <X size={20} />
+        </button>
+      )}
+
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-start p-6 sm:p-10">
+
         {/* Left Column: Text and Contact Info */}
-        <div className="w-full lg:w-1/2 flex flex-col pt-8">
+        <div className="w-full lg:w-1/2 flex flex-col pt-8 min-w-0">
           <div className="mb-8">
-            <h1 className="text-4xl sm:text-5xl font-normal text-gray-900 dark:text-white mb-2">
+            <h1 className="text-4xl sm:text-5xl font-normal text-gray-900 dark:text-white mb-2 break-words">
               Hello, I'm <span className="font-semibold">{data.firstName}</span>
             </h1>
-            <h2 className={`text-2xl sm:text-3xl font-semibold ${config.color}`}>
-              {data.department || config.label}
-            </h2>
-            
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {data.department ? (
+                data.department.split(',').map((dept, idx) => (
+                  <Badge key={idx} color="warning" size="md" className="px-3 py-1 text-sm font-medium rounded-full shadow-sm">
+                    {dept.trim()}
+                  </Badge>
+                ))
+              ) : (
+                <Badge color="warning" size="md" className="px-3 py-1 text-sm font-medium rounded-full shadow-sm">
+                  {config.label}
+                </Badge>
+              )}
+            </div>
+
             {(data.bio || true) && (
               <p className="mt-6 text-gray-500 dark:text-gray-400 text-lg leading-relaxed max-w-lg">
                 {data.bio || "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form."}
@@ -110,7 +134,7 @@ export default function HumanPortfolio({
           </div>
 
           {/* Contact Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 sm:p-10 border border-gray-100 dark:border-gray-700 relative">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
             <div className="space-y-6">
               {data.phone && (
                 <div className="flex items-center gap-4 text-gray-700 dark:text-gray-300">
@@ -123,7 +147,7 @@ export default function HumanPortfolio({
                   </div>
                 </div>
               )}
-              
+
               {data.email && (
                 <div className="flex items-center gap-4 text-gray-700 dark:text-gray-300">
                   <Mail className="w-6 h-6 text-teal-700 dark:text-teal-500 flex-shrink-0" fill="currentColor" />
@@ -135,7 +159,7 @@ export default function HumanPortfolio({
                   </div>
                 </div>
               )}
-              
+
               {(data.location || true) && (
                 <div className="flex items-start gap-4 text-gray-700 dark:text-gray-300">
                   <MapPin className="w-6 h-6 text-teal-700 dark:text-teal-500 flex-shrink-0 mt-1" fill="currentColor" />
@@ -148,50 +172,50 @@ export default function HumanPortfolio({
 
               {/* Extras (ID, Joined Date) */}
               {(data.idNumber || data.joinedDate) && (
-                 <div className="flex flex-col sm:flex-row gap-6 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    {data.idNumber && (
-                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <Hash size={18} />
-                        <span className="font-medium">ID: {data.idNumber}</span>
-                      </div>
-                    )}
-                    {data.joinedDate && (
-                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <Calendar size={18} />
-                        <span className="font-medium">
-                          Joined: {typeof data.joinedDate === 'string' ? data.joinedDate : format(data.joinedDate, "MMM yyyy")}
-                        </span>
-                      </div>
-                    )}
-                 </div>
+                <div className="flex flex-wrap gap-x-6 gap-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  {data.idNumber && (
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 break-all min-w-0">
+                      <Hash size={18} className="flex-shrink-0" />
+                      <span className="font-medium truncate">ID: {data.idNumber}</span>
+                    </div>
+                  )}
+                  {data.joinedDate && (
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                      <Calendar size={18} className="flex-shrink-0" />
+                      <span className="font-medium">
+                        Joined: {typeof data.joinedDate === 'string' ? data.joinedDate : format(data.joinedDate, "MMM yyyy")}
+                      </span>
+                    </div>
+                  )}
+                </div>
               )}
-            </div>
 
-            {/* Social Icons at bottom right */}
-            <div className="absolute bottom-6 right-6 flex gap-3">
-              {(data.socials?.facebook || true) && (
-                <a href={data.socials?.facebook || "#"} className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center hover:bg-orange-500 transition-colors">
-                  <FacebookIcon size={16} fill="currentColor" strokeWidth={0} />
-                </a>
-              )}
-              {(data.socials?.instagram || true) && (
-                <a href={data.socials?.instagram || "#"} className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center hover:bg-orange-500 transition-colors">
-                  <InstagramIcon size={16} />
-                </a>
-              )}
-              {(data.socials?.twitter || true) && (
-                <a href={data.socials?.twitter || "#"} className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center hover:bg-orange-500 transition-colors">
-                  <TwitterIcon size={16} fill="currentColor" strokeWidth={0} />
-                </a>
-              )}
-              {(data.socials?.linkedin || true) && (
-                 <a href={data.socials?.linkedin || "#"} className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center hover:bg-orange-500 transition-colors">
-                   <LinkedinIcon size={16} fill="currentColor" strokeWidth={0} />
-                 </a>
-              )}
+              {/* Social Icons inside document flow */}
+              <div className="pt-2 flex flex-wrap gap-3">
+                {(data.socials?.facebook || true) && (
+                  <a href={data.socials?.facebook || "#"} className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center hover:bg-orange-500 transition-colors">
+                    <FacebookIcon size={16} fill="currentColor" strokeWidth={0} />
+                  </a>
+                )}
+                {(data.socials?.instagram || true) && (
+                  <a href={data.socials?.instagram || "#"} className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center hover:bg-orange-500 transition-colors">
+                    <InstagramIcon size={16} />
+                  </a>
+                )}
+                {(data.socials?.twitter || true) && (
+                  <a href={data.socials?.twitter || "#"} className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center hover:bg-orange-500 transition-colors">
+                    <TwitterIcon size={16} fill="currentColor" strokeWidth={0} />
+                  </a>
+                )}
+                {(data.socials?.linkedin || true) && (
+                  <a href={data.socials?.linkedin || "#"} className="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center hover:bg-orange-500 transition-colors">
+                    <LinkedinIcon size={16} fill="currentColor" strokeWidth={0} />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
-          
+
           {/* Actions Area */}
           {actions && (
             <div className="mt-8 flex gap-4">
@@ -202,55 +226,55 @@ export default function HumanPortfolio({
 
         {/* Right Column: Visual Composition */}
         <div className="w-full lg:w-1/2 relative flex justify-center items-center py-10 lg:py-0">
-           {/* Background Decorative Shapes */}
-           <div className="absolute top-0 right-1/4 w-48 h-48 bg-orange-500 rounded-full translate-x-12 -translate-y-4 z-0 mix-blend-multiply dark:mix-blend-normal opacity-90 blur-[1px]"></div>
-           <div className="absolute bottom-0 right-1/4 w-56 h-56 bg-teal-800 dark:bg-teal-700 rounded-full translate-x-8 translate-y-12 z-0 opacity-90 blur-[1px]"></div>
-           
-           {/* Image Frame Wrapper */}
-           <div className="relative z-10">
-              {/* Offset stacked cards */}
-              <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-xl transform rotate-6 translate-x-4 translate-y-2 border border-gray-100 dark:border-gray-700"></div>
-              <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-xl transform rotate-3 translate-x-2 translate-y-1 border border-gray-100 dark:border-gray-700"></div>
-              
-              {/* Main Image Container */}
-              <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-3 shadow-2xl border border-gray-100 dark:border-gray-700 transform -rotate-1 transition-transform hover:rotate-0 duration-300">
-                 <div className="w-72 h-[420px] sm:w-80 sm:h-[460px] rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-900 relative">
-                    {data.avatarUrl ? (
-                      <img
-                        src={data.avatarUrl}
-                        alt={fullName}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-orange-500 bg-orange-50 dark:bg-gray-800">
-                         <span className="text-8xl font-black uppercase tracking-widest opacity-20">
-                           {data.firstName.charAt(0)}
-                           {data.lastName ? data.lastName.charAt(0) : ""}
-                         </span>
-                      </div>
-                    )}
-                    
-                    {/* Status indicator on image */}
-                    <div className="absolute top-4 right-4">
-                      <Badge color={data.status === "active" ? "success" : data.status === "inactive" ? "failure" : "warning"} className="rounded-full shadow-md font-bold px-3">
-                         {data.status || "Active"}
-                      </Badge>
-                    </div>
-                 </div>
-                 
-                 {/* Floating Name Badge */}
-                 <div className="absolute -bottom-6 -right-6 sm:-right-8 bg-orange-500 text-white py-3 px-8 rounded-full shadow-xl z-20">
-                    <span className="text-lg font-medium">{fullName}</span>
-                 </div>
+          {/* Background Decorative Shapes */}
+          <div className="absolute top-0 right-1/4 w-48 h-48 bg-orange-500 rounded-full translate-x-12 -translate-y-4 z-0 mix-blend-multiply dark:mix-blend-normal opacity-90 blur-[1px]"></div>
+          <div className="absolute bottom-0 right-1/4 w-56 h-56 bg-teal-800 dark:bg-teal-700 rounded-full translate-x-8 translate-y-12 z-0 opacity-90 blur-[1px]"></div>
+
+          {/* Image Frame Wrapper */}
+          <div className="relative z-10">
+            {/* Offset stacked cards */}
+            <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-xl transform rotate-6 translate-x-4 translate-y-2 border border-gray-100 dark:border-gray-700"></div>
+            <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-xl transform rotate-3 translate-x-2 translate-y-1 border border-gray-100 dark:border-gray-700"></div>
+
+            {/* Main Image Container */}
+            <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-3 shadow-2xl border border-gray-100 dark:border-gray-700 transform -rotate-1 transition-transform hover:rotate-0 duration-300">
+              <div className="w-64 h-80 sm:w-72 sm:h-[420px] md:w-80 md:h-[460px] max-w-full rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-900 relative">
+                {data.avatarUrl ? (
+                  <img
+                    src={data.avatarUrl}
+                    alt={fullName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-orange-500 bg-orange-50 dark:bg-gray-800">
+                    <span className="text-8xl font-black uppercase tracking-widest opacity-20">
+                      {data.firstName.charAt(0)}
+                      {data.lastName ? data.lastName.charAt(0) : ""}
+                    </span>
+                  </div>
+                )}
+
+                {/* Status indicator on image */}
+                <div className="absolute top-4 right-4">
+                  <Badge color={data.status === "active" ? "success" : data.status === "inactive" ? "failure" : "warning"} className="rounded-full shadow-md font-bold px-3">
+                    {data.status || "Active"}
+                  </Badge>
+                </div>
               </div>
-           </div>
+
+              {/* Floating Name Badge */}
+              <div className="absolute -bottom-6 -right-6 sm:-right-8 bg-orange-500 text-white py-3 px-8 rounded-full shadow-xl z-20">
+                <span className="text-lg font-medium">{fullName}</span>
+              </div>
+            </div>
+          </div>
         </div>
-        
+
       </div>
 
       {/* ADDITIONAL SECTIONS */}
       <div className="p-6 sm:p-10 space-y-16">
-        
+
         {/* About Me Section */}
         {data.about && (
           <section className="animate-fade-in-up">
@@ -291,7 +315,7 @@ export default function HumanPortfolio({
                   <div key={idx} className="relative pl-8 md:pl-10">
                     {/* Timeline Dot */}
                     <div className="absolute -left-[13px] top-1 w-6 h-6 bg-white dark:bg-gray-800 border-4 border-orange-500 rounded-full shadow-sm"></div>
-                    
+
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-2">
                       <h4 className="text-xl font-bold text-gray-900 dark:text-white">{exp.role}</h4>
                       <span className="text-teal-600 dark:text-teal-400 font-semibold text-sm whitespace-nowrap bg-teal-50 dark:bg-teal-900/30 px-3 py-1 rounded-full mt-2 sm:mt-0 inline-block">
@@ -346,7 +370,7 @@ export default function HumanPortfolio({
           </section>
         )}
       </div>
-      
+
       {/* Optional Children Area */}
       {children && (
         <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-8 px-6 sm:px-10">

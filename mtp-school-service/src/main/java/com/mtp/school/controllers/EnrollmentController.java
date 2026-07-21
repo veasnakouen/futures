@@ -23,8 +23,8 @@ public class EnrollmentController {
     private final GetEnrollmentByIdQueryHandler getByIdHandler;
 
     @GetMapping
-    public Page<EnrollmentQueryResultDto> getAll(Pageable pageable) {
-        return getAllHandler.handle(new GetAllEnrollmentsQuery(pageable.getPageNumber(), pageable.getPageSize()));
+    public Page<EnrollmentQueryResultDto> getAll(Pageable pageable, @RequestParam(required = false) String courseId) {
+        return getAllHandler.handle(new GetAllEnrollmentsQuery(pageable.getPageNumber(), pageable.getPageSize(), courseId));
     }
 
     @GetMapping("/{id}")

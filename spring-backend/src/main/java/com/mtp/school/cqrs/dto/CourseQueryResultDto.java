@@ -8,6 +8,7 @@ public class CourseQueryResultDto {
     private String id;
     private String name;
     private String description;
+    private String subject;
     private Integer credits;
     private String teacherId;
     private String teacherFirstName;

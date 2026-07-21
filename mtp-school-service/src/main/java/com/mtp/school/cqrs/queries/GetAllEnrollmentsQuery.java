@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class GetAllEnrollmentsQuery {
     private int page;
     private int size;
+    private String courseId;
 }

@@ -5,7 +5,8 @@ import toast from 'react-hot-toast';
 export interface SystemHoliday {
   id: number;
   name: string;
-  eventDate: string;
+  startDate: string;
+  endDate: string;
   category: string;
   description: string;
 }

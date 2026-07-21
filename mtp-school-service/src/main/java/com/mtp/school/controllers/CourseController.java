@@ -23,8 +23,11 @@ public class CourseController {
     private final GetCourseByIdQueryHandler getByIdHandler;
 
     @GetMapping
-    public Page<CourseQueryResultDto> getAll(Pageable pageable) {
-        return getAllHandler.handle(new GetAllCoursesQuery(pageable.getPageNumber(), pageable.getPageSize()));
+    public Page<CourseQueryResultDto> getAll(
+            Pageable pageable, 
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String teacherId) {
+        return getAllHandler.handle(new GetAllCoursesQuery(pageable, search, teacherId));
     }
 
     @GetMapping("/{id}")

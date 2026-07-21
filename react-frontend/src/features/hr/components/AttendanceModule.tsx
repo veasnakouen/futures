@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import {
   Clock,
@@ -23,7 +24,8 @@ import {
   LayoutGrid,
   List,
   X,
-  ChevronRight
+  ChevronRight,
+  QrCode
 } from "lucide-react";
 import { Button, Badge, Avatar, Select, TextInput, Checkbox, Label, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Spinner } from '@/lib/flowbite-compat';
 import {
@@ -42,8 +44,10 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
+import { QRCodeCanvas } from "qrcode.react";
+import { useAuthStore } from "@/store/authStore";
+import api from "@/services/api";
 
-import HolidayModal from "./HolidayModal";
 import toast from "react-hot-toast";
 import { TimetableFormModal } from "./TimetableFormModal";
 import { ScheduleAssignmentModal } from "./ScheduleAssignmentModal";
@@ -88,7 +92,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
   const [statusFilter, setStatusFilter] = useState("");
   const [unmappedOnly, setUnmappedOnly] = useState(false);
   const [isHolidayModalOpen, setIsHolidayModalOpen] = React.useState(false);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<string>("clockIn");
@@ -97,6 +101,35 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
   const [isAssignScheduleModalOpen, setIsAssignScheduleModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [itemsPerRow, setItemsPerRow] = useState("4");
+
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [qrToken, setQrToken] = useState("");
+  const [appLogo, setAppLogo] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  const { user } = useAuthStore();
+  const isAdminOrSuperAdmin = isHydrated && user?.roles?.some(role => role.toUpperCase().includes("ADMIN"));
+
+  React.useEffect(() => {
+    setIsHydrated(true);
+    api.get("/settings/APP_LOGO")
+      .then(res => {
+        if (res.data?.value) setAppLogo(res.data.value);
+      })
+      .catch(err => console.error("Could not fetch APP_LOGO", err));
+  }, []);
+
+  const fetchQrCode = async (isPermanent: boolean = false) => {
+    try {
+      const response = await api.get(`/lookups/qr-token?permanent=${isPermanent}`);
+      if (response.data && response.data.token) {
+        setQrToken(response.data.token);
+        setIsQrModalOpen(true);
+      }
+    } catch (err) {
+      toast.error("Failed to generate QR Code");
+    }
+  };
 
   const { useTimetables } = useTimetable();
   const { data: timetables = [] } = useTimetables();
@@ -126,11 +159,10 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
               <button
                 key={tab}
                 onClick={() => setSubTab(tab)}
-                className={`relative px-8 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${
-                  active
+                className={`relative px-8 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${active
                     ? "text-white"
                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800"
-                }`}
+                  }`}
               >
                 {active && (
                   <motion.div
@@ -155,12 +187,12 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
               <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">On Premises</p>
               <h4 className="text-3xl font-black text-gray-900 dark:text-white">12</h4>
             </InfoCard>
-            
+
             <InfoCard className="!p-5 flex flex-col justify-center">
               <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">OT Hours</p>
               <h4 className="text-3xl font-black text-[#c53030] dark:text-red-400">42.5h</h4>
             </InfoCard>
-            
+
             <InfoCard className="!p-5 flex flex-col justify-center">
               <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">OT Payout</p>
               <h4 className="text-3xl font-black text-emerald-500">$850</h4>
@@ -196,6 +228,14 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
               >
                 <Clock size={14} /> Manual Log
               </button>
+              {isAdminOrSuperAdmin && (
+                <button
+                  onClick={() => fetchQrCode(false)}
+                  className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl shadow-md shadow-indigo-900/20 font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 transition-all"
+                >
+                  <QrCode size={14} /> Generate QR
+                </button>
+              )}
               <button className="flex-1 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 transition-all">
                 <FileText size={14} /> Audit
               </button>
@@ -210,20 +250,20 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
               </div>
               <div style={{ width: '100%', height: 250 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={[
-                  { day: "Mon", count: 42 }, { day: "Tue", count: 38 }, { day: "Wed", count: 45 },
-                  { day: "Thu", count: 40 }, { day: "Fri", count: 35 }, { day: "Sat", count: 12 }, { day: "Sun", count: 8 }
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: "bold", fill: "#94a3b8" }} dy={10} />
-                  <Tooltip cursor={{ fill: "#f1f5f9", opacity: 0.4 }} contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }} />
-                  <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>
-                    {[42, 38, 45, 40, 35, 12, 8].map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry > 30 ? "#c53030" : "#cbd5e1"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+                  <BarChart data={[
+                    { day: "Mon", count: 42 }, { day: "Tue", count: 38 }, { day: "Wed", count: 45 },
+                    { day: "Thu", count: 40 }, { day: "Fri", count: 35 }, { day: "Sat", count: 12 }, { day: "Sun", count: 8 }
+                  ]}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: "bold", fill: "#94a3b8" }} dy={10} />
+                    <Tooltip cursor={{ fill: "#f1f5f9", opacity: 0.4 }} contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }} />
+                    <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>
+                      {[42, 38, 45, 40, 35, 12, 8].map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry > 30 ? "#c53030" : "#cbd5e1"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </InfoCard>
 
@@ -298,10 +338,9 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                     accessorKey: "status",
                     sortable: true,
                     cell: (log) => (
-                      <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${
-                        log.status === "Present" ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400" 
-                        : "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
-                      }`}>
+                      <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${log.status === "Present" ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400"
+                          : "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
+                        }`}>
                         {log.status}
                       </span>
                     )
@@ -389,10 +428,9 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                         <Zap size={10} fill="currentColor" />
                         <span className="text-[8px] font-black uppercase tracking-widest">Biometric</span>
                       </div>
-                      <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${
-                        log.status === "Present" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" 
-                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                      }`}>
+                      <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${log.status === "Present" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                          : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                        }`}>
                         {log.status}
                       </span>
                     </div>
@@ -521,22 +559,31 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
               <SectionLabel>Upcoming Holidays</SectionLabel>
               <div className="space-y-4">
                 {holidays.length > 0 ? (
-                  holidays.map((h, i) => (
-                    <div key={i} className="flex gap-4 items-center p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50">
-                      <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 flex flex-col items-center justify-center border border-amber-100 dark:border-amber-900/30">
-                        <span className="text-[9px] font-black uppercase leading-none">{format(new Date(h.eventDate), "MMM")}</span>
-                        <span className="text-sm font-black leading-none mt-0.5">{format(new Date(h.eventDate), "dd")}</span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-bold text-gray-900 dark:text-white">{h.name}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[9px] font-bold text-gray-400">1 Day</span>
-                          <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
-                          <span className="text-[9px] font-bold text-amber-600 dark:text-amber-500">{h.category || "System"}</span>
+                  holidays.map((h, i) => {
+                    const start = new Date(h.startDate);
+                    const end = new Date(h.endDate);
+                    const durationDays = Math.round((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) + 1;
+                    const isMultiDay = durationDays > 1;
+
+                    return (
+                      <div key={i} className="flex gap-4 items-center p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50">
+                        <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 flex flex-col items-center justify-center border border-amber-100 dark:border-amber-900/30">
+                          <span className="text-[9px] font-black uppercase leading-none">{format(start, "MMM")}</span>
+                          <span className="text-sm font-black leading-none mt-0.5">{format(start, "dd")}</span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs font-bold text-gray-900 dark:text-white">{h.name}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[9px] font-bold text-gray-400">
+                              {isMultiDay ? `${format(start, "MMM dd")} - ${format(end, "MMM dd")} (${durationDays} Days)` : "1 Day"}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
+                            <span className="text-[9px] font-bold text-amber-600 dark:text-amber-500">{h.category || "System"}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <EmptyState icon={<LayoutGrid size={24} />} label="No upcoming holidays" />
                 )}
@@ -578,7 +625,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 <span className="text-[9px] font-bold uppercase">Within safety limit</span>
               </div>
             </InfoCard>
-            
+
             <div className="md:col-span-1 bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900 text-white rounded-2xl shadow-lg shadow-blue-900/20 flex flex-col justify-center p-5 relative overflow-hidden group">
               <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 80% 20%, white 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
               <div className="relative z-10">
@@ -686,9 +733,9 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
               </Table>
             </div>
           </InfoCard>
-          
+
           <InfoCard className="!p-0 overflow-hidden">
-             <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <h4 className="font-black text-sm text-gray-800 dark:text-white uppercase tracking-wider">Attendance Audit Ledger</h4>
                 <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">Export verified clock-in/out records for compliance</p>
@@ -708,7 +755,7 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 </button>
               </div>
             </div>
-            
+
             <div className="overflow-x-auto max-h-[400px] custom-scrollbar">
               <Table hoverable className="border-none w-full min-w-[700px] relative">
                 <TableHead className="bg-white dark:bg-gray-900 sticky top-0 z-10 shadow-sm border-b border-gray-100 dark:border-gray-800">
@@ -766,6 +813,89 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
       <TimetableFormModal isOpen={isTimetableModalOpen} onClose={() => setIsTimetableModalOpen(false)} />
       <ScheduleAssignmentModal isOpen={isAssignScheduleModalOpen} onClose={() => setIsAssignScheduleModalOpen(false)} onSave={() => setIsAssignScheduleModalOpen(false)} />
       <HolidayFormModal isOpen={isHolidayModalOpen} onClose={() => setIsHolidayModalOpen(false)} />
+
+      {/* Modern Solid QR Code Modal */}
+      {isQrModalOpen && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/90 animate-in fade-in duration-200 px-4">
+          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform scale-100 animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+              <div>
+                <h3 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                  <QrCode className="text-[#8b5cf6]" size={24} />
+                  Office Check-In
+                </h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">
+                  Scan via Staff Mobile App
+                </p>
+              </div>
+              <button
+                onClick={() => setIsQrModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
+              >
+                <X size={20} strokeWidth={3} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-8 flex flex-col items-center justify-center bg-white">
+              {qrToken ? (
+                <div className="bg-white p-4 rounded-2xl shadow-sm border-2 border-gray-100">
+                  <QRCodeCanvas
+                    value={`mtp-attendance://check-in?token=${qrToken}`}
+                    size={240}
+                    level="H"
+                    includeMargin={true}
+                    imageSettings={
+                      appLogo
+                        ? {
+                          src: appLogo,
+                          x: undefined,
+                          y: undefined,
+                          height: 48,
+                          width: 48,
+                          excavate: true,
+                        }
+                        : undefined
+                    }
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-[240px] text-gray-400">
+                  <QrCode size={48} className="animate-pulse mb-4 text-gray-200" />
+                  <p className="text-sm font-bold uppercase tracking-widest">Generating Code...</p>
+                </div>
+              )}
+
+              <div className="mt-8 text-center space-y-2">
+                <p className="text-gray-900 font-bold text-lg">Daily Attendance Code</p>
+                <p className="text-gray-500 text-sm font-medium">
+                  Valid for Check-In and Check-Out. Requires device location to be within 100m of the office.
+                </p>
+              </div>
+            </div>
+
+            {/* Footer with Toggle Options */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex gap-2">
+              <button
+                onClick={() => fetchQrCode(false)}
+                className="flex-1 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-lg transition-colors text-[10px] uppercase tracking-widest"
+              >
+                Refresh 5-Min Token
+              </button>
+              {isAdminOrSuperAdmin && (
+                <button
+                  onClick={() => fetchQrCode(true)}
+                  className="flex-1 py-2.5 bg-white border border-gray-300 hover:border-gray-900 text-gray-700 hover:text-gray-900 font-bold rounded-lg transition-colors text-[10px] uppercase tracking-widest"
+                >
+                  Generate Permanent Token
+                </button>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

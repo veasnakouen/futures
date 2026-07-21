@@ -59,9 +59,9 @@ const AssignTicketModal: React.FC<AssignTicketModalProps> = ({
         </div>
         <button
           onClick={onClose}
-          className="text-gray-500 hover:text-gray-900 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md p-1.5 transition-colors"
+          className="flex h-8 w-8 min-w-[2rem] min-h-[2rem] shrink-0 aspect-square items-center justify-center rounded-full p-0 bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-900 hover:rotate-90 hover:scale-110 active:scale-95 transition-all duration-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
         >
-          <X size={20} />
+            <X size={20} />
         </button>
       </div>
       <ModalBody className="p-6 bg-gray-50 dark:bg-gray-900">

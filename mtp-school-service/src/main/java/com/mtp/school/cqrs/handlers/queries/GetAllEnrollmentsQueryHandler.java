@@ -17,6 +17,10 @@ public class GetAllEnrollmentsQueryHandler {
     private final EnrollmentMapper mapper;
 
     public Page<EnrollmentQueryResultDto> handle(GetAllEnrollmentsQuery query) {
+        if (query.getCourseId() != null && !query.getCourseId().isEmpty()) {
+            return repository.findByCourseId(query.getCourseId(), PageRequest.of(query.getPage(), query.getSize()))
+                    .map(mapper::toDto);
+        }
         return repository.findAll(PageRequest.of(query.getPage(), query.getSize()))
                 .map(mapper::toDto);
     }

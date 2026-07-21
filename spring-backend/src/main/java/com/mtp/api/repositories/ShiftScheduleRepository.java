@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ShiftScheduleRepository extends JpaRepository<ShiftSchedule, Integer> {
-    List<ShiftSchedule> findByWeekStartDate(LocalDate weekStartDate);
+    List<ShiftSchedule> findByScheduleYear(Integer scheduleYear);
 }

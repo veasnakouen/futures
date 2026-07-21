@@ -1,26 +1,42 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { scheduleService, ShiftScheduleDto, BulkShiftScheduleDto } from "../services/scheduleService";
+import { scheduleService, ShiftScheduleDto, BulkShiftScheduleDto, WeeklyScheduleDto } from "../services/scheduleService";
 import { toast } from "react-hot-toast";
+
+const getErrorMsg = (error: any, defaultMsg: string) => {
+  if (error?.response?.data) {
+    const data = error.response.data;
+    if (typeof data === 'string') return data;
+    if (data.message) return data.message;
+  }
+  return defaultMsg;
+};
 
 export const useScheduling = () => {
   const queryClient = useQueryClient();
 
-  const useCurrentWeekSchedules = () => {
+  const useYearSchedules = (year: number) => {
     return useQuery({
-      queryKey: ["currentWeekSchedules"],
-      queryFn: scheduleService.getCurrentWeekSchedules,
+      queryKey: ["yearSchedules", year],
+      queryFn: () => scheduleService.getYearSchedules(year),
+    });
+  };
+
+  const useWeeklySchedules = () => {
+    return useQuery({
+      queryKey: ["weeklySchedules"],
+      queryFn: () => scheduleService.getWeeklySchedules(),
     });
   };
 
   const useCreateSchedule = () => {
     return useMutation({
       mutationFn: (data: ShiftScheduleDto) => scheduleService.createSchedule(data),
-      onSuccess: () => {
+      onSuccess: (_, variables) => {
         toast.success("Schedule assigned successfully");
-        queryClient.invalidateQueries({ queryKey: ["currentWeekSchedules"] });
+        queryClient.invalidateQueries({ queryKey: ["yearSchedules", variables.scheduleYear] });
       },
       onError: (error: any) => {
-        toast.error(error?.response?.data || "Failed to assign schedule");
+        toast.error(getErrorMsg(error, "Failed to assign schedule"));
       },
     });
   };
@@ -28,12 +44,25 @@ export const useScheduling = () => {
   const useCreateDepartmentSchedule = () => {
     return useMutation({
       mutationFn: (data: BulkShiftScheduleDto) => scheduleService.createDepartmentSchedule(data),
-      onSuccess: () => {
+      onSuccess: (_, variables) => {
         toast.success("Department schedule assigned successfully");
-        queryClient.invalidateQueries({ queryKey: ["currentWeekSchedules"] });
+        queryClient.invalidateQueries({ queryKey: ["yearSchedules", variables.scheduleYear] });
       },
       onError: (error: any) => {
-        toast.error(error?.response?.data || "Failed to assign department schedule");
+        toast.error(getErrorMsg(error, "Failed to assign department schedule"));
+      },
+    });
+  };
+
+  const useCreateWeeklySchedule = () => {
+    return useMutation({
+      mutationFn: (data: WeeklyScheduleDto) => scheduleService.createWeeklySchedule(data),
+      onSuccess: () => {
+        toast.success("Weekly schedule assigned successfully");
+        // queryClient.invalidateQueries({ queryKey: ["weeklySchedules"] }); // Can add this later if we display them
+      },
+      onError: (error: any) => {
+        toast.error(getErrorMsg(error, "Failed to assign weekly schedule"));
       },
     });
   };
@@ -42,33 +71,35 @@ export const useScheduling = () => {
     return useMutation({
       mutationFn: ({ id, data }: { id: number; data: ShiftScheduleDto }) =>
         scheduleService.updateSchedule(id, data),
-      onSuccess: () => {
+      onSuccess: (_, variables) => {
         toast.success("Schedule updated successfully");
-        queryClient.invalidateQueries({ queryKey: ["currentWeekSchedules"] });
+        queryClient.invalidateQueries({ queryKey: ["yearSchedules", variables.data.scheduleYear] });
       },
       onError: (error: any) => {
-        toast.error(error?.response?.data || "Failed to update schedule");
+        toast.error(getErrorMsg(error, "Failed to update schedule"));
       },
     });
   };
 
-  const useDeleteSchedule = () => {
+  const useDeleteSchedule = (year: number) => {
     return useMutation({
       mutationFn: (id: number) => scheduleService.deleteSchedule(id),
       onSuccess: () => {
         toast.success("Schedule deleted successfully");
-        queryClient.invalidateQueries({ queryKey: ["currentWeekSchedules"] });
+        queryClient.invalidateQueries({ queryKey: ["yearSchedules", year] });
       },
       onError: (error: any) => {
-        toast.error("Failed to delete schedule");
+        toast.error(getErrorMsg(error, "Failed to delete schedule"));
       },
     });
   };
 
   return {
-    useCurrentWeekSchedules,
+    useYearSchedules,
+    useWeeklySchedules,
     useCreateSchedule,
     useCreateDepartmentSchedule,
+    useCreateWeeklySchedule,
     useUpdateSchedule,
     useDeleteSchedule,
   };

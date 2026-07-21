@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface AttendanceService {
     ResponseEntity<?> processBiometricCheck(BiometricRequest request);
+    ResponseEntity<?> processQrScan(Integer employeeId, Integer departmentId, Double lat, Double lng);
     Attendance clockIn(Integer employeeId, String location, String note);
     Attendance clockOut(Integer employeeId, String note);
     Attendance submitManualLog(ManualAttendanceRequest request);

@@ -29,6 +29,11 @@ export const clientSchema = z.object({
   clientCode: z.string().min(1, "Client code is required"),
   branch: z.string().min(1, "Branch is required"),
   status: z.string().min(1, "Status is required"),
+  headline: z.string().optional(),
+  desiredSalary: z.string().optional(),
+  availability: z.string().optional(),
+  preferredLocation: z.string().optional(),
+  primarySkills: z.string().optional(),
 });
 
 export const placementSchema = z.object({

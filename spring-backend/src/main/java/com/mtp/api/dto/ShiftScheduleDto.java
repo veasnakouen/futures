@@ -12,12 +12,17 @@ public class ShiftScheduleDto {
     private Integer id;
     private String employeeId; // Using employeeId (e.g., EMP-001) or Integer DB id. Let's use String since the UI passes EMP-001
     private String employeeName;
-    private LocalDate weekStartDate;
-    private String mondayShift;
-    private String tuesdayShift;
-    private String wednesdayShift;
-    private String thursdayShift;
-    private String fridayShift;
-    private String saturdayShift;
-    private String sundayShift;
+    private Integer scheduleYear;
+    private String janShift;
+    private String febShift;
+    private String marShift;
+    private String aprShift;
+    private String mayShift;
+    private String junShift;
+    private String julShift;
+    private String augShift;
+    private String sepShift;
+    private String octShift;
+    private String novShift;
+    private String decShift;
 }

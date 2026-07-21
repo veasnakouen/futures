@@ -8,12 +8,22 @@ import com.mtp.api.repositories.AttendanceRepository;
 import com.mtp.api.repositories.EmployeeRepository;
 import com.mtp.api.repositories.BiometricDeviceRepository;
 import com.mtp.api.models.BiometricDevice;
+import com.mtp.api.models.Timetable;
+import com.mtp.api.models.WeeklySchedule;
+import com.mtp.api.repositories.BiometricDeviceRepository;
+import com.mtp.api.repositories.TimetableRepository;
+import com.mtp.api.repositories.DepartmentRepository;
+import com.mtp.api.repositories.WeeklyScheduleRepository;
 import com.mtp.api.services.AttendanceService;
 import com.mtp.api.utils.ZkDeviceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
@@ -34,6 +44,30 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Autowired
     private BiometricDeviceRepository deviceRepository;
+
+    @Autowired
+    private WeeklyScheduleRepository weeklyScheduleRepository;
+
+    @Autowired
+    private TimetableRepository timetableRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private com.mtp.api.repositories.SystemSettingRepository systemSettingRepository;
+
+    // Haversine formula to calculate distance between two coordinates in meters
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371000; // Radius of the earth in meters
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Convert to meters
+    }
 
     @Override
     @Transactional
@@ -66,6 +100,142 @@ public class AttendanceServiceImpl implements AttendanceService {
             a.setLocation(request.getLocation() != null ? request.getLocation() : request.getDeviceName());
             a.setStatus("Present");
             a.setNote("Biometric In | Source: " + request.getType());
+            return ResponseEntity.ok(attendanceRepository.save(a));
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> processQrScan(Integer employeeId, Integer departmentId, Double lat, Double lng) {
+        Employee emp = employeeRepository.findById(employeeId).orElse(null);
+        if (emp == null) return ResponseEntity.badRequest().body("Employee not found");
+
+        // --- GEOLOCATION VALIDATION ---
+        if (lat != null && lng != null) {
+            Double targetLat = null;
+            Double targetLng = null;
+            
+            if (departmentId != null && departmentId > 0) {
+                com.mtp.api.models.Department dept = departmentRepository.findById(departmentId).orElse(null);
+                if (dept != null && dept.getLat() != null && dept.getLng() != null) {
+                    targetLat = dept.getLat();
+                    targetLng = dept.getLng();
+                }
+            }
+
+            if (targetLat == null || targetLng == null) {
+                String officeLatStr = systemSettingRepository.findById("OFFICE_LAT").map(s -> s.getValue()).orElse(null);
+                String officeLngStr = systemSettingRepository.findById("OFFICE_LNG").map(s -> s.getValue()).orElse(null);
+                if (officeLatStr != null && officeLngStr != null) {
+                    try {
+                        targetLat = Double.parseDouble(officeLatStr);
+                        targetLng = Double.parseDouble(officeLngStr);
+                    } catch (NumberFormatException e) {
+                        log.warn("Invalid coordinates in SystemSettings");
+                    }
+                }
+            }
+            
+            if (targetLat != null && targetLng != null) {
+                double distance = calculateDistance(lat, lng, targetLat, targetLng);
+                if (distance > 100.0) { // 100 meters radius
+                    return ResponseEntity.status(403).body("Location Validation Failed: You are " + String.format("%.0f", distance) + " meters away from the department. Maximum allowed is 100 meters.");
+                }
+            }
+        }
+        // ------------------------------
+
+        LocalDateTime now = LocalDateTime.now();
+        DayOfWeek day = now.getDayOfWeek();
+        
+        Optional<WeeklySchedule> weeklyOpt = weeklyScheduleRepository.findByEmployeeId(emp.getId());
+        
+        String shiftPattern = "Off";
+        if (weeklyOpt.isPresent()) {
+            WeeklySchedule ws = weeklyOpt.get();
+            switch (day) {
+                case MONDAY: shiftPattern = ws.getMondayShift(); break;
+                case TUESDAY: shiftPattern = ws.getTuesdayShift(); break;
+                case WEDNESDAY: shiftPattern = ws.getWednesdayShift(); break;
+                case THURSDAY: shiftPattern = ws.getThursdayShift(); break;
+                case FRIDAY: shiftPattern = ws.getFridayShift(); break;
+                case SATURDAY: shiftPattern = ws.getSaturdayShift(); break;
+                case SUNDAY: shiftPattern = ws.getSundayShift(); break;
+            }
+        }
+        
+        if (shiftPattern == null) shiftPattern = "Off";
+        
+        // Parse "AM: [Name] | PM: [Name]"
+        String targetTimetableName = null;
+        if (shiftPattern.contains("AM:") && shiftPattern.contains("PM:")) {
+            if (now.getHour() < 12) {
+                targetTimetableName = shiftPattern.split("\\|")[0].replace("AM:", "").trim();
+            } else {
+                targetTimetableName = shiftPattern.split("\\|")[1].replace("PM:", "").trim();
+            }
+        } else {
+            targetTimetableName = shiftPattern;
+        }
+
+        Timetable timetable = null;
+        if (targetTimetableName != null && !targetTimetableName.equalsIgnoreCase("Off")) {
+            final String finalTargetName = targetTimetableName;
+            List<Timetable> timetables = timetableRepository.findAll(); // Optimization: use findByName
+            timetable = timetables.stream()
+                .filter(t -> t.getName().equalsIgnoreCase(finalTargetName))
+                .findFirst()
+                .orElse(null);
+        }
+
+        Optional<Attendance> activeAttendance = attendanceRepository
+                .findTopByEmployeeIdAndClockOutIsNullOrderByClockInDesc(emp.getId());
+
+        if (activeAttendance.isPresent()) {
+            // Clock Out
+            Attendance a = activeAttendance.get();
+            a.setClockOut(now);
+            
+            // Check Leave Early
+            if (timetable != null && timetable.getOffDutyTime() != null) {
+                try {
+                    LocalTime offDutyTime = LocalTime.parse(timetable.getOffDutyTime().replaceAll("(?i)\\s*(AM|PM)", "").trim());
+                    // Rough parsing if 12-hour AM/PM exists vs 24-hour. Let's assume standard parsing or just a basic check.
+                    // For safety, just set note
+                    a.setNote("QR Out (Schedule: " + targetTimetableName + ")");
+                } catch (Exception e) {
+                    a.setNote("QR Out (Error parsing off-time)");
+                }
+            } else {
+                a.setNote("QR Out (No strict timetable)");
+            }
+            return ResponseEntity.ok(attendanceRepository.save(a));
+        } else {
+            // Clock In
+            Attendance a = new Attendance();
+            a.setEmployee(emp);
+            a.setClockIn(now);
+            a.setLocation("Department " + departmentId + " QR Scan");
+            
+            // Check Late
+            String status = "Present";
+            if (timetable != null && timetable.getOnDutyTime() != null) {
+                try {
+                    LocalTime onDuty = LocalTime.parse(timetable.getOnDutyTime().replaceAll("(?i)\\s*(AM|PM)", "").trim());
+                    int lateGrace = timetable.getLateTime() != null ? timetable.getLateTime() : 0;
+                    if (now.toLocalTime().isAfter(onDuty.plusMinutes(lateGrace))) {
+                        status = "Late";
+                        a.setNote("QR In | LATE (Schedule: " + targetTimetableName + ")");
+                    } else {
+                        a.setNote("QR In | On Time (Schedule: " + targetTimetableName + ")");
+                    }
+                } catch (Exception e) {
+                    a.setNote("QR In (Error parsing on-time)");
+                }
+            } else {
+                a.setNote("QR In (No strict timetable)");
+            }
+            a.setStatus(status);
             return ResponseEntity.ok(attendanceRepository.save(a));
         }
     }

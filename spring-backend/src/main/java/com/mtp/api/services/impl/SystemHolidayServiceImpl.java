@@ -56,7 +56,8 @@ public class SystemHolidayServiceImpl implements SystemHolidayService {
         SystemHolidayDto dto = new SystemHolidayDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
-        dto.setEventDate(entity.getEventDate());
+        dto.setStartDate(entity.getStartDate());
+        dto.setEndDate(entity.getEndDate());
         dto.setCategory(entity.getCategory());
         dto.setDescription(entity.getDescription());
         return dto;
@@ -64,7 +65,8 @@ public class SystemHolidayServiceImpl implements SystemHolidayService {
 
     private void mapToEntity(SystemHolidayDto dto, SystemHoliday entity) {
         entity.setName(dto.getName());
-        entity.setEventDate(dto.getEventDate());
+        entity.setStartDate(dto.getStartDate());
+        entity.setEndDate(dto.getEndDate());
         entity.setCategory(dto.getCategory());
         entity.setDescription(dto.getDescription());
     }

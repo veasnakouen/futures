@@ -21,11 +21,11 @@ public class CreateCourseCommandHandler {
     @Transactional
     public CourseQueryResultDto handle(CreateCourseCommand command) {
         Course entity = mapper.toEntity(command);
-        
-        if (command.getTeacherId() != null) {
+
+        if (command.getTeacherId() != null && !command.getTeacherId().isEmpty()) {
             teacherRepository.findById(command.getTeacherId()).ifPresent(entity::setTeacher);
         }
-        
+
         Course savedEntity = repository.save(entity);
         return mapper.toDto(savedEntity);
     }

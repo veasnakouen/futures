@@ -28,10 +28,9 @@ public class SchedulingController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    @GetMapping("/current")
-    public ResponseEntity<List<ShiftScheduleDto>> getCurrentWeekSchedule() {
-        LocalDate startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        List<ShiftSchedule> schedules = shiftScheduleRepository.findByWeekStartDate(startOfWeek);
+    @GetMapping("/year/{year}")
+    public ResponseEntity<List<ShiftScheduleDto>> getYearSchedule(@PathVariable Integer year) {
+        List<ShiftSchedule> schedules = shiftScheduleRepository.findByScheduleYear(year);
         
         List<ShiftScheduleDto> dtos = schedules.stream().map(this::mapToDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
@@ -46,14 +45,19 @@ public class SchedulingController {
         
         ShiftSchedule schedule = new ShiftSchedule();
         schedule.setEmployee(empOpt.get());
-        schedule.setWeekStartDate(dto.getWeekStartDate());
-        schedule.setMondayShift(dto.getMondayShift());
-        schedule.setTuesdayShift(dto.getTuesdayShift());
-        schedule.setWednesdayShift(dto.getWednesdayShift());
-        schedule.setThursdayShift(dto.getThursdayShift());
-        schedule.setFridayShift(dto.getFridayShift());
-        schedule.setSaturdayShift(dto.getSaturdayShift());
-        schedule.setSundayShift(dto.getSundayShift());
+        schedule.setScheduleYear(dto.getScheduleYear());
+        schedule.setJanShift(dto.getJanShift());
+        schedule.setFebShift(dto.getFebShift());
+        schedule.setMarShift(dto.getMarShift());
+        schedule.setAprShift(dto.getAprShift());
+        schedule.setMayShift(dto.getMayShift());
+        schedule.setJunShift(dto.getJunShift());
+        schedule.setJulShift(dto.getJulShift());
+        schedule.setAugShift(dto.getAugShift());
+        schedule.setSepShift(dto.getSepShift());
+        schedule.setOctShift(dto.getOctShift());
+        schedule.setNovShift(dto.getNovShift());
+        schedule.setDecShift(dto.getDecShift());
         
         ShiftSchedule saved = shiftScheduleRepository.save(schedule);
         return ResponseEntity.ok(mapToDto(saved));
@@ -67,14 +71,19 @@ public class SchedulingController {
         }
         
         ShiftSchedule schedule = schedOpt.get();
-        schedule.setWeekStartDate(dto.getWeekStartDate());
-        schedule.setMondayShift(dto.getMondayShift());
-        schedule.setTuesdayShift(dto.getTuesdayShift());
-        schedule.setWednesdayShift(dto.getWednesdayShift());
-        schedule.setThursdayShift(dto.getThursdayShift());
-        schedule.setFridayShift(dto.getFridayShift());
-        schedule.setSaturdayShift(dto.getSaturdayShift());
-        schedule.setSundayShift(dto.getSundayShift());
+        schedule.setScheduleYear(dto.getScheduleYear());
+        schedule.setJanShift(dto.getJanShift());
+        schedule.setFebShift(dto.getFebShift());
+        schedule.setMarShift(dto.getMarShift());
+        schedule.setAprShift(dto.getAprShift());
+        schedule.setMayShift(dto.getMayShift());
+        schedule.setJunShift(dto.getJunShift());
+        schedule.setJulShift(dto.getJulShift());
+        schedule.setAugShift(dto.getAugShift());
+        schedule.setSepShift(dto.getSepShift());
+        schedule.setOctShift(dto.getOctShift());
+        schedule.setNovShift(dto.getNovShift());
+        schedule.setDecShift(dto.getDecShift());
         
         ShiftSchedule saved = shiftScheduleRepository.save(schedule);
         return ResponseEntity.ok(mapToDto(saved));
@@ -96,14 +105,19 @@ public class SchedulingController {
             dto.setEmployeeId(schedule.getEmployee().getIdNo());
             dto.setEmployeeName(schedule.getEmployee().getFirstNameEnglish() + " " + schedule.getEmployee().getLastNameEnglish());
         }
-        dto.setWeekStartDate(schedule.getWeekStartDate());
-        dto.setMondayShift(schedule.getMondayShift());
-        dto.setTuesdayShift(schedule.getTuesdayShift());
-        dto.setWednesdayShift(schedule.getWednesdayShift());
-        dto.setThursdayShift(schedule.getThursdayShift());
-        dto.setFridayShift(schedule.getFridayShift());
-        dto.setSaturdayShift(schedule.getSaturdayShift());
-        dto.setSundayShift(schedule.getSundayShift());
+        dto.setScheduleYear(schedule.getScheduleYear());
+        dto.setJanShift(schedule.getJanShift());
+        dto.setFebShift(schedule.getFebShift());
+        dto.setMarShift(schedule.getMarShift());
+        dto.setAprShift(schedule.getAprShift());
+        dto.setMayShift(schedule.getMayShift());
+        dto.setJunShift(schedule.getJunShift());
+        dto.setJulShift(schedule.getJulShift());
+        dto.setAugShift(schedule.getAugShift());
+        dto.setSepShift(schedule.getSepShift());
+        dto.setOctShift(schedule.getOctShift());
+        dto.setNovShift(schedule.getNovShift());
+        dto.setDecShift(schedule.getDecShift());
         return dto;
     }
 
@@ -117,14 +131,19 @@ public class SchedulingController {
         List<ShiftSchedule> createdSchedules = employees.stream().map(emp -> {
             ShiftSchedule schedule = new ShiftSchedule();
             schedule.setEmployee(emp);
-            schedule.setWeekStartDate(dto.getWeekStartDate());
-            schedule.setMondayShift(dto.getMondayShift());
-            schedule.setTuesdayShift(dto.getTuesdayShift());
-            schedule.setWednesdayShift(dto.getWednesdayShift());
-            schedule.setThursdayShift(dto.getThursdayShift());
-            schedule.setFridayShift(dto.getFridayShift());
-            schedule.setSaturdayShift(dto.getSaturdayShift());
-            schedule.setSundayShift(dto.getSundayShift());
+            schedule.setScheduleYear(dto.getScheduleYear());
+            schedule.setJanShift(dto.getJanShift());
+            schedule.setFebShift(dto.getFebShift());
+            schedule.setMarShift(dto.getMarShift());
+            schedule.setAprShift(dto.getAprShift());
+            schedule.setMayShift(dto.getMayShift());
+            schedule.setJunShift(dto.getJunShift());
+            schedule.setJulShift(dto.getJulShift());
+            schedule.setAugShift(dto.getAugShift());
+            schedule.setSepShift(dto.getSepShift());
+            schedule.setOctShift(dto.getOctShift());
+            schedule.setNovShift(dto.getNovShift());
+            schedule.setDecShift(dto.getDecShift());
             return schedule;
         }).collect(Collectors.toList());
         

@@ -23,6 +23,8 @@ public class LookupController {
     private PositionRepository positionRepository;
     @Autowired
     private DepartmentRepository departmentRepository;
+    @Autowired
+    private com.mtp.api.services.QRCodeService qrCodeService;
 
     @Autowired
     private TicketTypeRepository ticketTypeRepository;
@@ -98,6 +100,15 @@ public class LookupController {
     public Department createDepartment(@RequestBody Department department) {
         log.info("Creating dynamic department: {}", department.getName());
         return departmentRepository.save(department);
+    }
+
+    @GetMapping("/qr-token")
+    public java.util.Map<String, String> getQrToken(@RequestParam(required = false, defaultValue = "false") boolean permanent) {
+        // Generate a global QR token (departmentId = 0 means HQ/Global)
+        String token = qrCodeService.generateDepartmentQrToken(0, permanent);
+        java.util.Map<String, String> response = new java.util.HashMap<>();
+        response.put("token", token);
+        return response;
     }
 
     @CacheEvict(value = "lookups", allEntries = true)

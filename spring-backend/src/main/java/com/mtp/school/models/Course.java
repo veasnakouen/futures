@@ -21,6 +21,8 @@ public class Course {
 
     private String name;
     private String description;
+    
+    private String subject;
 
     @Column(name = "image_url")
     private String imageUrl;

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "Departments")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,4 +28,12 @@ public class Department {
     @Nullable
     @Size(max = 255)
     private String location;
+
+    @Nullable
+    @Column(name = "latitude")
+    private Double lat;
+
+    @Nullable
+    @Column(name = "longitude")
+    private Double lng;
 }

@@ -23,11 +23,10 @@ export default function TimetablePage() {
   const { useHolidays } = useHoliday();
   const { data: holidays = [] } = useHolidays();
 
-  const { useCurrentWeekSchedules, useCreateSchedule, useCreateDepartmentSchedule, useDeleteSchedule } = useScheduling();
-  const { data: schedules = [] } = useCurrentWeekSchedules();
-  const createSchedule = useCreateSchedule();
-  const createDepartmentSchedule = useCreateDepartmentSchedule();
-  const deleteSchedule = useDeleteSchedule();
+  const { useWeeklySchedules, useCreateWeeklySchedule, useDeleteSchedule } = useScheduling();
+  const { data: schedules = [] } = useWeeklySchedules();
+  const createWeeklySchedule = useCreateWeeklySchedule();
+  const deleteSchedule = useDeleteSchedule(new Date().getFullYear());
 
   const parseShift = (shiftStr?: string) => {
     if (!shiftStr) return { am: "Off", pm: "Off" };
@@ -293,17 +292,26 @@ export default function TimetablePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700/30">
-                  {holidays.map((h) => (
-                    <tr key={h.id} className="hover:bg-white/5 transition-colors">
-                      <td className="px-5 py-4 font-bold text-sm text-rose-400">{h.eventDate}</td>
-                      <td className="px-5 py-4 font-bold text-sm text-white">{h.name}</td>
-                      <td className="px-5 py-4 text-sm text-gray-400">{h.description}</td>
-                      <td className="px-5 py-4 text-right">
-                        <button className="text-gray-400 hover:text-white mr-3 transition-colors"><Edit2 size={16}/></button>
-                        <button className="text-gray-400 hover:text-rose-500 transition-colors"><Trash2 size={16}/></button>
-                      </td>
-                    </tr>
-                  ))}
+                  {holidays.map((h) => {
+                    const start = new Date(h.startDate);
+                    const end = new Date(h.endDate);
+                    const isMultiDay = start.getTime() !== end.getTime();
+                    const dateDisplay = isMultiDay 
+                      ? `${h.startDate} to ${h.endDate}`
+                      : h.startDate;
+
+                    return (
+                      <tr key={h.id} className="hover:bg-white/5 transition-colors">
+                        <td className="px-5 py-4 font-bold text-sm text-rose-400">{dateDisplay}</td>
+                        <td className="px-5 py-4 font-bold text-sm text-white">{h.name}</td>
+                        <td className="px-5 py-4 text-sm text-gray-400">{h.description}</td>
+                        <td className="px-5 py-4 text-right">
+                          <button className="text-gray-400 hover:text-white mr-3 transition-colors"><Edit2 size={16}/></button>
+                          <button className="text-gray-400 hover:text-rose-500 transition-colors"><Trash2 size={16}/></button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {holidays.length === 0 && (
                     <tr>
                       <td colSpan={4} className="px-5 py-10 text-center text-gray-500 text-sm">
@@ -333,11 +341,8 @@ export default function TimetablePage() {
         isOpen={isScheduleModalOpen} 
         onClose={() => setIsScheduleModalOpen(false)} 
         onSave={(data: any, assignmentType: "employee" | "department") => {
-          if (assignmentType === "employee") {
-            createSchedule.mutate(data);
-          } else {
-            createDepartmentSchedule.mutate(data);
-          }
+          // Both employee and department pass through the same unified endpoint now.
+          createWeeklySchedule.mutate(data);
           setIsScheduleModalOpen(false);
         }} 
       />

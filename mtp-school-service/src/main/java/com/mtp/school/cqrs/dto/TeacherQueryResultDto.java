@@ -16,4 +16,9 @@ public class TeacherQueryResultDto {
     private com.mtp.school.cqrs.dto.AddressDto address;
     private String branchId;
     private String imageUrl;
+    
+    private String facebookLink;
+    private String instagramLink;
+    private String twitterLink;
+    private String linkedinLink;
 }

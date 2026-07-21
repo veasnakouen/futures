@@ -86,13 +86,18 @@ export interface TeacherDto {
   id: string;
   firstName: string;
   lastName: string;
-  email: string;
+  email?: string;
   hireDate: string;
-  subject: string;
+  subject?: string;
   isActive?: boolean;
   baseSalary?: number;
   address?: AddressDto;
   branchId?: string;
+  facebookLink?: string;
+  instagramLink?: string;
+  twitterLink?: string;
+  linkedinLink?: string;
+  courseIds?: string[];
 }
 
 export interface BranchDto {
@@ -165,8 +170,10 @@ export interface MedicalRecordDto {
 // Service Methods
 export const schoolService = {
   // --- Students ---
-  getStudents: (page = 0, size = 10, outreachWorkerName?: string) => {
+  getStudents: (page = 0, size = 10, search?: string, sort?: string, dir?: string, outreachWorkerName?: string) => {
     let url = `/school/students?page=${page}&size=${size}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (sort) url += `&sort=${sort},${dir || "asc"}`;
     if (outreachWorkerName) {
       url += `&outreachWorkerName=${encodeURIComponent(outreachWorkerName)}`;
     }
@@ -189,8 +196,12 @@ export const schoolService = {
   deleteBranch: (id: string) => api.delete(`/school/branches/${id}`),
 
   // --- Teachers ---
-  getTeachers: (page = 0, size = 10) =>
-    api.get(`/school/teachers?page=${page}&size=${size}`),
+  getTeachers: (page = 0, size = 10, search?: string, sort?: string, dir?: string) => {
+    let url = `/school/teachers?page=${page}&size=${size}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (sort) url += `&sort=${sort},${dir || "asc"}`;
+    return api.get(url);
+  },
   getTeacherById: (id: string) => api.get(`/school/teachers/${id}`),
   createTeacher: (data: Omit<TeacherDto, "id">) =>
     api.post(`/school/teachers`, data),
@@ -199,8 +210,18 @@ export const schoolService = {
   deleteTeacher: (id: string) => api.delete(`/school/teachers/${id}`),
 
   // --- Courses ---
-  getCourses: (page = 0, size = 10) =>
-    api.get(`/school/courses?page=${page}&size=${size}`),
+  getCourses: (page = 0, size = 10, search?: string, sort?: string, dir?: string) => {
+    let url = `/school/courses?page=${page}&size=${size}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (sort) url += `&sort=${sort},${dir || "asc"}`;
+    return api.get(url);
+  },
+  getCoursesByTeacher: (teacherId: string, page = 0, size = 10, search?: string, sort?: string, dir?: string) => {
+    let url = `/school/courses?teacherId=${teacherId}&page=${page}&size=${size}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (sort) url += `&sort=${sort},${dir || "asc"}`;
+    return api.get(url);
+  },
   getCourseById: (id: string) => api.get(`/school/courses/${id}`),
   createCourse: (data: Omit<CourseDto, "id">) =>
     api.post(`/school/courses`, data),
@@ -209,8 +230,8 @@ export const schoolService = {
   deleteCourse: (id: string) => api.delete(`/school/courses/${id}`),
 
   // --- Enrollments ---
-  getEnrollments: (page = 0, size = 10) =>
-    api.get(`/school/enrollments?page=${page}&size=${size}`),
+  getEnrollments: (page = 0, size = 10, courseId?: string) =>
+    api.get(`/school/enrollments?page=${page}&size=${size}${courseId ? `&courseId=${courseId}` : ''}`),
   getEnrollmentById: (id: string) => api.get(`/school/enrollments/${id}`),
   createEnrollment: (data: Omit<EnrollmentDto, "id">) =>
     api.post(`/school/enrollments`, data),

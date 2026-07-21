@@ -156,21 +156,21 @@ public class AttendanceController {
 
     @GetMapping("/department/{id}/qr")
     public ResponseEntity<String> getDepartmentQrToken(@PathVariable Integer id) {
-        String token = qrCodeService.generateDepartmentQrToken(id);
+        String token = qrCodeService.generateDepartmentQrToken(id, false);
         return ResponseEntity.ok(token);
     }
 
     @PostMapping("/scan-qr")
-    public ResponseEntity<?> scanQrCode(@RequestParam String token, @RequestParam Integer employeeId) {
+    public ResponseEntity<?> scanQrCode(@RequestParam String token, @RequestParam Integer employeeId, 
+            @RequestParam(required = false) Double lat, @RequestParam(required = false) Double lng) {
         try {
             Integer departmentId = qrCodeService.validateAndGetDepartmentId(token);
             if (departmentId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired QR code.");
             }
             
-            // In a real application, we'd verify the employee actually belongs to this department, 
-            // but for this demo we'll assume they just clock in at the department location.
-            return ResponseEntity.ok(attendanceService.clockIn(employeeId, "Department " + departmentId + " QR Scan", "QR Clock-In"));
+            // Use dynamic Weekly Schedule logic for Check-In / Check-Out and Late calculation
+            return attendanceService.processQrScan(employeeId, departmentId, lat, lng);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

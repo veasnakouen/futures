@@ -7,11 +7,17 @@ import com.mtp.hotel.cqrs.handlers.queries.*;
 import com.mtp.hotel.cqrs.queries.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.lang.annotation.ElementType;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// @Target({ElementType.TYPE})
+// @Retention(RetentionPolicy.RUNTIME)
+// @Documented
 @RestController
 @RequestMapping("/api/hotel/rooms")
 @RequiredArgsConstructor
@@ -40,7 +46,8 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoomQueryResultDto> update(@PathVariable Integer id, @Valid @RequestBody UpdateRoomCommand command) {
+    public ResponseEntity<RoomQueryResultDto> update(@PathVariable Integer id,
+            @Valid @RequestBody UpdateRoomCommand command) {
         command.setId(id);
         return updateHandler.handle(command)
                 .map(ResponseEntity::ok)

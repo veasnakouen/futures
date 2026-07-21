@@ -25,7 +25,10 @@ public class SystemHoliday {
     private String name;
 
     @Column(nullable = false)
-    private LocalDate eventDate;
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     private String category;
     

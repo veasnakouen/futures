@@ -187,8 +187,8 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
         )}
 
         {/* Recruitment Header & Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-t-md shadow-sm mb-6">
-          <div className="p-6 border-b">
+        <div className="bg-white dark:bg-gray-800 rounded-t-xl shadow-sm mb-6">
+          <div className="p-6 pb-2">
             <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
               <div className="p-2.5 bg-blue-600 text-white rounded-md shadow-lg shadow-blue-500/30">
                 <Handshake size={24} />
@@ -200,7 +200,7 @@ const RecruitmentPage = ({ isDark, setIsDark }: any) => {
             </p>
           </div>
 
-          <div className="px-6 pb-0">
+          <div className="px-6 pb-4">
             <ModernTabs
               tabs={tabs}
               activeTab={activeTab}

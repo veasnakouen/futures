@@ -104,12 +104,12 @@ export default function ExtracurricularFormModal({ isOpen, onClose, activityToEd
       <form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody className="space-y-4 max-h-[70vh] overflow-y-auto">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
               {t("activityName")}
             </label>
             <input
               {...register("name")}
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
               placeholder="e.g. Chess Club"
             />
             {errors.name && (
@@ -117,12 +117,12 @@ export default function ExtracurricularFormModal({ isOpen, onClose, activityToEd
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
               {t("leadTeacher")}
             </label>
             <select
               {...register("leadTeacherId")}
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
             >
               <option value="">{t("selectLeadTeacher")}</option>
               {(teachersData?.content || (Array.isArray(teachersData) ? teachersData : [])).map((teacher: any) => (
@@ -133,59 +133,59 @@ export default function ExtracurricularFormModal({ isOpen, onClose, activityToEd
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
               {t("description")}
             </label>
             <textarea
               {...register("description")}
               rows={3}
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
               placeholder="Describe the activity..."
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("schedule")}
               </label>
               <input
                 {...register("schedule")}
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="e.g. Fridays 3-5 PM"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("location")}
               </label>
               <input
                 {...register("location")}
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="e.g. Room 101"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("capacity")}
               </label>
               <input
                 {...register("capacity", { valueAsNumber: true })}
                 type="number"
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="Maximum students"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("cost")}
               </label>
               <input
                 {...register("cost", { valueAsNumber: true })}
                 type="number"
                 step="0.01"
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="e.g. 50.00"
               />
             </div>

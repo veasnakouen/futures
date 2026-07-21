@@ -24,7 +24,8 @@ public class UpdateCourseCommandHandler {
             entity.setName(command.getName());
             entity.setDescription(command.getDescription());
             entity.setCredits(command.getCredits());
-            if (command.getTeacherId() != null) {
+            entity.setImageUrl(command.getImageUrl());
+            if (command.getTeacherId() != null && !command.getTeacherId().isEmpty()) {
                 teacherRepository.findById(command.getTeacherId()).ifPresent(entity::setTeacher);
             } else {
                 entity.setTeacher(null);

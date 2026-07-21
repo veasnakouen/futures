@@ -23,6 +23,7 @@ public class LeaveBalance {
     private int year; // The year this balance applies to, e.g., 2026
 
     private double totalAnnualLeave; // e.g. 18 (base) + 1 per 3 years
+    private double carriedOverAnnualLeave; // Carried over from previous year
     private double usedAnnualLeave;
 
     private double totalSickLeave; // e.g. 14

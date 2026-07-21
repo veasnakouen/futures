@@ -43,7 +43,7 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
   const queryClient = useQueryClient();
   const isEdit = !!studentToEdit;
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<string | "basic" | "contact" | "parents" | "extracurriculars" | "medical" | "custom" | "outreach">("basic");
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   // Fetch options for relations
   const { data: parentsData } = useQuery({
@@ -170,7 +170,7 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
           globalClientId: undefined,
         });
       }
-      setActiveTab("basic");
+      setCurrentStepIndex(0);
     }
   }, [isOpen, studentToEdit, reset]);
 
@@ -220,29 +220,69 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
     setValue("extracurricularIds", updated);
   };
 
+  const steps = [
+    { id: "basic", label: t("basicInfo") },
+    { id: "contact", label: t("contactPlacement") },
+    { id: "parents", label: t("parents") },
+    { id: "extracurriculars", label: t("activities") },
+    { id: "medical", label: t("medical") },
+    { id: "outreach", label: "Background" },
+    ...(customFields && customFields.length > 0 ? [{ id: "custom", label: t("customFields") }] : [])
+  ];
+
+  const activeTab = steps[currentStepIndex]?.id || "basic";
+  const isLastStep = currentStepIndex === steps.length - 1;
+
+  const handleNext = async () => {
+    const isValid = await form.trigger(); // Trigger validation for the current fields
+    if (isValid) {
+      if (!isLastStep) {
+        setCurrentStepIndex(prev => prev + 1);
+      } else {
+        handleSubmit(onSubmit)();
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStepIndex(prev => prev - 1);
+    }
+  };
+
   return (
-    <Modal show={isOpen} onClose={onClose} size="lg">
+    <Modal show={isOpen} onClose={onClose} size="xl">
       <CustomModalHeader
-        title={isEdit ? t("editStudent") : t("newStudent")}
+        title={isEdit ? t("editStudent") : t("newStudentWizard", "Student Onboarding")}
         onClose={onClose}
         icon={null}
       />
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col min-h-[65vh] sm:min-h-[600px] max-h-[80vh]">
+      <div className="flex flex-col min-h-[65vh] sm:min-h-[600px] max-h-[80vh]">
         <ModalBody className="p-0 flex flex-col flex-1 overflow-hidden">
-          <PillTabs
-            className="mx-4 mt-2 mb-2"
-            activeTab={activeTab}
-            onTabChange={(id) => setActiveTab(id as any)}
-            tabs={[
-              { id: "basic", label: t("basicInfo") },
-              { id: "contact", label: t("contactPlacement") },
-              { id: "parents", label: t("parents") },
-              { id: "extracurriculars", label: t("activities") },
-              { id: "medical", label: t("medical") },
-              { id: "outreach", label: "Background" },
-              ...(customFields && customFields.length > 0 ? [{ id: "custom", label: t("customFields") }] : [])
-            ]}
-          />
+          {/* Stepper Header */}
+          <div className="bg-gray-50 dark:bg-gray-900/50 p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center overflow-x-auto custom-scrollbar">
+             {steps.map((step, index) => {
+               const isActive = index === currentStepIndex;
+               const isCompleted = index < currentStepIndex;
+               return (
+                 <div key={step.id} className="flex items-center min-w-max">
+                   <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium border-2 transition-colors ${
+                     isActive ? "bg-blue-600 border-blue-600 text-white" :
+                     isCompleted ? "bg-blue-100 border-blue-600 text-blue-600 dark:bg-blue-900/50" :
+                     "bg-white border-gray-300 text-gray-500 dark:bg-gray-800 dark:border-gray-600"
+                   }`}>
+                     {isCompleted ? "✓" : index + 1}
+                   </div>
+                   <span className={`ml-2 text-sm font-medium ${isActive ? "text-gray-900 dark:text-white" : "text-gray-500"}`}>
+                     {step.label}
+                   </span>
+                   {index < steps.length - 1 && (
+                     <div className="w-8 h-px bg-gray-300 dark:bg-gray-700 mx-3"></div>
+                   )}
+                 </div>
+               )
+             })}
+          </div>
 
           <div className="p-4 space-y-4 overflow-y-auto custom-scrollbar flex-1 min-h-0">
             {activeTab === "basic" && (
@@ -303,12 +343,25 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
           </div>
         </ModalBody>
 
-        <CustomModalFooter
-          onClose={onClose}
-          submitText={isEdit ? t("saveChanges") : t("createStudent")}
-          submitDisabled={mutation.isPending}
-        />
-      </form>
+        <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 rounded-b-xl">
+          <button
+            type="button"
+            onClick={currentStepIndex === 0 ? onClose : handleBack}
+            className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
+          >
+            {currentStepIndex === 0 ? t("cancel") : t("back", "Back")}
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={mutation.isPending}
+            className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          >
+            {mutation.isPending ? t("saving") : isLastStep ? (isEdit ? t("saveChanges") : t("createStudent")) : t("next", "Next")}
+          </button>
+        </div>
+      </div>
     </Modal>
   );
 }

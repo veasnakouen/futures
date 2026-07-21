@@ -16,8 +16,10 @@ public class QRCodeService {
 
     // Valid for 5 minutes
     private static final long EXPIRATION_TIME = 5 * 60 * 1000;
+    // Valid for 10 years (effectively permanent)
+    private static final long PERMANENT_TIME = 10L * 365 * 24 * 60 * 60 * 1000;
 
-    public String generateDepartmentQrToken(Integer departmentId) {
+    public String generateDepartmentQrToken(Integer departmentId, boolean isPermanent) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("departmentId", departmentId);
         claims.put("type", "attendance_qr");
@@ -26,7 +28,7 @@ public class QRCodeService {
                 .setClaims(claims)
                 .setSubject(String.valueOf(departmentId))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + (isPermanent ? PERMANENT_TIME : EXPIRATION_TIME)))
                 .signWith(key)
                 .compact();
     }

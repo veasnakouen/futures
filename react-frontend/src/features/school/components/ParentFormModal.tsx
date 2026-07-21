@@ -125,12 +125,12 @@ export default function ParentFormModal({ isOpen, onClose, parentToEdit }: Props
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
               {t("name")}
             </label>
             <input
               {...register("name")}
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
               placeholder="Jane Doe"
             />
             {errors.name && (
@@ -139,12 +139,12 @@ export default function ParentFormModal({ isOpen, onClose, parentToEdit }: Props
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
               {t("contactNumber")}
             </label>
             <input
               {...register("contactNumber")}
-              className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
               placeholder="+1 234 567 8900"
             />
             {errors.contactNumber && (
@@ -154,13 +154,13 @@ export default function ParentFormModal({ isOpen, onClose, parentToEdit }: Props
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("email")}
               </label>
               <input
                 {...register("email")}
                 type="email"
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="jane@example.com"
               />
               {errors.email && (
@@ -168,12 +168,12 @@ export default function ParentFormModal({ isOpen, onClose, parentToEdit }: Props
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("gender")}
               </label>
               <select
                 {...register("gender")}
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="MALE">{t("male")}</option>
                 <option value="FEMALE">{t("female")}</option>

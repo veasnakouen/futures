@@ -5,7 +5,6 @@ import com.mtp.school.cqrs.mappers.TeacherMapper;
 import com.mtp.school.cqrs.queries.GetAllTeachersQuery;
 import com.mtp.school.repositories.TeacherRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +16,11 @@ public class GetAllTeachersQueryHandler {
     private final TeacherMapper mapper;
 
     public Page<TeacherQueryResultDto> handle(GetAllTeachersQuery query) {
-        return repository.findAll(PageRequest.of(query.getPage(), query.getSize()))
+        if (query.getSearch() != null && !query.getSearch().trim().isEmpty()) {
+            return repository.searchAllFields(query.getSearch(), query.getPageable())
+                    .map(mapper::toDto);
+        }
+        return repository.findAll(query.getPageable())
                 .map(mapper::toDto);
     }
 }

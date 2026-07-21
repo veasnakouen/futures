@@ -202,7 +202,7 @@ const Layout = ({ children, title }: LayoutProps) => {
         links: [
           { to: "/", icon: LayoutDashboard, label: t("dashboard") },
           { to: "/cases", icon: FolderKanban, label: t("cases") },
-          { to: "/logbook", icon: History, label: t("logbook") },
+          // { to: "/logbook", icon: History, label: t("logbook") },
           { to: "/inventory", icon: Package, label: t("inventory") },
         ],
       },

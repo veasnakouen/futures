@@ -20,13 +20,18 @@ public class ShiftSchedule {
     @JoinColumn(name = "EmployeeId")
     private Employee employee;
 
-    private LocalDate weekStartDate;
+    private Integer scheduleYear;
 
-    private String mondayShift;
-    private String tuesdayShift;
-    private String wednesdayShift;
-    private String thursdayShift;
-    private String fridayShift;
-    private String saturdayShift;
-    private String sundayShift;
+    private String janShift;
+    private String febShift;
+    private String marShift;
+    private String aprShift;
+    private String mayShift;
+    private String junShift;
+    private String julShift;
+    private String augShift;
+    private String sepShift;
+    private String octShift;
+    private String novShift;
+    private String decShift;
 }

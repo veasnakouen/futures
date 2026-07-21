@@ -506,7 +506,8 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
           if (!fullEmp.customFields) return [];
           if (typeof fullEmp.customFields === "string") {
             try {
-              return JSON.parse(fullEmp.customFields);
+              const parsed = JSON.parse(fullEmp.customFields);
+              return Array.isArray(parsed) ? parsed : [];
             } catch (e) {
               return [];
             }
@@ -533,7 +534,8 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
       if (fullEmp.customFields) {
         if (typeof fullEmp.customFields === "string") {
           try {
-            parsedCustomFields = JSON.parse(fullEmp.customFields);
+            const parsed = JSON.parse(fullEmp.customFields);
+            parsedCustomFields = Array.isArray(parsed) ? parsed : [];
           } catch (e) { }
         } else if (Array.isArray(fullEmp.customFields)) {
           parsedCustomFields = fullEmp.customFields;
@@ -997,7 +999,7 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
           </div>
         </header>
 
-        <nav className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 p-2 rounded-md overflow-x-auto scrollbar-hide no-scrollbar animate-slide-up shadow-sm">
+        <nav className="flex items-center bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-2xl overflow-x-auto scrollbar-hide no-scrollbar animate-slide-up shadow-sm gap-2 w-max max-w-full">
           {[
             { id: "directory", label: t("workforce"), icon: <Users size={18} /> },
             {
@@ -1064,15 +1066,32 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
               icon: <ShieldCheck size={18} />,
             },
             { id: "reports", label: t("reports"), icon: <FileText size={18} /> },
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveModule(item.id as any)}
-              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded text-xs font-black transition-all duration-300 transform hover:scale-105 active:scale-95 ${activeModule === item.id ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm ring-1 ring-blue-600 dark:ring-blue-500" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/30 ring-1 ring-gray-200 dark:ring-gray-700"}`}
-            >
-              {item.icon} {item.label}
-            </button>
-          ))}
+          ].map((item) => {
+            const isActive = activeModule === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveModule(item.id as any)}
+                className={`relative flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black transition-colors duration-300 ${
+                  isActive
+                    ? "text-blue-700 dark:text-blue-400 z-10"
+                    : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-0"
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="employeeNavBg"
+                    className="absolute inset-0 bg-white dark:bg-gray-700 rounded-xl shadow-sm border border-black/5 dark:border-white/5 -z-10"
+                    initial={false}
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  {item.icon} {item.label}
+                </span>
+              </button>
+            );
+          })}
         </nav>
 
         <main className="space-y-6">

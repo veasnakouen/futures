@@ -26,8 +26,9 @@ public class StudentController {
     @GetMapping
     public Page<StudentQueryResultDto> getAll(
             Pageable pageable,
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) String outreachWorkerName) {
-        return getAllHandler.handle(new GetAllStudentsQuery(pageable.getPageNumber(), pageable.getPageSize(), outreachWorkerName));
+        return getAllHandler.handle(new GetAllStudentsQuery(pageable, search, outreachWorkerName));
     }
 
     @GetMapping("/{id}")

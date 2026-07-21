@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import {Badge, Button, Progress, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput, Avatar, Tooltip, Modal, ModalHeader, ModalBody, ModalFooter, Label, Spinner, Pagination, Dropdown, DropdownItem, DropdownDivider, Textarea} from '@/lib/flowbite-compat';
+import { Badge, Button, Progress, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput, Avatar, Tooltip, Modal, ModalHeader, ModalBody, ModalFooter, Label, Spinner, Pagination, Dropdown, DropdownItem, DropdownDivider, Textarea } from '@/lib/flowbite-compat';
 import DatePicker from '@/components/common/DatePicker';
 import ModernPagination from '@/components/common/ModernPagination';
 import {
@@ -65,6 +65,7 @@ import JobWorkspace from "./JobWorkspace";
 import VacancyFormModal from '@/features/vacancies/components/VacancyFormModal';
 import GlobalATSBoard from "./GlobalATSBoard";
 import SearchInput from "@/components/common/SearchInput";
+import CandidateOnboardingWizard from "./CandidateOnboardingWizard";
 
 interface RecruitmentModuleProps {
   vacancies: any[];
@@ -130,21 +131,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
     },
   });
 
-  // 2. Candidate Form
-  const candidateFormMethods = useForm<ClientFormData>({
-    resolver: zodResolver(clientSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      gender: "Male",
-      contactPhone: "",
-      email: "",
-      province: "",
-      clientCode: "",
-      branch: "Phnom Penh",
-      status: "Searching",
-    },
-  });
+
 
   // 3. Placement Form
   const placementFormMethods = useForm<PlacementFormData>({
@@ -167,12 +154,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
     watch: watchVacancy,
     formState: { errors: vacancyErrors },
   } = vacancyFormMethods;
-  const {
-    register: regCandidate,
-    handleSubmit: submitCandidate,
-    reset: resetCandidate,
-    formState: { errors: candidateErrors },
-  } = candidateFormMethods;
+
   const {
     register: regPlacement,
     handleSubmit: submitPlacement,
@@ -205,9 +187,8 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
   // Candidate Modal State
   const [isCandidateModalOpen, setIsCandidateModalOpen] = useState(false);
   const [isEditCandidate, setIsEditCandidate] = useState(false);
-  const [editingCandidateId, setEditingCandidateId] = useState<number | null>(
-    null,
-  );
+  const [editingCandidateId, setEditingCandidateId] = useState<number | null>(null);
+  const [candidateFormData, setCandidateFormData] = useState<any>(null);
 
   // Placement Modal State
   const [isPlacementModalOpen, setIsPlacementModalOpen] = useState(false);
@@ -334,32 +315,42 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
   };
 
   const handleOpenAddCandidate = () => {
-    resetCandidate({
+    setCandidateFormData({
       firstName: "",
       lastName: "",
       gender: "Male",
       contactPhone: "",
       email: "",
-      province: "",
+      province: "Phnom Penh",
       clientCode: `TAL-${Date.now().toString().slice(-4)}`,
       branch: "Phnom Penh",
       status: "Searching",
+      headline: "",
+      desiredSalary: "",
+      availability: "",
+      preferredLocation: "",
+      primarySkills: "",
     });
     setIsEditCandidate(false);
     setIsCandidateModalOpen(true);
   };
 
   const handleOpenEditCandidate = (c: any) => {
-    resetCandidate({
+    setCandidateFormData({
       firstName: c.firstName || "",
       lastName: c.lastName || "",
       gender: c.gender || "Male",
       contactPhone: c.contactPhone || "",
       email: c.email || "",
-      province: c.province || "",
+      province: c.province || "Phnom Penh",
       clientCode: c.clientCode || "",
       branch: c.branch || "Phnom Penh",
       status: c.status || "Searching",
+      headline: c.headline || "",
+      desiredSalary: c.desiredSalary || "",
+      availability: c.availability || "",
+      preferredLocation: c.preferredLocation || "",
+      primarySkills: c.primarySkills || "",
     });
     setEditingCandidateId(c.id);
     setIsEditCandidate(true);
@@ -458,11 +449,11 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
           <div className="relative flex-grow xl:flex-initial xl:w-48">
             {/* <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10" /> */}
             <SearchInput
-                        placeholder="Search talent, jobs..."
-                        value={searchQuery}
-                        onChange={setSearchQuery}
-                        containerClassName="pl-10 rounded-md w-full"
-                      />
+              placeholder="Search talent, jobs..."
+              value={searchQuery}
+              onChange={setSearchQuery}
+              containerClassName="pl-10 rounded-md w-full"
+            />
           </div>
           <div className="flex gap-2 shrink-0">
             {activeTab !== "PLACEMENTS" && activeTab !== "DASHBOARD" ? (
@@ -502,10 +493,10 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
 
       <AnimatePresence mode="wait">
         {activeTab === "APPLICATIONS" && (
-        <GlobalATSBoard />
-      )}
+          <GlobalATSBoard />
+        )}
 
-      {activeTab === "DASHBOARD" && (
+        {activeTab === "DASHBOARD" && (
           <motion.div
             key="dashboard"
             initial={{ opacity: 0, y: 15 }}
@@ -709,13 +700,13 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                 <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-1.5 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                    className={`p-1.5 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                   >
                     <LayoutGrid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-1.5 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                    className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                   >
                     <List size={16} />
                   </button>
@@ -724,7 +715,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
             </div>
 
             {viewMode === "grid" ? (
-              <div className={`grid gap-8 ${ itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
+              <div className={`grid gap-8 ${itemsPerRow === "3" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : itemsPerRow === "5" ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-5" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
                 {paginatedVacancies.map((v) => (
                   <div
                     key={v.id}
@@ -915,7 +906,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                   onPageChange={setVacancyPage}
                   totalItems={filteredVacancies.length}
                   pageSize={vacanciesPerPage}
-                  onPageSizeChange={() => {}}
+                  onPageSizeChange={() => { }}
                 />
               </div>
             )}
@@ -952,13 +943,13 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                 <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-1.5 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                    className={`p-1.5 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                   >
                     <LayoutGrid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-1.5 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+                    className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
                   >
                     <List size={16} />
                   </button>
@@ -1050,7 +1041,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                 </div>
               </div>
             ) : (
-              <div className={`grid gap-4 p-4 ${ itemsPerRow ==="3"?"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 sm:grid-cols-3 lg:grid-cols-5":"grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
+              <div className={`grid gap-4 p-4 ${itemsPerRow === "3" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : itemsPerRow === "5" ? "grid-cols-1 sm:grid-cols-3 lg:grid-cols-5" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
                 {paginatedCandidates.map((c) => (
                   <div
                     key={c.id}
@@ -1133,7 +1124,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                               ? "Cancel request"
                               : "Add friend"
                           }
-                          className={`!rounded transition-all w-9 h-9 flex items-center justify-center !p-0 ${ sentRequests.includes(c.id) ?"border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100":"border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"}`}
+                          className={`!rounded transition-all w-9 h-9 flex items-center justify-center !p-0 ${sentRequests.includes(c.id) ? "border-emerald-500 bg-emerald-50 text-emerald-600 hover:bg-emerald-100" : "border-blue-600 bg-blue-600 hover:bg-blue-700 text-white"}`}
                         >
                           {sentRequests.includes(c.id) ? (
                             <UserPlus size={16} className="hidden" />
@@ -1190,7 +1181,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                   onPageChange={setCandidatePage}
                   totalItems={filteredCandidates.length}
                   pageSize={candidatesPerPage}
-                  onPageSizeChange={() => {}}
+                  onPageSizeChange={() => { }}
                 />
               </div>
             )}
@@ -1284,7 +1275,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                   onPageChange={setPlacementPage}
                   totalItems={filteredPlacements.length}
                   pageSize={placementsPerPage}
-                  onPageSizeChange={() => {}}
+                  onPageSizeChange={() => { }}
                 />
               </div>
             )}
@@ -1304,143 +1295,13 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
       />
 
       {/* Candidate Modal */}
-      <Modal
-        show={isCandidateModalOpen}
+      <CandidateOnboardingWizard
+        isOpen={isCandidateModalOpen}
         onClose={() => setIsCandidateModalOpen(false)}
-        size="md"
-      >
-        <ModalHeader>
-          {isEditCandidate ? "Modify Talent Record" : "Enroll New Talent"}
-        </ModalHeader>
-        <form
-          onSubmit={submitCandidate(onCandidateSubmit)}
-          className="contents"
-        >
-          <ModalBody>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                    First Name
-                  </Label>
-                  <TextInput {...regCandidate("firstName")} />
-                  {candidateErrors.firstName && (
-                    <p className="text-[10px] font-bold text-red-500 mt-1">
-                      {candidateErrors.firstName.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                    Last Name
-                  </Label>
-                  <TextInput {...regCandidate("lastName")} />
-                  {candidateErrors.lastName && (
-                    <p className="text-[10px] font-bold text-red-500 mt-1">
-                      {candidateErrors.lastName.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div>
-                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                  Identity Node ID
-                </Label>
-                <TextInput {...regCandidate("clientCode")} />
-                {candidateErrors.clientCode && (
-                  <p className="text-[10px] font-bold text-red-500 mt-1">
-                    {candidateErrors.clientCode.message}
-                  </p>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                    Gender
-                  </Label>
-                  <select
-                    className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4"
-                    {...regCandidate("gender")}
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                    Branch Node
-                  </Label>
-                  <select
-                    className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4"
-                    {...regCandidate("branch")}
-                  >
-                    <option value="Phnom Penh">Phnom Penh</option>
-                    <option value="Siem Reap">Siem Reap</option>
-                    <option value="Battambang">Battambang</option>
-                    <option value="Sihanoukville">Sihanoukville</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                  Province
-                </Label>
-                <TextInput {...regCandidate("province")} />
-                {candidateErrors.province && (
-                  <p className="text-[10px] font-bold text-red-500 mt-1">
-                    {candidateErrors.province.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                  Contact Node (Phone)
-                </Label>
-                <TextInput {...regCandidate("contactPhone")} />
-                {candidateErrors.contactPhone && (
-                  <p className="text-[10px] font-bold text-red-500 mt-1">
-                    {candidateErrors.contactPhone.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                  Email Node
-                </Label>
-                <TextInput type="email" {...regCandidate("email")} />
-                {candidateErrors.email && (
-                  <p className="text-[10px] font-bold text-red-500 mt-1">
-                    {candidateErrors.email.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </ModalBody>
-          <ModalFooter className="gap-3">
-            <Button
-              color="gray"
-              onClick={() => setIsCandidateModalOpen(false)}
-              className="font-black uppercase text-[10px] tracking-widest h-11 border-none bg-gray-100 dark:bg-gray-700"
-            >
-              Discard
-            </Button>
-            <Button
-              type="submit"
-              color="blue"
-              disabled={isProcessing}
-              className="flex-1 font-black uppercase text-[10px] tracking-widest h-12 border-none shadow-lg shadow-blue-500/20"
-            >
-              {isProcessing ? (
-                <Spinner size="sm" className="mr-2" />
-              ) : (
-                <Plus size={16} className="mr-2" />
-              )}
-              {isEditCandidate ? "Update Profile" : "Enroll Talent"}
-            </Button>
-          </ModalFooter>
-        </form>
-      </Modal>
+        isEditMode={isEditCandidate}
+        initialData={candidateFormData}
+        onSubmit={onCandidateSubmit}
+      />
 
       {/* Placement Modal */}
       <Modal
@@ -1478,7 +1339,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                       Hiring Company
                     </Label>
                     <select
-                      className={`w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4 ${placementErrors.companyName ?"ring-1 ring-red-500":""}`}
+                      className={`w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4 ${placementErrors.companyName ? "ring-1 ring-red-500" : ""}`}
                       {...regPlacement("companyName")}
                     >
                       <option value="">Select Employer</option>
@@ -1499,7 +1360,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                       Assigned Position
                     </Label>
                     <select
-                      className={`w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4 ${placementErrors.jobPositionId ?"ring-1 ring-red-500":""}`}
+                      className={`w-full bg-gray-50 dark:bg-gray-700 border-none rounded-md text-xs font-bold h-11 px-4 ${placementErrors.jobPositionId ? "ring-1 ring-red-500" : ""}`}
                       {...regPlacement("jobPositionId")}
                     >
                       <option value="">Select Position</option>

@@ -20,9 +20,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { DataTable, ColumnDef } from "../../../components/common/DataTable";
+
 export default function StudentList() {
   const [page, setPage] = useState(0);
-  const [size] = useState(10);
+  const [size, setSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("firstName");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<StudentDto | null>(null);
@@ -37,8 +43,8 @@ export default function StudentList() {
   const { data: usersData, isLoading: usersLoading } = useAllUsers();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["students", page, size, selectedOutreachWorker],
-    queryFn: () => schoolService.getStudents(page, size, selectedOutreachWorker).then((res) => res.data),
+    queryKey: ["students", page, size, search, sortField, sortDir, selectedOutreachWorker],
+    queryFn: () => schoolService.getStudents(page, size, search, sortField, sortDir, selectedOutreachWorker).then((res) => res.data),
   });
 
   const deleteMutation = useMutation({
@@ -75,6 +81,91 @@ export default function StudentList() {
     setIsViewOpen(true);
   };
 
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+    setPage(0);
+  };
+
+  const handleSearch = (val: string) => {
+    setSearch(val);
+    setPage(0);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setSize(newSize);
+    setPage(0);
+  };
+
+  const columns: ColumnDef<StudentDto>[] = [
+    {
+      header: t("name"),
+      accessorKey: "firstName",
+      sortable: true,
+      cell: (student) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md shrink-0">
+            {student.firstName?.charAt(0) || ""}{student.lastName?.charAt(0) || ""}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold whitespace-nowrap">{student.firstName} {student.lastName}</span>
+            {(student.isIdPoor || student.broughtByOutreachWorker) && (
+              <div className="flex gap-1.5 mt-1">
+                {student.isIdPoor && (
+                  <span className="px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-md text-[9px] font-bold uppercase tracking-wider">
+                    ID Poor
+                  </span>
+                )}
+                {student.broughtByOutreachWorker && (
+                  <span className="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 rounded-md text-[9px] font-bold uppercase tracking-wider" title={student.outreachWorkerName}>
+                    Outreach
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    },
+    {
+      header: t("email"),
+      accessorKey: "email",
+      sortable: true,
+      cell: (student) => <span className="font-medium">{student.email}</span>
+    },
+    {
+      header: t("dob"),
+      accessorKey: "dateOfBirth",
+      sortable: true,
+      cell: (student) => <span className="font-medium">{student.dateOfBirth}</span>
+    },
+    {
+      header: t("enrollmentDate"),
+      accessorKey: "enrollmentDate",
+      sortable: true,
+      cell: (student) => (
+        <span className="px-3 py-1 bg-green-500/20 text-green-700 dark:text-green-400 rounded-lg text-[10px] font-black uppercase tracking-widest">
+          {student.enrollmentDate}
+        </span>
+      )
+    },
+    {
+      header: t("actions"),
+      className: "text-right",
+      cell: (student) => (
+        <div className="flex justify-end gap-2">
+          <button onClick={() => handleView(student)} className="p-2 text-green-600 bg-green-50 dark:bg-green-500/10 hover:bg-green-100 dark:hover:bg-green-500/20 rounded-xl transition-all"><Eye size={18} /></button>
+          <button onClick={() => handleEdit(student)} className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"><Edit2 size={18} /></button>
+          <button onClick={() => handleDelete(student)} className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"><Trash2 size={18} /></button>
+        </div>
+      )
+    }
+  ];
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
       {/* Header Panel */}
@@ -103,8 +194,8 @@ export default function StudentList() {
               >
                 <SelectTrigger className="w-full h-[46px] pl-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded text-sm focus:ring-2 focus:ring-blue-500/50 dark:text-white transition-all shadow-inner">
                   <SelectValue placeholder="All Workers (My Clients)">
-                    {selectedOutreachWorker && selectedOutreachWorker !== "all" 
-                      ? selectedOutreachWorker 
+                    {selectedOutreachWorker && selectedOutreachWorker !== "all"
+                      ? selectedOutreachWorker
                       : "All Workers (My Clients)"}
                   </SelectValue>
                 </SelectTrigger>
@@ -124,14 +215,6 @@ export default function StudentList() {
               </Select>
             )}
           </div>
-          <div className="relative flex-1 sm:w-64 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-            <input
-              type="text"
-              placeholder={t("searchStudents")}
-              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded text-sm focus:ring-2 focus:ring-blue-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
-            />
-          </div>
           <button
             onClick={handleCreate}
             className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-6 py-3 rounded font-bold transition-all shadow-lg shadow-blue-500/30 whitespace-nowrap hover:scale-105 active:scale-95"
@@ -141,89 +224,24 @@ export default function StudentList() {
         </div>
       </div>
 
-      {/* Data Table */}
-      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
-            <thead className="text-xs text-gray-900 dark:text-gray-100 uppercase bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-md">
-              <tr>
-                <th className="px-8 py-5 font-black tracking-wider">{t("name")}</th>
-                <th className="px-6 py-5 font-black tracking-wider">{t("email")}</th>
-                <th className="px-6 py-5 font-black tracking-wider">{t("dob")}</th>
-                <th className="px-6 py-5 font-black tracking-wider">{t("enrollmentDate")}</th>
-                <th className="px-8 py-5 font-black tracking-wider text-right">{t("actions")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200/20 dark:divide-gray-700/30">
-              {isLoading ? (
-                <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500"><div className="flex justify-center"><Spinner size="xl" /></div></td></tr>
-              ) : data?.content?.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-16 text-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="w-16 h-16 bg-blue-500/10 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4">
-                        <Users className="w-8 h-8 text-blue-500 dark:text-blue-400" />
-                      </div>
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                        {t("noStudentsFound")}
-                      </h3>
-                      <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                        {t("addFirstStudent")}
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                data?.content?.map((student: StudentDto) => (
-                  <tr key={student.id} className="hover:bg-white/60 dark:hover:bg-gray-800/40 transition-colors group">
-                    <td className="px-8 py-5 text-gray-900 dark:text-white flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md shrink-0">
-                        {student.firstName.charAt(0)}{student.lastName.charAt(0)}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-bold whitespace-nowrap">{student.firstName} {student.lastName}</span>
-                        {(student.isIdPoor || student.broughtByOutreachWorker) && (
-                          <div className="flex gap-1.5 mt-1">
-                            {student.isIdPoor && (
-                              <span className="px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-md text-[9px] font-bold uppercase tracking-wider">
-                                ID Poor
-                              </span>
-                            )}
-                            {student.broughtByOutreachWorker && (
-                              <span className="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 rounded-md text-[9px] font-bold uppercase tracking-wider" title={student.outreachWorkerName}>
-                                Outreach
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 font-medium">{student.email}</td>
-                    <td className="px-6 py-5 font-medium">{student.dateOfBirth}</td>
-                    <td className="px-6 py-5">
-                      <span className="px-3 py-1 bg-green-500/20 text-green-700 dark:text-green-400 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                        {student.enrollmentDate}
-                      </span>
-                    </td>
-                    <td className="px-8 py-5 text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => handleView(student)} className="p-2 text-green-600 bg-green-50 dark:bg-green-500/10 hover:bg-green-100 dark:hover:bg-green-500/20 rounded-xl transition-all"><Eye size={18} /></button>
-                        <button onClick={() => handleEdit(student)} className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"><Edit2 size={18} /></button>
-                        <button onClick={() => handleDelete(student)} className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"><Trash2 size={18} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        {data?.totalPages > 1 && (
-          <div className="p-6 border-t border-gray-200/20 dark:border-gray-700/30 bg-gray-50/30 dark:bg-gray-800/20">
-            <ModernPagination currentPage={page} totalPages={data.totalPages} onPageChange={setPage} />
-          </div>
-        )}
-      </div>
+      <DataTable
+        data={data?.content || []}
+        columns={columns}
+        isLoading={isLoading}
+        searchQuery={search}
+        onSearchChange={handleSearch}
+        searchPlaceholder={t("searchStudents")}
+        currentPage={page}
+        totalPages={data?.totalPages || 0}
+        onPageChange={setPage}
+        pageSize={size}
+        onPageSizeChange={handlePageSizeChange}
+        sortField={sortField}
+        sortDir={sortDir}
+        onSort={handleSort}
+        totalItems={data?.totalElements || 0}
+        emptyMessage={t("noStudentsFound")}
+      />
 
       <StudentFormModal
         isOpen={isFormOpen}
@@ -232,11 +250,12 @@ export default function StudentList() {
 
       />
 
-      <Modal show={isViewOpen} onClose={() => setIsViewOpen(false)} size="3xl" dismissible>
+      <Modal show={isViewOpen} onClose={() => setIsViewOpen(false)} size="5xl" dismissible>
         <Modal.Body className="p-0 rounded-xl overflow-hidden bg-transparent">
           {viewStudent && (
             <HumanPortfolio
               entityType="student"
+              onClose={() => setIsViewOpen(false)}
               data={{
                 firstName: viewStudent.firstName,
                 lastName: viewStudent.lastName,
@@ -294,11 +313,6 @@ export default function StudentList() {
                   }
                 ]
               }}
-              actions={
-                <Button color="gray" size="sm" onClick={() => setIsViewOpen(false)}>
-                  {t("close")}
-                </Button>
-              }
             />
           )}
         </Modal.Body>

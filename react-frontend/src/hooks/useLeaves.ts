@@ -28,6 +28,27 @@ export interface LeaveBalance {
   usedSpecialLeave: number;
 }
 
+export interface AnnualLeavePlanDto {
+  id?: number;
+  employeeId: string;
+  employeeName?: string;
+  planYear: number;
+  janDays: number;
+  febDays: number;
+  marDays: number;
+  aprDays: number;
+  mayDays: number;
+  junDays: number;
+  julDays: number;
+  augDays: number;
+  sepDays: number;
+  octDays: number;
+  novDays: number;
+  decDays: number;
+  updatedAt?: string;
+}
+
+
 export const useMyLeaves = (employeeId: number | null) => {
   return useQuery({
     queryKey: ["myLeaves", employeeId],
@@ -47,6 +68,17 @@ export const useLeaveBalance = (employeeId: number | null, year: number) => {
       return data as LeaveBalance;
     },
     enabled: !!employeeId && !!year,
+  });
+};
+
+export const useAnnualLeavePlan = (employeeIdNo: string | null, year: number) => {
+  return useQuery({
+    queryKey: ["annualLeavePlan", employeeIdNo, year],
+    queryFn: async () => {
+      const { data } = await api.get(`/hr/leave-plans/${employeeIdNo}/${year}`);
+      return data as AnnualLeavePlanDto;
+    },
+    enabled: !!employeeIdNo && !!year,
   });
 };
 
@@ -93,6 +125,19 @@ export const useSubmitLeave = () => {
       if (variables?.employee?.id) {
         queryClient.invalidateQueries({ queryKey: ["myLeaves", variables.employee.id] });
       }
+    },
+  });
+};
+
+export const useSaveAnnualLeavePlan = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: AnnualLeavePlanDto) => {
+      const { data } = await api.post("/hr/leave-plans", payload);
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["annualLeavePlan", data.employeeId, data.planYear] });
     },
   });
 };

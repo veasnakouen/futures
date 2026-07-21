@@ -17,7 +17,20 @@ public class GetAllCoursesQueryHandler {
     private final CourseMapper mapper;
 
     public Page<CourseQueryResultDto> handle(GetAllCoursesQuery query) {
-        return repository.findAll(PageRequest.of(query.getPage(), query.getSize()))
-                .map(mapper::toDto);
+        Page<com.mtp.school.models.Course> courses;
+        boolean hasSearch = query.getSearch() != null && !query.getSearch().trim().isEmpty();
+        boolean hasTeacher = query.getTeacherId() != null && !query.getTeacherId().isEmpty();
+
+        if (hasSearch && hasTeacher) {
+            courses = repository.searchAllFieldsByTeacherId(query.getSearch(), query.getTeacherId(), query.getPageable());
+        } else if (hasSearch) {
+            courses = repository.searchAllFields(query.getSearch(), query.getPageable());
+        } else if (hasTeacher) {
+            courses = repository.findByTeacherId(query.getTeacherId(), query.getPageable());
+        } else {
+            courses = repository.findAll(query.getPageable());
+        }
+        
+        return courses.map(mapper::toDto);
     }
 }

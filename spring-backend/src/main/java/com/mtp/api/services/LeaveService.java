@@ -8,6 +8,7 @@ import com.mtp.api.repositories.LeaveBalanceRepository;
 import com.mtp.api.repositories.LeaveRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+@Transactional
 public class LeaveService {
 
     @Autowired
@@ -22,6 +24,9 @@ public class LeaveService {
 
     @Autowired
     private LeaveBalanceRepository leaveBalanceRepository;
+
+    @Autowired
+    private com.mtp.api.repositories.AnnualLeavePlanRepository annualLeavePlanRepository;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -39,6 +44,14 @@ public class LeaveService {
             balance.setUsedAnnualLeave(0);
             balance.setUsedSickLeave(0);
             balance.setUsedSpecialLeave(0);
+            
+            // Carry-over logic: Fetch previous year's balance
+            leaveBalanceRepository.findByEmployeeIdAndYear(employeeId, year - 1).ifPresent(prev -> {
+                double unused = (prev.getTotalAnnualLeave() + prev.getCarriedOverAnnualLeave()) - prev.getUsedAnnualLeave();
+                if (unused > 0) {
+                    balance.setCarriedOverAnnualLeave(unused);
+                }
+            });
         }
 
         // Logic: 18 days base + 1 AL per 3 years
@@ -63,18 +76,76 @@ public class LeaveService {
         req.setManagerApprovalStatus("PENDING");
         req.setChairmanApprovalStatus("PENDING");
         
-        // Dynamically lookup the manager's ID based on the employee's manager name string
         if (emp.getManager() != null && !emp.getManager().trim().isEmpty()) {
             employeeRepository.findByFullNameIgnoreCase(emp.getManager().trim())
+                .stream().findFirst()
                 .ifPresent(managerEmp -> req.setManagerId(managerEmp.getId()));
         }
         
-        // Chairman lookup: For this prototype, we'll try to find an employee with the title 'Chairman'
-        // If not found, it stays null, and SUPER_ADMINs can still approve it globally.
         employeeRepository.findAll().stream()
             .filter(e -> e.getTitle() != null && e.getTitle().equalsIgnoreCase("Chairman"))
             .findFirst()
             .ifPresent(chairmanEmp -> req.setChairmanId(chairmanEmp.getId()));
+            
+        if (req.getStartDate() != null) {
+            int year = req.getStartDate().getYear();
+            LeaveBalance balance = calculateAndGetBalance(employeeId, year);
+            double durationDays = calculateDurationDays(req);
+            
+            if ("Annual".equalsIgnoreCase(req.getLeaveType())) {
+                double remaining = (balance.getTotalAnnualLeave() + balance.getCarriedOverAnnualLeave()) - balance.getUsedAnnualLeave();
+                if (durationDays > remaining) {
+                    String warning = " [URGENT: Exceeds AL balance by " + (durationDays - remaining) + " days]";
+                    req.setReason(req.getReason() != null ? req.getReason() + warning : warning);
+                } else {
+                    // Check Monthly AL Plan
+                    int month = req.getStartDate().getMonthValue();
+                    annualLeavePlanRepository.findByEmployeeIdAndPlanYear(employeeId, year).ifPresent(plan -> {
+                        double plannedDays = 0;
+                        switch (month) {
+                            case 1: plannedDays = plan.getJanDays(); break;
+                            case 2: plannedDays = plan.getFebDays(); break;
+                            case 3: plannedDays = plan.getMarDays(); break;
+                            case 4: plannedDays = plan.getAprDays(); break;
+                            case 5: plannedDays = plan.getMayDays(); break;
+                            case 6: plannedDays = plan.getJunDays(); break;
+                            case 7: plannedDays = plan.getJulDays(); break;
+                            case 8: plannedDays = plan.getAugDays(); break;
+                            case 9: plannedDays = plan.getSepDays(); break;
+                            case 10: plannedDays = plan.getOctDays(); break;
+                            case 11: plannedDays = plan.getNovDays(); break;
+                            case 12: plannedDays = plan.getDecDays(); break;
+                        }
+
+                        // Calculate how many AL days have been requested/approved this month already
+                        java.time.LocalDateTime monthStart = java.time.LocalDate.of(year, month, 1).atStartOfDay();
+                        java.time.LocalDateTime monthEnd = monthStart.plusMonths(1).minusNanos(1);
+                        
+                        List<LeaveRequest> monthlyLeaves = leaveRequestRepository.findAll().stream()
+                            .filter(l -> l.getEmployee().getId().equals(employeeId) && 
+                                       "Annual".equalsIgnoreCase(l.getLeaveType()) &&
+                                       !"REJECTED".equals(l.getStatus()) &&
+                                       l.getStartDate() != null && 
+                                       !l.getStartDate().isBefore(monthStart) && 
+                                       !l.getStartDate().isAfter(monthEnd))
+                            .toList();
+                        
+                        double takenThisMonth = monthlyLeaves.stream().mapToDouble(this::calculateDurationDays).sum();
+                        
+                        if ((takenThisMonth + durationDays) > plannedDays) {
+                            String monthlyWarning = " [URGENT: Exceeds Monthly AL Plan (" + plannedDays + " days) by " + ((takenThisMonth + durationDays) - plannedDays) + " days]";
+                            req.setReason(req.getReason() != null ? req.getReason() + monthlyWarning : monthlyWarning);
+                        }
+                    });
+                }
+            } else if ("Sick".equalsIgnoreCase(req.getLeaveType())) {
+                double remaining = balance.getTotalSickLeave() - balance.getUsedSickLeave();
+                if (durationDays > remaining) {
+                    String warning = " [URGENT: Exceeds Sick Leave balance by " + (durationDays - remaining) + " days]";
+                    req.setReason(req.getReason() != null ? req.getReason() + warning : warning);
+                }
+            }
+        }
         
         return leaveRequestRepository.save(req);
     }
@@ -115,13 +186,9 @@ public class LeaveService {
         return leaveRequestRepository.save(req);
     }
 
-    private void deductBalance(LeaveRequest req) {
-        int year = req.getStartDate().getYear();
-        LeaveBalance balance = calculateAndGetBalance(req.getEmployee().getId(), year);
-
+    public double calculateDurationDays(LeaveRequest req) {
         double durationDays = "HALF_MORNING".equals(req.getDuration()) || "HALF_AFTERNOON".equals(req.getDuration()) ? 0.5 : 1.0;
         
-        // Rough estimate of days if FULL_DAY spans multiple days, excluding weekends
         if ("FULL_DAY".equals(req.getDuration()) && req.getEndDate() != null && req.getStartDate() != null) {
             java.time.LocalDate start = req.getStartDate().toLocalDate();
             java.time.LocalDate end = req.getEndDate().toLocalDate();
@@ -135,6 +202,14 @@ public class LeaveService {
             }
             durationDays = days;
         }
+        return durationDays;
+    }
+
+    private void deductBalance(LeaveRequest req) {
+        int year = req.getStartDate().getYear();
+        LeaveBalance balance = calculateAndGetBalance(req.getEmployee().getId(), year);
+
+        double durationDays = calculateDurationDays(req);
 
         if ("Annual".equalsIgnoreCase(req.getLeaveType())) {
             balance.setUsedAnnualLeave(balance.getUsedAnnualLeave() + durationDays);

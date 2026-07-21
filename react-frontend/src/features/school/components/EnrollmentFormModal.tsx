@@ -9,7 +9,7 @@ import { schoolService, EnrollmentDto, StudentDto, CourseDto } from "../../../se
 import { toast } from "react-hot-toast";
 import CustomModalHeader from "../../../components/common/CustomModalHeader";
 import CustomModalFooter from "../../../components/common/CustomModalFooter";
-import {Modal, ModalBody} from "@/lib/flowbite-compat";
+import { Modal, ModalBody } from "@/lib/flowbite-compat";
 import DatePicker from "../../../components/common/DatePicker";
 import { format } from "date-fns";
 
@@ -109,12 +109,12 @@ export default function EnrollmentFormModal({ isOpen, onClose, enrollmentToEdit 
           <div className="p-4 space-y-4 overflow-y-auto custom-scrollbar animate-fade-in">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t("student")}
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
+                  {t("student")}<span className="text-red-500">{t("*")}</span>
                 </label>
                 <select
                   {...register("studentId")}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 >
                   <option value="">{t("selectStudent")}</option>
                   {studentsData?.content?.map((student: StudentDto) => (
@@ -128,17 +128,18 @@ export default function EnrollmentFormModal({ isOpen, onClose, enrollmentToEdit 
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t("course")}
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
+                  {t("course")}<span className="text-red-500">{t("*")}</span>
                 </label>
                 <select
                   {...register("courseId")}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
                 >
                   <option value="">{t("selectCourse")}</option>
                   {coursesData?.content?.map((course: CourseDto) => (
                     <option key={course.id} value={course.id}>
-                      {course.name} ({course.description})
+                      {course.name}
+                      {/* ({course.description}) */}
                     </option>
                   ))}
                 </select>
@@ -149,7 +150,7 @@ export default function EnrollmentFormModal({ isOpen, onClose, enrollmentToEdit 
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("enrollmentDate")}
               </label>
               <DatePicker
@@ -163,12 +164,12 @@ export default function EnrollmentFormModal({ isOpen, onClose, enrollmentToEdit 
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
                 {t("gradeOptional")}
               </label>
               <select
                 {...register("grade")}
-                className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="">{t("selectGradeOptional")}</option>
                 <option value="A">A - Excellent</option>

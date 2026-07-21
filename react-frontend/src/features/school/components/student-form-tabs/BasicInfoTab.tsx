@@ -43,7 +43,7 @@ export default function BasicInfoTab({
             onValueChange={(value) => handleClientSelect({ target: { value } } as any)}
             disabled={clientsLoading}
           >
-            <SelectTrigger className="w-full h-[42px] rounded-lg bg-white dark:bg-gray-800 border-blue-200 dark:border-blue-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:border-blue-300 dark:hover:border-blue-600">
+            <SelectTrigger className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all">
               <SelectValue placeholder="-- Select a Client to auto-fill details --">
                 {watch("globalClientId") && watch("globalClientId") !== null
                   ? (() => {
@@ -80,33 +80,33 @@ export default function BasicInfoTab({
       </div>
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("firstName")}
           </label>
           <input
             {...register("firstName")}
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
             placeholder="John"
           />
           {errors.firstName && <span className="text-red-500 text-xs mt-1">{errors.firstName.message}</span>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("middleName")}
           </label>
           <input
             {...register("middleName")}
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
             placeholder="Robert"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("lastName")}
           </label>
           <input
             {...register("lastName")}
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
             placeholder="Doe"
           />
           {errors.lastName && <span className="text-red-500 text-xs mt-1">{errors.lastName.message}</span>}
@@ -115,24 +115,24 @@ export default function BasicInfoTab({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("emailAddress")}
           </label>
           <input
             {...register("email")}
             type="email"
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
             placeholder="john.doe@example.com"
           />
           {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("studentCode")}
           </label>
           <input
             {...register("studentCode")}
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
             placeholder="STU-12345"
           />
         </div>
@@ -140,12 +140,12 @@ export default function BasicInfoTab({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("gender")}
           </label>
           <select
             {...register("gender")}
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
           >
             <option value="">{t("selectGender")}</option>
             <option value="MALE">{t("male")}</option>
@@ -154,12 +154,12 @@ export default function BasicInfoTab({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("nationality")}
           </label>
           <input
             {...register("nationality")}
-            className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4 focus:ring-2 focus:ring-blue-500 transition-all"
             placeholder="Cambodian"
           />
         </div>
@@ -167,7 +167,7 @@ export default function BasicInfoTab({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("dateOfBirth")}
           </label>
           <DatePicker
@@ -178,7 +178,7 @@ export default function BasicInfoTab({
           {errors.dateOfBirth && <span className="text-red-500 text-xs mt-1">{errors.dateOfBirth.message}</span>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
             {t("enrollmentDate")}
           </label>
           <DatePicker
