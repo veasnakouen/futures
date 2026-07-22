@@ -9,12 +9,12 @@ version = '0.0.1-SNAPSHOT'
 
 ext {
 	set('springCloudVersion', "2023.0.4")
-	set('lombok.version', "1.18.46")
+	set('lombok.version', "1.18.34")
 }
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21

@@ -27,7 +27,7 @@ const CustomModalFooter: React.FC<CustomModalFooterProps> = ({
   const defaultSubmitText = isEditMode ? "Update Record" : "Save Record";
   return (
     <div
-      className={`flex justify-end items-center w-full px-6 py-4 bg-slate-50/90 dark:bg-[#090c10]/90 backdrop-blur-xl rounded-br-2xl ${hideBorder ? "" : "border-t border-slate-200/60 dark:border-white/[0.05] shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]"}`}
+      className={`flex justify-end items-center w-full px-6 py-3.5 bg-slate-50/90 dark:bg-[#090c10]/90 backdrop-blur-xl rounded-b-2xl ${hideBorder ? "" : "border-t border-slate-200/60 dark:border-white/[0.05] shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]"}`}
     >
       <div className="flex items-center gap-3">
       <button

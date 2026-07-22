@@ -63,7 +63,14 @@ api.interceptors.response.use(
         window.location.href = "/login";
       }
     }
-    // Handle other errors
+    // Handle 503 Service Unavailable gracefully (e.g. backend microservice restarting or offline)
+    if (error.response?.status === 503) {
+      if (typeof window !== "undefined" && (window as any)._last503Toast !== Date.now()) {
+        (window as any)._last503Toast = Date.now();
+        console.warn("[API Interceptor] 503 Service Unavailable: Gateway or downstream microservice is offline or initializing.");
+      }
+    }
+
     return Promise.reject(error);
   },
 );

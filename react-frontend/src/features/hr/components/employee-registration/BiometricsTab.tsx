@@ -1,5 +1,5 @@
 import React from "react";
-import {Label, Select, Button, Progress} from '@/lib/flowbite-compat';
+import { Label, Select, Button, Progress } from '@/lib/flowbite-compat';
 import { ShieldCheck } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { type UseFormReturn } from "react-hook-form";
@@ -27,12 +27,12 @@ const BiometricsTab: React.FC<BiometricsTabProps> = ({
     <div className="space-y-10 animate-fade-in py-6">
       <div className="max-w-md mx-auto text-center space-y-8">
         <div
-          className={`w-32 h-32 mx-auto rounded-md flex items-center justify-center transition-all duration-700 ${isEnrolling ?"bg-blue-100 dark:bg-blue-900/30 text-blue-600 scale-110": formData.biometricStatus ==="Enrolled"?"bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600":"bg-gray-100 dark:bg-gray-700 text-gray-400"}`}
+          className={`w-32 h-32 mx-auto rounded-md flex items-center justify-center transition-all duration-700 ${isEnrolling ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 scale-110" : formData.biometricStatus === "Enrolled" ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600" : "bg-gray-100 dark:bg-gray-700 text-gray-400"}`}
         >
           <div className="relative">
             <ShieldCheck
               size={64}
-              className={isEnrolling ? "animate-pulse":""}
+              className={isEnrolling ? "animate-pulse" : ""}
             />
             {isEnrolling && (
               <div className="absolute inset-0 flex items-center justify-center">

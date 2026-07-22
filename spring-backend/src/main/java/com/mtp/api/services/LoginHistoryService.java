@@ -140,7 +140,35 @@ public class LoginHistoryService {
     }
 
     public List<LoginHistory> getAllAccessLogs() {
-        return loginHistoryRepository.findAll();
+        return loginHistoryRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "loggedDate"));
+    }
+
+    public java.util.Map<String, Object> getAnalyticsData() {
+        List<LoginHistory> logs = loginHistoryRepository.findAll();
+        java.util.Map<String, Object> analytics = new java.util.HashMap<>();
+
+        java.util.Map<String, Long> osMap = new java.util.HashMap<>();
+        java.util.Map<String, Long> browserMap = new java.util.HashMap<>();
+        java.util.Map<String, Long> deviceMap = new java.util.HashMap<>();
+        java.util.Map<String, Long> locationMap = new java.util.HashMap<>();
+        java.util.Map<String, Long> statusMap = new java.util.HashMap<>();
+
+        for (LoginHistory l : logs) {
+            if (l.getOs() != null) osMap.put(l.getOs(), osMap.getOrDefault(l.getOs(), 0L) + 1);
+            if (l.getBrowser() != null) browserMap.put(l.getBrowser(), browserMap.getOrDefault(l.getBrowser(), 0L) + 1);
+            if (l.getDeviceType() != null) deviceMap.put(l.getDeviceType(), deviceMap.getOrDefault(l.getDeviceType(), 0L) + 1);
+            if (l.getLocation() != null) locationMap.put(l.getLocation(), locationMap.getOrDefault(l.getLocation(), 0L) + 1);
+            if (l.getStatus() != null) statusMap.put(l.getStatus(), statusMap.getOrDefault(l.getStatus(), 0L) + 1);
+        }
+
+        analytics.put("totalLogs", logs.size());
+        analytics.put("osDistribution", osMap);
+        analytics.put("browserDistribution", browserMap);
+        analytics.put("deviceDistribution", deviceMap);
+        analytics.put("locationDistribution", locationMap);
+        analytics.put("statusDistribution", statusMap);
+
+        return analytics;
     }
 
     public void clearLogs(String type) {
@@ -155,8 +183,14 @@ public class LoginHistoryService {
             case "30days":
                 loginHistoryRepository.deleteByLoggedDateBefore(LocalDateTime.now().minusDays(30));
                 break;
+            case "90days":
+                loginHistoryRepository.deleteByLoggedDateBefore(LocalDateTime.now().minusDays(90));
+                break;
             case "success":
                 loginHistoryRepository.deleteByStatus("Success");
+                break;
+            case "suspicious":
+                loginHistoryRepository.deleteByStatus("Suspicious");
                 break;
             default:
                 break;

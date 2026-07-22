@@ -139,7 +139,7 @@ const EngagementModule: React.FC = () => {
             </div>
 
             <div className="flex-1 h-32 mb-8">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                 <LineChart data={metrics.chartData}>
                   <Line
                     type="monotone"

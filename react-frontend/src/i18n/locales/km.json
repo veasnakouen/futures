@@ -441,5 +441,6 @@
   "system": "ប្រព័ន្ធ",
   "userAccessControl": "ការគ្រប់គ្រងការចូលប្រើ",
   "rolePermissions": "សិទ្ធិតួនាទី",
-  "switchDatabase": "ប្តូរមូលដ្ឋានទិន្នន័យ"
+  "switchDatabase": "ប្តូរមូលដ្ឋានទិន្នន័យ",
+  "failedToLoadUserData": "បរាជ័យក្នុងការទាញយកទិន្នន័យអ្នកប្រើប្រាស់"
 }

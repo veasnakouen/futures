@@ -74,10 +74,10 @@ export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onCl
       size="lg"
       className="[&_.fixed.inset-0]:bg-black/60 [&_.fixed.inset-0]:backdrop-blur-sm"
     >
-      <div className="flex flex-col bg-white dark:bg-[#0f172a] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/10 dark:ring-white/10 animate-scale-in">
+      <div className="flex flex-col max-h-[85vh] bg-white dark:bg-[#0f172a] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/10 dark:ring-white/10 animate-scale-in">
         
         {/* ── Header ── */}
-        <div className="relative flex items-center justify-between px-6 py-5 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-[#0f172a] border-b border-gray-100 dark:border-gray-800">
+        <div className="relative shrink-0 flex items-center justify-between px-6 py-5 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-[#0f172a] border-b border-gray-100 dark:border-gray-800">
           <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#7a2323] to-[#c53030]" />
           <div>
             <h2 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2 pl-3 tracking-tight">
@@ -97,7 +97,7 @@ export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onCl
         </div>
 
         {/* ── Body ── */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 flex-1 overflow-y-auto max-h-[60vh] custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2 space-y-2 group">
               <label className="flex items-center gap-1.5 text-[10px] font-black text-gray-500 uppercase tracking-widest group-focus-within:text-[#c53030] transition-colors">
@@ -119,7 +119,12 @@ export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onCl
               <Datepicker
                 className="w-full [&_input]:bg-gray-50 [&_input]:dark:bg-gray-900/50 [&_input]:border-gray-200 [&_input]:dark:border-gray-700 [&_input]:rounded-xl [&_input]:py-3 [&_input]:font-bold [&_input]:shadow-sm"
                 value={formData.startDate}
-                onChange={(e: any) => setFormData({ ...formData, startDate: e.target ? e.target.value : e })}
+                onChange={(date: Date | null) =>
+                  setFormData({
+                    ...formData,
+                    startDate: date ? date.toISOString().split("T")[0] : "",
+                  })
+                }
               />
             </div>
 
@@ -130,7 +135,12 @@ export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onCl
               <Datepicker
                 className="w-full [&_input]:bg-gray-50 [&_input]:dark:bg-gray-900/50 [&_input]:border-gray-200 [&_input]:dark:border-gray-700 [&_input]:rounded-xl [&_input]:py-3 [&_input]:font-bold [&_input]:shadow-sm"
                 value={formData.endDate}
-                onChange={(e: any) => setFormData({ ...formData, endDate: e.target ? e.target.value : e })}
+                onChange={(date: Date | null) =>
+                  setFormData({
+                    ...formData,
+                    endDate: date ? date.toISOString().split("T")[0] : "",
+                  })
+                }
               />
             </div>
 
@@ -166,7 +176,7 @@ export const HolidayFormModal: React.FC<HolidayFormModalProps> = ({ isOpen, onCl
         </div>
 
         {/* ── Footer ── */}
-        <div className="p-5 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/80 flex justify-end gap-3 backdrop-blur-md">
+        <div className="p-5 shrink-0 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/80 flex justify-end gap-3 backdrop-blur-md sticky bottom-0 z-20">
           <button
             onClick={onClose}
             className="px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 rounded-xl transition-colors"

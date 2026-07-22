@@ -46,6 +46,15 @@ public class LeavePlanController {
         }
     }
 
+    @GetMapping("/year/{year}")
+    public ResponseEntity<List<AnnualLeavePlanDto>> getAllPlansForYear(@PathVariable int year) {
+        List<AnnualLeavePlan> plans = leavePlanRepository.findByPlanYear(year);
+        List<AnnualLeavePlanDto> dtos = plans.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
     @PostMapping
     public ResponseEntity<?> savePlan(@RequestBody AnnualLeavePlanDto dto) {
         Optional<Employee> empOpt = employeeRepository.findByIdNo(dto.getEmployeeId());
@@ -64,19 +73,54 @@ public class LeavePlanController {
             plan.setPlanYear(dto.getPlanYear());
         }
 
-        plan.setJanDays(dto.getJanDays());
-        plan.setFebDays(dto.getFebDays());
-        plan.setMarDays(dto.getMarDays());
-        plan.setAprDays(dto.getAprDays());
-        plan.setMayDays(dto.getMayDays());
-        plan.setJunDays(dto.getJunDays());
-        plan.setJulDays(dto.getJulDays());
-        plan.setAugDays(dto.getAugDays());
-        plan.setSepDays(dto.getSepDays());
-        plan.setOctDays(dto.getOctDays());
-        plan.setNovDays(dto.getNovDays());
-        plan.setDecDays(dto.getDecDays());
-        plan.setUpdatedAt(LocalDateTime.now());
+        if (dto.getDateRanges() != null && !dto.getDateRanges().isEmpty()) {
+            double[] monthTotals = new double[12];
+            plan.getDateRanges().clear();
+            for (AnnualLeavePlanDto.LeaveDateRangeDto drDto : dto.getDateRanges()) {
+                com.mtp.api.models.LeaveDateRange dr = new com.mtp.api.models.LeaveDateRange();
+                dr.setAnnualLeavePlan(plan);
+                dr.setStartDate(drDto.getStartDate());
+                dr.setEndDate(drDto.getEndDate());
+                dr.setCalculatedDays(drDto.getCalculatedDays());
+                plan.getDateRanges().add(dr);
+                
+                // Calculate days per month for this range
+                java.time.LocalDate current = drDto.getStartDate();
+                while (!current.isAfter(drDto.getEndDate())) {
+                    if (current.getDayOfWeek() != java.time.DayOfWeek.SATURDAY && current.getDayOfWeek() != java.time.DayOfWeek.SUNDAY) {
+                        monthTotals[current.getMonthValue() - 1] += 1.0;
+                    }
+                    current = current.plusDays(1);
+                }
+            }
+            plan.setJanDays(monthTotals[0]);
+            plan.setFebDays(monthTotals[1]);
+            plan.setMarDays(monthTotals[2]);
+            plan.setAprDays(monthTotals[3]);
+            plan.setMayDays(monthTotals[4]);
+            plan.setJunDays(monthTotals[5]);
+            plan.setJulDays(monthTotals[6]);
+            plan.setAugDays(monthTotals[7]);
+            plan.setSepDays(monthTotals[8]);
+            plan.setOctDays(monthTotals[9]);
+            plan.setNovDays(monthTotals[10]);
+            plan.setDecDays(monthTotals[11]);
+        } else {
+            plan.setJanDays(dto.getJanDays());
+            plan.setFebDays(dto.getFebDays());
+            plan.setMarDays(dto.getMarDays());
+            plan.setAprDays(dto.getAprDays());
+            plan.setMayDays(dto.getMayDays());
+            plan.setJunDays(dto.getJunDays());
+            plan.setJulDays(dto.getJulDays());
+            plan.setAugDays(dto.getAugDays());
+            plan.setSepDays(dto.getSepDays());
+            plan.setOctDays(dto.getOctDays());
+            plan.setNovDays(dto.getNovDays());
+            plan.setDecDays(dto.getDecDays());
+            if (plan.getDateRanges() != null) plan.getDateRanges().clear();
+        }
+
 
         AnnualLeavePlan saved = leavePlanRepository.save(plan);
         return ResponseEntity.ok(mapToDto(saved));
@@ -103,6 +147,21 @@ public class LeavePlanController {
         dto.setNovDays(plan.getNovDays());
         dto.setDecDays(plan.getDecDays());
         dto.setUpdatedAt(plan.getUpdatedAt());
+        
+        if (plan.getDateRanges() != null) {
+            List<AnnualLeavePlanDto.LeaveDateRangeDto> rangesDto = plan.getDateRanges().stream().map(r -> {
+                AnnualLeavePlanDto.LeaveDateRangeDto rDto = new AnnualLeavePlanDto.LeaveDateRangeDto();
+                rDto.setId(r.getId());
+                rDto.setStartDate(r.getStartDate());
+                rDto.setEndDate(r.getEndDate());
+                rDto.setCalculatedDays(r.getCalculatedDays());
+                return rDto;
+            }).collect(Collectors.toList());
+            dto.setDateRanges(rangesDto);
+        } else {
+            dto.setDateRanges(new java.util.ArrayList<>());
+        }
+        
         return dto;
     }
 }

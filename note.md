@@ -22,4 +22,12 @@ Here is what you need to do:
    ```
    .\start_all.bat
    ```
+
+3.login
+
+   ```
+   email: fb.chhutlayveasna@gmail.com
+   password: Fbchhutlayveasna123!
+   ```
    
+  

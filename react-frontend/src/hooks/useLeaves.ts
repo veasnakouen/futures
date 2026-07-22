@@ -45,6 +45,12 @@ export interface AnnualLeavePlanDto {
   octDays: number;
   novDays: number;
   decDays: number;
+  dateRanges?: {
+    id?: number;
+    startDate: string;
+    endDate: string;
+    calculatedDays: number;
+  }[];
   updatedAt?: string;
 }
 
@@ -57,6 +63,8 @@ export const useMyLeaves = (employeeId: number | null) => {
       return data as LeaveRequest[];
     },
     enabled: !!employeeId,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
@@ -68,6 +76,9 @@ export const useLeaveBalance = (employeeId: number | null, year: number) => {
       return data as LeaveBalance;
     },
     enabled: !!employeeId && !!year,
+    retry: 0,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
 
@@ -79,6 +90,20 @@ export const useAnnualLeavePlan = (employeeIdNo: string | null, year: number) =>
       return data as AnnualLeavePlanDto;
     },
     enabled: !!employeeIdNo && !!year,
+    retry: 0,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+};
+
+export const useAllAnnualLeavePlans = (year: number) => {
+  return useQuery({
+    queryKey: ["allAnnualLeavePlans", year],
+    queryFn: async () => {
+      const { data } = await api.get(`/hr/leave-plans/year/${year}`);
+      return data as AnnualLeavePlanDto[];
+    },
+    enabled: !!year,
   });
 };
 

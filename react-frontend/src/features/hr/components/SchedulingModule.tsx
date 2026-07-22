@@ -51,29 +51,19 @@ const SchedulingModule: React.FC = () => {
     return "gray";
   };
 
-  const calcAlDays = (alString?: string | null) => {
-    if (!alString) return 0;
-    const parts = alString.split(",").map(s => s.trim());
-    let total = 0;
-    parts.forEach(p => {
-      if (p.includes("(AM)") || p.includes("(PM)")) total += 0.5;
-      else if (p) total += 1;
-    });
-    return total;
-  };
-
   const calcTotalYearAl = (shift: ShiftScheduleDto) => {
-    let total = 0;
-    monthKeys.forEach(key => {
-      const value = shift[key];
-      if (value) {
-        const parts = value.split(" | AL: ");
-        if (parts.length > 1) {
-          total += calcAlDays(parts[1]);
-        }
-      }
-    });
-    return total;
+    return (shift.janAlDays || 0) +
+           (shift.febAlDays || 0) +
+           (shift.marAlDays || 0) +
+           (shift.aprAlDays || 0) +
+           (shift.mayAlDays || 0) +
+           (shift.junAlDays || 0) +
+           (shift.julAlDays || 0) +
+           (shift.augAlDays || 0) +
+           (shift.sepAlDays || 0) +
+           (shift.octAlDays || 0) +
+           (shift.novAlDays || 0) +
+           (shift.decAlDays || 0);
   };
 
   // Calculate coverage for a specific shift type across all months
@@ -175,12 +165,11 @@ const SchedulingModule: React.FC = () => {
                     <TableCell className="font-black dark:text-white text-xs py-4 whitespace-nowrap">
                       {shift.employeeName || shift.employeeId}
                     </TableCell>
-                    {monthKeys.map(key => {
-                      const value = shift[key] || "Off";
-                      const parts = value.split(" | AL: ");
-                      const pattern = parts[0];
-                      const alInfo = parts.length > 1 ? parts[1] : null;
-                      const alDays = calcAlDays(alInfo);
+                    {monthKeys.map((key, mIdx) => {
+                      const pattern = shift[key] || "Off";
+                      // We map monthKeys index to AL keys
+                      const alKeys = ["janAlDays", "febAlDays", "marAlDays", "aprAlDays", "mayAlDays", "junAlDays", "julAlDays", "augAlDays", "sepAlDays", "octAlDays", "novAlDays", "decAlDays"] as const;
+                      const alDays = shift[alKeys[mIdx]] || 0;
 
                       return (
                         <TableCell key={key} className="py-4 px-2 text-center align-top min-w-[100px]">
@@ -194,7 +183,7 @@ const SchedulingModule: React.FC = () => {
                               {pattern}
                             </Badge>
                           )}
-                          {alInfo && alDays > 0 && (
+                          {alDays > 0 && (
                             <div className="mt-2 text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800 break-words max-w-[120px] mx-auto">
                               AL: {alDays} Day{alDays !== 1 ? 's' : ''}
                             </div>

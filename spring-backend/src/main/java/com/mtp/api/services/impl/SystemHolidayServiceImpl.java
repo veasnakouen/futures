@@ -2,6 +2,7 @@ package com.mtp.api.services.impl;
 
 import com.mtp.api.dto.SystemHolidayDto;
 import com.mtp.api.models.SystemHoliday;
+import com.mtp.api.exceptions.ResourceNotFoundException;
 import com.mtp.api.repositories.SystemHolidayRepository;
 import com.mtp.api.services.SystemHolidayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class SystemHolidayServiceImpl implements SystemHolidayService {
     @Override
     public SystemHolidayDto getHolidayById(Integer id) {
         SystemHoliday holiday = holidayRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Holiday not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Holiday not found"));
         return mapToDto(holiday);
     }
 
@@ -41,7 +42,7 @@ public class SystemHolidayServiceImpl implements SystemHolidayService {
     @Override
     public SystemHolidayDto updateHoliday(Integer id, SystemHolidayDto dto) {
         SystemHoliday holiday = holidayRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Holiday not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Holiday not found"));
         mapToEntity(dto, holiday);
         holiday = holidayRepository.save(holiday);
         return mapToDto(holiday);

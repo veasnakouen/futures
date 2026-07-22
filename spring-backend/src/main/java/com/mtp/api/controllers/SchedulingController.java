@@ -6,6 +6,8 @@ import com.mtp.api.models.Employee;
 import com.mtp.api.models.ShiftSchedule;
 import com.mtp.api.repositories.EmployeeRepository;
 import com.mtp.api.repositories.ShiftScheduleRepository;
+import com.mtp.api.repositories.AnnualLeavePlanRepository;
+import com.mtp.api.models.AnnualLeavePlan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,9 @@ public class SchedulingController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private AnnualLeavePlanRepository annualLeavePlanRepository;
 
     @GetMapping("/year/{year}")
     public ResponseEntity<List<ShiftScheduleDto>> getYearSchedule(@PathVariable Integer year) {
@@ -118,6 +123,40 @@ public class SchedulingController {
         dto.setOctShift(schedule.getOctShift());
         dto.setNovShift(schedule.getNovShift());
         dto.setDecShift(schedule.getDecShift());
+
+        if (schedule.getEmployee() != null) {
+            Optional<AnnualLeavePlan> alPlanOpt = annualLeavePlanRepository.findByEmployeeIdAndPlanYear(
+                schedule.getEmployee().getId(), schedule.getScheduleYear());
+            if (alPlanOpt.isPresent()) {
+                AnnualLeavePlan alPlan = alPlanOpt.get();
+                dto.setJanAlDays(alPlan.getJanDays());
+                dto.setFebAlDays(alPlan.getFebDays());
+                dto.setMarAlDays(alPlan.getMarDays());
+                dto.setAprAlDays(alPlan.getAprDays());
+                dto.setMayAlDays(alPlan.getMayDays());
+                dto.setJunAlDays(alPlan.getJunDays());
+                dto.setJulAlDays(alPlan.getJulDays());
+                dto.setAugAlDays(alPlan.getAugDays());
+                dto.setSepAlDays(alPlan.getSepDays());
+                dto.setOctAlDays(alPlan.getOctDays());
+                dto.setNovAlDays(alPlan.getNovDays());
+                dto.setDecAlDays(alPlan.getDecDays());
+            } else {
+                dto.setJanAlDays(0.0);
+                dto.setFebAlDays(0.0);
+                dto.setMarAlDays(0.0);
+                dto.setAprAlDays(0.0);
+                dto.setMayAlDays(0.0);
+                dto.setJunAlDays(0.0);
+                dto.setJulAlDays(0.0);
+                dto.setAugAlDays(0.0);
+                dto.setSepAlDays(0.0);
+                dto.setOctAlDays(0.0);
+                dto.setNovAlDays(0.0);
+                dto.setDecAlDays(0.0);
+            }
+        }
+
         return dto;
     }
 

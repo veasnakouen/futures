@@ -1,7 +1,6 @@
 import React from "react";
-import { Button, Badge, Progress } from '@/lib/flowbite-compat';
+import { Button, Badge } from '@/lib/flowbite-compat';
 import {
-  Award,
   Activity,
   TrendingUp,
   Users,
@@ -22,8 +21,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  AreaChart,
-  Area,
 } from "recharts";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";

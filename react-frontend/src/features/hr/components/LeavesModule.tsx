@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Button, Badge, Avatar, TextInput, Dropdown, DropdownItem, DropdownDivider} from '@/lib/flowbite-compat';
+import { Button, Badge, Avatar, TextInput, Dropdown, DropdownItem, DropdownDivider } from '@/lib/flowbite-compat';
 import {
   CheckCircle,
   XCircle,
@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { AppCard } from '@/components/ui/AppCard';
 import { DataTable, DataTableColumn } from "../../../components/ui/DataTable";
 import SearchInput from "@/components/common/SearchInput";
+import { GlobalLeaveCalendar } from "./GlobalLeaveCalendar";
 
 interface LeavesModuleProps {
   globalLeaves: any[];
@@ -31,14 +32,14 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
     "ALL" | "PENDING" | "APPROVED" | "REJECTED"
   >("PENDING");
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
-    const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).getItem("leavesViewMode");
-    return saved === "list" || saved === "grid" ? saved : "grid";
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "calendar">(() => {
+    const saved = (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).getItem("leavesViewMode");
+    return saved === "list" || saved === "grid" || saved === "calendar" ? saved : "grid";
   });
   const [itemsPerRow, setItemsPerRow] = useState("4");
 
   React.useEffect(() => {
-    (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }).setItem("leavesViewMode", viewMode);
+    (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("leavesViewMode", viewMode);
   }, [viewMode]);
 
   const safeLeaves = Array.isArray(globalLeaves) ? globalLeaves : [];
@@ -219,7 +220,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
             <button
               key={t}
               onClick={() => setFilter(t)}
-              className={`shrink-0 px-4 py-1.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${filter === t ?"bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100":"text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
+              className={`shrink-0 px-4 py-1.5 rounded-md text-[10px] font-black uppercase transition-all duration-300 flex items-center justify-center gap-2 ${filter === t ? "bg-white dark:bg-gray-800 shadow-md text-blue-600 dark:text-blue-400 scale-100" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"}`}
             >
               {t}
             </button>
@@ -242,24 +243,30 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
           <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-md shrink-0">
             <button
               onClick={() => setViewMode("grid")}
-              className={`py-1.5 px-2 rounded-md transition-all ${viewMode ==="grid"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+              className={`py-1.5 px-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
             >
               <LayoutGrid size={16} />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`py-1.5 px-2 rounded-md transition-all ${viewMode ==="list"?"bg-white dark:bg-gray-600 shadow-sm text-blue-600":"text-gray-400 hover:text-gray-600"}`}
+              className={`py-1.5 px-2 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
             >
               <List size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode("calendar")}
+              className={`py-1.5 px-2 rounded-md transition-all ${viewMode === "calendar" ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}
+            >
+              <Calendar size={16} />
             </button>
           </div>
           <div className="relative w-full md:w-80">
             <SearchInput
-                        placeholder="Search requests by staff name..."
-                        value={searchQuery}
-                        onChange={setSearchQuery}
-                        containerClassName="rounded-md pr-8"
-                      />
+              placeholder="Search requests by staff name..."
+              value={searchQuery}
+              onChange={setSearchQuery}
+              containerClassName="rounded-md pr-8"
+            />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
@@ -273,7 +280,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
         </div>
       </div>
 
-      {filteredLeaves.length === 0 ? (
+      {filteredLeaves.length === 0 && viewMode !== "calendar" ? (
         <div className="py-32 text-center rounded-md bg-white/30 dark:bg-gray-800/20 backdrop-blur-sm mt-8">
           <Calendar size={64} className="mx-auto text-gray-300 mb-6" />
           <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">
@@ -283,8 +290,10 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
             Everything is synchronized and up to date
           </p>
         </div>
+      ) : viewMode === "calendar" ? (
+        <GlobalLeaveCalendar globalLeaves={safeLeaves} />
       ) : viewMode === "grid" ? (
-        <div className={`grid gap-6 mt-8 ${ itemsPerRow ==="3"?"grid-cols-1 md:grid-cols-2 lg:grid-cols-3": itemsPerRow ==="5"?"grid-cols-1 md:grid-cols-3 lg:grid-cols-5":"grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
+        <div className={`grid gap-6 mt-8 ${itemsPerRow === "3" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : itemsPerRow === "5" ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-5" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}>
           {filteredLeaves.map((l) => (
             <AppCard
               key={l.id}
@@ -314,7 +323,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
               }
               actions={
                 l.status === "PENDING_MANAGER" ||
-                l.status === "PENDING_CHAIRMAN" ? (
+                  l.status === "PENDING_CHAIRMAN" ? (
                   <>
                     <DropdownItem
                       onClick={() =>

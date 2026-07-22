@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Select, Label, Button } from "@/lib/flowbite-compat";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { ShiftScheduleDto } from "../../../services/scheduleService";
 import { useAllEmployees } from "../../../hooks/useHR";
 import { useScheduling } from "../../../hooks/useScheduling";
+import { useAnnualLeavePlan } from "../../../hooks/useLeaves";
 import { Input } from "@/components/ui/input";
-import { MonthlyALCalendarModal } from "./MonthlyALCalendarModal";
 interface ShiftScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,7 +17,9 @@ const shiftOptions = ["Mon-Sat(Morning)", "Mon-Fri(Full)", "Morning", "Afternoon
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const monthKeys = ["janShift", "febShift", "marShift", "aprShift", "mayShift", "junShift", "julShift", "augShift", "sepShift", "octShift", "novShift", "decShift"] as const;
 
-const MonthPlanInput: React.FC<{ value: string; onChange: (val: string) => void; year: number; monthIndex: number }> = ({ value, onChange, year, monthIndex }) => {
+import { MonthlyALCalendarModal } from "./MonthlyALCalendarModal";
+
+const MonthPlanInput: React.FC<{ value: string; onChange: (val: string) => void; year: number; monthIndex: number; }> = ({ value, onChange, year, monthIndex }) => {
   const [pattern, setPattern] = useState("");
   const [alInfo, setAlInfo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,7 +64,7 @@ const MonthPlanInput: React.FC<{ value: string; onChange: (val: string) => void;
   const totalDays = calcAlDays(alInfo);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1 relative">
       <Select value={pattern} onChange={handlePatternChange} className="text-xs">
         <option value="">None</option>
         {shiftOptions.map((opt) => (
@@ -114,22 +116,22 @@ export const ShiftScheduleModal: React.FC<ShiftScheduleModalProps> = ({
   const createMutation = useCreateSchedule();
   const updateMutation = useUpdateSchedule();
 
-  const [selectedYear, setSelectedYear] = useState(year);
+  const selectedYear = useWatch({ control, name: "scheduleYear" }) || year;
+  const selectedEmployeeId = useWatch({ control, name: "employeeId" });
+  
+  const { data: alPlan } = useAnnualLeavePlan(selectedEmployeeId, selectedYear);
 
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
         reset(initialData);
-        setSelectedYear(initialData.scheduleYear);
       } else {
         reset({ scheduleYear: year });
-        setSelectedYear(year);
       }
     }
   }, [isOpen, initialData, year, reset]);
 
   const onSubmit = async (data: ShiftScheduleDto) => {
-    data.scheduleYear = selectedYear;
     if (initialData?.id) {
       await updateMutation.mutateAsync({ id: initialData.id, data });
     } else {
@@ -168,12 +170,19 @@ export const ShiftScheduleModal: React.FC<ShiftScheduleModalProps> = ({
               <div className="mb-2 block">
                 <Label htmlFor="scheduleYear" value="Year" />
               </div>
-              <Input
-                type="number"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                min={2000}
-                max={2100}
+              <Controller
+                name="scheduleYear"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    value={field.value}
+                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    min={2000}
+                    max={2100}
+                  />
+                )}
               />
             </div>
           </div>

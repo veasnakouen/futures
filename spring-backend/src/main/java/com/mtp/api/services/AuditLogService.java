@@ -24,6 +24,10 @@ public class AuditLogService {
      * @param target Description of the target (e.g. "John Doe #EMP-001")
      * @param type Severity or classification (e.g. "info", "warning", "critical", "success")
      */
+    public void logActivity(String action, String target) {
+        logActivity(action, target, "info");
+    }
+
     public void logActivity(String action, String target, String type) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();

@@ -61,7 +61,7 @@ const ManualAttendanceModal: React.FC<ManualAttendanceModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 md:left-[260px] z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4">
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-slide-up flex flex-col">
         <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 px-6 flex justify-between items-center">
           <div className="flex items-center gap-3">

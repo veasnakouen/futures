@@ -211,7 +211,7 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       header: "Actions",
       accessorKey: "actions",
       cell: (item) => (
-        <div className="flex gap-1 justify-end">
+        <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <Tooltip content="View Details">
             <button onClick={() => handleView(item)} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors">
               <Eye size={16} />

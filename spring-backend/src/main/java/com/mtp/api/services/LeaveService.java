@@ -38,7 +38,8 @@ public class LeaveService {
         LeaveBalance balance = leaveBalanceRepository.findByEmployeeIdAndYear(employeeId, year)
                 .orElse(new LeaveBalance());
 
-        if (balance.getId() == null) {
+        boolean isNew = balance.getId() == null;
+        if (isNew) {
             balance.setEmployee(emp);
             balance.setYear(year);
             balance.setUsedAnnualLeave(0);
@@ -62,11 +63,15 @@ public class LeaveService {
                 baseAL += (yearsWorked / 3);
             }
         }
-        balance.setTotalAnnualLeave(baseAL);
-        balance.setTotalSickLeave(14.0);
-        balance.setTotalSpecialLeave(7.0);
 
-        return leaveBalanceRepository.save(balance);
+        if (isNew || balance.getTotalAnnualLeave() != baseAL || balance.getTotalSickLeave() != 14.0 || balance.getTotalSpecialLeave() != 7.0) {
+            balance.setTotalAnnualLeave(baseAL);
+            balance.setTotalSickLeave(14.0);
+            balance.setTotalSpecialLeave(7.0);
+            return leaveBalanceRepository.save(balance);
+        }
+
+        return balance;
     }
 
     public LeaveRequest submitRequest(LeaveRequest req, Integer employeeId) {
