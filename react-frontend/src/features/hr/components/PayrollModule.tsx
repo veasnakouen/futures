@@ -22,7 +22,8 @@ import ModernPagination from "@/components/common/ModernPagination";
 
 import {
   X, DollarSign, CreditCard, Calendar, TrendingUp, CheckCircle, Zap,
-  Search, List, LayoutGrid, Download, Edit2, Wallet, Printer, MoreVertical
+  Search, List, LayoutGrid, Download, Edit2, Wallet, Printer, MoreVertical,
+  ArrowUpDown, ArrowUp, ArrowDown, Columns, Eye, Filter
 } from "lucide-react";
 
 const salarySchema = z.object({
@@ -63,6 +64,21 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [itemsPerRow, setItemsPerRow] = useState("4");
 
+  const [sortField, setSortField] = useState<string>("date");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([
+    "id", "date", "staff", "gross", "tax", "net", "status", "action"
+  ]);
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDirection("desc");
+    }
+  };
+
   const safePayroll = Array.isArray(globalPayroll) ? globalPayroll : [];
   const safeEmployees = Array.isArray(employees) ? employees : [];
 
@@ -79,13 +95,53 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
     return matchesSearch && matchesDept && e.status === "Active";
   });
 
-  const sortedPayroll = [...safePayroll].sort(
-    (a, b) => new Date(b.processedDate).getTime() - new Date(a.processedDate).getTime()
-  );
+  const filteredPayroll = safePayroll.filter((p) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    const refId = `pay-${(p.id || 0).toString().padStart(5, "0")}`;
+    return (
+      refId.includes(query) ||
+      (p.status && p.status.toLowerCase().includes(query)) ||
+      (p.processedDate && p.processedDate.toLowerCase().includes(query))
+    );
+  });
+
+  const sortedPayroll = [...filteredPayroll].sort((a, b) => {
+    let aVal: any = 0;
+    let bVal: any = 0;
+    if (sortField === "id") {
+      aVal = a.id || 0;
+      bVal = b.id || 0;
+    } else if (sortField === "date") {
+      aVal = new Date(a.processedDate || 0).getTime();
+      bVal = new Date(b.processedDate || 0).getTime();
+    } else if (sortField === "staff") {
+      aVal = a.totalEmployeesProcessed || 0;
+      bVal = b.totalEmployeesProcessed || 0;
+    } else if (sortField === "gross") {
+      aVal = a.totalGrossAmount || 0;
+      bVal = b.totalGrossAmount || 0;
+    } else if (sortField === "tax") {
+      aVal = a.totalTaxDeducted || 0;
+      bVal = b.totalTaxDeducted || 0;
+    } else if (sortField === "net") {
+      aVal = a.totalNetPayable || a.totalAmount || 0;
+      bVal = b.totalNetPayable || b.totalAmount || 0;
+    } else if (sortField === "status") {
+      aVal = a.status || "";
+      bVal = b.status || "";
+    }
+
+    if (typeof aVal === "number" && typeof bVal === "number") {
+      return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
+    }
+    const res = String(aVal).localeCompare(String(bVal));
+    return sortDirection === "asc" ? res : -res;
+  });
 
   const currentData = subView === "DISBURSEMENTS" ? sortedPayroll : filteredEmployees;
   const totalItems = currentData.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
+  const totalPages = Math.ceil(totalItems / pageSize) || 1;
   const paginatedData = currentData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   React.useEffect(() => {
@@ -268,12 +324,22 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
 
               {/* Disbursement Ledger */}
               <div className="border border-gray-200 dark:border-gray-800 shadow-sm dark:bg-gray-900 rounded-xl overflow-hidden bg-white">
-                <div className="p-6 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex justify-between items-center">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div>
                     <h4 className="text-lg font-black dark:text-white uppercase tracking-tight">Disbursement Ledger</h4>
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Audit-ready historical payroll data</p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <div className="relative flex-1 sm:w-64">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                      <Input
+                        type="text"
+                        placeholder="Search reference ID or status..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 h-9 text-xs"
+                      />
+                    </div>
                     {viewMode === "grid" && (
                       <select
                         className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-md text-xs h-9 border-none outline-none px-3 min-w-[100px] font-bold cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -286,10 +352,10 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                       </select>
                     )}
                     <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-md">
-                      <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-md transition-all ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}>
+                      <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-md transition-all cursor-pointer ${viewMode === "grid" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}>
                         <LayoutGrid size={16} />
                       </button>
-                      <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}>
+                      <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-md transition-all cursor-pointer ${viewMode === "list" ? "bg-white dark:bg-gray-700 shadow-sm text-blue-600" : "text-gray-400 hover:text-gray-600"}`}>
                         <List size={16} />
                       </button>
                     </div>
@@ -300,13 +366,69 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                   <Table>
                     <TableHeader className="bg-gray-50/50 dark:bg-gray-800/50">
                       <TableRow className="border-b border-gray-200 dark:border-gray-800">
-                        <TableHead className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Reference ID</TableHead>
-                        <TableHead className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Processed Date</TableHead>
-                        <TableHead className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Staff Count</TableHead>
-                        <TableHead className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Gross Amount</TableHead>
-                        <TableHead className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Tax</TableHead>
-                        <TableHead className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Net Payable</TableHead>
-                        <TableHead className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</TableHead>
+                        <TableHead
+                          className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                          onClick={() => handleSort("id")}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>Reference ID</span>
+                            {sortField === "id" ? (sortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600" /> : <ArrowDown size={12} className="text-blue-600" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                          onClick={() => handleSort("date")}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>Processed Date</span>
+                            {sortField === "date" ? (sortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600" /> : <ArrowDown size={12} className="text-blue-600" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                          onClick={() => handleSort("staff")}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>Staff Count</span>
+                            {sortField === "staff" ? (sortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600" /> : <ArrowDown size={12} className="text-blue-600" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                          onClick={() => handleSort("gross")}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>Gross Amount</span>
+                            {sortField === "gross" ? (sortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600" /> : <ArrowDown size={12} className="text-blue-600" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                          onClick={() => handleSort("tax")}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>Tax</span>
+                            {sortField === "tax" ? (sortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600" /> : <ArrowDown size={12} className="text-blue-600" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                          onClick={() => handleSort("net")}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>Net Payable</span>
+                            {sortField === "net" ? (sortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600" /> : <ArrowDown size={12} className="text-blue-600" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                          onClick={() => handleSort("status")}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>Status</span>
+                            {sortField === "status" ? (sortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600" /> : <ArrowDown size={12} className="text-blue-600" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                          </div>
+                        </TableHead>
                         <TableHead className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -371,7 +493,7 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                     className={`grid gap-4 p-6 bg-gray-50/50 dark:bg-gray-900/50 ${itemsPerRow === "3" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : itemsPerRow === "5" ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-5" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"}`}
                   >
                     {paginatedData.map((row, i) => (
-                      <motion.div key={row.id || i} variants={itemVariants} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all rounded-xl overflow-hidden p-5 flex flex-col gap-4">
+                      <motion.div key={row.id || i} variants={itemVariants} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all rounded-xl overflow-hidden p-5 flex flex-col gap-4 group relative">
                         <div className="flex justify-between items-start">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
@@ -425,7 +547,7 @@ const PayrollModule: React.FC<PayrollModuleProps> = ({
                   </motion.div>
                 )}
 
-                {totalPages > 1 && (
+                {currentData.length > 0 && (
                   <div className="p-4 border-t border-gray-100 dark:border-gray-800">
                     <ModernPagination
                       currentPage={currentPage}

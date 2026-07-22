@@ -1,21 +1,23 @@
 "use client";
-import { Spinner } from "@/components/ui/spinner";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { clinicService, PatientDto } from "../../../services/clinicService";
-import { Plus, Edit2, Trash2, Filter, User } from "lucide-react";
+import { clinicService, PatientDto } from "@/services/clinicService";
 import PatientFormModal from "./PatientFormModal";
-import ConfirmModal from "../../../components/common/ConfirmModal";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "@/lib/react-router-compat";
-
 import { AdvancedDataTable } from "@/components/ui/advanced-data-table";
-import { ColumnDef } from "@tanstack/react-table";
+
+import { usePatientColumns } from "./patient/usePatientColumns";
+import { PatientMetricsBanner } from "./patient/PatientMetricsBanner";
+import { PatientFilterToolbar } from "./patient/PatientFilterToolbar";
 
 export default function PatientList() {
   const navigate = useNavigate();
-  const [size] = useState(100); // Increased size to let tanstack handle pagination locally for now
+  const [size] = useState(100);
   const [genderFilter, setGenderFilter] = useState("ALL");
+  const [poorIdFilter, setPoorIdFilter] = useState("ALL");
+  const [bloodTypeFilter, setBloodTypeFilter] = useState("ALL");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PatientDto | null>(null);
@@ -31,141 +33,132 @@ export default function PatientList() {
     mutationFn: (id: string) => clinicService.deletePatient(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patients"] });
-      toast.success("Patient deleted successfully");
+      toast.success("Patient record deleted successfully");
       setIsConfirmOpen(false);
     },
-    onError: () => toast.error("Failed to delete patient")
+    onError: () => toast.error("Failed to delete patient record"),
   });
 
-  const filteredData = data?.content?.filter((p: PatientDto) => {
-    const matchesGender = genderFilter === "ALL" || p.gender === genderFilter;
-    return matchesGender;
-  }) || [];
+  const allPatients: PatientDto[] = data?.content || [];
 
-  const columns = React.useMemo<ColumnDef<PatientDto>[]>(
-    () => [
-      {
-        accessorKey: "firstName",
-        header: "Patient Name",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-3 font-bold text-gray-900 dark:text-white">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs shadow-md">
-              {row.original.firstName.charAt(0)}
-              {row.original.lastName.charAt(0)}
-            </div>
-            {row.original.firstName} {row.original.lastName}
-            {row.original.poorId && (
-              <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] uppercase rounded-full">Poor ID</span>
-            )}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "dateOfBirth",
-        header: "DOB",
-        cell: ({ row }) => <span className="font-medium">{row.original.dateOfBirth}</span>,
-      },
-      {
-        accessorKey: "gender",
-        header: "Gender",
-        cell: ({ row }) => (
-          <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-bold uppercase tracking-wider">
-            {row.original.gender}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "contactNumber",
-        header: "Contact",
-        cell: ({ row }) => <span className="font-medium">{row.original.contactNumber}</span>,
-      },
-      {
-        id: "actions",
-        header: () => <div className="text-right">Actions</div>,
-        cell: ({ row }) => (
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedItem(row.original);
-                setIsFormOpen(true);
-              }}
-              className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
-            >
-              <Edit2 size={18} />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedItem(row.original);
-                setIsConfirmOpen(true);
-              }}
-              className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"
-            >
-              <Trash2 size={18} />
-            </button>
-          </div>
-        ),
-      },
-    ],
-    []
-  );
+  // Calculate dynamic counts from full dataset
+  const counts = useMemo(() => {
+    const male = allPatients.filter((p) => p.gender?.toUpperCase() === "MALE").length;
+    const female = allPatients.filter((p) => p.gender?.toUpperCase() === "FEMALE").length;
+    const other = allPatients.filter(
+      (p) => p.gender && p.gender.toUpperCase() !== "MALE" && p.gender.toUpperCase() !== "FEMALE"
+    ).length;
+    const poorIdCount = allPatients.filter((p) => Boolean(p.poorId)).length;
+    const regularCount = allPatients.length - poorIdCount;
+
+    const bloodTypes: Record<string, number> = {};
+    allPatients.forEach((p) => {
+      if (p.bloodType) {
+        const bt = p.bloodType.toUpperCase().trim();
+        bloodTypes[bt] = (bloodTypes[bt] || 0) + 1;
+      }
+    });
+
+    return {
+      total: allPatients.length,
+      male,
+      female,
+      other,
+      poorIdCount,
+      regularCount,
+      bloodTypes,
+    };
+  }, [allPatients]);
+
+  // Apply dynamic multi-attribute filtering
+  const filteredData = useMemo(() => {
+    return allPatients.filter((p: PatientDto) => {
+      const pGender = (p.gender || "").toUpperCase();
+      const matchesGender =
+        genderFilter === "ALL" ||
+        (genderFilter === "MALE" && pGender === "MALE") ||
+        (genderFilter === "FEMALE" && pGender === "FEMALE") ||
+        (genderFilter === "OTHER" && pGender !== "MALE" && pGender !== "FEMALE");
+
+      const matchesPoorId =
+        poorIdFilter === "ALL" ||
+        (poorIdFilter === "POOR_ID_ONLY" && Boolean(p.poorId)) ||
+        (poorIdFilter === "REGULAR_ONLY" && !p.poorId);
+
+      const matchesBloodType =
+        bloodTypeFilter === "ALL" ||
+        (p.bloodType && p.bloodType.toUpperCase() === bloodTypeFilter.toUpperCase());
+
+      return matchesGender && matchesPoorId && matchesBloodType;
+    });
+  }, [allPatients, genderFilter, poorIdFilter, bloodTypeFilter]);
+
+  const hasActiveFilters =
+    genderFilter !== "ALL" || poorIdFilter !== "ALL" || bloodTypeFilter !== "ALL";
+
+  const handleResetFilters = () => {
+    setGenderFilter("ALL");
+    setPoorIdFilter("ALL");
+    setBloodTypeFilter("ALL");
+  };
+
+  const handleEditPatient = (patient: PatientDto) => {
+    setSelectedItem(patient);
+    setIsFormOpen(true);
+  };
+
+  const handleDeletePatient = (patient: PatientDto) => {
+    setSelectedItem(patient);
+    setIsConfirmOpen(true);
+  };
+
+  const columns = usePatientColumns({
+    onEdit: handleEditPatient,
+    onDelete: handleDeletePatient,
+  });
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
-      {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded-3xl shadow-xl">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-2xl shadow-inner">
-            <User size={28} className="drop-shadow-sm" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Patient Directory</h2>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-widest">Manage clinical demographics</p>
-          </div>
-        </div>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10 pb-12">
+      {/* Metrics Summary Banner */}
+      <PatientMetricsBanner counts={counts} />
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative group">
-            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-            <select
-              value={genderFilter}
-              onChange={(e) => setGenderFilter(e.target.value)}
-              className="pl-12 pr-10 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/50 dark:text-white appearance-none cursor-pointer shadow-inner font-medium"
-            >
-              <option value="ALL">All Genders</option>
-              <option value="MALE">Male</option>
-              <option value="FEMALE">Female</option>
-              <option value="OTHER">Other</option>
-            </select>
-          </div>
-          <button
-            onClick={() => { setSelectedItem(null); setIsFormOpen(true); }}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/30 whitespace-nowrap hover:scale-105 active:scale-95"
-          >
-            <Plus size={20} strokeWidth={2.5} /> Add Patient
-          </button>
-        </div>
-      </div>
+      {/* Main Header & Dynamic Filter Toolbar */}
+      <PatientFilterToolbar
+        filteredCount={filteredData.length}
+        genderFilter={genderFilter}
+        setGenderFilter={setGenderFilter}
+        poorIdFilter={poorIdFilter}
+        setPoorIdFilter={setPoorIdFilter}
+        bloodTypeFilter={bloodTypeFilter}
+        setBloodTypeFilter={setBloodTypeFilter}
+        hasActiveFilters={hasActiveFilters}
+        onResetFilters={handleResetFilters}
+        onAddPatient={() => {
+          setSelectedItem(null);
+          setIsFormOpen(true);
+        }}
+        counts={counts}
+      />
 
-      {/* Data Table */}
+      {/* Advanced Data Table */}
       <AdvancedDataTable
         columns={columns}
         data={filteredData}
         searchKey="firstName"
-        searchPlaceholder="Search patients..."
+        searchPlaceholder="Search by patient name, MRN, or phone..."
         isLoading={isLoading}
         onRowClick={(item) => navigate(`/clinic/patients/${item.id}`)}
       />
 
+      {/* Form & Confirmation Modals */}
       <PatientFormModal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} itemToEdit={selectedItem} />
 
       <ConfirmModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
-        onConfirm={() => deleteMutation.mutate(selectedItem!.id)}
-        title="Delete Patient"
-        message={`Are you sure you want to permanently delete this patient record?`}
+        onConfirm={() => selectedItem && deleteMutation.mutate(selectedItem.id)}
+        title="Delete Patient Record"
+        message="Are you sure you want to permanently delete this clinical patient record?"
         confirmText="Delete Record"
         type="danger"
         isLoading={deleteMutation.isPending}

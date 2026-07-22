@@ -36,4 +36,7 @@ public class AnnualLeavePlan {
     private double decDays;
 
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "annualLeavePlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<LeaveDateRange> dateRanges = new java.util.ArrayList<>();
 }

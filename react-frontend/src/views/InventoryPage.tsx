@@ -45,6 +45,8 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams?.get('tab') === 'assets' ? 'assets' : searchParams?.get('tab') === 'locations' ? 'locations' : searchParams?.get('tab') === 'categories' ? 'categories' : 'inventory';
   const [activeModule, setActiveModule] = useState<"inventory" | "assets" | "locations" | "categories">(initialTab as any);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     const tab = searchParams?.get('tab');
@@ -211,7 +213,7 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       header: "Actions",
       accessorKey: "actions",
       cell: (item) => (
-        <div className="flex gap-1 justify-end">
+        <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <Tooltip content="View Details">
             <button onClick={() => handleView(item)} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors">
               <Eye size={16} />
@@ -254,6 +256,9 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
   });
 
   const items = fetchedItems.length > 0 ? fetchedItems : (loading ? [] : filteredMockData);
+  const totalFilteredItems = items.length;
+  const totalPages = Math.ceil(totalFilteredItems / pageSize) || 1;
+  const paginatedItems = items.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   // Stats Query
   const { data: stats } = useQuery({
@@ -468,10 +473,13 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
                 <InventorySummary stats={stats} />
                 <div className="border-none shadow-sm dark:bg-gray-800 rounded-md bg-white/50 backdrop-blur-xl mt-4">
                   <DataTable
-                    data={items}
+                    data={paginatedItems}
                     columns={columns}
                     searchQuery={search}
-                    onSearchChange={setSearch}
+                    onSearchChange={(val) => {
+                      setSearch(val);
+                      setCurrentPage(1);
+                    }}
                     searchPlaceholder="Search item name or SKU code..."
                     sortField={sortField}
                     sortDir={sortDir as "asc" | "desc"}
@@ -483,24 +491,75 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
                         setSortDir("asc");
                       }
                     }}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={totalFilteredItems}
+                    pageSize={pageSize}
+                    onPageChange={setCurrentPage}
+                    onPageSizeChange={(size) => {
+                      setPageSize(size);
+                      setCurrentPage(1);
+                    }}
+                    enableViewToggle={true}
+                    enableColumnToggle={true}
+                    renderGridCard={(item: any) => (
+                      <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 overflow-hidden flex items-center justify-center shrink-0">
+                            {item.imageUrl ? (
+                              <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <Package size={22} className="text-gray-400" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-black text-sm text-gray-900 dark:text-white truncate">{item.name}</h4>
+                            <span className="text-[10px] font-mono text-gray-400 font-bold">{item.sku || 'N/A'}</span>
+                          </div>
+
+                          {/* Hover Action Buttons */}
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm p-1 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleView(item);
+                              }}
+                              className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors cursor-pointer"
+                              title="View Details"
+                            >
+                              <Eye size={14} />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(item);
+                              }}
+                              className="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded-lg transition-colors cursor-pointer"
+                              title="Edit Record"
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(item.id);
+                              }}
+                              className="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors cursor-pointer"
+                              title="Delete"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs pt-3 border-t border-gray-100 dark:border-gray-700">
+                          <Badge color="gray" className="rounded-md font-bold text-[9px] uppercase">
+                            {item.category?.name || "General"}
+                          </Badge>
+                          <span className="font-mono font-bold text-gray-900 dark:text-white">${(item.price || 0).toFixed(2)}</span>
+                        </div>
+                      </div>
+                    )}
                   />
-                  {hasNextPage && (
-                    <div className="p-8 flex justify-center bg-gray-50/50 dark:bg-gray-800/50 border-t">
-                      <Button
-                        color="light"
-                        onClick={() => fetchNextPage()}
-                        disabled={isFetchingNextPage}
-                        className="rounded-md px-12 font-black uppercase text-[10px] tracking-widest h-12"
-                      >
-                        {isFetchingNextPage ? (
-                          <Spinner size="sm" className="mr-3" />
-                        ) : null}
-                        {isFetchingNextPage
-                          ? "Syncing Ledger..."
-                          : "Load More Assets"}
-                      </Button>
-                    </div>
-                  )}
                 </div>
               </>
             )}

@@ -95,9 +95,9 @@ const CandidateOnboardingWizard: React.FC<CandidateOnboardingWizardProps> = ({
   return (
     <Modal show={isOpen} onClose={onClose} size="4xl">
       <ModalHeader className="border-b-0 pb-0">
-        <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+        <div className="text-2xl font-black text-gray-900 dark:text-white">
           {isEditMode ? "Modify Candidate Profile" : "New Candidate Profile"}
-        </h2>
+        </div>
         <p className="text-sm font-medium text-gray-500 mt-1">
           Complete the onboarding steps below to register a new talent profile.
         </p>

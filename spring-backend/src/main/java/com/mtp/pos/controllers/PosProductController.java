@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController // tell that this is rest controller and handle web request
 @RequestMapping("/api/pos/products")
 public class PosProductController {
 
+    // dependency injection: inject service in constructor (IoC container)
     private final PosProductService service;
 
     public PosProductController(PosProductService service) {
@@ -57,4 +58,5 @@ public class PosProductController {
         service.deleteProduct(id);
         return ResponseEntity.ok().build();
     }
+
 }

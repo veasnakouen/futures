@@ -2,7 +2,6 @@ package com.mtp.billing.cqrs.dto;
 
 import lombok.Data;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Data
 public class PaymentQueryResultDto {

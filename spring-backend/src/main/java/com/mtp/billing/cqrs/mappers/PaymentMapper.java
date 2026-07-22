@@ -10,6 +10,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PaymentMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "tenantId", ignore = true)
     Payment toEntity(CreatePaymentCommand command);
 
     PaymentQueryResultDto toDto(Payment entity);

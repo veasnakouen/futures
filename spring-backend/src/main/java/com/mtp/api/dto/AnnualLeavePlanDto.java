@@ -26,4 +26,16 @@ public class AnnualLeavePlanDto {
     private double novDays;
     private double decDays;
     private LocalDateTime updatedAt;
+    
+    private java.util.List<LeaveDateRangeDto> dateRanges;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LeaveDateRangeDto {
+        private Integer id;
+        private java.time.LocalDate startDate;
+        private java.time.LocalDate endDate;
+        private double calculatedDays;
+    }
 }

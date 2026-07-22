@@ -1,18 +1,18 @@
-"use client";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { schoolService, EnrollmentDto } from "../../../services/schoolService";
-import { Plus, Search, Edit2, Trash2, GraduationCap } from "lucide-react";
-import ModernPagination from "../../../components/common/ModernPagination";
+import { Plus, Edit2, Trash2, GraduationCap, BookOpen, Calendar, Award } from "lucide-react";
 import EnrollmentFormModal from "./EnrollmentFormModal";
 import ConfirmModal from "../../../components/common/ConfirmModal";
+import DataTable, { ColumnDef } from "../../../components/common/DataTable";
 import { toast } from "react-hot-toast";
-import { Spinner } from "@/components/ui/spinner";
+import { Badge } from "@/lib/flowbite-compat";
 
 export default function EnrollmentList() {
-  const [page, setPage] = useState(0);
-  const [size] = useState(10);
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(10);
+  const [search, setSearch] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState<EnrollmentDto | null>(null);
@@ -21,8 +21,8 @@ export default function EnrollmentList() {
   const { t } = useTranslation();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["enrollments", page, size],
-    queryFn: () => schoolService.getEnrollments(page, size).then((res) => res.data),
+    queryKey: ["enrollments", page - 1, size],
+    queryFn: () => schoolService.getEnrollments(page - 1, size).then((res) => res.data),
   });
 
   const deleteMutation = useMutation({
@@ -49,107 +49,205 @@ export default function EnrollmentList() {
     setIsFormOpen(true);
   };
 
+  const allEnrollments: EnrollmentDto[] = data?.content || [];
+  const filteredEnrollments = allEnrollments.filter((e) => {
+    if (!search) return true;
+    const query = search.toLowerCase();
+    return (
+      (e.studentName && e.studentName.toLowerCase().includes(query)) ||
+      (e.courseName && e.courseName.toLowerCase().includes(query)) ||
+      (e.grade && e.grade.toLowerCase().includes(query)) ||
+      (String(e.id).includes(query))
+    );
+  });
+
+  const totalElements = data?.totalElements || filteredEnrollments.length;
+  const totalPages = data?.totalPages || Math.ceil(totalElements / size) || 1;
+
+  const columns: ColumnDef<EnrollmentDto>[] = [
+    {
+      header: t("studentName"),
+      accessorKey: "studentName",
+      sortable: true,
+      cell: (enrollment) => (
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-xs shrink-0">
+            <GraduationCap size={18} />
+          </div>
+          <div>
+            <span className="font-bold text-sm text-gray-900 dark:text-white block">
+              {enrollment.studentName || `#${enrollment.studentId}`}
+            </span>
+            <span className="text-[10px] text-gray-400 font-mono">
+              Student #{enrollment.studentId}
+            </span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: t("courseName"),
+      accessorKey: "courseName",
+      sortable: true,
+      cell: (enrollment) => (
+        <div className="flex items-center gap-1.5 font-medium text-xs text-gray-900 dark:text-white">
+          <BookOpen size={14} className="text-indigo-500" />
+          {enrollment.courseName || `#${enrollment.courseId}`}
+        </div>
+      ),
+    },
+    {
+      header: t("enrollmentDate"),
+      accessorKey: "enrollmentDate",
+      sortable: true,
+      cell: (enrollment) => (
+        <div className="flex items-center gap-1.5 text-xs text-gray-500 font-mono font-bold">
+          <Calendar size={12} className="text-gray-400" />
+          {enrollment.enrollmentDate || "N/A"}
+        </div>
+      ),
+    },
+    {
+      header: t("grade"),
+      accessorKey: "grade",
+      cell: (enrollment) =>
+        enrollment.grade ? (
+          <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-md text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
+            {enrollment.grade}
+          </span>
+        ) : (
+          <span className="text-gray-400 italic text-xs font-medium">
+            {t("noGrade")}
+          </span>
+        ),
+    },
+    {
+      header: t("actions"),
+      cell: (enrollment) => (
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => handleEdit(enrollment)}
+            className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all cursor-pointer"
+            title="Edit Enrollment"
+          >
+            <Edit2 size={16} />
+          </button>
+          <button
+            onClick={() => handleDelete(enrollment)}
+            className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all cursor-pointer"
+            title="Delete Enrollment"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded shadow-lg">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded-2xl shadow-lg">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-full shadow-inner">
+          <div className="p-3 bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-2xl shadow-inner">
             <GraduationCap size={28} className="drop-shadow-sm" />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{t("enrollments")}</h2>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-widest">{t("manageEnrollmentsDesc")}</p>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+              {t("enrollments")}
+            </h2>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-widest">
+              {t("manageEnrollmentsDesc")}
+            </p>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative flex-1 sm:w-64 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 transition-colors" size={18} />
-            <input
-              type="text"
-              placeholder={t("searchEnrollments")}
-              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded text-sm focus:ring-2 focus:ring-purple-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
-            />
-          </div>
-          <button
-            onClick={handleCreate}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-3 rounded font-bold transition-all shadow-lg shadow-purple-500/30 whitespace-nowrap hover:scale-105 active:scale-95"
-          >
-            <Plus size={20} strokeWidth={2.5} /> {t("newEnrollment")}
-          </button>
-        </div>
+        <button
+          onClick={handleCreate}
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-purple-500/30 whitespace-nowrap hover:scale-105 active:scale-95 cursor-pointer"
+        >
+          <Plus size={20} strokeWidth={2.5} /> {t("newEnrollment")}
+        </button>
       </div>
 
-      {/* Data Table */}
-      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded shadow-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
-            <thead className="text-xs text-gray-900 dark:text-gray-100 uppercase bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-lg">
-              <tr>
-                <th className="px-8 py-5 font-black tracking-wider">{t("studentName")}</th>
-                <th className="px-6 py-5 font-black tracking-wider">{t("courseName")}</th>
-                <th className="px-6 py-5 font-black tracking-wider">{t("enrollmentDate")}</th>
-                <th className="px-6 py-5 font-black tracking-wider">{t("grade")}</th>
-                <th className="px-8 py-5 font-black tracking-wider text-right">{t("actions")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200/20 dark:divide-gray-700/30">
-              {isLoading ? (
-                <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500"><div className="flex justify-center"><Spinner size="xl" /></div></td></tr>
-              ) : data?.content?.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-16 text-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="w-16 h-16 bg-purple-500/10 dark:bg-purple-900/50 rounded-full flex items-center justify-center mb-4">
-                        <GraduationCap className="w-8 h-8 text-purple-500 dark:text-purple-400" />
-                      </div>
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                        {t("noEnrollmentsFound")}
-                      </h3>
-                      <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                        {t("addFirstEnrollment")}
-                      </p>
-                    </div>
-                  </td>
-                </tr>
+      {/* Enterprise DataTable */}
+      <DataTable
+        data={filteredEnrollments}
+        columns={columns}
+        isLoading={isLoading}
+        searchQuery={search}
+        onSearchChange={(val) => {
+          setSearch(val);
+          setPage(1);
+        }}
+        searchPlaceholder={t("searchEnrollments")}
+        currentPage={page}
+        totalPages={totalPages}
+        totalItems={totalElements}
+        pageSize={size}
+        onPageChange={setPage}
+        onPageSizeChange={(newSize) => {
+          setSize(newSize);
+          setPage(1);
+        }}
+        enableViewToggle={true}
+        enableColumnToggle={true}
+        emptyMessage={t("noEnrollmentsFound")}
+        renderGridCard={(enrollment: EnrollmentDto) => (
+          <div className="p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+            <div className="flex items-center gap-3.5 mb-3">
+              <div className="w-11 h-11 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-xs shrink-0">
+                <GraduationCap size={20} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-black text-sm text-gray-900 dark:text-white truncate">
+                  {enrollment.studentName || `#${enrollment.studentId}`}
+                </h4>
+                <span className="text-[10px] font-mono text-gray-400 font-bold">
+                  {enrollment.courseName || `#${enrollment.courseId}`}
+                </span>
+              </div>
+
+              {/* Hover Action Buttons */}
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm p-1 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(enrollment);
+                  }}
+                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors cursor-pointer"
+                  title="Edit Enrollment"
+                >
+                  <Edit2 size={14} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(enrollment);
+                  }}
+                  className="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors cursor-pointer"
+                  title="Delete Enrollment"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between text-xs font-mono font-bold">
+              <span className="text-gray-400 flex items-center gap-1">
+                <Calendar size={12} /> {enrollment.enrollmentDate || "N/A"}
+              </span>
+              {enrollment.grade ? (
+                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded text-[9px] uppercase font-black">
+                  Grade: {enrollment.grade}
+                </span>
               ) : (
-                data?.content?.map((enrollment: EnrollmentDto) => (
-                  <tr key={enrollment.id} className="hover:bg-white/60 dark:hover:bg-gray-800/40 transition-colors group">
-                    <td className="px-8 py-5 font-bold text-gray-900 dark:text-white">
-                      {enrollment.studentName || `#${enrollment.studentId}`}
-                    </td>
-                    <td className="px-6 py-5 font-medium text-gray-900 dark:text-white">
-                      {enrollment.courseName || `#${enrollment.courseId}`}
-                    </td>
-                    <td className="px-6 py-5 font-medium">{enrollment.enrollmentDate}</td>
-                    <td className="px-6 py-5">
-                      {enrollment.grade ? (
-                        <span className="px-3 py-1 bg-green-500/20 text-green-700 dark:text-green-400 rounded text-[10px] font-black uppercase tracking-widest border border-green-500/20">
-                          {enrollment.grade}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400 italic text-xs font-medium">{t("noGrade")}</span>
-                      )}
-                    </td>
-                    <td className="px-8 py-5 text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => handleEdit(enrollment)} className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"><Edit2 size={18} /></button>
-                        <button onClick={() => handleDelete(enrollment)} className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"><Trash2 size={18} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                <span className="text-gray-400 italic text-[10px]">No Grade</span>
               )}
-            </tbody>
-          </table>
-        </div>
-        {data?.totalPages > 1 && (
-          <div className="p-6 border-t border-gray-200/20 dark:border-gray-700/30 bg-gray-50/30 dark:bg-gray-800/20">
-            <ModernPagination currentPage={page} totalPages={data.totalPages} onPageChange={setPage} />
+            </div>
           </div>
         )}
-      </div>
+      />
 
       <EnrollmentFormModal
         isOpen={isFormOpen}
@@ -160,12 +258,13 @@ export default function EnrollmentList() {
       <ConfirmModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
-        onConfirm={() => deleteMutation.mutate(selectedEnrollment!.id)}
+        onConfirm={() => {
+          if (selectedEnrollment?.id) {
+            deleteMutation.mutate(selectedEnrollment.id.toString());
+          }
+        }}
         title={t("deleteEnrollment")}
-        message={t("confirmDeleteEnrollment", { id: selectedEnrollment?.id })}
-        confirmText={t("deleteEnrollment")}
-        type="danger"
-        isLoading={deleteMutation.isPending}
+        message={t("confirmDeleteEnrollment")}
       />
     </div>
   );

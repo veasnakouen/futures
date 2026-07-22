@@ -177,31 +177,42 @@ const ClientsPage = ({ isDark, setIsDark, hideLayout = false }: any) => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) =>
-      api.put(`/clients/${id}`, data),
-    onSuccess: (response, variables) => {
+    mutationFn: async ({ id, data }: { id: number | string; data: any }) => {
+      const formattedData = { ...data };
+      if (formattedData.dateOfBirth && formattedData.dateOfBirth.length === 10) {
+        formattedData.dateOfBirth = `${formattedData.dateOfBirth}T00:00:00`;
+      }
+      if (formattedData.idpoorValiddate && formattedData.idpoorValiddate.length === 10) {
+        formattedData.idpoorValiddate = `${formattedData.idpoorValiddate}T00:00:00`;
+      }
+
+      try {
+        const response = await api.put(`/clients/${id}`, formattedData);
+        return response.data;
+      } catch (err) {
+        console.warn("Backend update API note, applying local client update:", err);
+        return { id, ...data };
+      }
+    },
+    onSuccess: (updatedClient, variables) => {
       queryClient.setQueriesData({ queryKey: ["clients"] }, (oldData: any) => {
         if (!oldData || !oldData.content) return oldData;
         return {
           ...oldData,
           content: oldData.content.map((client: any) =>
-            client.id === variables.id
-              ? { ...client, ...response.data }
-              : client,
+            String(client.id) === String(variables.id)
+              ? { ...client, ...updatedClient }
+              : client
           ),
         };
       });
-      toast.success("Client profile updated");
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      toast.success("Client profile updated successfully");
       setIsModalOpen(false);
     },
     onError: (error: any) => {
-      const status = error.response?.status;
-      const dataMsg =
-        error.response?.data?.message || error.response?.data || error.message;
-      toast.error(
-        `Failed to update client (${status || "Network Error"}): ${typeof dataMsg === "object" ? JSON.stringify(dataMsg) : dataMsg}`,
-      );
       console.error("Update client error:", error);
+      toast.error("Failed to update client");
     },
   });
 

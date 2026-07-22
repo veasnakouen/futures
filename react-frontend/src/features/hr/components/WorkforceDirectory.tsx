@@ -15,6 +15,9 @@ import {
   X,
   UserPlus,
   Filter,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AppCard } from '@/components/ui/AppCard';
@@ -83,6 +86,44 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
     "status",
     "action",
   ]);
+
+  const [sortField, setSortField] = React.useState<string>("name");
+  const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("asc");
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedEmployees = React.useMemo(() => {
+    return [...filteredEmployees].sort((a, b) => {
+      let aVal = "";
+      let bVal = "";
+      if (sortField === "name") {
+        aVal = `${a.firstName || ""} ${a.lastName || ""}`.trim() || a.name || "";
+        bVal = `${b.firstName || ""} ${b.lastName || ""}`.trim() || b.name || "";
+      } else if (sortField === "id") {
+        aVal = String(a.idNo || a.id || "");
+        bVal = String(b.idNo || b.id || "");
+      } else if (sortField === "position") {
+        aVal = a.position || a.jobTitle || "";
+        bVal = b.position || b.jobTitle || "";
+      } else if (sortField === "dept") {
+        aVal = a.departmentName || a.department?.name || a.department || "";
+        bVal = b.departmentName || b.department?.name || b.department || "";
+      } else if (sortField === "status") {
+        aVal = a.status || "";
+        bVal = b.status || "";
+      }
+
+      const res = aVal.localeCompare(bVal);
+      return sortDirection === "asc" ? res : -res;
+    });
+  }, [filteredEmployees, sortField, sortDirection]);
 
   const getGridClass = () => {
     return `grid gap-6 ${
@@ -468,19 +509,79 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                   className="border-none w-full min-w-[800px] relative"
                 >
                   <TableHead className="bg-gray-50/90 dark:bg-gray-700/90 text-[10px] font-black uppercase tracking-widest text-gray-400 sticky top-0 z-[1] backdrop-blur-md shadow-sm border-b">
-                    <TableHeadCell className="px-8 py-5">
-                      Personnel
+                    <TableHeadCell
+                      className="px-8 py-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none group"
+                      onClick={() => handleSort("name")}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>Personnel</span>
+                        {sortField === "name" ? (
+                          sortDirection === "asc" ? (
+                            <ArrowUp size={13} className="text-blue-600 font-bold" />
+                          ) : (
+                            <ArrowDown size={13} className="text-blue-600 font-bold" />
+                          )
+                        ) : (
+                          <ArrowUpDown size={13} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                        )}
+                      </div>
                     </TableHeadCell>
                     {visibleColumns.includes("id") && (
-                      <TableHeadCell className="px-8 py-5">ID</TableHeadCell>
+                      <TableHeadCell
+                        className="px-8 py-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none group"
+                        onClick={() => handleSort("id")}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>ID</span>
+                          {sortField === "id" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp size={13} className="text-blue-600 font-bold" />
+                            ) : (
+                              <ArrowDown size={13} className="text-blue-600 font-bold" />
+                            )
+                          ) : (
+                            <ArrowUpDown size={13} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                          )}
+                        </div>
+                      </TableHeadCell>
                     )}
                     {visibleColumns.includes("position") && (
-                      <TableHeadCell className="px-8 py-5">
-                        Position
+                      <TableHeadCell
+                        className="px-8 py-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none group"
+                        onClick={() => handleSort("position")}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Position</span>
+                          {sortField === "position" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp size={13} className="text-blue-600 font-bold" />
+                            ) : (
+                              <ArrowDown size={13} className="text-blue-600 font-bold" />
+                            )
+                          ) : (
+                            <ArrowUpDown size={13} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                          )}
+                        </div>
                       </TableHeadCell>
                     )}
                     {visibleColumns.includes("dept") && (
-                      <TableHeadCell className="px-8 py-5">Dept</TableHeadCell>
+                      <TableHeadCell
+                        className="px-8 py-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none group"
+                        onClick={() => handleSort("dept")}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Dept</span>
+                          {sortField === "dept" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp size={13} className="text-blue-600 font-bold" />
+                            ) : (
+                              <ArrowDown size={13} className="text-blue-600 font-bold" />
+                            )
+                          ) : (
+                            <ArrowUpDown size={13} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                          )}
+                        </div>
+                      </TableHeadCell>
                     )}
                     {visibleColumns.includes("contact") && (
                       <TableHeadCell className="px-8 py-5">
@@ -488,8 +589,22 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                       </TableHeadCell>
                     )}
                     {visibleColumns.includes("status") && (
-                      <TableHeadCell className="px-8 py-5">
-                        Status
+                      <TableHeadCell
+                        className="px-8 py-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none group"
+                        onClick={() => handleSort("status")}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Status</span>
+                          {sortField === "status" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp size={13} className="text-blue-600 font-bold" />
+                            ) : (
+                              <ArrowDown size={13} className="text-blue-600 font-bold" />
+                            )
+                          ) : (
+                            <ArrowUpDown size={13} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                          )}
+                        </div>
                       </TableHeadCell>
                     )}
                     {visibleColumns.includes("action") && (
@@ -499,7 +614,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
                     )}
                   </TableHead>
                   <TableBody className="divide-y divide-gray-100 dark:divide-gray-700">
-                    {filteredEmployees.map((emp) => (
+                    {sortedEmployees.map((emp) => (
                       <TableRow
                         key={emp.id}
                         className="relative bg-white dark:bg-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors hover:z-[2] focus-within:z-[2]"
@@ -674,7 +789,7 @@ const WorkforceDirectory: React.FC<WorkforceDirectoryProps> = ({
             </div>
           )}
 
-          {totalPages > 1 && (
+          {filteredEmployees.length > 0 && (
             <div className="mt-8">
               <ModernPagination
                 currentPage={currentPage}

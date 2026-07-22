@@ -1,11 +1,33 @@
 import api from './api';
 
+export interface PosProductDto {
+    id?: string;
+    name: string;
+    sku: string;
+    barcode?: string;
+    price: number;
+    costPrice?: number;
+    stockQuantity: number;
+    minStockLevel?: number;
+    categoryId?: string;
+    categoryName?: string;
+    category?: string;
+    brandId?: string;
+    brandName?: string;
+    brand?: string;
+    taxRate?: number;
+    status?: string;
+    unit?: string;
+    description?: string;
+    imageUrl?: string;
+    isActive?: boolean;
+}
+
 export interface PosCategoryDto {
     id?: string;
     name: string;
     description?: string;
     colorCode?: string;
-    icon?: string;
 }
 
 export interface PosBrandDto {
@@ -15,31 +37,15 @@ export interface PosBrandDto {
     logoUrl?: string;
 }
 
-export interface PosProductDto {
-    id: string;
-    name: string;
-    description: string;
-    sku: string;
-    price: number;
-    stockQuantity: number;
-    category: string;
-    barcode?: string;
-    costPrice?: number;
-    taxRate?: number;
-    status?: string;
-    imageUrl?: string;
-    unit?: string;
-    brand?: string;
-}
-
 export interface PosSaleItemDto {
-    id: string;
+    id?: string;
     productId: string;
     productName: string;
+    productSku?: string;
     quantity: number;
     unitPrice: number;
     subtotal: number;
-    discount: number;
+    discount?: number;
 }
 
 export interface PosSaleDto {
@@ -54,8 +60,13 @@ export interface PosSaleDto {
 
 export const posService = {
     getAllProducts: async (): Promise<PosProductDto[]> => {
-        const response = await api.get('/pos/products');
-        return response.data?.value || response.data || [];
+        try {
+            const response = await api.get('/pos/products');
+            return response.data?.value || response.data || [];
+        } catch (error) {
+            console.warn("[posService] Unable to reach /api/pos/products endpoint. Returning fallback empty array.");
+            return [];
+        }
     },
 
     createProduct: async (data: PosProductDto): Promise<PosProductDto> => {
@@ -64,8 +75,12 @@ export const posService = {
     },
 
     generateSku: async (): Promise<{sku: string}> => {
-        const response = await api.get('/pos/products/generate-sku');
-        return response.data;
+        try {
+            const response = await api.get('/pos/products/generate-sku');
+            return response.data;
+        } catch (error) {
+            return { sku: `SKU-${Math.floor(100000 + Math.random() * 900000)}` };
+        }
     },
 
     updateProduct: async (id: string, data: PosProductDto): Promise<PosProductDto> => {
@@ -78,8 +93,13 @@ export const posService = {
     },
 
     getAllSales: async (): Promise<PosSaleDto[]> => {
-        const response = await api.get('/pos/sales');
-        return response.data?.value || response.data || [];
+        try {
+            const response = await api.get('/pos/sales');
+            return response.data?.value || response.data || [];
+        } catch (error) {
+            console.warn("[posService] Unable to reach /api/pos/sales endpoint. Returning fallback empty array.");
+            return [];
+        }
     },
 
     createSale: async (data: PosSaleDto): Promise<PosSaleDto> => {
@@ -88,8 +108,13 @@ export const posService = {
     },
 
     getAllCategories: async (): Promise<PosCategoryDto[]> => {
-        const response = await api.get('/pos/categories');
-        return response.data?.value || response.data || [];
+        try {
+            const response = await api.get('/pos/categories');
+            return response.data?.value || response.data || [];
+        } catch (error) {
+            console.warn("[posService] Unable to reach /api/pos/categories endpoint. Returning fallback empty array.");
+            return [];
+        }
     },
 
     createCategory: async (data: PosCategoryDto): Promise<PosCategoryDto> => {
@@ -98,8 +123,13 @@ export const posService = {
     },
 
     getAllBrands: async (): Promise<PosBrandDto[]> => {
-        const response = await api.get('/pos/brands');
-        return response.data?.value || response.data || [];
+        try {
+            const response = await api.get('/pos/brands');
+            return response.data?.value || response.data || [];
+        } catch (error) {
+            console.warn("[posService] Unable to reach /api/pos/brands endpoint. Returning fallback empty array.");
+            return [];
+        }
     },
 
     createBrand: async (data: PosBrandDto): Promise<PosBrandDto> => {

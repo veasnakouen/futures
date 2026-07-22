@@ -40,11 +40,17 @@ const ClientFilters: React.FC<ClientFiltersProps> = ({
         {/* Top Row: Search & Toggle */}
         <div className="flex gap-3 items-center w-full">
           <SearchInput
-                    placeholder="Search name or registration code..."
-                    value={filters.search}
-                    onChange={setFilters}
-                    containerClassName="flex-1"
-                  />
+            placeholder="Search name or registration code..."
+            value={typeof filters === "object" && filters !== null ? filters.search || "" : String(filters || "")}
+            onChange={(val) =>
+              setFilters((prev: any) =>
+                typeof prev === "object" && prev !== null
+                  ? { ...prev, search: val }
+                  : { search: val, branch: "", status: "" }
+              )
+            }
+            containerClassName="flex-1"
+          />
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-md transition-all text-sm font-bold shadow-sm ${isExpanded ?"bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400":"bg-white dark:bg-gray-800  text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}

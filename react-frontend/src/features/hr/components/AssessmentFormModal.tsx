@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, Button, TextInput, Textarea, Table, TableHead, TableHeadCell, TableBody, TableRow, TableCell, Select } from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
-import { X, FileText, Save, Plus, Trash2, Printer } from "lucide-react";
+import { X, FileText, Save, Plus, Trash2, Printer, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
 import AssessmentPreviewModal from "./AssessmentPreviewModal";
 import ConfirmModal from "./ConfirmModal";
@@ -17,6 +17,18 @@ interface AssessmentFormModalProps {
   initialTicketId?: number | null;
 }
 
+const initialFormState = {
+  brand: "",
+  model: "",
+  itemCode: "",
+  subject: "",
+  issueDescription: "",
+  replacementAction: "REPLACE_PRODUCT",
+  replacementProduct: "",
+  estimatedBudget: "",
+  approvalStatus: "PENDING_APPROVAL",
+};
+
 const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
   isOpen,
   onClose,
@@ -30,13 +42,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
   const [selectedAssessmentId, setSelectedAssessmentId] = useState<
     number | null
   >(null);
-  const [formData, setFormData] = useState({
-    brand: "",
-    model: "",
-    itemCode: "",
-    subject: "",
-    issueDescription: "",
-  });
+  const [formData, setFormData] = useState(initialFormState);
 
   const [selectedTicketId, setSelectedTicketId] = useState<string>("");
   const [requesterName, setRequesterName] = useState("");
@@ -61,13 +67,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
       setSelectedAssessmentId(null);
       setRequesterName("");
       setDepartment("");
-      setFormData({
-        brand: "",
-        model: "",
-        itemCode: "",
-        subject: "",
-        issueDescription: "",
-      });
+      setFormData(initialFormState);
       setItems([]);
     }
   }, [isOpen, initialTicketId]);
@@ -143,13 +143,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
       });
       toast.success("Assessment Form saved successfully!");
       // Reset
-      setFormData({
-        brand: "",
-        model: "",
-        itemCode: "",
-        subject: "",
-        issueDescription: "",
-      });
+      setFormData(initialFormState);
       setItems([]);
       setSelectedTicketId("");
     } catch (err) {
@@ -205,13 +199,7 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
     setSelectedTicketId("");
     setRequesterName("");
     setDepartment("");
-    setFormData({
-      brand: "",
-      model: "",
-      itemCode: "",
-      subject: "",
-      issueDescription: "",
-    });
+    setFormData(initialFormState);
     setItems([]);
   };
 
@@ -226,6 +214,10 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
       itemCode: a.itemCode || "",
       subject: a.subject || "",
       issueDescription: a.issueDescription || "",
+      replacementAction: a.replacementAction || "REPLACE_PRODUCT",
+      replacementProduct: a.replacementProduct || "",
+      estimatedBudget: a.estimatedBudget || "",
+      approvalStatus: a.approvalStatus || "PENDING_APPROVAL",
     });
     setItems(a.items || []);
   };
@@ -339,6 +331,54 @@ const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
                 setFormData({ ...formData, issueDescription: e.target.value })
               }
             />
+          </div>
+
+          {/* Product / Hardware Replacement Request Assessment */}
+          <div className="p-4 bg-purple-50/50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 rounded-2xl mb-6 space-y-4">
+            <h4 className="text-xs font-black uppercase text-purple-700 dark:text-purple-300 tracking-wider flex items-center gap-2">
+              <RefreshCw size={14} /> Product Replacement & Hardware Request Form
+            </h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider block mb-1">
+                  Replacement Action Required
+                </label>
+                <Select
+                  sizing="sm"
+                  value={formData.replacementAction}
+                  onChange={(e) => setFormData({ ...formData, replacementAction: e.target.value })}
+                >
+                  <option value="REPLACE_PRODUCT">Replace with New Product</option>
+                  <option value="REPAIR_COMPONENT">Component Level Repair</option>
+                  <option value="EOL_UPGRADE">End-of-Life (EOL) Upgrade</option>
+                  <option value="NO_REPLACEMENT">No Hardware Replacement Needed</option>
+                </Select>
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider block mb-1">
+                  Estimated Budget ($)
+                </label>
+                <TextInput
+                  sizing="sm"
+                  type="number"
+                  placeholder="e.g. 1250.00"
+                  value={formData.estimatedBudget}
+                  onChange={(e) => setFormData({ ...formData, estimatedBudget: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider block mb-1">
+                Requested Replacement Product Model & Specs
+              </label>
+              <TextInput
+                sizing="sm"
+                placeholder="e.g. Dell Latitude 5540 i7-1370P 32GB RAM 1TB NVMe"
+                value={formData.replacementProduct}
+                onChange={(e) => setFormData({ ...formData, replacementProduct: e.target.value })}
+              />
+            </div>
           </div>
 
           {/* Items Table */}

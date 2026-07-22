@@ -3,7 +3,7 @@ Ran command: `docker-compose -f docker-logging.yml up -d`
 Yes, you absolutely do need to start it! The Spring Boot applications will crash or throw connection errors if they try to send logs to Logstash on port `5000` but the ELK stack isn't running yet. 
 
 However, I just tried to automatically start it for you and encountered a Docker connection error:
-`The system cannot find the file specified (//./pipe/dockerDesktopLinuxEngine)` 
+`The system cannot find the file specified (//./pipe/sdockerDesktopLinuxEngine)` 
 
 This error means that **Docker Desktop is not currently running** on your Windows machine (or it isn't installed).
 Here is what you need to do:
@@ -23,3 +23,11 @@ Here is what you need to do:
    .\start_all.bat
    ```
    
+3.login
+
+   ```
+   email: fb.chhutlayveasna@gmail.com
+   password: Fbchhutlayveasna123!
+   ```
+   
+  

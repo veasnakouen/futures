@@ -130,7 +130,7 @@ export default function CourseList() {
       header: t("actions"),
       className: "text-right",
       cell: (course) => (
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={() => handleViewStudents(course)}
             className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-colors"

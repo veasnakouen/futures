@@ -655,9 +655,9 @@ const StructureModule: React.FC<StructureModuleProps> = ({
         </div>
         <ModalHeader className="border-b bg-white dark:bg-gray-800 rounded-t-3xl">
           <div className="flex flex-col">
-            <h3 className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
+            <div className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
               Manage Departments
-            </h3>
+            </div>
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
               Initialize or decommission active divisions
             </p>
@@ -739,9 +739,9 @@ const StructureModule: React.FC<StructureModuleProps> = ({
       >
         <ModalHeader className="border-b bg-white dark:bg-gray-800 rounded-t-3xl">
           <div className="flex flex-col">
-            <h3 className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
+            <div className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
               Initialize Hierarchy Node
-            </h3>
+            </div>
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
               Map a new operational unit
             </p>
@@ -832,9 +832,9 @@ const StructureModule: React.FC<StructureModuleProps> = ({
       >
         <ModalHeader className="border-b bg-white dark:bg-gray-800 rounded-t-3xl">
           <div className="flex flex-col">
-            <h3 className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
+            <div className="text-xl font-black dark:text-white leading-tight uppercase tracking-tight">
               Reporting Matrix Editor
-            </h3>
+            </div>
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
               Orchestrate and map reporting relationships
             </p>

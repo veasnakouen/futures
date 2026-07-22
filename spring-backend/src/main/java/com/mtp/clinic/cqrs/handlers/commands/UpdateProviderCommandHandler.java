@@ -19,12 +19,21 @@ public class UpdateProviderCommandHandler {
     @Transactional
     public Optional<ProviderQueryResultDto> handle(UpdateProviderCommand command) {
         return repository.findById(command.getId()).map(entity -> {
-            entity.setFirstName(command.getFirstName());
-            entity.setLastName(command.getLastName());
-            entity.setSpecialization(command.getSpecialization());
-            entity.setContactNumber(command.getContactNumber());
-            entity.setEmail(command.getEmail());
-            entity.setIsActive(command.getIsActive());
+            if (command.getFirstName() != null) entity.setFirstName(command.getFirstName());
+            if (command.getLastName() != null) entity.setLastName(command.getLastName());
+            if (command.getSpecialization() != null) entity.setSpecialization(command.getSpecialization());
+            if (command.getContactNumber() != null) entity.setContactNumber(command.getContactNumber());
+            if (command.getEmail() != null) entity.setEmail(command.getEmail());
+            if (command.getIsActive() != null) entity.setIsActive(command.getIsActive());
+            if (command.getLicenseNumber() != null) entity.setLicenseNumber(command.getLicenseNumber());
+            if (command.getYearOfExperience() != null) entity.setYearOfExperience(command.getYearOfExperience());
+            if (command.getNpiNumber() != null) entity.setNpiNumber(command.getNpiNumber());
+            if (command.getConsultationFee() != null) entity.setConsultationFee(command.getConsultationFee());
+            if (command.getEmployeeId() != null) entity.setEmployeeId(command.getEmployeeId());
+            if (command.getRole() != null) entity.setRole(command.getRole());
+            if (command.getHiredDate() != null) entity.setHiredDate(command.getHiredDate());
+            if (command.getTerminationDate() != null) entity.setTerminationDate(command.getTerminationDate());
+            if (command.getShift() != null) entity.setShift(command.getShift());
             return mapper.toDto(repository.save(entity));
         });
     }

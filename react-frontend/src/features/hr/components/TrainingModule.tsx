@@ -15,12 +15,16 @@ import {
   UserCheck,
   AlertTriangle,
   Info,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import ModernTabs from "@/components/common/ModernTabs";
 import DatePicker from '@/components/common/DatePicker';
+import ModernPagination from "@/components/common/ModernPagination";
 import { format } from "date-fns";
 
 interface Course {
@@ -420,6 +424,63 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
     );
   });
 
+  const [adminCurrentPage, setAdminCurrentPage] = useState(1);
+  const [adminPageSize, setAdminPageSize] = useState(10);
+  const [adminSortField, setAdminSortField] = useState<string>("enrolledAt");
+  const [adminSortDirection, setAdminSortDirection] = useState<"asc" | "desc">("desc");
+
+  const handleAdminSort = (field: string) => {
+    if (adminSortField === field) {
+      setAdminSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setAdminSortField(field);
+      setAdminSortDirection("desc");
+    }
+  };
+
+  const sortedAdminEnrollments = React.useMemo(() => {
+    return [...filteredEnrollments].sort((a, b) => {
+      let aVal: any = "";
+      let bVal: any = "";
+      if (adminSortField === "staff") {
+        aVal = a.employeeName || "";
+        bVal = b.employeeName || "";
+      } else if (adminSortField === "course") {
+        aVal = a.courseTitle || "";
+        bVal = b.courseTitle || "";
+      } else if (adminSortField === "status") {
+        aVal = a.status || "";
+        bVal = b.status || "";
+      } else if (adminSortField === "progress") {
+        aVal = a.progress || 0;
+        bVal = b.progress || 0;
+      } else if (adminSortField === "enrolledAt") {
+        aVal = new Date(a.enrolledAt || 0).getTime();
+        bVal = new Date(b.enrolledAt || 0).getTime();
+      } else if (adminSortField === "deadline") {
+        aVal = new Date(a.deadline || 0).getTime();
+        bVal = new Date(b.deadline || 0).getTime();
+      }
+
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return adminSortDirection === "asc" ? aVal - bVal : bVal - aVal;
+      }
+      const res = String(aVal).localeCompare(String(bVal));
+      return adminSortDirection === "asc" ? res : -res;
+    });
+  }, [filteredEnrollments, adminSortField, adminSortDirection]);
+
+  const totalAdminItems = sortedAdminEnrollments.length;
+  const totalAdminPages = Math.ceil(totalAdminItems / adminPageSize) || 1;
+  const paginatedAdminEnrollments = sortedAdminEnrollments.slice(
+    (adminCurrentPage - 1) * adminPageSize,
+    adminCurrentPage * adminPageSize
+  );
+
+  useEffect(() => {
+    setAdminCurrentPage(1);
+  }, [adminSearchQuery]);
+
   // Metrics Calculations
   const totalEnrolled = enrollments.length;
   const completedEnrolled = enrollments.filter(
@@ -711,22 +772,70 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
           </div>
 
           {/* Staff Training Matrix Table */}
-          <div className="border-none shadow-sm dark:bg-gray-800 overflow-hidden rounded-md p-0">
+          <div className="border border-gray-100 dark:border-gray-700/80 shadow-sm dark:bg-gray-800 overflow-hidden rounded-2xl p-0 bg-white">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50/80 dark:bg-gray-700/80 text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 border-b">
-                    <th className="px-6 py-4.5">Staff Member</th>
-                    <th className="px-6 py-4.5">Course Assigned</th>
-                    <th className="px-6 py-4.5">Status</th>
-                    <th className="px-6 py-4.5">Progress</th>
-                    <th className="px-6 py-4.5">Enrolled Date</th>
-                    <th className="px-6 py-4.5">Deadline</th>
+                  <tr className="bg-gray-50/80 dark:bg-gray-700/80 text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 border-b select-none">
+                    <th
+                      className="px-6 py-4.5 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      onClick={() => handleAdminSort("staff")}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>Staff Member</span>
+                        {adminSortField === "staff" ? (adminSortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600 font-bold" /> : <ArrowDown size={12} className="text-blue-600 font-bold" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-4.5 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      onClick={() => handleAdminSort("course")}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>Course Assigned</span>
+                        {adminSortField === "course" ? (adminSortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600 font-bold" /> : <ArrowDown size={12} className="text-blue-600 font-bold" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-4.5 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      onClick={() => handleAdminSort("status")}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>Status</span>
+                        {adminSortField === "status" ? (adminSortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600 font-bold" /> : <ArrowDown size={12} className="text-blue-600 font-bold" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-4.5 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      onClick={() => handleAdminSort("progress")}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>Progress</span>
+                        {adminSortField === "progress" ? (adminSortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600 font-bold" /> : <ArrowDown size={12} className="text-blue-600 font-bold" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-4.5 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      onClick={() => handleAdminSort("enrolledAt")}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>Enrolled Date</span>
+                        {adminSortField === "enrolledAt" ? (adminSortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600 font-bold" /> : <ArrowDown size={12} className="text-blue-600 font-bold" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-4.5 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      onClick={() => handleAdminSort("deadline")}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span>Deadline</span>
+                        {adminSortField === "deadline" ? (adminSortDirection === "asc" ? <ArrowUp size={12} className="text-blue-600 font-bold" /> : <ArrowDown size={12} className="text-blue-600 font-bold" />) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      </div>
+                    </th>
                     <th className="px-6 py-4.5 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
-                  {filteredEnrollments.length === 0 ? (
+                  {totalAdminItems === 0 ? (
                     <tr>
                       <td
                         colSpan={7}
@@ -736,7 +845,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                       </td>
                     </tr>
                   ) : (
-                    filteredEnrollments.map((enroll) => (
+                    paginatedAdminEnrollments.map((enroll) => (
                       <tr
                         key={enroll.id}
                         className="hover:bg-gray-50/30 dark:hover:bg-gray-700/20 transition-colors"
@@ -815,7 +924,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                               <button
                                 onClick={() => handleManualComplete(enroll.id)}
                                 title="Mark as Completed"
-                                className="p-1.5 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                                className="p-1.5 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
                               >
                                 <CheckCircle size={16} />
                               </button>
@@ -823,7 +932,7 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                             <button
                               onClick={() => handleDeleteEnrollment(enroll.id)}
                               title="Remove Enrollment"
-                              className="p-1.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                              className="p-1.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -835,6 +944,19 @@ const TrainingModule: React.FC<TrainingModuleProps> = ({ employees = [] }) => {
                 </tbody>
               </table>
             </div>
+
+            {totalAdminItems > 0 && (
+              <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                <ModernPagination
+                  currentPage={adminCurrentPage}
+                  totalPages={totalAdminPages}
+                  onPageChange={setAdminCurrentPage}
+                  totalItems={totalAdminItems}
+                  pageSize={adminPageSize}
+                  onPageSizeChange={setAdminPageSize}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

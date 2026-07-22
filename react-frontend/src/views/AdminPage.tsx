@@ -5,8 +5,9 @@ import UserManagement from "@/features/admin/components/UserManagement";
 import RoleManagement from "@/features/admin/components/RoleManagement";
 import UserLogRecorder from "@/features/admin/components/UserLogRecorder";
 import SwitchDatabase from "@/features/admin/components/SwitchDatabase";
+import TelemetryAndDataCleanTab from "@/features/admin/components/TelemetryAndDataCleanTab";
 import ModernTabs from "@/components/common/ModernTabs";
-import { ShieldCheck, Logs, ShieldUser, DatabaseBackup } from "lucide-react";
+import { ShieldCheck, Logs, ShieldUser, DatabaseBackup, Activity } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useTranslation } from "react-i18next";
 
@@ -18,6 +19,7 @@ interface AdminPageProps {
 const TABS = [
   { id: "USERS", label: "User Access Control", icon: <ShieldUser size={18} /> },
   { id: "ROLES", label: "Role Permissions", icon: <ShieldCheck size={18} /> },
+  { id: "DATA_TELEMETRY", label: "Telemetry & Data Clean", icon: <Activity size={18} /> },
   { id: "LOGS", label: "User Log Recorder", icon: <Logs size={18} /> },
   { id: "DB", label: "Switch Database", icon: <DatabaseBackup size={18} /> },
 ];
@@ -31,7 +33,7 @@ const AdminPage = ({ isDark, setIsDark }: AdminPageProps) => {
     user?.roles?.includes("ROLE_SUPERADMIN");
 
   const filteredTabs = TABS.filter((tab) => {
-    if (tab.id === "LOGS" || tab.id === "DB") {
+    if (tab.id === "LOGS" || tab.id === "DB" || tab.id === "DATA_TELEMETRY") {
       return !!hasSystemConfig;
     }
     return true;
@@ -39,6 +41,7 @@ const AdminPage = ({ isDark, setIsDark }: AdminPageProps) => {
     let label = tab.label;
     if (tab.id === "USERS") label = t("userAccessControl");
     if (tab.id === "ROLES") label = t("rolePermissions");
+    if (tab.id === "DATA_TELEMETRY") label = t("telemetryDataClean", { defaultValue: "Telemetry & Data Clean" });
     if (tab.id === "LOGS") label = t("userLogRecorder");
     if (tab.id === "DB") label = t("switchDatabase");
     return { ...tab, label };
@@ -70,6 +73,7 @@ const AdminPage = ({ isDark, setIsDark }: AdminPageProps) => {
             >
               {activeTab === "USERS" && <UserManagement />}
               {activeTab === "ROLES" && <RoleManagement />}
+              {activeTab === "DATA_TELEMETRY" && <TelemetryAndDataCleanTab />}
               {activeTab === "LOGS" && <UserLogRecorder />}
               {activeTab === "DB" && <SwitchDatabase />}
             </motion.div>

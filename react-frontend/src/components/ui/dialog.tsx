@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import Draggable from 'react-draggable';
 
 import { cn } from "@/lib/utils";
 
@@ -10,9 +11,22 @@ const Dialog = DialogPrimitive.Root;
 
 const DialogTrigger = DialogPrimitive.Trigger;
 
-const DialogPortal = DialogPrimitive.Portal;
-
 const DialogClose = DialogPrimitive.Close;
+
+const DialogPortalContainer = ({ children }: { children: React.ReactNode }) => {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return (
+    <DialogPrimitive.Portal container={document.body}>
+      {children}
+    </DialogPrimitive.Portal>
+  );
+};
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -21,15 +35,13 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
+      "fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm data-[state=open]:animate-fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
       className,
     )}
     {...props}
   />
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
-
-import Draggable from 'react-draggable';
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
@@ -46,14 +58,14 @@ const DialogContent = React.forwardRef<
   }, [ref]);
 
   return (
-    <DialogPortal>
+    <DialogPortalContainer>
       <DialogOverlay />
-      <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none sm:p-4">
-        <Draggable handle=".modal-header" bounds="parent" nodeRef={dragRef}>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none sm:p-4">
+        <Draggable handle=".modal-header" nodeRef={dragRef}>
           <DialogPrimitive.Content
             ref={mergedRef}
             className={cn(
-              "pointer-events-auto grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-slide-up data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 sm:rounded-lg",
+              "pointer-events-auto grid w-full max-w-lg gap-4 border bg-background p-6 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.35)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)] duration-200 data-[state=open]:animate-slide-up data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 sm:rounded-2xl",
               className,
             )}
             {...props}
@@ -68,7 +80,7 @@ const DialogContent = React.forwardRef<
           </DialogPrimitive.Content>
         </Draggable>
       </div>
-    </DialogPortal>
+    </DialogPortalContainer>
   );
 });
 DialogContent.displayName = DialogPrimitive.Content.displayName;
@@ -130,7 +142,7 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
   Dialog,
-  DialogPortal,
+  DialogPortalContainer as DialogPortal,
   DialogOverlay,
   DialogClose,
   DialogTrigger,

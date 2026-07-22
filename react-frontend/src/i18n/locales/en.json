@@ -16,5 +16,6 @@
   "stock_movement": "Stock Movement",
   "movement": "Movement",
   "audit_details": "Audit Details",
-  "audit_node": "Audit Node"
+  "audit_node": "Audit Node",
+  "failedToLoadUserData": "Failed to load user data from backend service."
 }

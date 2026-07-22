@@ -43,6 +43,7 @@ import { useTranslation } from "react-i18next";
 import authService from '../../services/authService';
 import Chat from "../../features/chat/components/Chat";
 import NetworkDrawer from "./NetworkDrawer";
+import UserProfileDropdown from "./UserProfileDropdown";
 import { motion } from "framer-motion";
 import { useTheme } from '../../contexts/ThemeContext';
 import { useNotifications } from '../../contexts/NotificationContext';
@@ -596,144 +597,12 @@ const Layout = ({ children, title }: LayoutProps) => {
               </div>
             </Dropdown>
 
-            <Dropdown
-              arrowIcon={false}
-              inline
-              label={
-                <div className="flex items-center gap-2.5 p-1 pr-3 hover:bg-indigo-50 dark:hover:bg-white/[0.05] rounded-full cursor-pointer transition-all duration-300 group active:scale-95 border border-transparent hover:border-indigo-100 dark:hover:border-white/[0.05] hover:shadow-sm">
-                  <div className="w-8 h-8 min-w-[2rem] min-h-[2rem] aspect-square rounded-full shrink-0 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/40 dark:to-violet-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border-2 border-transparent group-hover:border-indigo-400 shadow-sm overflow-hidden transition-all duration-300 relative">
-                    {user?.photo ? (
-                      <img
-                        src={getFaceFocusedUrl(user.photo, 80)}
-                        className="object-cover w-full h-full rounded-full transition-transform duration-500 group-hover:scale-110"
-                      />
-                    ) : (
-                      <UserCircle size={18} className="transition-transform duration-500 group-hover:scale-110" />
-                    )}
-                  </div>
-                  <div className="hidden sm:block text-left">
-                    <p className="text-[9px] font-bold text-gray-400 dark:text-white/30 uppercase leading-none mb-0.5 tracking-wider">
-                      {Array.isArray(user?.roles) &&
-                        user.roles.some((r: any) =>
-                          (typeof r === "string" ? r : r?.name || "")
-                            .toUpperCase()
-                            .includes("SUPERADMIN"),
-                        )
-                        ? "Super Admin"
-                        : Array.isArray(user?.roles) &&
-                          user.roles.some((r: any) =>
-                            (typeof r === "string" ? r : r?.name || "")
-                              .toUpperCase()
-                              .includes("ADMIN"),
-                          )
-                          ? "Administrator"
-                          : "Standard User"}
-                    </p>
-                    <p className="text-[12px] font-bold dark:text-white text-gray-800 leading-none">
-                      {user?.username || "Guest"}
-                    </p>
-                  </div>
-                  <ChevronDown
-                    size={12}
-                    className="text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-transform duration-300 ml-0.5 [[aria-expanded=true]_&]:rotate-180"
-                  />
-                </div>
-              }
-            >
-              <DropdownHeader>
-                <span className="block text-sm font-black dark:text-white">
-                  Logged in as
-                </span>
-                <span className="block truncate text-xs font-bold text-blue-600 dark:text-blue-400">
-                  {user?.email || "admin@mtp.org"}
-                </span>
-              </DropdownHeader>
-
-              <DropdownItem onClick={() => navigate("/settings")}>
-                <div className="flex items-center gap-2">
-                  <User size={16} />
-                  <span>Profile Settings</span>
-                </div>
-              </DropdownItem>
-
-              {/* <DropdownDivider /> */}
-
-              <DropdownDivider />
-              <div className="px-4 py-2 text-xs font-black dark:text-gray-400 uppercase tracking-wider">
-                Theme
-              </div>
-              <DropdownItem onClick={() => setTheme("light")}>
-                <div
-                  className={`flex items-center gap-2 ${theme === "light" ? "text-blue-600 font-bold" : ""}`}
-                >
-                  <Sun size={16} />
-                  <span>Light Mode</span>
-                </div>
-              </DropdownItem>
-              <DropdownItem onClick={() => setTheme("dark")}>
-                <div
-                  className={`flex items-center gap-2 ${theme === "dark" ? "text-blue-600 font-bold" : ""}`}
-                >
-                  <Moon size={16} />
-                  <span>Dark Mode (Default)</span>
-                </div>
-              </DropdownItem>
-              <DropdownItem onClick={() => setTheme("antigravity")}>
-                <div
-                  className={`flex items-center gap-2 ${theme === "antigravity" ? "text-blue-600 font-bold" : ""}`}
-                >
-                  <Monitor size={16} />
-                  <span>Antigravity Theme</span>
-                </div>
-              </DropdownItem>
-
-              <DropdownItem>
-                <div className="flex items-center gap-2 w-full">
-                  <Languages size={16} />
-                  <div className="flex gap-2 flex-1">
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        i18n.changeLanguage("en");
-                      }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "en" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
-                    >
-                      EN
-                    </div>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        i18n.changeLanguage("fr");
-                      }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "fr" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
-                    >
-                      FR
-                    </div>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        i18n.changeLanguage("km");
-                      }}
-                      className={`flex-1 text-[10px] font-bold py-1 rounded text-center cursor-pointer transition-colors ${i18n.language === "km" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600"}`}
-                    >
-                      KM
-                    </div>
-                  </div>
-                </div>
-              </DropdownItem>
-
-              <DropdownDivider />
-
-              <DropdownItem
-                onClick={handleLogout}
-                className="text-red-600 dark:text-red-400 font-bold"
-              >
-                <div className="flex items-center gap-2">
-                  <LogOut size={16} />
-                  <span>Logout Session</span>
-                </div>
-              </DropdownItem>
-            </Dropdown>
+            <UserProfileDropdown
+              user={user}
+              theme={theme}
+              setTheme={setTheme}
+              handleLogout={handleLogout}
+            />
           </div>
         </header>
         <div className="flex-1 overflow-y-auto bg-[#f4f5f9] dark:bg-[#080c14] p-4 lg:p-6">

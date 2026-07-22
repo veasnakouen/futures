@@ -37,17 +37,29 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const user = authService.getCurrentUser();
     if (user) {
-      // 1. Fetch existing notifications on load
+      // 1. Fetch existing notifications on load safely
       api.get("/notifications")
         .then(res => {
-          setNotifications(res.data);
+          if (Array.isArray(res.data)) {
+            setNotifications(res.data);
+          } else if (res.data && Array.isArray(res.data.content)) {
+            setNotifications(res.data.content);
+          } else {
+            setNotifications([]);
+          }
         })
-        .catch(err => console.warn("Failed to fetch notifications"));
+        .catch(err => {
+          console.warn("Failed to fetch notifications:", err);
+          setNotifications([]);
+        });
 
       // 2. Connect to WebSocket and subscribe to personal queue
       websocketService.connect(() => {
         websocketService.subscribe("/user/queue/notifications", (newNotification: Notification) => {
-          setNotifications((prev) => [newNotification, ...prev]);
+          setNotifications((prev) => {
+            const safePrev = Array.isArray(prev) ? prev : [];
+            return [newNotification, ...safePrev];
+          });
           toast.success(newNotification.title || "New Notification");
         });
 
@@ -62,7 +74,10 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
             createdAt: event.timestamp || new Date().toISOString(),
             recipientUsername: ""
           };
-          setNotifications((prev) => [broadcastNotification, ...prev]);
+          setNotifications((prev) => {
+            const safePrev = Array.isArray(prev) ? prev : [];
+            return [broadcastNotification, ...safePrev];
+          });
           toast.success(event.message);
         });
       });
@@ -76,20 +91,22 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const markAsRead = async (id: number) => {
     try {
       await api.put(`/notifications/${id}/read`);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
+      setNotifications((prev) => {
+        const safePrev = Array.isArray(prev) ? prev : [];
+        return safePrev.map((n) => (n.id === id ? { ...n, read: true } : n));
+      });
     } catch (err) {
       console.error("Failed to mark notification as read", err);
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+  const unreadCount = safeNotifications.filter(n => !n.read).length;
 
   return (
     <NotificationContext.Provider
       value={{
-        notifications,
+        notifications: safeNotifications,
         setNotifications,
         markAsRead,
         unreadCount,

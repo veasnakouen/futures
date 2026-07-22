@@ -3,7 +3,7 @@ import { Search, X } from "lucide-react";
 
 export interface SearchInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange"> {
-  value: string;
+  value?: any;
   onChange: (value: string) => void;
   containerClassName?: string;
   inputClassName?: string;
@@ -18,6 +18,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
   placeholder = "Search...",
   ...props
 }) => {
+  const safeValue =
+    typeof value === "string" || typeof value === "number"
+      ? String(value)
+      : "";
+
   return (
     <div className={`relative flex-1 min-w-[200px] group ${containerClassName}`}>
       <Search
@@ -25,18 +30,18 @@ const SearchInput: React.FC<SearchInputProps> = ({
         size={18}
       />
       <input
+        {...props}
         type="text"
-        value={value}
+        value={safeValue}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full pl-12 pr-10 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400 ${inputClassName} ${className}`}
-        {...props}
+        className={`w-full pl-12 pr-10 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/70 dark:border-gray-700/70 rounded-2xl text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 transition-all shadow-inner placeholder:text-gray-400 placeholder:font-medium ${inputClassName} ${className}`}
       />
-      {value && (
+      {Boolean(safeValue) && (
         <button
           type="button"
           onClick={() => onChange("")}
-          className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors z-10"
+          className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors z-10 cursor-pointer"
         >
           <X size={16} />
         </button>

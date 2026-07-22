@@ -16,10 +16,10 @@ public class InvoiceQueryResultDto {
     private InvoiceStatus status;
     private String referenceId;
     private ModuleSource sourceModule;
-    
+
     private String headerText;
     private String footerText;
-    
+
     private String paymentMethod;
     private String paymentLink;
 

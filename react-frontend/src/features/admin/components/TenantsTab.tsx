@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {Button, Spinner, Alert, Badge} from '@/lib/flowbite-compat';
 import { TenantDto, tenantService } from '@/services/tenantService';
 import TenantFormModal from './TenantFormModal';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import { Building2, Plus, Edit2, Trash2, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -14,6 +15,7 @@ const TenantsTab = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [tenantToEdit, setTenantToEdit] = useState<TenantDto | null>(null);
+    const [deleteTenantId, setDeleteTenantId] = useState<string | null>(null);
 
     const fetchTenants = async () => {
         setLoading(true);
@@ -41,14 +43,19 @@ const TenantsTab = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: string) => {
-        if (window.confirm(t("confirmDeleteOrganization"))) {
-            try {
-                await tenantService.deleteTenant(id);
-                fetchTenants();
-            } catch (err: any) {
-                setError(err.response?.data?.message || t("failedToDeleteOrganization"));
-            }
+    const handleDelete = (id: string) => {
+        setDeleteTenantId(id);
+    };
+
+    const handleConfirmDeleteTenant = async () => {
+        if (!deleteTenantId) return;
+        try {
+            await tenantService.deleteTenant(deleteTenantId);
+            fetchTenants();
+        } catch (err: any) {
+            setError(err.response?.data?.message || t("failedToDeleteOrganization"));
+        } finally {
+            setDeleteTenantId(null);
         }
     };
 
@@ -164,6 +171,16 @@ const TenantsTab = () => {
                 onClose={() => setIsModalOpen(false)}
                 tenantToEdit={tenantToEdit}
                 onSuccess={fetchTenants}
+            />
+
+            <ConfirmModal
+                show={!!deleteTenantId}
+                onClose={() => setDeleteTenantId(null)}
+                onConfirm={handleConfirmDeleteTenant}
+                title={t("organizationManagement")}
+                message={t("confirmDeleteOrganization")}
+                confirmText={t("delete")}
+                type="danger"
             />
         </div>
     );

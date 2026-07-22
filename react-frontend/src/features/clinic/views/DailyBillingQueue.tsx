@@ -95,7 +95,7 @@ export default function DailyBillingQueue() {
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                         {patient.firstName} {patient.lastName}
                       </h3>
-                      {patient.poorId && (
+                      {"poorId" in patient && (patient as any).poorId && (
                         <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider rounded-full">
                           Poor ID
                         </span>

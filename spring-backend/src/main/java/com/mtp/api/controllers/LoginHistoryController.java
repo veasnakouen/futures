@@ -22,6 +22,11 @@ public class LoginHistoryController {
         return ResponseEntity.ok(loginHistoryService.getAllAccessLogs());
     }
 
+    @GetMapping("/analytics")
+    public ResponseEntity<java.util.Map<String, Object>> getAnalytics() {
+        return ResponseEntity.ok(loginHistoryService.getAnalyticsData());
+    }
+
     @org.springframework.web.bind.annotation.DeleteMapping("/clear")
     public ResponseEntity<Void> clearLogs(@org.springframework.web.bind.annotation.RequestParam String type) {
         loginHistoryService.clearLogs(type);

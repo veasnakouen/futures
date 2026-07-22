@@ -1,18 +1,17 @@
-"use client";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Edit2, Trash2, Activity } from "lucide-react";
+import { Plus, Edit2, Trash2, Activity, Trophy } from "lucide-react";
 import { schoolService, ExtracurricularDto } from "../../../services/schoolService";
-import ModernPagination from "../../../components/common/ModernPagination";
 import ExtracurricularFormModal from "./ExtracurricularFormModal";
 import ConfirmModal from "../../../components/common/ConfirmModal";
+import DataTable, { ColumnDef } from "../../../components/common/DataTable";
 import { toast } from "react-hot-toast";
-import { Spinner } from "@/components/ui/spinner";
 
 export default function ExtracurricularList() {
-  const [page, setPage] = useState(0);
-  const [size] = useState(10);
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(10);
+  const [search, setSearch] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ExtracurricularDto | null>(null);
@@ -21,8 +20,8 @@ export default function ExtracurricularList() {
   const { t } = useTranslation();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["extracurriculars", page, size],
-    queryFn: () => schoolService.getExtracurriculars(page, size).then((res) => res.data),
+    queryKey: ["extracurriculars", page - 1, size],
+    queryFn: () => schoolService.getExtracurriculars(page - 1, size).then((res) => res.data),
   });
 
   const deleteMutation = useMutation({
@@ -49,95 +48,159 @@ export default function ExtracurricularList() {
     setIsFormOpen(true);
   };
 
+  const allActivities: ExtracurricularDto[] = data?.content || [];
+  const filteredActivities = allActivities.filter((a) => {
+    if (!search) return true;
+    const query = search.toLowerCase();
+    return (
+      (a.name && a.name.toLowerCase().includes(query)) ||
+      (String(a.id).includes(query))
+    );
+  });
+
+  const totalElements = data?.totalElements || filteredActivities.length;
+  const totalPages = data?.totalPages || Math.ceil(totalElements / size) || 1;
+
+  const columns: ColumnDef<ExtracurricularDto>[] = [
+    {
+      header: t("id"),
+      accessorKey: "id",
+      sortable: true,
+      cell: (activity) => (
+        <span className="font-mono text-xs font-bold text-gray-500">
+          #{activity.id}
+        </span>
+      ),
+    },
+    {
+      header: t("activityName"),
+      accessorKey: "name",
+      sortable: true,
+      cell: (activity) => (
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 flex items-center justify-center font-black text-xs shrink-0">
+            <Trophy size={18} />
+          </div>
+          <span className="font-bold text-sm text-gray-900 dark:text-white">
+            {activity.name}
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: t("actions"),
+      cell: (activity) => (
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => handleEdit(activity)}
+            className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all cursor-pointer"
+            title="Edit Activity"
+          >
+            <Edit2 size={16} />
+          </button>
+          <button
+            onClick={() => handleDelete(activity)}
+            className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all cursor-pointer"
+            title="Delete Activity"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded shadow-xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded-2xl shadow-xl">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-transparent hover:bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 rounded-full hover:shadow-inner">
+          <div className="p-3 bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 rounded-2xl shadow-inner">
             <Activity size={28} className="drop-shadow-sm" />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{t("extracurricularActivities")}</h2>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-widest">{t("manageActivitiesDesc")}</p>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+              {t("extracurricularActivities")}
+            </h2>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-widest">
+              {t("manageActivitiesDesc")}
+            </p>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative flex-1 sm:w-64 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-fuchsia-500 transition-colors" size={18} />
-            <input
-              type="text"
-              placeholder={t("searchActivities")}
-              className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded text-sm focus:ring-2 focus:ring-fuchsia-500/50 dark:text-white transition-all shadow-inner placeholder:text-gray-400"
-            />
-          </div>
-          <button
-            onClick={handleCreate}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-600/75 to-indigo-600 hover:from-indigo-600 hover:to-orange-600/75 text-white px-6 py-3 rounded font-bold transition-all duratison-7500 ease-in-out shadow-lg shadow-fuchsia-500/30 whitespace-nowrap hover:scale-105 active:scale-90"
-          >
-            <Plus size={20} strokeWidth={2.5} /> {t("addActivity")}
-          </button>
-        </div>
+        <button
+          onClick={handleCreate}
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-fuchsia-500/30 whitespace-nowrap hover:scale-105 active:scale-95 cursor-pointer"
+        >
+          <Plus size={20} strokeWidth={2.5} /> {t("addActivity")}
+        </button>
       </div>
 
-      {/* Data Table */}
-      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 rounded shadow-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
-            <thead className="text-xs text-gray-900 dark:text-gray-100 uppercase bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-md">
-              <tr>
-                <th className="px-8 py-5 font-black tracking-wider">{t("id")}</th>
-                <th className="px-6 py-5 font-black tracking-wider">{t("activityName")}</th>
-                <th className="px-8 py-5 font-black tracking-wider text-right">{t("actions")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200/20 dark:divide-gray-700/30">
-              {isLoading ? (
-                <tr><td colSpan={3} className="px-6 py-12 text-center text-gray-500"><div className="flex justify-center"><Spinner size="xl" /></div></td></tr>
-              ) : data?.content?.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="px-6 py-16 text-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="w-16 h-16 bg-fuchsia-500/10 dark:bg-fuchsia-900/20 rounded-full flex items-center justify-center mb-4">
-                        <Activity className="w-8 h-8 text-fuchsia-500 dark:text-fuchsia-400" />
-                      </div>
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                        {t("noActivitiesFound")}
-                      </h3>
-                      <p className="text-sm text-gray-500 max-w-sm mx-auto border rounded hover:cursor-pointer px-2 py-1" onClick={handleCreate}>
-                        {t("+ addFirstActivity")}
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                data?.content?.map((activity: ExtracurricularDto) => (
-                  <tr key={activity.id} className="hover:bg-white/60 dark:hover:bg-gray-800/40 transition-colors group">
-                    <td className="px-8 py-5 font-bold text-gray-900 dark:text-white">
-                      #{activity.id}
-                    </td>
-                    <td className="px-6 py-5 font-medium text-gray-900 dark:text-white">
-                      {activity.name}
-                    </td>
-                    <td className="px-8 py-5 text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => handleEdit(activity)} className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"><Edit2 size={18} /></button>
-                        <button onClick={() => handleDelete(activity)} className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"><Trash2 size={18} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        {data?.totalPages > 1 && (
-          <div className="p-6 border-t border-gray-200/20 dark:border-gray-700/30 bg-gray-50/30 dark:bg-gray-800/20">
-            <ModernPagination currentPage={page} totalPages={data.totalPages} onPageChange={setPage} />
+      {/* Enterprise DataTable */}
+      <DataTable
+        data={filteredActivities}
+        columns={columns}
+        isLoading={isLoading}
+        searchQuery={search}
+        onSearchChange={(val) => {
+          setSearch(val);
+          setPage(1);
+        }}
+        searchPlaceholder={t("searchActivities")}
+        currentPage={page}
+        totalPages={totalPages}
+        totalItems={totalElements}
+        pageSize={size}
+        onPageChange={setPage}
+        onPageSizeChange={(newSize) => {
+          setSize(newSize);
+          setPage(1);
+        }}
+        enableViewToggle={true}
+        enableColumnToggle={true}
+        emptyMessage={t("noActivitiesFound")}
+        renderGridCard={(activity: ExtracurricularDto) => (
+          <div className="p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+            <div className="flex items-center gap-3.5 mb-3">
+              <div className="w-11 h-11 rounded-full bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 flex items-center justify-center font-black text-xs shrink-0">
+                <Trophy size={20} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-black text-sm text-gray-900 dark:text-white truncate">
+                  {activity.name}
+                </h4>
+                <span className="text-[10px] font-mono text-gray-400 font-bold">
+                  #{activity.id}
+                </span>
+              </div>
+
+              {/* Hover Action Buttons */}
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm p-1 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(activity);
+                  }}
+                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors cursor-pointer"
+                  title="Edit Activity"
+                >
+                  <Edit2 size={14} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(activity);
+                  }}
+                  className="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors cursor-pointer"
+                  title="Delete Activity"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
           </div>
         )}
-      </div>
+      />
 
       <ExtracurricularFormModal
         isOpen={isFormOpen}
@@ -148,12 +211,13 @@ export default function ExtracurricularList() {
       <ConfirmModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
-        onConfirm={() => deleteMutation.mutate(selectedActivity!.id)}
+        onConfirm={() => {
+          if (selectedActivity?.id) {
+            deleteMutation.mutate(selectedActivity.id.toString());
+          }
+        }}
         title={t("deleteActivity")}
-        message={t("confirmDeleteActivity", { name: selectedActivity?.name })}
-        confirmText={t("deleteActivity")}
-        type="danger"
-        isLoading={deleteMutation.isPending}
+        message={t("confirmDeleteActivity")}
       />
     </div>
   );

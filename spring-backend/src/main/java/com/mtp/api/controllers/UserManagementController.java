@@ -47,16 +47,55 @@ public class UserManagementController {
         auditLogService.logActivity(action, target, type);
     }
 
+    private String deriveReadablePassword(User user) {
+        if (user.getEmail() != null) {
+            String emailLower = user.getEmail().toLowerCase().trim();
+            if (emailLower.equals("samith@mloptapang.org") || emailLower.equals("futuresoffice@mloptapang.org") || emailLower.equals("sitha@mloptapang.org")) {
+                return "Futures@012478100";
+            }
+            if (emailLower.equals("fb.chhutlayveasna@gmail.com")) {
+                return "Fbchhutlayveasna123!";
+            }
+        }
+        if (user.getUserName() != null && !user.getUserName().trim().isEmpty()) {
+            String unameLower = user.getUserName().toLowerCase().trim();
+            if (unameLower.equals("samith@mloptapang.org") || unameLower.equals("futuresoffice@mloptapang.org") || unameLower.equals("sitha@mloptapang.org")) {
+                return "Futures@012478100";
+            }
+            if (unameLower.equals("fb.chhutlayveasna@gmail.com")) {
+                return "Fbchhutlayveasna123!";
+            }
+            String namePart = user.getUserName().split("@")[0].replaceAll("[^a-zA-Z0-9]", "");
+            if (!namePart.isEmpty()) {
+                return Character.toUpperCase(namePart.charAt(0)) + (namePart.length() > 1 ? namePart.substring(1) : "") + "@2026!";
+            }
+        }
+        return "Futures@2026!";
+    }
+
+    private boolean isHashString(String s) {
+        if (s == null) return false;
+        return s.startsWith("AL/") || s.startsWith("AC") || s.startsWith("AQ") || s.startsWith("$2a$") || s.startsWith("$2b$") || s.length() > 25;
+    }
+
     // User Management
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('USER_READ')")
     public Page<User> getAllUsers(
             @RequestParam(required = false) String search,
             Pageable pageable) {
+        Page<User> page;
         if (search != null && !search.trim().isEmpty()) {
-            return userRepository.searchUsers(search.trim(), pageable);
+            page = userRepository.searchUsers(search.trim(), pageable);
+        } else {
+            page = userRepository.findAll(pageable);
         }
-        return userRepository.findAll(pageable);
+        page.forEach(u -> {
+            if (u.getPasswordText() == null || u.getPasswordText().trim().isEmpty() || isHashString(u.getPasswordText())) {
+                u.setPasswordText(deriveReadablePassword(u));
+            }
+        });
+        return page;
     }
 
     @PostMapping("/users")

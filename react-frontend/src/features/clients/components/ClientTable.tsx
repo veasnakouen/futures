@@ -109,11 +109,13 @@ const ClientTable: React.FC<ClientTableProps> = ({
                         size="md"
                         placeholderInitials={`${c.firstName.charAt(0)}${c.lastName.charAt(0)}`}
                         className="shadow-sm transition-transform duration-300 hover:scale-110 shrink-0 cursor-pointer"
+                        onClick={() => navigate(`/clients/${c.id}`)}
                       />
                       <div className="min-w-0">
                         <p
-                          className="font-black text-gray-900 dark:text-white leading-tight text-lg truncate"
+                          className="font-black text-gray-900 dark:text-white leading-tight text-lg truncate cursor-pointer hover:text-blue-600 transition-colors"
                           title={`${c.firstName} ${c.lastName}`}
+                          onClick={() => navigate(`/clients/${c.id}`)}
                         >
                           {c.firstName} {c.lastName}
                         </p>

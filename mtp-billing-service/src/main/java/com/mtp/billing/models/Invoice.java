@@ -26,13 +26,13 @@ import java.util.ArrayList;
 @NoArgsConstructor
 public class Invoice {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID) // to make auto generate
     private String id;
 
     @org.hibernate.annotations.TenantId
     @Column(name = "tenant_id")
     private String tenantId;
-    
+
     private String invoiceNumber;
     private LocalDate issueDate;
     private LocalDate dueDate;
@@ -41,7 +41,7 @@ public class Invoice {
     private InvoiceStatus status = InvoiceStatus.DRAFT;
 
     private String referenceId; // e.g., bookingId or appointmentId
-    
+
     @Enumerated(EnumType.STRING)
     private ModuleSource sourceModule = ModuleSource.GENERAL;
 

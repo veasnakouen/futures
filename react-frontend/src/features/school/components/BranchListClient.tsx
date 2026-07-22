@@ -19,7 +19,17 @@ export default function BranchListClient({ initialBranches }: { initialBranches:
 
   const { data: branches = initialBranches, isLoading } = useQuery<BranchDto[]>({
     queryKey: ["branches"],
-    queryFn: () => schoolService.getBranches().then((res) => res.data),
+    queryFn: async () => {
+      try {
+        const res = await schoolService.getBranches();
+        const data = res.data;
+        const list = Array.isArray(data) ? data : (data?.data || []);
+        return list.length > 0 ? list : initialBranches;
+      } catch (err) {
+        console.warn("[School Service] Client query failed, using fallback branches:", err);
+        return initialBranches;
+      }
+    },
     initialData: initialBranches,
   });
 

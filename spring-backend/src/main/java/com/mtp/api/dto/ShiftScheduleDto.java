@@ -25,4 +25,18 @@ public class ShiftScheduleDto {
     private String octShift;
     private String novShift;
     private String decShift;
+
+    // Planned Annual Leave days from AnnualLeavePlan
+    private Double janAlDays;
+    private Double febAlDays;
+    private Double marAlDays;
+    private Double aprAlDays;
+    private Double mayAlDays;
+    private Double junAlDays;
+    private Double julAlDays;
+    private Double augAlDays;
+    private Double sepAlDays;
+    private Double octAlDays;
+    private Double novAlDays;
+    private Double decAlDays;
 }

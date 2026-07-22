@@ -2,7 +2,6 @@ package com.mtp.billing.models;
 
 import com.mtp.billing.enums.ModuleSource;
 
-
 import java.time.LocalDate;
 
 import com.mtp.billing.enums.Status;
@@ -21,18 +20,18 @@ import lombok.NoArgsConstructor;
 @Table(name = "sys_payment")
 @NoArgsConstructor
 public class Payment {
-@Id
-@GeneratedValue(strategy = GenerationType.UUID)
-private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
-@org.hibernate.annotations.TenantId
-@Column(name = "tenant_id")
-private String tenantId;
-private int amount;
-private LocalDate submitDate;
-private Status status;
-private int adjudicatedAmount;
+    @org.hibernate.annotations.TenantId
+    @Column(name = "tenant_id")
+    private String tenantId;
+    private int amount;
+    private LocalDate submitDate;
+    private Status status;
+    private int adjudicatedAmount;
 
-private String referenceId;
-private ModuleSource sourceModule = ModuleSource.CLINIC;
+    private String referenceId;
+    private ModuleSource sourceModule = ModuleSource.CLINIC;
 }

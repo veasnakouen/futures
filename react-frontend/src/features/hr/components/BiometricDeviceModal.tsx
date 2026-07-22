@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {Modal, ModalBody, ModalFooter, Label, TextInput, Badge, Button, Spinner} from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import {
   X,
   Server,
@@ -221,19 +222,28 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
     }
   };
 
-  const removeDevice = async (id: number) => {
-    if (!window.confirm("Permanently decommission this hardware node?")) return;
+  const [decommissionId, setDecommissionId] = useState<number | null>(null);
+
+  const removeDevice = (id: number) => {
+    setDecommissionId(id);
+  };
+
+  const handleConfirmDecommission = async () => {
+    if (!decommissionId) return;
     try {
-      await api.delete(`/hr/attendance/devices/${id}`);
+      await api.delete(`/hr/attendance/devices/${decommissionId}`);
       toast.success("Device decommissioned from network");
       fetchDevices();
     } catch (err) {
       toast.error("Failed to decommission device");
+    } finally {
+      setDecommissionId(null);
     }
   };
 
   return (
-    <Modal show={isOpen} onClose={onClose} size="3xl">
+    <>
+      <Modal show={isOpen} onClose={onClose} size="3xl">
       <CustomModalHeader
         title="Biometric Node Manager"
         subtitle="Hardware Fleet Configuration"
@@ -512,6 +522,17 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({
         </div>
       </ModalFooter>
     </Modal>
+
+      <ConfirmModal
+        show={!!decommissionId}
+        onClose={() => setDecommissionId(null)}
+        onConfirm={handleConfirmDecommission}
+        title="Decommission Hardware Node"
+        message="Permanently decommission this hardware node from the network?"
+        confirmText="Decommission Device"
+        type="danger"
+      />
+    </>
   );
 };
 

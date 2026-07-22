@@ -157,7 +157,7 @@ export default function StudentList() {
       header: t("actions"),
       className: "text-right",
       cell: (student) => (
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button onClick={() => handleView(student)} className="p-2 text-green-600 bg-green-50 dark:bg-green-500/10 hover:bg-green-100 dark:hover:bg-green-500/20 rounded-xl transition-all"><Eye size={18} /></button>
           <button onClick={() => handleEdit(student)} className="p-2 text-blue-600 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"><Edit2 size={18} /></button>
           <button onClick={() => handleDelete(student)} className="p-2 text-rose-600 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl transition-all"><Trash2 size={18} /></button>

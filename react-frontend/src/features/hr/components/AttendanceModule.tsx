@@ -116,7 +116,9 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
       .then(res => {
         if (res.data?.value) setAppLogo(res.data.value);
       })
-      .catch(err => console.error("Could not fetch APP_LOGO", err));
+      .catch(() => {
+        // Fallback to null logo silently without throwing Next.js error overlay
+      });
   }, []);
 
   const fetchQrCode = async (isPermanent: boolean = false) => {

@@ -17,8 +17,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/compliance")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
-// @PreAuthorize("hasAuthority('SYSTEM_CONFIG')")
 @Slf4j
 public class ComplianceController {
 

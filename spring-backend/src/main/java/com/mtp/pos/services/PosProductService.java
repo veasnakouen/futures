@@ -71,7 +71,7 @@ public class PosProductService {
         String prefix = "POS";
         String maxSku = repository.findMaxSkuByPrefix(prefix);
         String newSku = prefix + "-00001";
-        
+
         if (maxSku != null && maxSku.startsWith(prefix + "-")) {
             try {
                 String numPart = maxSku.substring(prefix.length() + 1);

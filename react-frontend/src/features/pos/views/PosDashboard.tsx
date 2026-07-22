@@ -59,7 +59,7 @@ export default function PosDashboard() {
         try {
             const saleItems = cart.map(item => ({
                 id: '',
-                productId: item.product.id,
+                productId: item.product.id || '',
                 productName: item.product.name,
                 quantity: item.quantity,
                 unitPrice: item.product.price,
@@ -156,7 +156,7 @@ export default function PosDashboard() {
                                         <p className="text-xs font-medium text-slate-400">${item.product.price.toFixed(2)}</p>
                                     </div>
                                     <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-1">
-                                        <button onClick={() => removeFromCart(item.product.id)} className="p-1.5 rounded-md bg-white dark:bg-slate-700 text-slate-500 shadow-sm hover:text-red-500 transition-colors active:scale-95">
+                                        <button onClick={() => removeFromCart(item.product.id!)} className="p-1.5 rounded-md bg-white dark:bg-slate-700 text-slate-500 shadow-sm hover:text-red-500 transition-colors active:scale-95">
                                             <Minus size={12} strokeWidth={3} />
                                         </button>
                                         <span className="font-black text-sm w-4 text-center">{item.quantity}</span>

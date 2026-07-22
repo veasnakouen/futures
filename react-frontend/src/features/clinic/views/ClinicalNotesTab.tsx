@@ -2,8 +2,11 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { clinicService } from "../../../services/clinicService";
-import { FileText, Plus, Clock, Edit2 } from "lucide-react";
+import { FileText, Plus, Clock } from "lucide-react";
 import { motion } from "framer-motion";
+import { Modal, ModalBody } from "@/lib/flowbite-compat";
+import CustomModalHeader from "@/components/common/CustomModalHeader";
+import CustomModalFooter from "@/components/common/CustomModalFooter";
 
 export default function ClinicalNotesTab({ patientId }: { patientId: string }) {
   const queryClient = useQueryClient();
@@ -12,7 +15,7 @@ export default function ClinicalNotesTab({ patientId }: { patientId: string }) {
     diagnosis: "",
     treatment: "",
     prescription: "",
-    doctorId: "DOC-123", // In a real app, this would come from Auth Context
+    doctorId: "DOC-123",
   });
 
   const { data: records, isLoading } = useQuery({
@@ -100,56 +103,43 @@ export default function ClinicalNotesTab({ patientId }: { patientId: string }) {
       )}
 
       {/* New Consultation Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">New Consultation</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                ✕
-              </button>
+      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="2xl">
+        <CustomModalHeader
+          title="New Consultation"
+          subtitle="Record Clinical History & Treatment Plan"
+          onClose={() => setIsModalOpen(false)}
+          icon={<FileText size={20} />}
+        />
+        <form onSubmit={handleSubmit}>
+          <ModalBody className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Diagnosis</label>
+              <textarea
+                required
+                value={formData.diagnosis}
+                onChange={(e) => setFormData({ ...formData, diagnosis: e.target.value })}
+                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none h-24 text-sm font-medium text-gray-900 dark:text-white"
+                placeholder="Enter patient diagnosis..."
+              />
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Diagnosis</label>
-                <textarea
-                  required
-                  value={formData.diagnosis}
-                  onChange={(e) => setFormData({ ...formData, diagnosis: e.target.value })}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none h-24"
-                  placeholder="Enter patient diagnosis..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Treatment Plan</label>
-                <textarea
-                  required
-                  value={formData.treatment}
-                  onChange={(e) => setFormData({ ...formData, treatment: e.target.value })}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none h-32"
-                  placeholder="Enter treatment plan..."
-                />
-              </div>
-              <div className="pt-4 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createRecordMutation.isPending}
-                  className="px-5 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-lg shadow-indigo-500/30"
-                >
-                  {createRecordMutation.isPending ? "Saving..." : "Save Consultation"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+            <div>
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Treatment Plan</label>
+              <textarea
+                required
+                value={formData.treatment}
+                onChange={(e) => setFormData({ ...formData, treatment: e.target.value })}
+                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none h-32 text-sm font-medium text-gray-900 dark:text-white"
+                placeholder="Enter treatment plan..."
+              />
+            </div>
+          </ModalBody>
+          <CustomModalFooter
+            onClose={() => setIsModalOpen(false)}
+            submitText="Save Consultation"
+            submitDisabled={createRecordMutation.isPending}
+          />
+        </form>
+      </Modal>
     </div>
   );
 }

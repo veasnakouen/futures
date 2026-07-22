@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {Button, Badge, Select, TextInput, Spinner, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Avatar} from '@/lib/flowbite-compat';
+import { Button, Badge, Select, TextInput, Spinner, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Avatar } from '@/lib/flowbite-compat';
 import {
   Calendar,
   Search,
@@ -169,7 +169,7 @@ const TimeOffOverview: React.FC = () => {
           >
             <RefreshCw
               size={12}
-              className={`mr-1.5 ${loading ?"animate-spin":""}`}
+              className={`mr-1.5 ${loading ? "animate-spin" : ""}`}
             />{" "}
             Refresh
           </Button>
@@ -178,11 +178,11 @@ const TimeOffOverview: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t">
           <div className="relative">
             <SearchInput
-                        placeholder="Search employee or leave type..."
-                        value={searchTerm}
-                        onChange={setSearchTerm}
-                        containerClassName="w-full"
-                      />
+              placeholder="Search employee or leave type..."
+              value={searchTerm}
+              onChange={setSearchTerm}
+              containerClassName="w-full"
+            />
           </div>
           <div>
             <Select

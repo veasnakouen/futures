@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   useMyLeaves,
   useLeaveBalance,
+  useAnnualLeavePlan,
   usePendingManagerLeaves,
   usePendingChairmanLeaves,
   useSubmitLeave,
@@ -38,65 +39,86 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
 
   // Mocking employee ID linking. In a real system, user.employeeId would exist.
   const [employeeId, setEmployeeId] = useState<number | null>(null);
+  const [employeeIdNo, setEmployeeIdNo] = useState<string | null>(null);
+  const [requestEmployeeId, setRequestEmployeeId] = useState<number | null>(null);
   const [employeesList, setEmployeesList] = useState<any[]>([]);
   const [isResolvingEmployee, setIsResolvingEmployee] = useState(true);
   const [resolutionError, setResolutionError] = useState<string | null>(null);
 
   const hasRole = (role: string) =>
     user?.roles?.includes(role) ||
-    user?.roles?.includes(`ROLE_${role}`) ||
-    ((user?.email === "admin@mtp.com" ||
-      user?.email === "superadmin@mloptapang.org" ||
-      user?.username === "admin@mtp.com") &&
-      (role === "ADMIN" || role === "SUPER_ADMIN"));
+    user?.roles?.includes(`ROLE_${role}`);
+
+  const isSuperAdmin = Boolean(
+    user?.roles?.includes("SUPER_ADMIN") ||
+    user?.roles?.includes("ROLE_SUPER_ADMIN") ||
+    user?.roles?.includes("SUPERADMIN") ||
+    user?.roles?.includes("ROLE_SUPERADMIN") ||
+    user?.email === "superadmin@mloptapang.org" ||
+    user?.username === "superadmin@mloptapang.org" ||
+    user?.username === "superadmin"
+  );
+
   const isManager =
-    hasRole("MANAGER") || hasRole("SUPER_ADMIN") || hasRole("ADMIN");
+    hasRole("MANAGER") || hasRole("ADMIN") || isSuperAdmin;
   const isChairman =
-    hasRole("CHAIRMAN") || hasRole("SUPER_ADMIN") || hasRole("ADMIN");
+    hasRole("CHAIRMAN") || hasRole("ADMIN") || isSuperAdmin;
 
   useEffect(() => {
     setIsResolvingEmployee(true);
     setResolutionError(null);
 
-    if (isManager || isChairman) {
-      // Managers and Admins can select any employee
+    // Always fetch the current user's actual employee profile first
+    api
+      .get("/employees/me")
+      .then((res) => {
+        if (res.data && res.data.id) {
+          setEmployeeId(res.data.id);
+          setEmployeeIdNo(res.data.idNo);
+          setRequestEmployeeId(res.data.id);
+        } else {
+          setEmployeeId(null);
+          setEmployeeIdNo(null);
+          setRequestEmployeeId(null);
+          if (!isManager && !isChairman) {
+            setResolutionError("Your account is not linked to an active HR Employee profile. Please contact your administrator.");
+          } else {
+            setActiveTab(isManager ? "manager_approvals" : "chairman_approvals");
+          }
+        }
+      })
+      .catch(() => {
+        setEmployeeId(null);
+        setEmployeeIdNo(null);
+        setRequestEmployeeId(null);
+        if (!isManager && !isChairman) {
+          setResolutionError("Your account is not linked to an active HR Employee profile. Please contact your administrator.");
+        } else {
+          setActiveTab(isManager ? "manager_approvals" : "chairman_approvals");
+        }
+      })
+      .finally(() => setIsResolvingEmployee(false));
+
+    // If super admin, fetch list of all employees for the 'Request on behalf' feature
+    if (isSuperAdmin) {
       api
         .get("/employees")
         .then((res) => {
           const employees = res.data.content || res.data;
           setEmployeesList(employees || []);
-          if (employees && employees.length > 0) {
-            setEmployeeId(employees[0].id);
-          } else {
-            setEmployeeId(null);
-          }
         })
         .catch(() => {
-          setEmployeeId(null);
-        })
-        .finally(() => setIsResolvingEmployee(false));
+          setEmployeesList([]);
+        });
     } else {
-      // Normal employee: resolve their actual Employee ID from the backend
-      api
-        .get("/employees/me")
-        .then((res) => {
-          if (res.data && res.data.id) {
-            setEmployeeId(res.data.id);
-          } else {
-            setEmployeeId(null);
-            setResolutionError("Your account is not linked to an active HR Employee profile. Please contact your administrator.");
-          }
-        })
-        .catch(() => {
-          setEmployeeId(null);
-          setResolutionError("Your account is not linked to an active HR Employee profile. Please contact your administrator.");
-        })
-        .finally(() => setIsResolvingEmployee(false));
+      setEmployeesList([]);
     }
-  }, [user, isManager, isChairman]);
+  }, [user, isSuperAdmin, isManager, isChairman]);
 
   const { data: myLeaves = [], isLoading: isLoadingMyLeaves } = useMyLeaves(employeeId);
   const { data: myBalance, isLoading: isLoadingMyBalance } = useLeaveBalance(employeeId, new Date().getFullYear());
+  // Prefetch Annual Leave Plan in background as soon as employeeIdNo is resolved
+  useAnnualLeavePlan(employeeIdNo, new Date().getFullYear());
 
   const { data: pendingManager = [], isLoading: isLoadingManager } = usePendingManagerLeaves(isManager ? employeeId : null);
   const { data: pendingChairman = [], isLoading: isLoadingChairman } = usePendingChairmanLeaves(isChairman ? employeeId : null);
@@ -184,10 +206,12 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
   const handleSubmitRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!startDate || !endDate) return toast.error("Dates are required");
+    if (endDate < startDate) return toast.error("End date cannot be earlier than start date");
+    if (!employeeId) return toast.error("Please select a valid employee");
 
     try {
       await submitLeaveMutation({
-        employee: { id: employeeId || 1 },
+        employee: { id: requestEmployeeId || 1 },
         leaveType,
         duration,
         startDate: format(startDate, "yyyy-MM-dd'T'HH:mm:ss"),
@@ -253,8 +277,10 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
         <div className="mb-6">
           <ModernTabs
             tabs={[
-              { id: "my_leaves", label: "My Leaves" },
-              { id: "al_planner", label: "AL Planner" },
+              ...(employeeId ? [
+                { id: "my_leaves", label: "My Leaves" },
+                { id: "al_planner", label: "AL Planner" },
+              ] : []),
               ...(isManager
                 ? [
                   {
@@ -460,12 +486,12 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
         )}
 
         {/* AL Planner Tab */}
-        {activeTab === "al_planner" && (
+        <div className={activeTab === "al_planner" ? "block" : "hidden"}>
           <AnnualLeavePlannerTab 
             employeeId={employeeId} 
-            employeeIdNo={employeesList.find(e => e.id === employeeId)?.idNo || (employeeId ? `EMP-00${employeeId}` : null)} 
+            employeeIdNo={employeeIdNo} 
           />
-        )}
+        </div>
 
         {/* Approvals */}
         {(activeTab === "manager_approvals" ||
@@ -578,13 +604,15 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
           </div>
           <div className="p-6 overflow-y-auto flex-1">
             <form onSubmit={handleSubmitRequest} className="space-y-5">
-              {employeesList.length > 0 && (
+              {isSuperAdmin && employeesList.length > 0 && (
                 <div>
-                  <Label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">Staff Name</Label>
+                  <Label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
+                    Staff Name (Super Admin On-Behalf Request)
+                  </Label>
                   <Select
                     className="w-full bg-gray-50 dark:bg-gray-700 border-none rounded-xl text-sm font-medium h-12 px-4"
-                    value={employeeId || ""}
-                    onChange={(e) => setEmployeeId(Number(e.target.value))}
+                    value={requestEmployeeId || ""}
+                    onChange={(e) => setRequestEmployeeId(Number(e.target.value))}
                     required
                   >
                     {employeesList.map((emp) => (
@@ -644,7 +672,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
                   required
                 />
               </div>
-              {employeeId === null && employeesList.length === 0 && (
+              {requestEmployeeId === null && employeesList.length === 0 && (
                 <Alert color="failure" className="mb-4 border-none rounded-xl">
                   <div className="flex items-center gap-2 font-bold text-sm">
                     <UserX size={16} />
@@ -656,7 +684,7 @@ const LeaveManagementPage = ({ isDark, setIsDark }: any) => {
                 type="submit"
                 color="blue"
                 className="w-full !mt-8 h-12 text-sm font-bold tracking-wide rounded-xl border-none shadow-lg shadow-blue-500/20"
-                disabled={loading || employeeId === null}
+                disabled={loading || requestEmployeeId === null}
               >
                 {loading ? <Spinner size="sm" /> : "Submit Request"}
               </Button>

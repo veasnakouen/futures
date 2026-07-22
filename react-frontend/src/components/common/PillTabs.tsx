@@ -18,6 +18,10 @@ export type PillTabsProps = {
 const PillTabs: React.FC<PillTabsProps> = ({ tabs, activeTab, onTabChange, className = '' }) => {
     const layoutIdPrefix = useId();
 
+    if (!tabs || tabs.length <= 1) {
+        return null;
+    }
+
     return (
         <div className={`flex overflow-x-auto whitespace-nowrap bg-gray-100/70 dark:bg-gray-800/70 p-1.5 rounded-xl gap-1 shrink-0 hide-scrollbar shadow-inner ${className}`}>
             {tabs.map((tab) => {
@@ -28,8 +32,8 @@ const PillTabs: React.FC<PillTabsProps> = ({ tabs, activeTab, onTabChange, class
                         type="button"
                         onClick={() => onTabChange(tab.id)}
                         className={`relative flex-1 shrink-0 min-w-max py-2 px-4 text-sm font-semibold text-center transition-all duration-300 rounded-lg flex items-center justify-center gap-2 ${isActive
-                                ? "text-blue-600 dark:text-blue-400"
-                                : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                            ? "text-blue-600 dark:text-blue-400"
+                            : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
                             }`}
                     >
                         {isActive && (

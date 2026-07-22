@@ -19,11 +19,13 @@ public class CreateProviderCommandHandler {
     @Transactional
     public ProviderQueryResultDto handle(CreateProviderCommand command) {
         Provider entity = mapper.toEntity(command);
-        if (entity.getId() == null) {
-            entity.setId(java.util.UUID.randomUUID().toString());
-        }
+        // Ensure id is null so Hibernate performs an INSERT (persist) instead of UPDATE (merge)
+        entity.setId(null);
         if (entity.getEmployeeId() == null || entity.getEmployeeId().trim().isEmpty()) {
             entity.setEmployeeId("EMP-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        }
+        if (entity.getIsActive() == null) {
+            entity.setIsActive(true);
         }
         Provider savedEntity = repository.save(entity);
         return mapper.toDto(savedEntity);

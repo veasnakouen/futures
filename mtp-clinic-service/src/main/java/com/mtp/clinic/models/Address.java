@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Address {
     private String street;
+    private String village;
+    private String commune;
+    private String district;
     private String city;
     private String state;
     private String zipCode;

@@ -17,6 +17,19 @@ export interface ShiftScheduleDto {
   octShift?: string;
   novShift?: string;
   decShift?: string;
+
+  janAlDays?: number;
+  febAlDays?: number;
+  marAlDays?: number;
+  aprAlDays?: number;
+  mayAlDays?: number;
+  junAlDays?: number;
+  julAlDays?: number;
+  augAlDays?: number;
+  sepAlDays?: number;
+  octAlDays?: number;
+  novAlDays?: number;
+  decAlDays?: number;
 }
 
 export interface BulkShiftScheduleDto {
