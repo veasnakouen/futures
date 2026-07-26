@@ -14,4 +14,3 @@ public interface RoomMapper {
 
     RoomQueryResultDto toDto(Room entity);
 }
-        

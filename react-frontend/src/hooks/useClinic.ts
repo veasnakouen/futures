@@ -5,7 +5,7 @@ import { clinicService, CreatePrescriptionCommand, UpdatePrescriptionCommand, Cr
 export const usePrescriptions = (page = 0, size = 10) => {
   return useQuery({
     queryKey: ["prescriptions", page, size],
-    queryFn: () => clinicService.getPrescriptions(page, size).then((res) => res.data),
+    queryFn: () => clinicService.getPrescriptions(page, size).then((res: any) => res.data?.data || res.data),
   });
 };
 
@@ -44,7 +44,7 @@ export const useDeletePrescriptionMutation = () => {
 export const useLabOrders = (page = 0, size = 10) => {
   return useQuery({
     queryKey: ["labOrders", page, size],
-    queryFn: () => clinicService.getLabOrders(page, size).then((res) => res.data),
+    queryFn: () => clinicService.getLabOrders(page, size).then((res: any) => res.data?.data || res.data),
   });
 };
 

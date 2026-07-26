@@ -74,6 +74,7 @@ interface RecruitmentModuleProps {
   employers: any[];
   positions: any[];
   placements: any[];
+  hideModuleHeaderTabs?: boolean;
   onAddVacancy: (data: any) => Promise<void>;
   onUpdateVacancy: (id: number, data: any) => Promise<void>;
   onDeleteVacancy: (id: number) => Promise<void>;
@@ -90,6 +91,7 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
   employers,
   positions,
   placements,
+  hideModuleHeaderTabs = false,
   onAddVacancy,
   onUpdateVacancy,
   onDeleteVacancy,
@@ -409,50 +411,44 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
 
   return (
     <div className="space-y-8 animate-fade-in pb-12">
-      {/* Module Header & Tabs */}
-      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-white/50 dark:bg-gray-800/50 p-4 rounded-md shadow-sm">
-        <div className="flex w-full sm:w-max mx-auto xl:mx-0 overflow-x-auto whitespace-nowrap no-scrollbar flex-nowrap shrink-0">
-          <ModernTabs
-            tabs={[
-              {
-                id: "DASHBOARD",
-                label: t("dashboard"),
-                icon: <TrendingUp size={14} />,
-              },
-              {
-                id: "VACANCIES",
-                label: t("vacancies"),
-                icon: <Briefcase size={14} />,
-              },
-              {
-                id: "CANDIDATES",
-                label: t("talentPool"),
-                icon: <Users size={14} />,
-              },
-              {
-                id: "PLACEMENTS",
-                label: t("placementAudit"),
-                icon: <UserCheck size={14} />,
-              },
-              {
-                id: "APPLICATIONS",
-                label: "ATS Pipeline",
-                icon: <CheckCircle size={14} />,
-              },
-            ]}
-            activeTab={activeTab}
-            onTabChange={(id) => setActiveTab(id as any)}
-          />
+      {/* Sub-view Filter Navigation & Action Toolbar */}
+      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700/80">
+        {/* Sub-view Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 xl:pb-0 shrink-0">
+          {[
+            { id: "DASHBOARD", label: t("dashboard"), icon: <TrendingUp size={13} /> },
+            { id: "APPLICATIONS", label: "ATS Board", icon: <CheckCircle size={13} /> },
+            { id: "VACANCIES", label: t("vacancies"), icon: <Briefcase size={13} /> },
+            { id: "CANDIDATES", label: t("talentPool"), icon: <Users size={13} /> },
+            { id: "PLACEMENTS", label: t("placementAudit"), icon: <UserCheck size={13} /> },
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 whitespace-nowrap border ${
+                  isActive
+                    ? "bg-blue-600 text-white border-blue-600 shadow-sm scale-[1.02]"
+                    : "bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 border-gray-200/60 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto flex-1 xl:flex-none justify-end">
-          <div className="relative flex-grow xl:flex-initial xl:w-48">
-            {/* <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10" /> */}
+        {/* Search & Actions */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 justify-end shrink-0">
+          <div className="relative flex-1 sm:flex-initial sm:w-56">
             <SearchInput
               placeholder="Search talent, jobs..."
               value={searchQuery}
               onChange={setSearchQuery}
-              containerClassName="pl-10 rounded-md w-full"
+              containerClassName="pl-9 rounded-lg text-xs font-semibold"
             />
           </div>
           <div className="flex gap-2 shrink-0">
@@ -464,26 +460,28 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                     ? handleOpenAddVacancy
                     : handleOpenAddCandidate
                 }
-                className="rounded-md px-6 h-11 shadow-lg shadow-blue-500/20 font-black uppercase text-[10px] tracking-widest border-none shrink-0 flex-1 sm:flex-none h-12"
+                className="rounded-lg px-3.5 py-2 text-xs font-black uppercase tracking-wider shadow-sm flex items-center gap-1 shrink-0"
               >
-                <Plus size={18} className="mr-2" /> New{" "}
-                {activeTab === "VACANCIES" ? "Vacancy" : "Candidate"}
+                <Plus size={15} />
+                <span>New {activeTab === "VACANCIES" ? "Vacancy" : "Candidate"}</span>
               </Button>
             ) : (
-              <div className="flex gap-2 shrink-0 flex-1 sm:flex-none">
+              <div className="flex gap-2 shrink-0">
                 <Button
                   color="blue"
                   onClick={handleOpenAddVacancy}
-                  className="rounded-md px-4 h-11 font-black uppercase text-[9px] border-none shadow-md shrink-0 flex-1 sm:flex-none"
+                  className="rounded-lg px-3 py-1.5 text-xs font-bold shadow-sm flex items-center gap-1"
                 >
-                  <Briefcase size={14} className="mr-2" /> Post Job
+                  <Briefcase size={14} />
+                  <span>Post Job</span>
                 </Button>
                 <Button
                   color="indigo"
                   onClick={handleOpenAddCandidate}
-                  className="rounded-md px-4 h-11 font-black uppercase text-[9px] border-none shadow-md shrink-0 flex-1 sm:flex-none h-12"
+                  className="rounded-lg px-3 py-1.5 text-xs font-bold shadow-sm flex items-center gap-1"
                 >
-                  <Users size={14} className="mr-2" /> Add Talent
+                  <Users size={14} />
+                  <span>Add Talent</span>
                 </Button>
               </div>
             )}
@@ -551,8 +549,8 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                 <h4 className="font-black text-xl dark:text-white uppercase tracking-tight mb-8">
                   Hiring Velocity
                 </h4>
-                <div className="h-[300px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
+                <div className="h-[300px] w-full" style={{ minWidth: 0 }}>
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
                     <BarChart data={trendData}>
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -603,8 +601,8 @@ const RecruitmentModule: React.FC<RecruitmentModuleProps> = ({
                 <h4 className="font-black text-xl dark:text-white uppercase tracking-tight mb-8">
                   Registered Vacancies
                 </h4>
-                <div className="h-[250px] w-full mb-8">
-                  <ResponsiveContainer width="100%" height="100%">
+                <div className="h-[250px] w-full mb-8" style={{ minWidth: 0 }}>
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
                     <BarChart
                       data={vacancyStatusData}
                       margin={{ top: 10, right: 10, left: -20, bottom: 0 }}

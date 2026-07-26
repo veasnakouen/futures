@@ -600,49 +600,135 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                     {paginatedEmployers.map((employer) => (
                       <div
                         key={employer.id}
-                        className="relative z-10 hover:z-30 focus-within:z-40 grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50/80 dark:hover:bg-gray-700/20 transition-colors group items-center"
+                        className="relative z-10 hover:z-30 focus-within:z-40 flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 px-6 py-4 hover:bg-gray-50/80 dark:hover:bg-gray-700/20 transition-colors group items-start md:items-center border-b border-gray-100 dark:border-gray-800/60"
                       >
-                        {/* Company */}
-                        <div
-                          className={`${getCompanyColSpanClass()} flex items-center gap-3`}
-                        >
-                          <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-sm shrink-0">
-                            {employer.logoUrl ? (
-                              <img
-                                src={employer.logoUrl}
-                                alt={employer.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <Building2 className="text-blue-600" size={18} />
-                            )}
+                        {/* Company & Actions Row for Mobile Flex / Desktop Grid */}
+                        <div className="w-full md:w-auto flex items-center justify-between md:contents">
+                          <div
+                            className={`${getCompanyColSpanClass()} flex items-center gap-3 min-w-0 flex-1 md:flex-initial`}
+                          >
+                            <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-sm shrink-0 border border-gray-100 dark:border-gray-600">
+                              {employer.logoUrl ? (
+                                <img
+                                  src={employer.logoUrl}
+                                  alt={employer.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Building2 className="text-blue-600 dark:text-blue-400" size={18} />
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-bold text-gray-900 dark:text-white truncate text-sm">
+                                {employer.name}
+                              </p>
+                              <p className="text-xs text-gray-400 truncate flex items-center gap-1">
+                                <Mail size={10} /> {employer.email || "no-email"}
+                              </p>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-gray-900 dark:text-white truncate">
-                              {employer.name}
-                            </p>
-                            <p className="text-xs text-gray-400 truncate flex items-center gap-1">
-                              <Mail size={10} /> {employer.email || "no-email"}
-                            </p>
+
+                          {/* Actions Menu (Pinned Top-Right on Mobile, Column 12 on Desktop) */}
+                          <div className="md:col-span-1 flex justify-end shrink-0 md:order-last">
+                            <Dropdown
+                              inline
+                              label={
+                                <div className="p-2 text-gray-400 hover:text-blue-600 transition-all hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md cursor-pointer">
+                                  <MoreVertical size={18} />
+                                </div>
+                              }
+                              arrowIcon={false}
+                              className="backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 border-none shadow-2xl !rounded-md p-2 min-w-[180px]"
+                            >
+                              <DropdownItem
+                                onClick={() =>
+                                  setTimeout(() => handleView(employer), 0)
+                                }
+                                className="rounded-md mb-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group/item"
+                              >
+                                <div className="flex items-center gap-3 py-1">
+                                  <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                    <Search size={14} />
+                                  </div>
+                                  <span className="font-bold text-xs text-gray-700 dark:text-gray-200">
+                                    {t("view_details")}
+                                  </span>
+                                </div>
+                              </DropdownItem>
+
+                              <DropdownItem
+                                onClick={() => {
+                                  navigate(
+                                    `/chat?chatWith=${encodeURIComponent(employer.name)}`,
+                                  );
+                                }}
+                                className="rounded-md mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"
+                              >
+                                <div className="flex items-center gap-3 py-1">
+                                  <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                    <MessageSquare size={14} />
+                                  </div>
+                                  <span className="font-bold text-xs text-gray-700 dark:text-gray-200">
+                                    {t("message")}
+                                  </span>
+                                </div>
+                              </DropdownItem>
+
+                              <DropdownItem
+                                onClick={() =>
+                                  setTimeout(() => handleEdit(employer), 0)
+                                }
+                                className="rounded-md mb-1 hover:bg-amber-50 dark:hover:bg-amber-900/20 group/item"
+                              >
+                                <div className="flex items-center gap-3 py-1">
+                                  <div className="p-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                    <Edit size={14} />
+                                  </div>
+                                  <span className="font-bold text-xs text-gray-700 dark:text-gray-200">
+                                    {t("edit")}
+                                  </span>
+                                </div>
+                              </DropdownItem>
+
+                              <DropdownItem
+                                onClick={() =>
+                                  setTimeout(() => {
+                                    setItemToDelete(employer.id);
+                                    setIsConfirmOpen(true);
+                                  }, 0)
+                                }
+                                className="rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 group/item"
+                              >
+                                <div className="flex items-center gap-3 py-1">
+                                  <div className="p-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 rounded-md group-hover/item:scale-110 transition-transform">
+                                    <Trash2 size={14} />
+                                  </div>
+                                  <span className="font-bold text-xs text-rose-600 dark:text-rose-400">
+                                    {t("delete")}
+                                  </span>
+                                </div>
+                              </DropdownItem>
+                            </Dropdown>
                           </div>
                         </div>
+
                         {/* Category */}
                         {visibleColumns.includes("category") && (
-                          <div className="md:col-span-2">
-                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-md">
+                          <div className="md:col-span-2 text-xs">
+                            <span className="font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-md inline-block">
                               {employer.jobCategoryName || "General"}
                             </span>
                           </div>
                         )}
                         {/* Contact Person */}
                         {visibleColumns.includes("contact") && (
-                          <div className="md:col-span-2 text-sm text-gray-600 dark:text-gray-300 font-medium truncate">
+                          <div className="md:col-span-2 text-xs md:text-sm text-gray-600 dark:text-gray-300 font-medium truncate">
                             {employer.contactPerson || "—"}
                           </div>
                         )}
                         {/* Phone */}
                         {visibleColumns.includes("phone") && (
-                          <div className="md:col-span-2 text-sm text-gray-500 flex items-center gap-1.5">
+                          <div className="md:col-span-2 text-xs md:text-sm text-gray-500 flex items-center gap-1.5 font-mono">
                             <Phone
                               size={13}
                               className="text-gray-400 shrink-0"
@@ -651,160 +737,6 @@ const EmployersPage = ({ isDark, setIsDark }: any) => {
                           </div>
                         )}
                         {/* Status */}
-                        {visibleColumns.includes("status") && (
-                          <div className="md:col-span-1">
-                            <span
-                              className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md ${employer.status === "Active" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"}`}
-                            >
-                              <span
-                                className={`w-1.5 h-1.5 rounded-md ${employer.status === "Active" ? "bg-green-500" : "bg-yellow-500"}`}
-                              />
-                              {employer.status || "Active"}
-                            </span>
-                          </div>
-                        )}
-                        {/* Actions */}
-                        <div className="md:col-span-1 flex justify-end">
-                          <Dropdown
-                            inline
-                            label={
-                              <div className="p-2 text-gray-400 hover:text-blue-600 transition-all hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md cursor-pointer">
-                                <MoreVertical size={20} />
-                              </div>
-                            }
-                            arrowIcon={false}
-                            className="backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 border-none shadow-2xl !rounded-md p-2 min-w-[180px]"
-                          >
-                            <DropdownItem
-                              onClick={() =>
-                                setTimeout(() => handleView(employer), 0)
-                              }
-                              className="rounded-md mb-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group/item"
-                            >
-                              <div className="flex items-center gap-3 py-1">
-                                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                  <Search size={14} />
-                                </div>
-                                <span className="font-bold text-xs text-gray-700 dark:text-gray-200">
-                                  {t("view_details")}
-                                </span>
-                              </div>
-                            </DropdownItem>
-
-                            <DropdownItem
-                              onClick={() => {
-                                navigate(
-                                  `/chat?chatWith=${encodeURIComponent(employer.name)}`,
-                                );
-                              }}
-                              className="rounded-md mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"
-                            >
-                              <div className="flex items-center gap-3 py-1">
-                                <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                  <MessageSquare size={14} />
-                                </div>
-                                <span className="font-bold text-xs text-gray-700 dark:text-gray-200">
-                                  Message
-                                </span>
-                              </div>
-                            </DropdownItem>
-
-                            <DropdownItem
-                              onClick={async () => {
-                                const isConnected = connections.some(
-                                  (c) =>
-                                    c.targetType === "EMPLOYER" &&
-                                    c.targetId === String(employer.id),
-                                );
-                                if (isConnected) {
-                                  try {
-                                    await api.delete(
-                                      `/connections/EMPLOYER/${employer.id}`,
-                                    );
-                                    setConnections((prev) =>
-                                      prev.filter(
-                                        (c) =>
-                                          !(
-                                            c.targetType === "EMPLOYER" &&
-                                            c.targetId === String(employer.id)
-                                          ),
-                                      ),
-                                    );
-                                    toast.success("Removed from network");
-                                  } catch (err) {
-                                    toast.error("Failed to remove");
-                                  }
-                                } else {
-                                  try {
-                                    const res = await api.post("/connections", {
-                                      targetId: String(employer.id),
-                                      targetType: "EMPLOYER",
-                                      targetName: employer.name,
-                                      targetAvatar: employer.logoUrl || "",
-                                    });
-                                    setConnections((prev) => [
-                                      ...prev,
-                                      res.data,
-                                    ]);
-                                    toast.success("Added to your network!");
-                                  } catch (err) {
-                                    toast.error("Failed to add");
-                                  }
-                                }
-                              }}
-                              className="rounded-md mb-1 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group/item"
-                            >
-                              <div className="flex items-center gap-3 py-1">
-                                <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                  <UserPlus size={14} />
-                                </div>
-                                <span className="font-bold text-xs text-gray-700 dark:text-gray-200">
-                                  {connections.some(
-                                    (c) =>
-                                      c.targetType === "EMPLOYER" &&
-                                      c.targetId === String(employer.id),
-                                  )
-                                    ? "Remove Connection"
-                                    : "Add to Network"}
-                                </span>
-                              </div>
-                            </DropdownItem>
-                            <DropdownItem
-                              onClick={() =>
-                                setTimeout(() => handleEdit(employer), 0)
-                              }
-                              className="rounded-md mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"
-                            >
-                              <div className="flex items-center gap-3 py-1">
-                                <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                  <Edit size={14} />
-                                </div>
-                                <span className="font-bold text-xs text-gray-700 dark:text-gray-200">
-                                  {t("update_details")}
-                                </span>
-                              </div>
-                            </DropdownItem>
-                            <DropdownDivider className="my-1" />
-                            <DropdownItem
-                              onClick={() =>
-                                setTimeout(() => {
-                                  setItemToDelete(employer.id);
-                                  setIsConfirmOpen(true);
-                                }, 0)
-                              }
-                              className="rounded-md hover:bg-rose-50 dark:hover:bg-rose-900/20 group/item"
-                            >
-                              <div className="flex items-center gap-3 py-1">
-                                <div className="p-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 rounded-md group-hover/item:scale-110 transition-transform">
-                                  <Trash2 size={14} />
-                                </div>
-                                <span className="font-bold text-xs text-rose-600">
-                                  {t("terminate")}
-                                </span>
-                              </div>
-                            </DropdownItem>
-                          </Dropdown>
-                        </div>
                       </div>
                     ))}
                   </div>

@@ -68,10 +68,11 @@ export const locationService = {
   // Provinces
   getProvinces: async () => {
     try {
-      const res = await api.get<ProvinceDto[]>("/locations/provinces");
-      if (res.data && Array.isArray(res.data) && res.data.length > 0) return res;
+      const res = await api.get<any>("/locations/provinces");
+      const list = res.data?.data || res.data || res;
+      if (Array.isArray(list) && list.length > 0) return { data: list as ProvinceDto[] };
     } catch (e) {
-      console.warn("Locations microservice endpoint fallback", e);
+      console.warn("Locations microservice endpoint fallback triggered:", e);
     }
     return { data: MOCK_PROVINCES };
   },
@@ -82,10 +83,11 @@ export const locationService = {
   // Districts
   getDistricts: async (provinceId: number) => {
     try {
-      const res = await api.get<DistrictDto[]>(`/locations/districts?provinceId=${provinceId}`);
-      if (res.data && Array.isArray(res.data) && res.data.length > 0) return res;
+      const res = await api.get<any>(`/locations/districts?provinceId=${provinceId}`);
+      const list = res.data?.data || res.data || res;
+      if (Array.isArray(list) && list.length > 0) return { data: list as DistrictDto[] };
     } catch (e) {
-      console.warn("Districts endpoint fallback", e);
+      console.warn("Districts endpoint fallback triggered:", e);
     }
     return { data: MOCK_DISTRICTS.filter(d => d.provinceId === provinceId) };
   },
@@ -96,10 +98,11 @@ export const locationService = {
   // Communes
   getCommunes: async (districtId: number) => {
     try {
-      const res = await api.get<CommuneDto[]>(`/locations/communes?districtId=${districtId}`);
-      if (res.data && Array.isArray(res.data) && res.data.length > 0) return res;
+      const res = await api.get<any>(`/locations/communes?districtId=${districtId}`);
+      const list = res.data?.data || res.data || res;
+      if (Array.isArray(list) && list.length > 0) return { data: list as CommuneDto[] };
     } catch (e) {
-      console.warn("Communes endpoint fallback", e);
+      console.warn("Communes endpoint fallback triggered:", e);
     }
     return { data: MOCK_COMMUNES.filter(c => c.districtId === districtId) };
   },
@@ -110,10 +113,11 @@ export const locationService = {
   // Villages
   getVillages: async (communeId: number) => {
     try {
-      const res = await api.get<VillageDto[]>(`/locations/villages?communeId=${communeId}`);
-      if (res.data && Array.isArray(res.data) && res.data.length > 0) return res;
+      const res = await api.get<any>(`/locations/villages?communeId=${communeId}`);
+      const list = res.data?.data || res.data || res;
+      if (Array.isArray(list) && list.length > 0) return { data: list as VillageDto[] };
     } catch (e) {
-      console.warn("Villages endpoint fallback", e);
+      console.warn("Villages endpoint fallback triggered:", e);
     }
     return { data: MOCK_VILLAGES.filter(v => v.communeId === communeId) };
   },

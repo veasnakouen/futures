@@ -1,5 +1,8 @@
 package com.mtp.clinic.controllers;
 
+import com.mtp.api.dto.ApiResponse;
+import com.mtp.api.dto.pagination.PagedResponse;
+import com.mtp.api.dto.pagination.PaginationRequest;
 import com.mtp.clinic.cqrs.commands.*;
 import com.mtp.clinic.cqrs.dto.PatientQueryResultDto;
 import com.mtp.clinic.cqrs.handlers.commands.*;
@@ -12,10 +15,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("/api/clinic/patients")
 @RequiredArgsConstructor
 public class PatientController {
+
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "firstName", "lastName", "medicalRecordNumber", "dateOfBirth", "contactNumber");
 
     private final CreatePatientCommandHandler createHandler;
     private final UpdatePatientCommandHandler updateHandler;
@@ -24,8 +31,11 @@ public class PatientController {
     private final DeletePatientCommandHandler deleteHandler;
 
     @GetMapping
-    public Page<PatientQueryResultDto> getAll(Pageable pageable) {
-        return getAllHandler.handle(new GetAllPatientsQuery(pageable.getPageNumber(), pageable.getPageSize()));
+    public ResponseEntity<ApiResponse<PagedResponse<PatientQueryResultDto>>> getAll(@Valid @ModelAttribute PaginationRequest request) {
+        Pageable pageable = request.toPageable(ALLOWED_SORT_FIELDS);
+        Page<PatientQueryResultDto> pageResult = getAllHandler.handle(new GetAllPatientsQuery(pageable));
+        PagedResponse<PatientQueryResultDto> response = PagedResponse.from(pageResult, request.getSortBy(), request.getSortOrder());
+        return ResponseEntity.ok(ApiResponse.success("Patients fetched successfully", response));
     }
 
     @GetMapping("/{id}")

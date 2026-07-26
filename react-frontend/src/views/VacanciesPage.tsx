@@ -115,11 +115,11 @@ const VacanciesPage = ({ isDark, setIsDark }: any) => {
           search: debouncedSearchTerm,
         },
       });
-      return res.data;
+      return res.data?.data || res.data;
     },
   });
 
-  const vacancies = data?.content || [];
+  const vacancies = data?.content || (Array.isArray(data) ? data : []);
   const totalPages = data?.totalPages || 0;
   const totalElements = data?.totalElements || 0;
 
@@ -132,7 +132,8 @@ const VacanciesPage = ({ isDark, setIsDark }: any) => {
     queryKey: ["employers"],
     queryFn: async () => {
       const res = await api.get("/employers");
-      return res.data.content || res.data || [];
+      const paged = res.data?.data || res.data;
+      return Array.isArray(paged?.content) ? paged.content : Array.isArray(paged) ? paged : [];
     },
   });
   const employers = employersData || [];
@@ -142,7 +143,8 @@ const VacanciesPage = ({ isDark, setIsDark }: any) => {
     queryKey: ["clients-brief"],
     queryFn: async () => {
       const res = await api.get("/clients");
-      return res.data.content || res.data || [];
+      const paged = res.data?.data || res.data;
+      return Array.isArray(paged?.content) ? paged.content : Array.isArray(paged) ? paged : [];
     },
   });
   const clients = clientsData || [];
@@ -152,7 +154,8 @@ const VacanciesPage = ({ isDark, setIsDark }: any) => {
     queryKey: ["job-positions"],
     queryFn: async () => {
       const res = await api.get("/job-positions");
-      return res.data || [];
+      const paged = res.data?.data || res.data;
+      return Array.isArray(paged?.content) ? paged.content : Array.isArray(paged) ? paged : [];
     },
   });
   const jobPositions = jobPositionsData || [];

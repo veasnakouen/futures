@@ -6,7 +6,8 @@ export const useAttendance = () => {
     queryKey: ["attendance"],
     queryFn: async () => {
       const { data } = await api.get("/hr/attendance");
-      return data;
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -15,7 +16,8 @@ export const useClients = (page = 0, size = 100) => {
     queryKey: ["clients", page, size],
     queryFn: async () => {
       const { data } = await api.get(`/clients?page=${page}&size=${size}`);
-      return data;
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -25,7 +27,8 @@ export const usePayroll = () => {
     queryKey: ["payroll"],
     queryFn: async () => {
       const { data } = await api.get("/hr/payroll");
-      return data;
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -35,7 +38,7 @@ export const useAnalyticsStats = () => {
     queryKey: ["analyticsStats"],
     queryFn: async () => {
       const { data } = await api.get("/hr/analytics/stats");
-      return data;
+      return data?.data || data;
     },
   });
 };
@@ -45,7 +48,7 @@ export const useAnalyticsDemographics = () => {
     queryKey: ["analyticsDemographics"],
     queryFn: async () => {
       const { data } = await api.get("/hr/analytics/demographics");
-      return data;
+      return data?.data || data;
     },
   });
 };
@@ -55,7 +58,7 @@ export const useAnalyticsDeptDist = () => {
     queryKey: ["analyticsDeptDist"],
     queryFn: async () => {
       const { data } = await api.get("/hr/analytics/department-distribution");
-      return data;
+      return data?.data || data;
     },
   });
 };
@@ -65,7 +68,8 @@ export const useHRAssets = () => {
     queryKey: ["hrAssets"],
     queryFn: async () => {
       const { data } = await api.get(`/stock/hr/assets?page=0&size=1000&t=${Date.now()}`);
-      return data.content || [];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -75,7 +79,8 @@ export const useAllEmployees = () => {
     queryKey: ["employees"],
     queryFn: async () => {
       const { data } = await api.get(`/employees?page=0&size=1000`);
-      return data.content || [];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -85,7 +90,8 @@ export const useAllUsers = () => {
     queryKey: ["users"],
     queryFn: async () => {
       const { data } = await api.get(`/users`);
-      return data;
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -96,7 +102,8 @@ export const useLookups = (type: string) => {
     queryFn: async () => {
       if (type === "clients" || type === "users") return [];
       const { data } = await api.get(`/lookups/${type}`);
-      return data;
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -106,7 +113,8 @@ export const useVacancies = () => {
     queryKey: ["vacancies"],
     queryFn: async () => {
       const { data } = await api.get(`/vacancies?page=0&size=100`);
-      return data.content || [];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -116,7 +124,7 @@ export const useRecruitmentStats = () => {
     queryKey: ["recruitmentStats"],
     queryFn: async () => {
       const { data } = await api.get(`/placements/stats`);
-      return data;
+      return data?.data || data;
     },
   });
 };
@@ -126,7 +134,8 @@ export const usePlacements = () => {
     queryKey: ["placements"],
     queryFn: async () => {
       const { data } = await api.get(`/placements?page=0&size=100`);
-      return data.content || [];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -136,7 +145,8 @@ export const useEmployers = () => {
     queryKey: ["employers"],
     queryFn: async () => {
       const { data } = await api.get(`/employers?page=0&size=100`);
-      return data.content || [];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -146,7 +156,8 @@ export const useTickets = () => {
     queryKey: ["tickets"],
     queryFn: async () => {
       const { data } = await api.get(`/tickets`);
-      return data;
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };
@@ -156,7 +167,8 @@ export const useAssessments = () => {
     queryKey: ["assessments"],
     queryFn: async () => {
       const { data } = await api.get(`/assessments`);
-      return data;
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return Array.isArray(list) ? list : [];
     },
   });
 };

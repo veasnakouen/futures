@@ -30,10 +30,11 @@ const TimeOffOverview: React.FC = () => {
     try {
       setLoading(true);
       const res = await api.get("/hr/leaves");
-      setLeaves(res.data?.content || res.data || []);
-    } catch (err) {
-      console.error("Failed to load leave requests", err);
-      toast.error("Failed to load time-off overview");
+      const list = res.data?.data?.content || res.data?.content || res.data?.data || res.data || [];
+      setLeaves(Array.isArray(list) ? list : []);
+    } catch (err: any) {
+      console.warn("Leave requests endpoint unavailable (microservice starting or offline):", err?.message);
+      setLeaves([]);
     } finally {
       setLoading(false);
     }

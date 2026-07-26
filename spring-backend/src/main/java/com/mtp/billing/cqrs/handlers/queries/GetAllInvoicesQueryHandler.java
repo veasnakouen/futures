@@ -17,7 +17,9 @@ public class GetAllInvoicesQueryHandler {
     private final InvoiceMapper mapper;
 
     public Page<InvoiceQueryResultDto> handle(GetAllInvoicesQuery query) {
-        return repository.findAll(PageRequest.of(query.getPage(), query.getSize()))
+        org.springframework.data.domain.Pageable pageable = query.getPageable() != null ? query.getPageable()
+                : PageRequest.of(query.getPage(), query.getSize());
+        return repository.findAll(pageable)
                 .map(mapper::toDto);
     }
 }

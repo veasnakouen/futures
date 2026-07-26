@@ -28,9 +28,15 @@ public class RoomController {
     private final GetAllRoomsQueryHandler getAllHandler;
     private final GetRoomByIdQueryHandler getByIdHandler;
 
+    private static final java.util.Set<String> ALLOWED_SORT_FIELDS = java.util.Set.of("id", "roomNumber", "roomType", "status", "pricePerNight");
+
     @GetMapping
-    public Page<RoomQueryResultDto> getAll(Pageable pageable) {
-        return getAllHandler.handle(new GetAllRoomsQuery(pageable.getPageNumber(), pageable.getPageSize()));
+    public ResponseEntity<com.mtp.api.dto.ApiResponse<com.mtp.api.dto.pagination.PagedResponse<RoomQueryResultDto>>> getAll(
+            @Valid @ModelAttribute com.mtp.api.dto.pagination.PaginationRequest request) {
+        Pageable pageable = request.toPageable(ALLOWED_SORT_FIELDS);
+        Page<RoomQueryResultDto> pageResult = getAllHandler.handle(new GetAllRoomsQuery(pageable));
+        com.mtp.api.dto.pagination.PagedResponse<RoomQueryResultDto> response = com.mtp.api.dto.pagination.PagedResponse.from(pageResult, request.getSortBy(), request.getSortOrder());
+        return ResponseEntity.ok(com.mtp.api.dto.ApiResponse.success("Rooms fetched successfully", response));
     }
 
     @GetMapping("/{id}")

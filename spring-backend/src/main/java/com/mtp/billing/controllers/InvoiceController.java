@@ -22,9 +22,15 @@ public class InvoiceController {
     private final GetAllInvoicesQueryHandler getAllHandler;
     private final GetInvoiceByIdQueryHandler getByIdHandler;
 
+    private static final java.util.Set<String> ALLOWED_SORT_FIELDS = java.util.Set.of("id", "invoiceNumber", "totalAmount", "status", "issueDate", "dueDate");
+
     @GetMapping
-    public Page<InvoiceQueryResultDto> getAll(Pageable pageable) {
-        return getAllHandler.handle(new GetAllInvoicesQuery(pageable.getPageNumber(), pageable.getPageSize()));
+    public ResponseEntity<com.mtp.api.dto.ApiResponse<com.mtp.api.dto.pagination.PagedResponse<InvoiceQueryResultDto>>> getAll(
+            @Valid @ModelAttribute com.mtp.api.dto.pagination.PaginationRequest request) {
+        Pageable pageable = request.toPageable(ALLOWED_SORT_FIELDS);
+        Page<InvoiceQueryResultDto> pageResult = getAllHandler.handle(new GetAllInvoicesQuery(pageable));
+        com.mtp.api.dto.pagination.PagedResponse<InvoiceQueryResultDto> response = com.mtp.api.dto.pagination.PagedResponse.from(pageResult, request.getSortBy(), request.getSortOrder());
+        return ResponseEntity.ok(com.mtp.api.dto.ApiResponse.success("Invoices fetched successfully", response));
     }
 
     @GetMapping("/modules")

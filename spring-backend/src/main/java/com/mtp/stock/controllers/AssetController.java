@@ -35,10 +35,15 @@ public class AssetController {
         return ResponseEntity.ok(getMyAssetsQueryHandler.handle(query));
     }
 
+    private static final java.util.Set<String> ALLOWED_SORT_FIELDS = java.util.Set.of("id", "name", "serialNumber", "assetType", "status", "vendor", "purchaseDate", "createdAt");
+
     @GetMapping
-    public Page<AssetQueryResultDto> getAll(Pageable pageable) {
-        GetAllAssetsQuery query = new GetAllAssetsQuery(pageable.getPageNumber(), pageable.getPageSize());
-        return getAllAssetsQueryHandler.handle(query);
+    public ResponseEntity<com.mtp.api.dto.ApiResponse<com.mtp.api.dto.pagination.PagedResponse<AssetQueryResultDto>>> getAll(
+            @jakarta.validation.Valid @ModelAttribute com.mtp.api.dto.pagination.PaginationRequest request) {
+        Pageable pageable = request.toPageable(ALLOWED_SORT_FIELDS);
+        Page<AssetQueryResultDto> pageResult = getAllAssetsQueryHandler.handle(new GetAllAssetsQuery(pageable));
+        com.mtp.api.dto.pagination.PagedResponse<AssetQueryResultDto> response = com.mtp.api.dto.pagination.PagedResponse.from(pageResult, request.getSortBy(), request.getSortOrder());
+        return ResponseEntity.ok(com.mtp.api.dto.ApiResponse.success("Assets fetched successfully", response));
     }
 
     @PostMapping

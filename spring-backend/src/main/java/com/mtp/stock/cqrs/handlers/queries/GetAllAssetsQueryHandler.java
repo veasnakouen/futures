@@ -18,7 +18,7 @@ public class GetAllAssetsQueryHandler {
     private final AssetMapper assetMapper;
 
     public Page<AssetQueryResultDto> handle(GetAllAssetsQuery query) {
-        Pageable pageable = PageRequest.of(query.getPage(), query.getSize());
+        Pageable pageable = query.getPageable() != null ? query.getPageable() : PageRequest.of(query.getPage(), query.getSize());
         return assetRepository.findAll(pageable).map(assetMapper::toDto);
     }
 }

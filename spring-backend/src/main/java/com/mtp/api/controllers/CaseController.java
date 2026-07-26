@@ -5,6 +5,7 @@ import com.mtp.api.repositories.CaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,24 +13,35 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.mtp.api.dto.ApiResponse;
+import com.mtp.api.dto.pagination.PagedResponse;
+import com.mtp.api.dto.pagination.PaginationRequest;
+import jakarta.validation.Valid;
+import java.util.Set;
+
 @RestController
 @RequestMapping("/api/cases")
 @CrossOrigin(origins = "*")
 public class CaseController {
 
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "openDate", "closeDate", "subject", "priority", "status", "serviceType");
+
     @Autowired
     private CaseRepository repository;
 
     @GetMapping
-    public Page<Case> getAllCases(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+    public ResponseEntity<ApiResponse<PagedResponse<Case>>> getAllCases(
+            @Valid @ModelAttribute PaginationRequest request,
             @RequestParam(required = false) String status) {
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("openDate").descending());
+        Pageable pageable = request.toPageable(ALLOWED_SORT_FIELDS);
+        Page<Case> pageResult;
         if (status != null && !status.isEmpty() && !"All".equalsIgnoreCase(status)) {
-            return repository.findByStatus(status, pageable);
+            pageResult = repository.findByStatus(status, pageable);
+        } else {
+            pageResult = repository.findAll(pageable);
         }
-        return repository.findAll(pageable);
+        PagedResponse<Case> response = PagedResponse.from(pageResult, request.getSortBy(), request.getSortOrder());
+        return ResponseEntity.ok(ApiResponse.success("Cases fetched successfully", response));
     }
 
     @GetMapping("/client/{clientId}")

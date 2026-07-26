@@ -64,20 +64,20 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
       const response = await api.get("/cases", {
         params: {
           status: statusFilter === "All" ? "" : statusFilter,
-          page,
+          page: page + 1, // 1-based page number for PaginationRequest
           size: 10,
         },
       });
-      const data = response.data;
-      const fetchedCases = Array.isArray(data.content)
-        ? data.content
-        : Array.isArray(data)
-          ? data
+      const resData = response.data;
+      const paged = resData.data || resData;
+      const fetchedCases = Array.isArray(paged.content)
+        ? paged.content
+        : Array.isArray(paged)
+          ? paged
           : [];
-          
+
       setCases(fetchedCases);
-      
-      // Auto-select first case if none selected or if selected case is not in current view
+
       if (fetchedCases.length > 0) {
         setSelectedCase((prev: any) => {
           if (!prev || !fetchedCases.find((c: any) => c.id === prev.id)) {
@@ -89,9 +89,11 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
         setSelectedCase(null);
       }
 
-      setTotalPages(data.totalPages || 0);
-    } catch (err) {
-      toast.error("Failed to load cases");
+      setTotalPages(paged.totalPages || 0);
+    } catch (err: any) {
+      console.warn("Could not fetch cases:", err?.message);
+      setCases([]);
+      setSelectedCase(null);
     } finally {
       setLoading(false);
     }
@@ -99,8 +101,10 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
 
   const fetchMetrics = async () => {
     try {
-      const response = await api.get("/cases", { params: { size: 1000 } });
-      const allCases = response.data.content || response.data || [];
+      const response = await api.get("/cases", { params: { size: 100 } });
+      const resData = response.data;
+      const paged = resData.data || resData;
+      const allCases = Array.isArray(paged.content) ? paged.content : Array.isArray(paged) ? paged : [];
       setMetrics({
         total: allCases.length,
         highPriority: allCases.filter(
@@ -114,16 +118,13 @@ const CasesPage = ({ isDark, setIsDark }: any) => {
   const fetchClients = async () => {
     try {
       const response = await api.get("/clients", { params: { size: 100 } });
-      const data = response.data;
-      setClients(
-        Array.isArray(data.content)
-          ? data.content
-          : Array.isArray(data)
-            ? data
-            : [],
-      );
+      const resData = response.data;
+      const paged = resData.data || resData;
+      const clientList = Array.isArray(paged.content) ? paged.content : Array.isArray(paged) ? paged : [];
+      setClients(clientList);
     } catch (err) {
-      console.error("Failed to fetch clients");
+      console.warn("Could not fetch clients");
+      setClients([]);
     }
   };
 

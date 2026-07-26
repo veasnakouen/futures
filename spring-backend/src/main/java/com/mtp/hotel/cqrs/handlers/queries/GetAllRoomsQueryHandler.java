@@ -17,7 +17,8 @@ public class GetAllRoomsQueryHandler {
     private final RoomMapper mapper;
 
     public Page<RoomQueryResultDto> handle(GetAllRoomsQuery query) {
-        return repository.findAll(PageRequest.of(query.getPage(), query.getSize()))
+        org.springframework.data.domain.Pageable pageable = query.getPageable() != null ? query.getPageable() : PageRequest.of(query.getPage(), query.getSize());
+        return repository.findAll(pageable)
                 .map(mapper::toDto);
     }
 }

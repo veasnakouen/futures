@@ -60,7 +60,8 @@ export const useMyLeaves = (employeeId: number | null) => {
     queryKey: ["myLeaves", employeeId],
     queryFn: async () => {
       const { data } = await api.get(`/hr/leaves/employee/${employeeId}`);
-      return data as LeaveRequest[];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return (Array.isArray(list) ? list : []) as LeaveRequest[];
     },
     enabled: !!employeeId,
     staleTime: 10 * 60 * 1000,
@@ -73,7 +74,7 @@ export const useLeaveBalance = (employeeId: number | null, year: number) => {
     queryKey: ["leaveBalance", employeeId, year],
     queryFn: async () => {
       const { data } = await api.get(`/hr/leaves/employee/${employeeId}/balance/${year}`);
-      return data as LeaveBalance;
+      return (data?.data || data) as LeaveBalance;
     },
     enabled: !!employeeId && !!year,
     retry: 0,
@@ -87,7 +88,7 @@ export const useAnnualLeavePlan = (employeeIdNo: string | null, year: number) =>
     queryKey: ["annualLeavePlan", employeeIdNo, year],
     queryFn: async () => {
       const { data } = await api.get(`/hr/leave-plans/${employeeIdNo}/${year}`);
-      return data as AnnualLeavePlanDto;
+      return (data?.data || data) as AnnualLeavePlanDto;
     },
     enabled: !!employeeIdNo && !!year,
     retry: 0,
@@ -101,7 +102,8 @@ export const useAllAnnualLeavePlans = (year: number) => {
     queryKey: ["allAnnualLeavePlans", year],
     queryFn: async () => {
       const { data } = await api.get(`/hr/leave-plans/year/${year}`);
-      return data as AnnualLeavePlanDto[];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return (Array.isArray(list) ? list : []) as AnnualLeavePlanDto[];
     },
     enabled: !!year,
   });
@@ -112,7 +114,8 @@ export const useAllLeaves = () => {
     queryKey: ["allLeaves"],
     queryFn: async () => {
       const { data } = await api.get(`/hr/leaves`);
-      return data as LeaveRequest[];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return (Array.isArray(list) ? list : []) as LeaveRequest[];
     },
   });
 };
@@ -122,7 +125,8 @@ export const usePendingManagerLeaves = (managerId: number | null) => {
     queryKey: ["pendingManagerLeaves", managerId],
     queryFn: async () => {
       const { data } = await api.get(`/hr/leaves/pending/manager/${managerId}`);
-      return data as LeaveRequest[];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return (Array.isArray(list) ? list : []) as LeaveRequest[];
     },
     enabled: !!managerId,
   });
@@ -133,7 +137,8 @@ export const usePendingChairmanLeaves = (chairmanId: number | null) => {
     queryKey: ["pendingChairmanLeaves", chairmanId],
     queryFn: async () => {
       const { data } = await api.get(`/hr/leaves/pending/chairman/${chairmanId}`);
-      return data as LeaveRequest[];
+      const list = data?.data?.content || data?.content || data?.data || data || [];
+      return (Array.isArray(list) ? list : []) as LeaveRequest[];
     },
     enabled: !!chairmanId,
   });

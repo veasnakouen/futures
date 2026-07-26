@@ -514,4 +514,19 @@ public class AttendanceServiceImpl implements AttendanceService {
             }
         }
     }
+
+    @Override
+    public List<Attendance> findAll(String startdate, String enddate) {
+        if (startdate != null && enddate != null && !startdate.isEmpty() && !enddate.isEmpty()) {
+            LocalDateTime start = java.time.LocalDate.parse(startdate).atStartOfDay();
+            LocalDateTime end = java.time.LocalDate.parse(enddate).atTime(23, 59, 59);
+            return attendanceRepository.findByClockInBetween(start, end);
+        }
+        return attendanceRepository.findAll();
+    }
+
+    @Override
+    public List<Attendance> findByEmployee(Integer employeeId) {
+        return attendanceRepository.findByEmployeeId(employeeId);
+    }
 }

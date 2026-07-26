@@ -18,11 +18,18 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
+import com.mtp.api.dto.ApiResponse;
+import com.mtp.api.dto.pagination.PagedResponse;
+import com.mtp.api.dto.pagination.PaginationRequest;
+import java.util.Set;
+
 @RestController
 @RequestMapping("/api/clients")
 @CrossOrigin(origins = "*")
 @Slf4j
 public class ClientController {
+
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "clientCode", "firstName", "lastName", "createdAt", "branch");
 
     @Autowired
     private ClientCommandService clientCommandService;
@@ -76,12 +83,15 @@ public class ClientController {
     private ClientDocumentRepository documentRepository;
 
     @GetMapping
-    public Page<ClientSummaryDto> getAllClients(
+    public ResponseEntity<ApiResponse<PagedResponse<ClientSummaryDto>>> getAllClients(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String branch,
             @RequestParam(required = false) String status,
-            Pageable pageable) {
-        return clientQueryService.getAllClients(name, branch, status, pageable);
+            @Valid @ModelAttribute PaginationRequest request) {
+        Pageable pageable = request.toPageable(ALLOWED_SORT_FIELDS);
+        Page<ClientSummaryDto> pageResult = clientQueryService.getAllClients(name, branch, status, pageable);
+        PagedResponse<ClientSummaryDto> response = PagedResponse.from(pageResult, request.getSortBy(), request.getSortOrder());
+        return ResponseEntity.ok(ApiResponse.success("Clients fetched successfully", response));
     }
 
     @GetMapping("/{id}")

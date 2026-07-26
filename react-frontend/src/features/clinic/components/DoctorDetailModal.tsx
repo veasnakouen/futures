@@ -48,8 +48,22 @@ export default function DoctorDetailModal({ isOpen, onClose, doctor, onEdit }: P
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
           
           <div className="flex flex-col sm:flex-row items-center gap-6 relative z-10">
-            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl font-black shadow-lg border-2 border-white/30 shrink-0">
-              {initials || "DR"}
+            {/* Avatar Photo Frame or Gradient Initial Badge */}
+            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl font-black shadow-xl border-2 border-white/40 shrink-0 overflow-hidden relative">
+              {doctor.photoUrl || doctor.avatarUrl ? (
+                <img
+                  src={doctor.photoUrl || doctor.avatarUrl}
+                  alt={fullName}
+                  className="w-full h-full object-cover rounded-2xl"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = "none";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-blue-500 text-white font-black text-2xl flex items-center justify-center tracking-wider shadow-inner">
+                  {initials || "DR"}
+                </div>
+              )}
             </div>
             
             <div className="text-center sm:text-left space-y-1 flex-1">

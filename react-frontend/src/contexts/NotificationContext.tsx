@@ -40,16 +40,11 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       // 1. Fetch existing notifications on load safely
       api.get("/notifications")
         .then(res => {
-          if (Array.isArray(res.data)) {
-            setNotifications(res.data);
-          } else if (res.data && Array.isArray(res.data.content)) {
-            setNotifications(res.data.content);
-          } else {
-            setNotifications([]);
-          }
+          const list = res.data?.data?.content || res.data?.content || res.data?.data || res.data || [];
+          setNotifications(Array.isArray(list) ? list : []);
         })
         .catch(err => {
-          console.warn("Failed to fetch notifications:", err);
+          console.warn("Failed to fetch notifications (service starting or offline):", err?.message);
           setNotifications([]);
         });
 

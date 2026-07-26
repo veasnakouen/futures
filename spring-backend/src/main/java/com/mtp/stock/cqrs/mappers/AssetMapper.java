@@ -21,6 +21,15 @@ public interface AssetMapper {
 
     // Entity to Query Result DTO
     @Mapping(source = "employee.id", target = "employeeId")
-    @Mapping(target = "employeeName", expression = "java(entity.getEmployee() != null ? entity.getEmployee().getFirstName() + \" \" + entity.getEmployee().getLastName() : null)")
+    @Mapping(target = "employeeName", expression = "java(mapEmployeeName(entity))")
     AssetQueryResultDto toDto(CompanyAsset entity);
+
+    default String mapEmployeeName(CompanyAsset entity) {
+        if (entity == null || entity.getEmployee() == null) {
+            return null;
+        }
+        String first = entity.getEmployee().getFirstName() != null ? entity.getEmployee().getFirstName() : "";
+        String last = entity.getEmployee().getLastName() != null ? entity.getEmployee().getLastName() : "";
+        return (first + " " + last).trim();
+    }
 }

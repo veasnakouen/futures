@@ -187,13 +187,20 @@ export default function LocationManagement() {
   const [selectedCommune, setSelectedCommune] = useState<number | null>(null);
 
   // Queries
-  const { data: provincesRes } = useQuery({ queryKey: ["provinces"], queryFn: locationService.getProvinces });
+  const { data: provincesRes } = useQuery({ 
+    queryKey: ["provinces"], 
+    queryFn: locationService.getProvinces,
+    retry: false,
+    refetchOnWindowFocus: false
+  });
   const provinces = provincesRes?.data || [];
 
   const { data: districtsRes } = useQuery({
     queryKey: ["districts", selectedProvince],
     queryFn: () => locationService.getDistricts(selectedProvince!),
     enabled: !!selectedProvince,
+    retry: false,
+    refetchOnWindowFocus: false
   });
   const districts = districtsRes?.data || [];
 
@@ -201,6 +208,8 @@ export default function LocationManagement() {
     queryKey: ["communes", selectedDistrict],
     queryFn: () => locationService.getCommunes(selectedDistrict!),
     enabled: !!selectedDistrict,
+    retry: false,
+    refetchOnWindowFocus: false
   });
   const communes = communesRes?.data || [];
 
@@ -208,6 +217,8 @@ export default function LocationManagement() {
     queryKey: ["villages", selectedCommune],
     queryFn: () => locationService.getVillages(selectedCommune!),
     enabled: !!selectedCommune,
+    retry: false,
+    refetchOnWindowFocus: false
   });
   const villages = villagesRes?.data || [];
 

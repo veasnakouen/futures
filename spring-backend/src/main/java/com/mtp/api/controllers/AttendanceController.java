@@ -1,178 +1,158 @@
 package com.mtp.api.controllers;
 
+import com.mtp.api.dto.ApiResponse;
 import com.mtp.api.dto.BiometricRequest;
 import com.mtp.api.dto.ManualAttendanceRequest;
 import com.mtp.api.models.Attendance;
 import com.mtp.api.models.BiometricDevice;
 import com.mtp.api.services.AttendanceService;
 import com.mtp.api.services.QRCodeService;
-import com.mtp.api.repositories.AttendanceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/hr/attendance")
+@CrossOrigin(origins = "*")
 public class AttendanceController {
 
     private static final Logger log = LoggerFactory.getLogger(AttendanceController.class);
 
-    @Autowired
-    private AttendanceService attendanceService;
+    private final AttendanceService attendanceService;
+    private final QRCodeService qrCodeService;
 
-    @Autowired
-    private QRCodeService qrCodeService;
-
-    @Autowired
-    private com.mtp.api.repositories.EmployeeRepository employeeRepository;
-
-    @Autowired
-    private AttendanceRepository attendanceRepository;
+    public AttendanceController(AttendanceService attendanceService, QRCodeService qrCodeService) {
+        this.attendanceService = attendanceService;
+        this.qrCodeService = qrCodeService;
+    }
 
     @GetMapping
-    public List<Attendance> getAll(
+    public ResponseEntity<ApiResponse<List<Attendance>>> getAll(
             @RequestParam(required = false) String startdate,
             @RequestParam(required = false) String enddate) {
-        if (startdate != null && enddate != null && !startdate.isEmpty() && !enddate.isEmpty()) {
-            java.time.LocalDateTime start = java.time.LocalDate.parse(startdate).atStartOfDay();
-            java.time.LocalDateTime end = java.time.LocalDate.parse(enddate).atTime(23, 59, 59);
-            return attendanceRepository.findByClockInBetween(start, end);
-        }
-        return attendanceRepository.findAll();
+        List<Attendance> result = attendanceService.findAll(startdate, enddate);
+        return ResponseEntity.ok(ApiResponse.success("Attendance logs fetched successfully", result));
     }
 
     @GetMapping("/employee/{id}")
-    public List<Attendance> getByEmployee(@PathVariable Integer id) {
-        return attendanceRepository.findByEmployeeId(id);
+    public ResponseEntity<ApiResponse<List<Attendance>>> getByEmployee(@PathVariable Integer id) {
+        List<Attendance> result = attendanceService.findByEmployee(id);
+        return ResponseEntity.ok(ApiResponse.success("Employee attendance logs fetched successfully", result));
     }
 
     @PostMapping("/clock-in")
-    public ResponseEntity<?> clockIn(@RequestParam Integer employeeId,
+    public ResponseEntity<ApiResponse<Attendance>> clockIn(
+            @RequestParam Integer employeeId,
             @RequestParam(required = false) String location) {
         try {
-            return ResponseEntity.ok(attendanceService.clockIn(employeeId, location, "Manual Clock-In"));
+            Attendance attendance = attendanceService.clockIn(employeeId, location, "Manual Clock-In");
+            return ResponseEntity.ok(ApiResponse.success("Clock-in recorded successfully", attendance));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         }
     }
 
     @PostMapping("/clock-out")
-    public ResponseEntity<?> clockOut(@RequestParam Integer employeeId) {
+    public ResponseEntity<ApiResponse<Attendance>> clockOut(@RequestParam Integer employeeId) {
         try {
-            return ResponseEntity.ok(attendanceService.clockOut(employeeId, "Manual Clock-Out"));
+            Attendance attendance = attendanceService.clockOut(employeeId, "Manual Clock-Out");
+            return ResponseEntity.ok(ApiResponse.success("Clock-out recorded successfully", attendance));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         }
     }
 
-    /**
-     * Generic Biometric Gateway.
-     * Supports Fingerprint, FaceID, RFID, etc.
-     */
     @PostMapping("/biometric")
     public ResponseEntity<?> biometricCheck(@Valid @RequestBody BiometricRequest request) {
         return attendanceService.processBiometricCheck(request);
     }
 
     @PostMapping("/manual")
-    public ResponseEntity<Attendance> submitManualLog(@Valid @RequestBody ManualAttendanceRequest request) {
-        return ResponseEntity.ok(attendanceService.submitManualLog(request));
+    public ResponseEntity<ApiResponse<Attendance>> submitManualLog(@Valid @RequestBody ManualAttendanceRequest request) {
+        Attendance attendance = attendanceService.submitManualLog(request);
+        return ResponseEntity.ok(ApiResponse.success("Manual attendance logged successfully", attendance));
     }
 
     @GetMapping("/test-connection")
-    public ResponseEntity<Boolean> testConnection(@RequestParam String ipAddress, @RequestParam int port) {
-        System.out.println(">>> INCOMING TEST REQUEST: " + ipAddress + ":" + port);
-        return ResponseEntity.ok(attendanceService.testConnection(ipAddress, port));
+    public ResponseEntity<ApiResponse<Boolean>> testConnection(@RequestParam String ipAddress, @RequestParam int port) {
+        boolean connected = attendanceService.testConnection(ipAddress, port);
+        return ResponseEntity.ok(ApiResponse.success("Connection test completed", connected));
     }
 
     @PostMapping("/sync-device")
-    public ResponseEntity<?> syncDevice(@RequestParam String ipAddress) {
+    public ResponseEntity<ApiResponse<Boolean>> syncDevice(@RequestParam String ipAddress) {
         try {
             attendanceService.syncDeviceData(ipAddress);
-            return ResponseEntity.ok(true);
+            return ResponseEntity.ok(ApiResponse.success("Hardware sync completed successfully", true));
         } catch (Exception e) {
             log.error("Sync failed for {}: {}", ipAddress, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Hardware Sync Error: " + e.getMessage());
+                    .body(ApiResponse.error("Hardware Sync Error: " + e.getMessage()));
         }
     }
 
     @GetMapping("/device-users")
-    public ResponseEntity<?> getDeviceUsers(@RequestParam String ipAddress) {
-        return ResponseEntity.ok(attendanceService.getDeviceUsers(ipAddress));
+    public ResponseEntity<ApiResponse<?>> getDeviceUsers(@RequestParam String ipAddress) {
+        var users = attendanceService.getDeviceUsers(ipAddress);
+        return ResponseEntity.ok(ApiResponse.success("Device users fetched successfully", users));
     }
 
-    // Device Management Endpoints
     @GetMapping("/devices")
-    public ResponseEntity<?> getDevices() {
-        return ResponseEntity.ok(attendanceService.getAllDevices());
+    public ResponseEntity<ApiResponse<List<BiometricDevice>>> getDevices() {
+        List<BiometricDevice> devices = attendanceService.getAllDevices();
+        return ResponseEntity.ok(ApiResponse.success("Biometric devices fetched successfully", devices));
     }
 
     @PostMapping("/devices")
-    public ResponseEntity<?> createDevice(@RequestBody BiometricDevice device) {
-        return ResponseEntity.ok(attendanceService.saveDevice(device));
+    public ResponseEntity<ApiResponse<BiometricDevice>> createDevice(@RequestBody BiometricDevice device) {
+        BiometricDevice saved = attendanceService.saveDevice(device);
+        return ResponseEntity.ok(ApiResponse.success("Biometric device created successfully", saved));
     }
 
     @PutMapping("/devices/{id}")
-    public ResponseEntity<?> updateDevice(@PathVariable Integer id, @RequestBody BiometricDevice device) {
+    public ResponseEntity<ApiResponse<BiometricDevice>> updateDevice(@PathVariable Integer id, @RequestBody BiometricDevice device) {
         device.setId(id);
-        return ResponseEntity.ok(attendanceService.saveDevice(device));
+        BiometricDevice updated = attendanceService.saveDevice(device);
+        return ResponseEntity.ok(ApiResponse.success("Biometric device updated successfully", updated));
     }
 
     @DeleteMapping("/devices/{id}")
-    public ResponseEntity<?> deleteDevice(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Void>> deleteDevice(@PathVariable Integer id) {
         attendanceService.deleteDevice(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success("Biometric device deleted successfully", null));
     }
 
     @GetMapping("/probe-device")
-    public ResponseEntity<String> probeDevice(@RequestParam String ipAddress, @RequestParam int port) {
-        return ResponseEntity.ok(attendanceService.probeDevice(ipAddress, port));
-    }
-
-    @PostMapping("/biometric/push")
-    public ResponseEntity<?> receiveBiometricData(@RequestBody java.util.List<java.util.Map<String, Object>> payloads) {
-        for (java.util.Map<String, Object> payload : payloads) {
-            String empIdNo = (String) payload.get("employeeId");
-            String timestampStr = (String) payload.get("timestamp");
-            // Find employee by idNo
-            java.util.Optional<com.mtp.api.models.Employee> empOpt = employeeRepository.findByIdNo(empIdNo);
-            if (empOpt.isPresent()) {
-                com.mtp.api.models.Attendance attendance = new com.mtp.api.models.Attendance();
-                attendance.setEmployee(empOpt.get());
-                attendance.setClockIn(java.time.LocalDateTime.parse(timestampStr));
-                attendance.setStatus("PRESENT");
-                attendanceRepository.save(attendance);
-            }
-        }
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ApiResponse<String>> probeDevice(@RequestParam String ipAddress, @RequestParam int port) {
+        String info = attendanceService.probeDevice(ipAddress, port);
+        return ResponseEntity.ok(ApiResponse.success("Device probe info fetched", info));
     }
 
     @GetMapping("/department/{id}/qr")
-    public ResponseEntity<String> getDepartmentQrToken(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<String>> getDepartmentQrToken(@PathVariable Integer id) {
         String token = qrCodeService.generateDepartmentQrToken(id, false);
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(ApiResponse.success("QR token generated successfully", token));
     }
 
     @PostMapping("/scan-qr")
-    public ResponseEntity<?> scanQrCode(@RequestParam String token, @RequestParam Integer employeeId, 
-            @RequestParam(required = false) Double lat, @RequestParam(required = false) Double lng) {
+    public ResponseEntity<?> scanQrCode(
+            @RequestParam String token,
+            @RequestParam Integer employeeId,
+            @RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lng) {
         try {
             Integer departmentId = qrCodeService.validateAndGetDepartmentId(token);
             if (departmentId == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired QR code.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Invalid or expired QR code"));
             }
-            
-            // Use dynamic Weekly Schedule logic for Check-In / Check-Out and Late calculation
             return attendanceService.processQrScan(employeeId, departmentId, lat, lng);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         }
     }
 }

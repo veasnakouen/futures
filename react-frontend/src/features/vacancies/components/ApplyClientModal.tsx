@@ -70,7 +70,10 @@ const ApplyClientModal: React.FC<ApplyClientModalProps> = ({
                 className="rounded-md"
               >
                 <option value="">Choose a client...</option>
-                {clients.map((c) => (
+                {(Array.isArray(clients)
+                  ? clients
+                  : (clients as any)?.data?.content || (clients as any)?.content || (clients as any)?.data || []
+                ).map((c: any) => (
                   <option key={c.id} value={c.id}>
                     {c.firstName} {c.lastName} ({c.clientCode})
                   </option>

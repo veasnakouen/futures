@@ -5,7 +5,7 @@ import { billingService, CreateInvoiceCommand, UpdateInvoiceCommand, CreatePayme
 export const useInvoices = (page = 0, size = 10) => {
   return useQuery({
     queryKey: ["invoices", page, size],
-    queryFn: () => billingService.getInvoices(page, size).then((res) => res.data),
+    queryFn: () => billingService.getInvoices(page, size).then((res) => res.data?.data || res.data),
   });
 };
 
@@ -44,7 +44,7 @@ export const useDeleteInvoiceMutation = () => {
 export const usePayments = (page = 0, size = 10) => {
   return useQuery({
     queryKey: ["payments", page, size],
-    queryFn: () => billingService.getPayments(page, size).then((res) => res.data),
+    queryFn: () => billingService.getPayments(page, size).then((res) => res.data?.data || res.data),
   });
 };
 

@@ -42,6 +42,17 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
     (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("leavesViewMode", viewMode);
   }, [viewMode]);
 
+const safeFormatDate = (dateVal: any, formatStr: string, fallback: string = "—") => {
+  if (!dateVal) return fallback;
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return fallback;
+    return format(d, formatStr);
+  } catch {
+    return fallback;
+  }
+};
+
   const safeLeaves = Array.isArray(globalLeaves) ? globalLeaves : [];
 
   const columns: DataTableColumn<any>[] = [
@@ -59,7 +70,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
             </p>
             <p className="text-[10px] font-bold text-gray-400 mt-0.5 flex items-center gap-1">
               <Clock size={10} /> Req{" "}
-              {format(new Date(l.createdAt || Date.now()), "MMM dd")}
+              {safeFormatDate(l.createdAt, "MMM dd")}
             </p>
           </div>
         </div>
@@ -78,8 +89,8 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
             {l.leaveType}
           </Badge>
           <span className="text-[11px] font-black text-gray-500 text-center">
-            {format(new Date(l.startDate), "MMM dd")} -{" "}
-            {format(new Date(l.endDate), "MMM dd")}
+            {safeFormatDate(l.startDate, "MMM dd")} -{" "}
+            {safeFormatDate(l.endDate, "MMM dd")}
           </span>
         </div>
       ),
@@ -362,7 +373,7 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
                     </Badge>
                     <span className="text-[9px] font-black text-gray-400 uppercase flex items-center gap-1">
                       <Clock size={10} /> Requested{" "}
-                      {format(new Date(l.createdAt || Date.now()), "MMM dd")}
+                      {safeFormatDate(l.createdAt, "MMM dd")}
                     </span>
                   </div>
                 </div>
@@ -375,9 +386,9 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
                       Duration
                     </p>
                     <p className="text-xs font-black dark:text-white flex items-center gap-2">
-                      {format(new Date(l.startDate), "MMM dd")}{" "}
+                      {safeFormatDate(l.startDate, "MMM dd")}{" "}
                       <span className="opacity-30">→</span>{" "}
-                      {format(new Date(l.endDate), "MMM dd, yyyy")}
+                      {safeFormatDate(l.endDate, "MMM dd, yyyy")}
                     </p>
                   </div>
                   <div>

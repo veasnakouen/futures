@@ -89,7 +89,8 @@ export default function StudentFormModal({ isOpen, onClose, studentToEdit }: Pro
       setValue("globalClientId", undefined);
       return;
     }
-    const client = clientsData?.content?.find((c: any) => c.id.toString() === clientId);
+    const clientsList = Array.isArray(clientsData) ? clientsData : (clientsData as any)?.content || [];
+    const client = clientsList.find((c: any) => c.id.toString() === clientId);
     if (client) {
       setValue("globalClientId", client.id);
       setValue("firstName", client.firstName || "");

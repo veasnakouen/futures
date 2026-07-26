@@ -56,10 +56,21 @@ import { useTimetable } from "@/hooks/useTimetable";
 import { useHoliday } from "@/hooks/useHoliday";
 import { DataTable, ColumnDef } from "@/components/common/DataTable";
 
+const safeFormatDate = (dateVal: any, formatStr: string, fallback: string = "—") => {
+  if (!dateVal) return fallback;
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return fallback;
+    return format(d, formatStr);
+  } catch {
+    return fallback;
+  }
+};
+
 interface AttendanceModuleProps {
   globalAttendance: any[];
-  onManualLog: () => void;
-  onOpenDeviceManager: () => void;
+  onManualLog?: () => void;
+  onOpenDeviceManager?: () => void;
 }
 
 /* ── Design System Helpers ── */
@@ -140,15 +151,29 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
   const { data: holidays = [] } = useHolidays();
 
   // Real-time Analytics Calculations
-  const onPremisesCount = React.useMemo(() => {
-    return globalAttendance.filter((a) => a.status === "Present" && !a.clockOut).length;
+  const safeAttendance = React.useMemo(() => {
+    if (Array.isArray(globalAttendance)) return globalAttendance;
+    if ((globalAttendance as any)?.data?.content && Array.isArray((globalAttendance as any).data.content)) {
+      return (globalAttendance as any).data.content;
+    }
+    if ((globalAttendance as any)?.content && Array.isArray((globalAttendance as any).content)) {
+      return (globalAttendance as any).content;
+    }
+    if ((globalAttendance as any)?.data && Array.isArray((globalAttendance as any).data)) {
+      return (globalAttendance as any).data;
+    }
+    return [];
   }, [globalAttendance]);
 
+  const onPremisesCount = React.useMemo(() => {
+    return safeAttendance.filter((a: any) => (a.status === "Present" || a.status === "PRESENT") && !a.clockOut).length;
+  }, [safeAttendance]);
+
   const punctualityScore = React.useMemo(() => {
-    if (!globalAttendance.length) return 100;
-    const late = globalAttendance.filter((a) => a.status === "Late").length;
-    return (100 - (late / globalAttendance.length) * 100).toFixed(1);
-  }, [globalAttendance]);
+    if (!safeAttendance.length) return 100;
+    const late = safeAttendance.filter((a: any) => a.status === "Late" || a.status === "LATE").length;
+    return (100 - (late / safeAttendance.length) * 100).toFixed(1);
+  }, [safeAttendance]);
 
   return (
     <div className="space-y-6 animate-fade-in pb-12">
@@ -250,8 +275,8 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                 <SectionLabel><span className="flex items-center gap-2 text-gray-500"><TrendingUp size={14} className="text-[#c53030]" /> Weekly Presence Trends</span></SectionLabel>
                 <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-[9px] font-black uppercase tracking-widest">Last 7 Days</span>
               </div>
-              <div style={{ width: '100%', height: 250 }}>
-                <ResponsiveContainer width="100%" height="100%">
+              <div style={{ width: '100%', height: 250, minWidth: 0 }}>
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
                   <BarChart data={[
                     { day: "Mon", count: 42 }, { day: "Tue", count: 38 }, { day: "Wed", count: 45 },
                     { day: "Thu", count: 40 }, { day: "Fri", count: 35 }, { day: "Sat", count: 12 }, { day: "Sun", count: 8 }
@@ -317,13 +342,16 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                     accessorKey: "shift",
                     cell: () => <span className="text-[10px] font-bold text-gray-400 uppercase">Day Shift</span>
                   },
+
                   {
                     header: "Clock In",
                     accessorKey: "clockIn",
                     sortable: true,
-                    cell: (log) => log.clockIn ? (
-                      <span className="font-mono text-gray-800 dark:text-gray-200 font-bold text-xs">{format(new Date(log.clockIn), "hh:mm a")}</span>
-                    ) : (<span className="text-gray-300 font-mono text-xs">—</span>)
+                    cell: (log) => (
+                      <span className="font-mono text-gray-800 dark:text-gray-200 font-bold text-xs">
+                        {safeFormatDate(log.clockIn, "hh:mm a")}
+                      </span>
+                    )
                   },
                   {
                     header: "Method",
@@ -368,13 +396,13 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
                   }
                 };
 
-                const filteredAttendance = (globalAttendance || [])
-                  .filter((log) => {
+                const filteredAttendance = safeAttendance
+                  .filter((log: any) => {
                     const fullName = log.employee ? `${log.employee.firstNameEnglish} ${log.employee.lastNameEnglish}` : log.employeeName || "";
                     return fullName.toLowerCase().includes(matrixSearch.toLowerCase());
                   })
-                  .filter((log) => statusFilter === "" || log.status === statusFilter)
-                  .filter((log) => !unmappedOnly || !log.employee);
+                  .filter((log: any) => statusFilter === "" || log.status === statusFilter)
+                  .filter((log: any) => !unmappedOnly || !log.employee);
 
                 const sortedAttendance = [...filteredAttendance].sort((a, b) => {
                   if (sortField === "clockIn") {
@@ -562,22 +590,26 @@ const AttendanceModule: React.FC<AttendanceModuleProps> = ({
               <div className="space-y-4">
                 {holidays.length > 0 ? (
                   holidays.map((h, i) => {
-                    const start = new Date(h.startDate);
-                    const end = new Date(h.endDate);
-                    const durationDays = Math.round((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) + 1;
+                    const start = h.startDate ? new Date(h.startDate) : null;
+                    const end = h.endDate ? new Date(h.endDate) : null;
+                    const startValid = start && !isNaN(start.getTime());
+                    const endValid = end && !isNaN(end.getTime());
+                    const durationDays = (startValid && endValid)
+                      ? Math.round((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) + 1
+                      : 1;
                     const isMultiDay = durationDays > 1;
 
                     return (
                       <div key={i} className="flex gap-4 items-center p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50">
                         <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 flex flex-col items-center justify-center border border-amber-100 dark:border-amber-900/30">
-                          <span className="text-[9px] font-black uppercase leading-none">{format(start, "MMM")}</span>
-                          <span className="text-sm font-black leading-none mt-0.5">{format(start, "dd")}</span>
+                          <span className="text-[9px] font-black uppercase leading-none">{startValid ? format(start, "MMM") : "N/A"}</span>
+                          <span className="text-sm font-black leading-none mt-0.5">{startValid ? format(start, "dd") : "--"}</span>
                         </div>
                         <div className="flex-1">
                           <p className="text-xs font-bold text-gray-900 dark:text-white">{h.name}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-[9px] font-bold text-gray-400">
-                              {isMultiDay ? `${format(start, "MMM dd")} - ${format(end, "MMM dd")} (${durationDays} Days)` : "1 Day"}
+                              {isMultiDay && startValid && endValid ? `${format(start, "MMM dd")} - ${format(end, "MMM dd")} (${durationDays} Days)` : "1 Day"}
                             </span>
                             <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
                             <span className="text-[9px] font-bold text-amber-600 dark:text-amber-500">{h.category || "System"}</span>

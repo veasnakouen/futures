@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Pageable;
+
 @Service
 @RequiredArgsConstructor
 public class GetAllPaymentsQueryHandler {
@@ -17,7 +19,10 @@ public class GetAllPaymentsQueryHandler {
     private final PaymentMapper mapper;
 
     public Page<PaymentQueryResultDto> handle(GetAllPaymentsQuery query) {
-        return repository.findAll(PageRequest.of(query.getPage(), query.getSize()))
+        Pageable pageable = query.getPageable() != null 
+            ? query.getPageable() 
+            : PageRequest.of(query.getPage(), query.getSize());
+        return repository.findAll(pageable)
                 .map(mapper::toDto);
     }
 }

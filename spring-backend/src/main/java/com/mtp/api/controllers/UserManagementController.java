@@ -3,13 +3,9 @@ package com.mtp.api.controllers;
 import com.mtp.api.models.Permission;
 import com.mtp.api.models.Role;
 import com.mtp.api.models.User;
-import com.mtp.api.models.AuditLog;
-import com.mtp.api.repositories.AuditLogRepository;
 import com.mtp.api.repositories.PermissionRepository;
 import com.mtp.api.repositories.RoleRepository;
 import com.mtp.api.repositories.UserRepository;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,7 +46,8 @@ public class UserManagementController {
     private String deriveReadablePassword(User user) {
         if (user.getEmail() != null) {
             String emailLower = user.getEmail().toLowerCase().trim();
-            if (emailLower.equals("samith@mloptapang.org") || emailLower.equals("futuresoffice@mloptapang.org") || emailLower.equals("sitha@mloptapang.org")) {
+            if (emailLower.equals("samith@mloptapang.org") || emailLower.equals("futuresoffice@mloptapang.org")
+                    || emailLower.equals("sitha@mloptapang.org")) {
                 return "Futures@012478100";
             }
             if (emailLower.equals("fb.chhutlayveasna@gmail.com")) {
@@ -59,7 +56,8 @@ public class UserManagementController {
         }
         if (user.getUserName() != null && !user.getUserName().trim().isEmpty()) {
             String unameLower = user.getUserName().toLowerCase().trim();
-            if (unameLower.equals("samith@mloptapang.org") || unameLower.equals("futuresoffice@mloptapang.org") || unameLower.equals("sitha@mloptapang.org")) {
+            if (unameLower.equals("samith@mloptapang.org") || unameLower.equals("futuresoffice@mloptapang.org")
+                    || unameLower.equals("sitha@mloptapang.org")) {
                 return "Futures@012478100";
             }
             if (unameLower.equals("fb.chhutlayveasna@gmail.com")) {
@@ -67,15 +65,18 @@ public class UserManagementController {
             }
             String namePart = user.getUserName().split("@")[0].replaceAll("[^a-zA-Z0-9]", "");
             if (!namePart.isEmpty()) {
-                return Character.toUpperCase(namePart.charAt(0)) + (namePart.length() > 1 ? namePart.substring(1) : "") + "@2026!";
+                return Character.toUpperCase(namePart.charAt(0)) + (namePart.length() > 1 ? namePart.substring(1) : "")
+                        + "@2026!";
             }
         }
         return "Futures@2026!";
     }
 
     private boolean isHashString(String s) {
-        if (s == null) return false;
-        return s.startsWith("AL/") || s.startsWith("AC") || s.startsWith("AQ") || s.startsWith("$2a$") || s.startsWith("$2b$") || s.length() > 25;
+        if (s == null)
+            return false;
+        return s.startsWith("AL/") || s.startsWith("AC") || s.startsWith("AQ") || s.startsWith("$2a$")
+                || s.startsWith("$2b$") || s.length() > 25;
     }
 
     // User Management
@@ -91,7 +92,8 @@ public class UserManagementController {
             page = userRepository.findAll(pageable);
         }
         page.forEach(u -> {
-            if (u.getPasswordText() == null || u.getPasswordText().trim().isEmpty() || isHashString(u.getPasswordText())) {
+            if (u.getPasswordText() == null || u.getPasswordText().trim().isEmpty()
+                    || isHashString(u.getPasswordText())) {
                 u.setPasswordText(deriveReadablePassword(u));
             }
         });

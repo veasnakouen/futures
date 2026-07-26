@@ -11,5 +11,7 @@ public class UserDto {
     private String branch;
     private String email;
     private String userName;
-    private Set<String> roles; // Role names instead of full objects
+    private String password;
+    private String avatarUrl;
+    private Set<String> roles;
 }

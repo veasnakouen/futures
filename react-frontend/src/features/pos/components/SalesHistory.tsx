@@ -54,7 +54,7 @@ export default function SalesHistory() {
                                 <React.Fragment key={sale.id}>
                                     <tr 
                                         className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
-                                        onClick={() => toggleRow(sale.id)}
+                                        onClick={() => toggleRow(sale.id || sale.receiptNumber)}
                                     >
                                         <td className="p-4 text-gray-400">
                                             {expandedRow === sale.id ? <ChevronDown size={20} /> : <ChevronRight size={20} />}

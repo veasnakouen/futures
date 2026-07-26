@@ -6,6 +6,7 @@ import com.mtp.api.models.LeaveRequest;
 import com.mtp.api.repositories.EmployeeRepository;
 import com.mtp.api.repositories.LeaveBalanceRepository;
 import com.mtp.api.repositories.LeaveRequestRepository;
+import com.mtp.api.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +32,52 @@ public class LeaveService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    public List<LeaveRequest> findAll() {
+        return leaveRequestRepository.findAll();
+    }
+
+    public List<LeaveRequest> findByEmployee(Integer employeeId) {
+        return leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(employeeId);
+    }
+
+    public List<LeaveRequest> getPendingForManager(Integer managerId) {
+        if (isAdmin()) {
+            return leaveRequestRepository.findByStatus("PENDING_MANAGER");
+        }
+        return leaveRequestRepository.findByManagerIdAndStatusOrderByCreatedAtDesc(managerId, "PENDING_MANAGER");
+    }
+
+    public List<LeaveRequest> getPendingForChairman(Integer chairmanId) {
+        if (isAdmin()) {
+            return leaveRequestRepository.findByStatus("PENDING_CHAIRMAN");
+        }
+        return leaveRequestRepository.findByChairmanIdAndStatusOrderByCreatedAtDesc(chairmanId, "PENDING_CHAIRMAN");
+    }
+
+    public LeaveRequest updateStatus(Integer id, String status) {
+        return leaveRequestRepository.findById(id).map(req -> {
+            req.setStatus(status);
+            if ("APPROVED".equalsIgnoreCase(status)) {
+                req.setManagerApprovalStatus("APPROVED");
+                req.setChairmanApprovalStatus("APPROVED");
+            } else if ("REJECTED".equalsIgnoreCase(status)) {
+                req.setManagerApprovalStatus("REJECTED");
+                req.setChairmanApprovalStatus("REJECTED");
+            }
+            return leaveRequestRepository.save(req);
+        }).orElseThrow(() -> new ResourceNotFoundException("Leave request not found with id: " + id));
+    }
+
+    private boolean isAdmin() {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return false;
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN") || a.getAuthority().equals("ADMIN") || a.getAuthority().equals("SUPER_ADMIN"));
+    }
+
     // Calculate dynamic leave balance based on tenure
     public LeaveBalance calculateAndGetBalance(Integer employeeId, int year) {
-        Employee emp = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee not found"));
+        Employee emp = employeeRepository.findById(employeeId).orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
         
         LeaveBalance balance = leaveBalanceRepository.findByEmployeeIdAndYear(employeeId, year)
                 .orElse(new LeaveBalance());
@@ -58,112 +102,38 @@ public class LeaveService {
         // Logic: 18 days base + 1 AL per 3 years
         double baseAL = 18.0;
         if (emp.getJoinDate() != null) {
-            long yearsWorked = ChronoUnit.YEARS.between(emp.getJoinDate(), LocalDate.of(year, 12, 31));
-            if (yearsWorked >= 3) {
-                baseAL += (yearsWorked / 3);
-            }
+            long yearsWorked = ChronoUnit.YEARS.between(emp.getJoinDate(), LocalDate.now());
+            double extraDays = Math.floor(yearsWorked / 3.0);
+            baseAL += extraDays;
         }
+        balance.setTotalAnnualLeave(baseAL);
+        balance.setTotalSickLeave(7.0);
+        balance.setTotalSpecialLeave(7.0);
 
-        if (isNew || balance.getTotalAnnualLeave() != baseAL || balance.getTotalSickLeave() != 14.0 || balance.getTotalSpecialLeave() != 7.0) {
-            balance.setTotalAnnualLeave(baseAL);
-            balance.setTotalSickLeave(14.0);
-            balance.setTotalSpecialLeave(7.0);
-            return leaveBalanceRepository.save(balance);
-        }
-
-        return balance;
+        return leaveBalanceRepository.save(balance);
     }
 
     public LeaveRequest submitRequest(LeaveRequest req, Integer employeeId) {
-        Employee emp = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee not found: ID=" + employeeId));
+        Employee emp = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+        
         req.setEmployee(emp);
         req.setStatus("PENDING_MANAGER");
         req.setManagerApprovalStatus("PENDING");
         req.setChairmanApprovalStatus("PENDING");
-        
-        if (emp.getManager() != null && !emp.getManager().trim().isEmpty()) {
-            employeeRepository.findByFullNameIgnoreCase(emp.getManager().trim())
-                .stream().findFirst()
-                .ifPresent(managerEmp -> req.setManagerId(managerEmp.getId()));
-        }
-        
-        employeeRepository.findAll().stream()
-            .filter(e -> e.getTitle() != null && e.getTitle().equalsIgnoreCase("Chairman"))
-            .findFirst()
-            .ifPresent(chairmanEmp -> req.setChairmanId(chairmanEmp.getId()));
-            
-        if (req.getStartDate() != null) {
-            int year = req.getStartDate().getYear();
-            LeaveBalance balance = calculateAndGetBalance(employeeId, year);
-            double durationDays = calculateDurationDays(req);
-            
-            if ("Annual".equalsIgnoreCase(req.getLeaveType())) {
-                double remaining = (balance.getTotalAnnualLeave() + balance.getCarriedOverAnnualLeave()) - balance.getUsedAnnualLeave();
-                if (durationDays > remaining) {
-                    String warning = " [URGENT: Exceeds AL balance by " + (durationDays - remaining) + " days]";
-                    req.setReason(req.getReason() != null ? req.getReason() + warning : warning);
-                } else {
-                    // Check Monthly AL Plan
-                    int month = req.getStartDate().getMonthValue();
-                    annualLeavePlanRepository.findByEmployeeIdAndPlanYear(employeeId, year).ifPresent(plan -> {
-                        double plannedDays = 0;
-                        switch (month) {
-                            case 1: plannedDays = plan.getJanDays(); break;
-                            case 2: plannedDays = plan.getFebDays(); break;
-                            case 3: plannedDays = plan.getMarDays(); break;
-                            case 4: plannedDays = plan.getAprDays(); break;
-                            case 5: plannedDays = plan.getMayDays(); break;
-                            case 6: plannedDays = plan.getJunDays(); break;
-                            case 7: plannedDays = plan.getJulDays(); break;
-                            case 8: plannedDays = plan.getAugDays(); break;
-                            case 9: plannedDays = plan.getSepDays(); break;
-                            case 10: plannedDays = plan.getOctDays(); break;
-                            case 11: plannedDays = plan.getNovDays(); break;
-                            case 12: plannedDays = plan.getDecDays(); break;
-                        }
-
-                        // Calculate how many AL days have been requested/approved this month already
-                        java.time.LocalDateTime monthStart = java.time.LocalDate.of(year, month, 1).atStartOfDay();
-                        java.time.LocalDateTime monthEnd = monthStart.plusMonths(1).minusNanos(1);
-                        
-                        List<LeaveRequest> monthlyLeaves = leaveRequestRepository.findAll().stream()
-                            .filter(l -> l.getEmployee().getId().equals(employeeId) && 
-                                       "Annual".equalsIgnoreCase(l.getLeaveType()) &&
-                                       !"REJECTED".equals(l.getStatus()) &&
-                                       l.getStartDate() != null && 
-                                       !l.getStartDate().isBefore(monthStart) && 
-                                       !l.getStartDate().isAfter(monthEnd))
-                            .toList();
-                        
-                        double takenThisMonth = monthlyLeaves.stream().mapToDouble(this::calculateDurationDays).sum();
-                        
-                        if ((takenThisMonth + durationDays) > plannedDays) {
-                            String monthlyWarning = " [URGENT: Exceeds Monthly AL Plan (" + plannedDays + " days) by " + ((takenThisMonth + durationDays) - plannedDays) + " days]";
-                            req.setReason(req.getReason() != null ? req.getReason() + monthlyWarning : monthlyWarning);
-                        }
-                    });
-                }
-            } else if ("Sick".equalsIgnoreCase(req.getLeaveType())) {
-                double remaining = balance.getTotalSickLeave() - balance.getUsedSickLeave();
-                if (durationDays > remaining) {
-                    String warning = " [URGENT: Exceeds Sick Leave balance by " + (durationDays - remaining) + " days]";
-                    req.setReason(req.getReason() != null ? req.getReason() + warning : warning);
-                }
-            }
-        }
+        req.setCreatedAt(LocalDateTime.now());
         
         return leaveRequestRepository.save(req);
     }
 
     public LeaveRequest approveByManager(Integer requestId, Integer managerId, boolean approved, String comment) {
-        LeaveRequest req = leaveRequestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
-        if (!"PENDING_MANAGER".equals(req.getStatus())) {
-            throw new RuntimeException("Request not waiting for manager approval");
-        }
+        LeaveRequest req = leaveRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Leave request not found"));
 
         if (approved) {
             req.setManagerApprovalStatus("APPROVED");
             req.setStatus("PENDING_CHAIRMAN");
+            req.setApprovedByManagerId(managerId);
         } else {
             req.setManagerApprovalStatus("REJECTED");
             req.setStatus("REJECTED");
@@ -173,14 +143,13 @@ public class LeaveService {
     }
 
     public LeaveRequest approveByChairman(Integer requestId, Integer chairmanId, boolean approved, String comment) {
-        LeaveRequest req = leaveRequestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
-        if (!"PENDING_CHAIRMAN".equals(req.getStatus())) {
-            throw new RuntimeException("Request not waiting for chairman approval");
-        }
+        LeaveRequest req = leaveRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Leave request not found"));
 
         if (approved) {
             req.setChairmanApprovalStatus("APPROVED");
             req.setStatus("APPROVED");
+            req.setApprovedByHrId(chairmanId);
             // Deduct balance
             deductBalance(req);
         } else {
