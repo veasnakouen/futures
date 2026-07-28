@@ -5,37 +5,25 @@ import { CustomFieldDefinition } from "../../../../components/common/DynamicCust
 export const studentSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  enrollmentDate: z.string().min(1, "Enrollment date is required"),
-
   middleName: z.string().optional(),
   gender: z.string().optional(),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().optional(),
-  studentPhone: z.string().optional(),
-  currentAddress: z.object({
-    street: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-    district: z.string().optional(),
-    commune: z.string().optional(),
-    village: z.string().optional(),
-  }).optional(),
-  permanentAddress: z.object({
-    street: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-    district: z.string().optional(),
-    commune: z.string().optional(),
-    village: z.string().optional(),
-  }).optional(),
-  studentCode: z.string().optional(),
+
+  email: z.string().email("Invalid email").or(z.literal("")),
+  phoneNumber: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zipCode: z.string().optional(),
+
+  studentIdNumber: z.string().optional(),
+  enrollmentDate: z.string().min(1, "Enrollment date is required"),
+  gradeLevel: z.string().optional(),
+  classroom: z.string().optional(),
   branchId: z.string().optional(),
-  classroomId: z.string().optional(),
+  status: z.string().optional(),
+  transportationRoute: z.string().optional(),
   dormitoryId: z.string().optional(),
 
   medicalConditions: z.string().optional(),
@@ -56,8 +44,12 @@ export const studentSchema = z.object({
 export type FormValues = z.infer<typeof studentSchema>;
 
 export interface StudentFormTabProps {
-  form: UseFormReturn<FormValues>;
+  form: UseFormReturn<FormValues | any>;
   t: (key: string) => string;
+  register?: any;
+  watch?: any;
+  setValue?: any;
+  errors?: any;
   clientsData?: any;
   clientsLoading?: boolean;
   handleClientSelect?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -67,4 +59,5 @@ export interface StudentFormTabProps {
   customFields?: CustomFieldDefinition[];
   usersData?: any[];
   usersLoading?: boolean;
+  [key: string]: any;
 }

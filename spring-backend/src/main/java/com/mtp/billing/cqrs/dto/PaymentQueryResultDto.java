@@ -1,9 +1,13 @@
 package com.mtp.billing.cqrs.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentQueryResultDto {
     private String id;
     private int amount;

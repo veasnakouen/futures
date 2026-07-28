@@ -11,35 +11,54 @@ export const exportToExcel = (
   customSignatures?: string,
   customDateLocation?: string,
 ) => {
-  // Create a worksheet
   const wsData: any[] = [];
 
-  // Add titles
-  wsData.push([reportTitle]);
-  wsData.push([reportSubtitle]);
-  wsData.push([]); // Empty row
+  // 1. Enterprise Report Title Banner
+  wsData.push(["MTP MICROSERVICES ECOSYSTEM - ENTERPRISE REPORT"]);
+  wsData.push([reportTitle.toUpperCase()]);
+  wsData.push([`Subtitle: ${reportSubtitle}`]);
+  wsData.push([`Generated On: ${new Date().toLocaleString()}`]);
+  wsData.push([]); // Blank spacing row
 
-  // Add headers
-  const headerRow = headers.map((h) => h.replace(/([A-Z])/g, " $1").trim());
+  // 2. Clean Upper-Case Header Row
+  const headerRow = headers.map((h) =>
+    h.replace(/([A-Z])/g, " $1").trim().toUpperCase()
+  );
   wsData.push(headerRow);
 
-  // Add data
+  // 3. Process & Format Data Rows
+  let totalNumericCount = 0;
+  let numericTotals: Record<number, number> = {};
+
   data.forEach((row) => {
-    const rowData = headers.map((h) => {
+    const rowData = headers.map((h, colIndex) => {
       let val = row[h];
       if (val !== null && val !== undefined) {
-        return String(val) === "true"
-          ? "Yes"
-          : String(val) === "false"
-            ? "No"
-            : String(val);
+        if (typeof val === "boolean") return val ? "Yes" : "No";
+        if (typeof val === "number") {
+          numericTotals[colIndex] = (numericTotals[colIndex] || 0) + val;
+          return val;
+        }
+        return String(val);
       }
       return "N/A";
     });
     wsData.push(rowData);
   });
 
-  // Add empty space for signatures
+  // 4. Summary / Total Row
+  wsData.push([]);
+  const totalRow = new Array(headers.length).fill("");
+  totalRow[0] = `SUMMARY (Total Records: ${data.length})`;
+  Object.keys(numericTotals).forEach((colIdx) => {
+    const idx = Number(colIdx);
+    if (idx > 0) {
+      totalRow[idx] = `Sum: ${numericTotals[idx].toLocaleString()}`;
+    }
+  });
+  wsData.push(totalRow);
+
+  // 5. Add Signatures & Footer
   if (customDateLocation || customSignatures) {
     wsData.push([]);
     wsData.push([]);
@@ -55,40 +74,48 @@ export const exportToExcel = (
   if (customSignatures) {
     wsData.push([]);
     wsData.push([]);
-    wsData.push([]);
     const signatures = customSignatures.split(",").map((s) => s.trim());
-
-    // Spread signatures across columns (e.g. first col and last col)
     const sigRow = new Array(headers.length).fill("");
-    if (signatures.length > 0) sigRow[0] = signatures[0];
-    if (signatures.length > 1) sigRow[headers.length - 1] = signatures[1];
-
-    // Add lines above signatures
     const lineRow = new Array(headers.length).fill("");
-    if (signatures.length > 0) lineRow[0] = "_________________________";
-    if (signatures.length > 1)
+    if (signatures.length > 0) {
+      sigRow[0] = signatures[0];
+      lineRow[0] = "_________________________";
+    }
+    if (signatures.length > 1) {
+      sigRow[headers.length - 1] = signatures[1];
       lineRow[headers.length - 1] = "_________________________";
-
+    }
     wsData.push(lineRow);
     wsData.push(sigRow);
     wsData.push([]);
   }
 
-  // Add footer
   wsData.push([]);
   if (customFooterText) {
-    const footerLines = customFooterText.split("\n");
-    footerLines.forEach((line) => wsData.push([line]));
+    customFooterText.split("\n").forEach((line) => wsData.push([line]));
   } else {
-    wsData.push(["© MT Program - System Modernization"]);
-    wsData.push(["This is a system generated report. No signature required."]);
+    wsData.push(["© MTP Enterprise Ecosystem - Modernization Report Engine"]);
+    wsData.push(["System Generated Official Document. Verified Data Integrity."]);
   }
 
+  // 6. Build Worksheet & Calculate Column Width Auto-Fitting
   const ws = XLSX.utils.aoa_to_sheet(wsData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Report");
 
-  // Save the file
+  // Calculate auto column widths
+  const colWidths = headers.map((h, colIdx) => {
+    let maxLen = headerRow[colIdx] ? headerRow[colIdx].length : 12;
+    data.forEach((row) => {
+      const cellVal = String(row[h] ?? "");
+      if (cellVal.length > maxLen) maxLen = cellVal.length;
+    });
+    return Math.min(Math.max(maxLen + 4, 14), 50); // Min 14, Max 50 char width
+  });
+
+  ws["!cols"] = colWidths.map((w) => ({ wch: w }));
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Enterprise_Report");
+
   const fileName = `${reportSubtitle.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.xlsx`;
   XLSX.writeFile(wb, fileName);
 };

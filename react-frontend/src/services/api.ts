@@ -33,6 +33,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Bypass refresh logic for login / refresh requests
+    if (originalRequest?.url?.includes("/auth/login") || originalRequest?.url?.includes("/auth/refresh")) {
+      return Promise.reject(error);
+    }
+
     // Handle 401 Unauthorized (Expired Token)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -65,8 +70,10 @@ api.interceptors.response.use(
     }
     // Handle 503 Service Unavailable gracefully (e.g. backend microservice restarting or offline)
     if (error.response?.status === 503) {
-      if (typeof window !== "undefined" && (window as any)._last503Toast !== Date.now()) {
-        (window as any)._last503Toast = Date.now();
+      const now = Date.now();
+      const lastLog = (window as any)._last503Toast || 0;
+      if (typeof window !== "undefined" && now - lastLog > 10000) {
+        (window as any)._last503Toast = now;
         console.warn("[API Interceptor] 503 Service Unavailable: Gateway or downstream microservice is offline or initializing.");
       }
     }

@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
 public class UserController extends BaseCrudController<UserDto, String, UserService> {
-
+    // constructor for inject service
     public UserController(UserService userService) {
         super(userService);
     }

@@ -104,13 +104,13 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 450, damping: 30 }}
-            className="absolute right-0 mt-3 w-80 rounded-3xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border border-gray-100 dark:border-gray-800 shadow-2xl shadow-indigo-500/10 z-50 ring-1 ring-black/5 dark:ring-white/10"
+            className="absolute right-0 mt-3 w-80 rounded-3xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl shadow-slate-900/15 z-[100] ring-1 ring-black/5 dark:ring-white/10"
           >
             {/* Top Pointer Triangle Notch */}
-            <div className="absolute -top-2 right-6 w-4 h-4 bg-blue-50 dark:bg-blue-950/80 rotate-45 border-t border-l border-gray-200 dark:border-gray-700 z-20" />
+            <div className="absolute -top-2 right-6 w-4 h-4 bg-blue-50/80 dark:bg-slate-900/90 rotate-45 border-t border-l border-gray-200 dark:border-gray-700 z-20" />
 
             {/* Main Inner Wrapper */}
-            <div className="overflow-hidden rounded-3xl relative z-10">
+            <div className="overflow-hidden rounded-3xl relative z-10 bg-white dark:bg-gray-900">
               {/* Header User Card */}
               <UserProfileHeaderCard
                 user={user}

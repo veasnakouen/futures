@@ -41,7 +41,11 @@ public class AssetImportService {
     private final Map<String, ImportProgress> progressMap = new ConcurrentHashMap<>();
 
     public ImportProgress getProgress(String jobId) {
-        return progressMap.getOrDefault(jobId, new ImportProgress(0, 0, "NOT_FOUND", "No job found", true, 0));
+        ImportProgress progress = progressMap.getOrDefault(jobId, new ImportProgress(0, 0, "NOT_FOUND", "No job found", true, 0));
+        if (progress != null && progress.isCompleted() && !"NOT_FOUND".equals(progress.getStatus())) {
+            progressMap.remove(jobId);
+        }
+        return progress;
     }
 
     public String startImportAsync(MultipartFile file) throws IOException {

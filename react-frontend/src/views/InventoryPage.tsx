@@ -339,6 +339,14 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       stockQuantity: item.stockQuantity || 0,
       reorderLevel: item.reorderLevel || 0,
       price: item.price || 0,
+      costPrice: item.costPrice || 0,
+      unitOfMeasure: item.unitOfMeasure || "",
+      supplierName: item.supplierName || "",
+      donorName: item.donorName || "",
+      grantCode: item.grantCode || "",
+      locationBin: item.locationBin || "",
+      batchNumber: item.batchNumber || "",
+      expiryDate: item.expiryDate || "",
       departmentId: item.department?.id || undefined,
       description: item.description || "",
       imageUrl: item.imageUrl || "",
@@ -358,10 +366,19 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       stockQuantity: item.stockQuantity || 0,
       reorderLevel: item.reorderLevel || 0,
       price: item.price || 0,
+      costPrice: item.costPrice || 0,
+      unitOfMeasure: item.unitOfMeasure || "",
+      supplierName: item.supplierName || "",
+      donorName: item.donorName || "",
+      grantCode: item.grantCode || "",
+      locationBin: item.locationBin || "",
+      batchNumber: item.batchNumber || "",
+      expiryDate: item.expiryDate || "",
       departmentId: item.department?.id || undefined,
       description: item.description || "",
       imageUrl: item.imageUrl || "",
     });
+    setEditingId(item.id);
     setIsEditMode(false);
     setIsViewMode(true);
     setIsModalOpen(true);
@@ -389,6 +406,10 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
       payload.category = { id: payload.category.id };
     }
 
+    if (payload.trackStock && payload.stockQuantity <= (payload.reorderLevel || 0)) {
+      toast.error(`⚠️ Restock Alert: ${payload.name} is at or below reorder threshold (${payload.stockQuantity} remaining)!`, { duration: 5000 });
+    }
+
     if (isEditMode && editingId) {
       updateMutation.mutate({ id: editingId, data: payload });
     } else {
@@ -399,6 +420,45 @@ const InventoryPage = ({ isDark, setIsDark }: any) => {
   return (
     <>
       <div className="space-y-8 animate-fade-in max-w-[1600px] mx-auto pb-12">
+        {/* Real-Time Low Stock & Out-of-Stock Alert Banner */}
+        {(() => {
+          const criticalItems = fetchedItems.filter(
+            (item: any) => item.trackStock && (item.stockQuantity === 0 || item.stockQuantity <= (item.reorderLevel || 0))
+          );
+          const outOfStockCount = criticalItems.filter((item: any) => item.stockQuantity === 0).length;
+          const lowStockCount = criticalItems.length - outOfStockCount;
+
+          if (criticalItems.length === 0) return null;
+
+          return (
+            <div className="bg-gradient-to-r from-rose-500/10 via-amber-500/10 to-indigo-500/10 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-rose-500 text-white rounded-xl shadow-lg shadow-rose-500/30 shrink-0">
+                  <Package size={20} className="animate-bounce" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
+                    Automated Stock Monitor & Real-Time Warning
+                  </h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+                    <span className="font-bold text-rose-600 dark:text-rose-400">{outOfStockCount} items Out of Stock</span> and{" "}
+                    <span className="font-bold text-amber-600 dark:text-amber-400">{lowStockCount} items below minimum reorder threshold</span>.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setSearch(search === "stock:critical" ? "" : "stock:critical")}
+                  className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                >
+                  {search === "stock:critical" ? "Show All Items" : `Filter Alert Items (${criticalItems.length})`}
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Action Bar & Sub Navigation */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-2">
           <nav className="flex overflow-x-auto px-2 gap-3 pb-2 scrollbar-hide">

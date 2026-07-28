@@ -31,9 +31,13 @@ const ManagerModule: React.FC = () => {
 
       setReports(reportsRes.data || []);
       setPendingLeaves(leavesRes.data || []);
-    } catch (err) {
-      console.error("Failed to load manager hub data", err);
-      toast.error("Failed to sync with manager hub services.");
+    } catch (err: any) {
+      if (err?.response?.status === 503) {
+        console.warn("Manager hub microservices initializing...");
+      } else {
+        console.warn("Failed to load manager hub data:", err?.message);
+        toast.error("Failed to sync with manager hub services.");
+      }
     } finally {
       setLoading(false);
     }

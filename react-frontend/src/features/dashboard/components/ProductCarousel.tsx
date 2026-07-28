@@ -214,6 +214,7 @@ const ProductCarousel: React.FC = () => {
   const autoPlayRef = useRef<any>(null);
 
   useEffect(() => {
+    let isMounted = true;
     // Fetch assets with a timeout so it doesn't hang indefinitely
     api
       .get("/stock/inventory", {
@@ -221,6 +222,7 @@ const ProductCarousel: React.FC = () => {
         timeout: 15000,
       })
       .then((res) => {
+        if (!isMounted) return;
         const items = res.data?.content || res.data || [];
 
         if (Array.isArray(items) && items.length > 0) {
@@ -250,10 +252,17 @@ const ProductCarousel: React.FC = () => {
         setProducts(FALLBACK_PRODUCTS);
       })
       .catch((err) => {
+        if (!isMounted) return;
         console.warn("Failed to fetch assets for carousel:", err.message);
         setProducts(FALLBACK_PRODUCTS);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -388,11 +397,11 @@ const ProductCarousel: React.FC = () => {
                 </p>
               </div>
               <div className="bg-white/60 dark:bg-gray-800/40 p-3 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.01)]">
-                <p className="text-[8px] font-black uppercase tracking-widest text-gray-455 mb-0.5">
+                <p className="text-[8px] font-black uppercase tracking-widest text-gray-400 mb-0.5">
                   Node Location
                 </p>
                 <p className="text-[10px] font-black text-gray-800 dark:text-gray-200 flex items-center gap-1 truncate">
-                  <MapPin size={10} className="text-gray-450 shrink-0" />
+                  <MapPin size={10} className="text-gray-400 shrink-0" />
                   {currentProduct.location || "Warehouse"}
                 </p>
               </div>

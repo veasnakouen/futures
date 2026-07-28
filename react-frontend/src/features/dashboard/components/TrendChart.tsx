@@ -39,10 +39,10 @@ const TrendChart: React.FC<TrendChartProps> = ({ data = [] }) => {
 
   const filteredData = Array.isArray(data)
     ? data.filter(
-        (item) =>
-          item.value > 0 &&
-          item.name.toLowerCase().includes(nameFilter.toLowerCase()),
-      )
+      (item) =>
+        item.value > 0 &&
+        item.name.toLowerCase().includes(nameFilter.toLowerCase()),
+    )
     : [];
 
   const totalVacancies = filteredData.reduce(

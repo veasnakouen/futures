@@ -1,17 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {Modal, ModalBody, Button, Label, TextInput, Select, Textarea} from '@/lib/flowbite-compat';
+import { Modal, ModalBody, Label, TextInput, Select, Textarea } from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
-import {
-  X,
-  ShoppingCart,
-  Heart,
-  Send,
-  Plus,
-  Minus,
-  DollarSign,
-  User,
-} from "lucide-react";
+import { ShoppingCart, Heart, Send, Plus, Minus, DollarSign, User } from "lucide-react";
 import { toast } from "react-hot-toast";
 import api from '@/services/api';
 
@@ -52,32 +43,26 @@ const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
         api.get("/stock/assets/lookups/donors").catch(() => ({ data: [] })),
         api.get("/departments").catch(() => ({ data: [] })),
       ]);
-      setSuppliers(sRes.data);
-      setDonors(dRes.data);
-      setDepartments(deptRes.data);
-    } catch (err) {
+      setSuppliers(sRes.data || []);
+      setDonors(dRes.data || []);
+      setDepartments(deptRes.data || []);
+    } catch {
       console.error("Failed to load reference data");
     }
   };
 
   const handleSubmit = async () => {
-    if (quantity <= 0) {
-      toast.error("Quantity must be greater than zero");
-      return;
-    }
-
+    if (quantity <= 0) return toast.error("Quantity must be greater than zero");
     try {
       setIsProcessing(true);
       const payload = {
         item: { id: item.id },
-        type: type,
-        quantity: ["SALE", "DONATION_OUT", "TRANSFER_OUT"].includes(type)
-          ? -quantity
-          : quantity,
+        type,
+        quantity: ["SALE", "DONATION_OUT", "TRANSFER_OUT"].includes(type) ? -quantity : quantity,
         unitPrice: price,
-        remarks: remarks,
+        remarks,
         supplier: type === "PURCHASE" && selectedPartyId ? { id: selectedPartyId } : null,
-        donor: type === "DONATION_IN" && selectedPartyId ? { id: selectedPartyId } : null,
+        donor: (type === "DONATION_IN" || type === "DONATION_OUT") && selectedPartyId ? { id: selectedPartyId } : null,
         department: type.includes("TRANSFER") && selectedPartyId ? { id: selectedPartyId } : null,
       };
 
@@ -85,190 +70,65 @@ const StockTransactionModal: React.FC<StockTransactionModalProps> = ({
       toast.success("Transaction synchronized successfully");
       onSuccess();
       onClose();
-    } catch (err) {
+    } catch {
       toast.error("Failed to commit transaction");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const getIcon = () => {
-    switch (type) {
-      case "PURCHASE":
-        return <Plus className="text-emerald-500" />;
-      case "SALE":
-        return <ShoppingCart className="text-blue-500" />;
-      case "DONATION_IN":
-      case "DONATION_OUT":
-        return <Heart className="text-pink-500" />;
-      case "TRANSFER_IN":
-      case "TRANSFER_OUT":
-        return <Send className="text-amber-500" />;
-      default:
-        return <Minus />;
-    }
-  };
-
   return (
     <Modal show={isOpen} onClose={onClose} size="md">
-      <CustomModalHeader
-        title="Stock Movement"
-        subtitle="Inventory Transaction"
-        icon={getIcon()}
-        onClose={onClose}
-      />
-      <ModalBody className="p-6">
-        <div className="space-y-6">
-          {/* Item Target Card */}
-          <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border-blue-100 dark:border-blue-800/30 flex items-center justify-between shadow-sm">
+      <CustomModalHeader title="Stock Movement" subtitle="Inventory Transaction" onClose={onClose} />
+      <ModalBody className="p-6 space-y-4">
+        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border flex justify-between items-center">
+          <div>
+            <p className="text-[10px] font-black uppercase text-blue-500 mb-1">Target Asset</p>
+            <h4 className="text-base font-black dark:text-white">{item?.name}</h4>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] font-black uppercase text-gray-400 mb-1">Current Stock</p>
+            <span className="text-base font-mono font-black text-indigo-600 px-3 py-1 bg-white rounded-md shadow-sm">{item?.quantity || 0}</span>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-xs">
+          <div>
+            <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Action Type</Label>
+            <Select value={type} onChange={(e) => setType(e.target.value)} sizing="sm">
+              <option value="PURCHASE">🛒 Buy (Purchase)</option>
+              <option value="SALE">💰 Sell (Shop Mode)</option>
+              <option value="DONATION_IN">🎁 Receive Donation</option>
+              <option value="DONATION_OUT">💝 Give Donation</option>
+              <option value="TRANSFER_OUT">🚚 Transfer to Dept</option>
+              <option value="ADJUSTMENT">⚙️ Stock Adjustment</option>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-[10px] font-black uppercase text-blue-500 mb-1 tracking-widest">
-                Target Asset
-              </p>
-              <h4 className="text-lg font-black dark:text-white">
-                {item?.name}
-              </h4>
+              <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Quantity</Label>
+              <TextInput type="number" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} sizing="sm" />
             </div>
-            <div className="text-right">
-              <p className="text-[10px] font-black uppercase text-gray-400 mb-1 tracking-widest">
-                Current Stock
-              </p>
-              <div className="inline-flex items-center justify-center px-3 py-1 bg-white dark:bg-gray-800 rounded-md shadow-sm">
-                <span className="text-base font-mono font-black text-indigo-600 dark:text-indigo-400">
-                  {item?.quantity}
-                </span>
-              </div>
+            <div>
+              <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Unit Price ($)</Label>
+              <TextInput type="number" value={price} onChange={(e) => setPrice(parseFloat(e.target.value))} sizing="sm" />
             </div>
           </div>
 
-          {/* Transaction Details */}
-          <div className="p-5 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl space-y-5">
+          {type === "PURCHASE" && (
             <div>
-              <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest">
-                Action Type
-              </Label>
-              <Select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="w-full shadow-sm"
-              >
-                <option value="PURCHASE">🛒 Buy (Purchase)</option>
-                <option value="SALE">💰 Sell (Shop Mode)</option>
-                <option value="DONATION_IN">🎁 Receive Donation</option>
-                <option value="DONATION_OUT">💝 Give Donation</option>
-                <option value="TRANSFER_OUT">🚚 Transfer to Dept</option>
-                <option value="ADJUSTMENT">⚙️ Stock Adjustment</option>
+              <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Supplier</Label>
+              <Select value={selectedPartyId} onChange={(e) => setSelectedPartyId(e.target.value)} sizing="sm">
+                <option value="">Select Supplier</option>
+                {suppliers.map((s) => (<option key={s.id} value={s.id}>{s.name}</option>))}
               </Select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-5">
-              <div>
-                <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest">
-                  Quantity
-                </Label>
-                <TextInput
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(parseInt(e.target.value))}
-                  icon={Plus}
-                  className="shadow-sm"
-                />
-              </div>
-              <div>
-                <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest">
-                  Price per Unit
-                </Label>
-                <TextInput
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(parseFloat(e.target.value))}
-                  icon={DollarSign}
-                  className="shadow-sm"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Dynamic Reference Fields */}
-          {(type === "PURCHASE" ||
-            type === "DONATION_IN" ||
-            type === "DONATION_OUT" ||
-            type.includes("TRANSFER")) && (
-            <div className="p-5 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl">
-              {type === "PURCHASE" && (
-                <div>
-                  <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest flex items-center gap-2">
-                    <User size={12} /> Supplier
-                  </Label>
-                  <Select
-                    value={selectedPartyId}
-                    onChange={(e) => setSelectedPartyId(e.target.value)}
-                    className="shadow-sm"
-                  >
-                    <option value="">Select Supplier</option>
-                    {suppliers.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              )}
-
-              {(type === "DONATION_IN" || type === "DONATION_OUT") && (
-                <div>
-                  <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest flex items-center gap-2">
-                    <Heart size={12} /> Donor / Recipient
-                  </Label>
-                  <Select
-                    value={selectedPartyId}
-                    onChange={(e) => setSelectedPartyId(e.target.value)}
-                    className="shadow-sm"
-                  >
-                    <option value="">Select Party</option>
-                    {donors.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.name}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              )}
-
-              {type.includes("TRANSFER") && (
-                <div>
-                  <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest flex items-center gap-2">
-                    <Send size={12} /> Target Department
-                  </Label>
-                  <Select
-                    value={selectedPartyId}
-                    onChange={(e) => setSelectedPartyId(e.target.value)}
-                    className="shadow-sm"
-                  >
-                    <option value="">Select Department</option>
-                    {departments.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.name}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              )}
             </div>
           )}
 
-          {/* Remarks */}
           <div>
-            <Label className="text-[10px] font-black uppercase text-gray-500 mb-2 block tracking-widest">
-              Remarks
-            </Label>
-            <Textarea
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              placeholder="Enter transaction details or notes..."
-              rows={3}
-              className="shadow-sm resize-none"
-            />
+            <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Remarks</Label>
+            <Textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Transaction notes..." rows={2} />
           </div>
         </div>
       </ModalBody>

@@ -84,8 +84,9 @@ public class ReportExportService {
     }
 
     public byte[] generatePdfReport(List<Map<String, Object>> data) {
+        Document document = null;
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            Document document = new Document(PageSize.A4.rotate()); // Landscape for wide tables
+            document = new Document(PageSize.A4.rotate()); // Landscape for wide tables
             PdfWriter.getInstance(document, out);
 
             document.open();
@@ -134,6 +135,13 @@ public class ReportExportService {
             return out.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException("Error generating PDF", e);
+        } finally {
+            if (document != null && document.isOpen()) {
+                try {
+                    document.close();
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 }

@@ -79,7 +79,7 @@ const MOCK_UNIVERSAL_PRODUCTS: PosProductDto[] = [
     { id: 'p-2', name: 'Organic Matcha Green Tea', sku: 'RET-002', barcode: '885012345679', price: 18.00, stockQuantity: 30, category: 'Retail', domain: 'RETAIL', imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&q=80' },
     { id: 'p-3', name: 'Wireless Ergonomic Mouse', sku: 'RET-003', barcode: '885012345680', price: 29.99, stockQuantity: 15, category: 'Electronics', domain: 'RETAIL', imageUrl: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&q=80' },
     { id: 'p-4', name: 'Stainless Steel Water Bottle', sku: 'RET-004', barcode: '885012345681', price: 15.00, stockQuantity: 50, category: 'Retail', domain: 'RETAIL', imageUrl: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80' },
-    
+
     // Clinic & Medical
     { id: 'p-10', name: 'General Medical Consultation', sku: 'CLI-001', price: 25.00, stockQuantity: 999, category: 'Medical Services', domain: 'CLINIC', imageUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&q=80' },
     { id: 'p-11', name: 'Complete Blood Count (CBC) Test', sku: 'CLI-002', price: 35.00, stockQuantity: 999, category: 'Lab Testing', domain: 'CLINIC', imageUrl: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&q=80' },
@@ -120,7 +120,7 @@ export const posService = {
         }
     },
 
-    generateSku: async (): Promise<{sku: string}> => {
+    generateSku: async (): Promise<{ sku: string }> => {
         try {
             const response = await api.get('/pos/products/generate-sku');
             return response.data;

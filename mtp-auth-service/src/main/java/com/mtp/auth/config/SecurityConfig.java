@@ -34,6 +34,8 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
                 .headers(headers -> headers
                         .frameOptions(fo -> fo.deny())
                         .xssProtection(xss -> xss.disable()) // CSP covers XSS
@@ -52,15 +54,22 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
+                            response.setHeader("WWW-Authenticate", "");
                             response.getWriter().write(
                                     "{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Token expired or invalid\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write(
+                                    "{\"status\":403,\"error\":\"Forbidden\",\"message\":\"Access Denied\"}");
                         }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/refresh", "/login").permitAll()
+                        .requestMatchers("/ws/**", "/ws").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
-                        // All other endpoints (including /api/auth/users) require authentication
                         .anyRequest().authenticated());
 
         http.addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);

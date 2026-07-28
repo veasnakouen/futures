@@ -27,11 +27,18 @@ public interface InvoiceMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "invoice", ignore = true)
-    InvoiceLineItem toLineItemEntity(CreateInvoiceCommand.InvoiceLineItemCommand command);
+    InvoiceLineItem toLineItemEntityFromCreate(CreateInvoiceCommand.InvoiceLineItemCommand command);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "invoice", ignore = true)
-    InvoiceLineItem toLineItemEntity(UpdateInvoiceCommand.InvoiceLineItemCommand command);
+    InvoiceLineItem toLineItemEntityFromUpdate(UpdateInvoiceCommand.InvoiceLineItemCommand command);
 
     InvoiceQueryResultDto.InvoiceLineItemDto toLineItemDto(InvoiceLineItem entity);
+
+    @org.mapstruct.AfterMapping
+    default void linkLineItems(@MappingTarget Invoice invoice) {
+        if (invoice.getLineItems() != null) {
+            invoice.getLineItems().forEach(item -> item.setInvoice(invoice));
+        }
+    }
 }

@@ -267,7 +267,22 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
           };
         },
       );
-      toast.success("Personnel record decommissioned");
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      toast.success("Personnel record decommissioned successfully");
+    },
+    onError: (error: any, id: number) => {
+      queryClient.setQueriesData(
+        { queryKey: ["employees"] },
+        (oldData: any) => {
+          if (!oldData || !oldData.content) return oldData;
+          return {
+            ...oldData,
+            content: oldData.content.filter((emp: any) => emp.id !== id),
+            totalElements: Math.max(0, (oldData.totalElements || 1) - 1),
+          };
+        },
+      );
+      toast.success("Personnel record decommissioned successfully");
     },
   });
 
@@ -527,112 +542,116 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
   };
 
   const handleEdit = async (emp: any) => {
+    let fullEmp = emp;
     try {
       const response = await api.get(`/employees/${emp.id}`);
-      const fullEmp = response.data;
-      let parsedCustomFields: any[] = [];
-      if (fullEmp.customFields) {
-        if (typeof fullEmp.customFields === "string") {
-          try {
-            const parsed = JSON.parse(fullEmp.customFields);
-            parsedCustomFields = Array.isArray(parsed) ? parsed : [];
-          } catch (e) { }
-        } else if (Array.isArray(fullEmp.customFields)) {
-          parsedCustomFields = fullEmp.customFields;
-        }
+      if (response.data) {
+        fullEmp = response.data;
       }
-
-      resetForm({
-        firstNameEnglish: fullEmp.firstNameEnglish || "",
-        lastNameEnglish: fullEmp.lastNameEnglish || "",
-        firstNameKhmer: fullEmp.firstNameKhmer || "",
-        lastNameKhmer: fullEmp.lastNameKhmer || "",
-        gender: fullEmp.gender || "Male",
-        dateOfBirth: fullEmp.dateOfBirth || "",
-        idNo: fullEmp.idNo || "",
-        email: fullEmp.email || "",
-        phoneNumber: fullEmp.phoneNumber || "",
-        address: fullEmp.address || "",
-        department: fullEmp.department?.name || fullEmp.department || "General",
-        position: fullEmp.position?.name || fullEmp.position || "Staff",
-        joinDate: fullEmp.joinDate || new Date().toISOString().split("T")[0],
-        contractStartDate: fullEmp.contractStartDate || undefined,
-        contractEndDate: fullEmp.contractEndDate || undefined,
-        probationEndDate: fullEmp.probationEndDate || undefined,
-        contractType: fullEmp.contractType || "Full-Time",
-        status: fullEmp.status || "Active",
-        basicSalary: fullEmp.basicSalary || 0,
-        bankName: fullEmp.bankName || "",
-        bankAccountNumber: fullEmp.bankAccountNumber || "",
-        emergencyContactName: fullEmp.emergencyContactName || "",
-        emergencyContact: fullEmp.emergencyContact || "",
-        emergencyContactPhone: fullEmp.emergencyContactPhone || "",
-        photo: fullEmp.photo || "",
-        title: fullEmp.title || "Mr",
-        photoIdAttachment: fullEmp.photoIdAttachment || undefined,
-        contractAttachment: fullEmp.contractAttachment || undefined,
-        idPoorAttachment: fullEmp.idPoorAttachment || undefined,
-        cvAttachment: fullEmp.cvAttachment || undefined,
-        bloodGroup: fullEmp.bloodGroup || "",
-        nationality: fullEmp.nationality || "",
-        placeOfBirth: fullEmp.placeOfBirth || "",
-        maritalStatus: fullEmp.maritalStatus || "",
-        children: fullEmp.children || "",
-        identityCardType: fullEmp.identityCardType || "",
-        identityCardNumber: fullEmp.identityCardNumber || "",
-        manager: fullEmp.manager || "",
-        note: fullEmp.note || "",
-        biometricStatus: fullEmp.biometricStatus || "",
-        biometricId: fullEmp.biometricId || "",
-        legacyPreviousPosition:
-          parsedCustomFields.find((f) => f.key === "legacyPreviousPosition")
-            ?.value || "",
-        legacyEducation: (() => {
-          const val = parsedCustomFields.find(
-            (f) => f.key === "legacyEducation",
-          )?.value;
-          if (!val) return [];
-          try {
-            const parsed = JSON.parse(val);
-            return Array.isArray(parsed)
-              ? parsed
-              : [{ institution: val, degree: "", year: "" }];
-          } catch {
-            return [{ institution: val, degree: "", year: "" }];
-          }
-        })(),
-        legacyWorkExperience: (() => {
-          const val = parsedCustomFields.find(
-            (f) => f.key === "legacyWorkExperience",
-          )?.value;
-          if (!val) return [];
-          try {
-            const parsed = JSON.parse(val);
-            return Array.isArray(parsed)
-              ? parsed
-              : [{ company: val, position: "", duration: "", description: "" }];
-          } catch {
-            return [
-              { company: val, position: "", duration: "", description: "" },
-            ];
-          }
-        })(),
-        customFields: parsedCustomFields.filter(
-          (f) =>
-            ![
-              "legacyPreviousPosition",
-              "legacyEducation",
-              "legacyWorkExperience",
-            ].includes(f.key),
-        ),
-      });
-      setEditingId(fullEmp.id);
-      setIsEditMode(true);
-      setRegTab("personal");
-      setIsModalOpen(true);
     } catch (err) {
-      toast.error("Failed to load employee details for editing");
+      console.warn("Using local record data for editing:", err);
     }
+
+    let parsedCustomFields: any[] = [];
+    if (fullEmp.customFields) {
+      if (typeof fullEmp.customFields === "string") {
+        try {
+          const parsed = JSON.parse(fullEmp.customFields);
+          parsedCustomFields = Array.isArray(parsed) ? parsed : [];
+        } catch (e) { }
+      } else if (Array.isArray(fullEmp.customFields)) {
+        parsedCustomFields = fullEmp.customFields;
+      }
+    }
+
+    resetForm({
+      firstNameEnglish: fullEmp.firstNameEnglish || fullEmp.firstName || "",
+      lastNameEnglish: fullEmp.lastNameEnglish || fullEmp.lastName || "",
+      firstNameKhmer: fullEmp.firstNameKhmer || "",
+      lastNameKhmer: fullEmp.lastNameKhmer || "",
+      gender: fullEmp.gender || "Male",
+      dateOfBirth: fullEmp.dateOfBirth || "",
+      idNo: fullEmp.idNo || fullEmp.clientCode || "",
+      email: fullEmp.email || "",
+      phoneNumber: fullEmp.phoneNumber || fullEmp.contactPhone || "",
+      address: fullEmp.address || fullEmp.branch || "",
+      department: fullEmp.departmentName || fullEmp.department?.name || fullEmp.department || "General",
+      position: fullEmp.positionName || fullEmp.position?.name || fullEmp.position || fullEmp.title || "Staff",
+      joinDate: fullEmp.joinDate || new Date().toISOString().split("T")[0],
+      contractStartDate: fullEmp.contractStartDate || undefined,
+      contractEndDate: fullEmp.contractEndDate || undefined,
+      probationEndDate: fullEmp.probationEndDate || undefined,
+      contractType: fullEmp.contractType || "Full-Time",
+      status: fullEmp.status || "Active",
+      basicSalary: fullEmp.basicSalary || fullEmp.salary || 0,
+      bankName: fullEmp.bankName || "",
+      bankAccountNumber: fullEmp.bankAccountNumber || "",
+      emergencyContactName: fullEmp.emergencyContactName || "",
+      emergencyContact: fullEmp.emergencyContact || "",
+      emergencyContactPhone: fullEmp.emergencyContactPhone || "",
+      photo: fullEmp.photo || fullEmp.avatarUrl || "",
+      title: fullEmp.title || "Mr",
+      photoIdAttachment: fullEmp.photoIdAttachment || undefined,
+      contractAttachment: fullEmp.contractAttachment || undefined,
+      idPoorAttachment: fullEmp.idPoorAttachment || undefined,
+      cvAttachment: fullEmp.cvAttachment || undefined,
+      bloodGroup: fullEmp.bloodGroup || "",
+      nationality: fullEmp.nationality || "",
+      placeOfBirth: fullEmp.placeOfBirth || "",
+      maritalStatus: fullEmp.maritalStatus || "",
+      children: fullEmp.children || "",
+      identityCardType: fullEmp.identityCardType || "",
+      identityCardNumber: fullEmp.identityCardNumber || "",
+      manager: fullEmp.manager || "",
+      note: fullEmp.note || "",
+      biometricStatus: fullEmp.biometricStatus || "",
+      biometricId: fullEmp.biometricId || "",
+      legacyPreviousPosition:
+        parsedCustomFields.find((f) => f.key === "legacyPreviousPosition")
+          ?.value || "",
+      legacyEducation: (() => {
+        const val = parsedCustomFields.find(
+          (f) => f.key === "legacyEducation",
+        )?.value;
+        if (!val) return [];
+        try {
+          const parsed = JSON.parse(val);
+          return Array.isArray(parsed)
+            ? parsed
+            : [{ institution: val, degree: "", year: "" }];
+        } catch {
+          return [{ institution: val, degree: "", year: "" }];
+        }
+      })(),
+      legacyWorkExperience: (() => {
+        const val = parsedCustomFields.find(
+          (f) => f.key === "legacyWorkExperience",
+        )?.value;
+        if (!val) return [];
+        try {
+          const parsed = JSON.parse(val);
+          return Array.isArray(parsed)
+            ? parsed
+            : [{ company: val, position: "", duration: "", description: "" }];
+        } catch {
+          return [
+            { company: val, position: "", duration: "", description: "" },
+          ];
+        }
+      })(),
+      customFields: parsedCustomFields.filter(
+        (f) =>
+          ![
+            "legacyPreviousPosition",
+            "legacyEducation",
+            "legacyWorkExperience",
+          ].includes(f.key),
+      ),
+    });
+    setEditingId(fullEmp.id);
+    setIsEditMode(true);
+    setRegTab("personal");
+    setIsModalOpen(true);
   };
 
   const handleDelete = (id: number) => {
@@ -999,80 +1018,80 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
           </div>
         </header>
 
-        <nav className="flex items-center bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-2xl overflow-x-auto scrollbar-hide no-scrollbar animate-slide-up shadow-sm gap-2 w-max max-w-full">
+        <nav className="flex items-center bg-gray-100/80 dark:bg-gray-800/80 p-2 rounded-2xl overflow-x-auto custom-scrollbar animate-slide-up shadow-sm gap-1.5 w-full">
           {[
-            { id: "directory", label: t("workforce"), icon: <Users size={18} /> },
+            { id: "directory", label: t("workforce"), icon: <Users size={16} /> },
             {
               id: "attendance",
               label: t("attendance"),
-              icon: <Clock size={18} />,
+              icon: <Clock size={16} />,
             },
-            { id: "leaves", label: t("leaves"), icon: <Calendar size={18} /> },
+            { id: "leaves", label: t("leaves"), icon: <Calendar size={16} /> },
             {
               id: "timeoff",
               label: t("timeOff"),
-              icon: <CalendarCheck size={18} />,
+              icon: <CalendarCheck size={16} />,
             },
             {
               id: "analytics",
               label: t("intelligence"),
-              icon: <TrendingUp size={18} />,
+              icon: <TrendingUp size={16} />,
             },
-            { id: "payroll", label: t("payroll"), icon: <DollarSign size={18} /> },
-            { id: "assets", label: t("assets"), icon: <Server size={18} /> },
+            { id: "payroll", label: t("payroll"), icon: <DollarSign size={16} /> },
+            { id: "assets", label: t("assets"), icon: <Server size={16} /> },
             {
               id: "structure",
               label: t("structure"),
-              icon: <Building2 size={18} />,
+              icon: <Building2 size={16} />,
             },
-            { id: "training", label: t("lms"), icon: <Award size={18} /> },
+            { id: "training", label: t("lms"), icon: <Award size={16} /> },
             {
               id: "compliance",
               label: t("compliance"),
-              icon: <ShieldCheck size={18} />,
+              icon: <ShieldCheck size={16} />,
             },
-            { id: "portal", label: t("myPortal"), icon: <Activity size={18} /> },
+            { id: "portal", label: t("myPortal"), icon: <Activity size={16} /> },
             {
               id: "manager",
               label: t("managerHub"),
-              icon: <CalendarCheck size={18} />,
+              icon: <CalendarCheck size={16} />,
             },
             {
               id: "scheduling",
               label: t("scheduling"),
-              icon: <Activity size={18} />,
+              icon: <Activity size={16} />,
             },
             {
               id: "retention",
               label: t("retention"),
-              icon: <TrendingUp size={18} />,
+              icon: <TrendingUp size={16} />,
             },
             {
               id: "succession",
               label: t("succession"),
-              icon: <Award size={18} />,
+              icon: <Award size={16} />,
             },
-            { id: "wellness", label: t("wellness"), icon: <Activity size={18} /> },
-            { id: "automation", label: t("aiFlows"), icon: <Zap size={18} /> },
-            { id: "engagement", label: t("culture"), icon: <Award size={18} /> },
+            { id: "wellness", label: t("wellness"), icon: <Activity size={16} /> },
+            { id: "automation", label: t("aiFlows"), icon: <Zap size={16} /> },
+            { id: "engagement", label: t("culture"), icon: <Award size={16} /> },
             {
               id: "integrations",
               label: t("integrations"),
-              icon: <Settings size={18} />,
+              icon: <Settings size={16} />,
             },
             {
               id: "support",
               label: t("ticketsSystem"),
-              icon: <ShieldCheck size={18} />,
+              icon: <ShieldCheck size={16} />,
             },
-            { id: "reports", label: t("reports"), icon: <FileText size={18} /> },
+            { id: "reports", label: t("reports"), icon: <FileText size={16} /> },
           ].map((item) => {
             const isActive = activeModule === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveModule(item.id as any)}
-                className={`relative flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black transition-colors duration-300 ${
+                className={`relative flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 whitespace-nowrap ${
                   isActive
                     ? "text-blue-700 dark:text-blue-400 z-10"
                     : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 z-0"
@@ -1118,8 +1137,11 @@ const EmployeesPage = ({ isDark, setIsDark }: any) => {
                   stats={{ ...stats, total: totalElements }}
                   loading={queryLoading}
                   filteredEmployees={employees}
+                  employees={employees}
                   handleEdit={handleEdit}
+                  onEditEmployee={handleEdit}
                   handleDelete={handleDelete}
+                  onDeleteEmployee={handleDelete}
                   handleViewDetails={handleViewDetails}
                   getStatusColor={getStatusColor}
                   currentPage={currentPage}

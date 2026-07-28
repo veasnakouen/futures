@@ -37,8 +37,18 @@ test_login.mjs
 excell/
 
 
-# Secrets and Environment Variables
+# Secrets, Certificates, Keystores & Environment Variables
 .env
 *.env
+.env.*
 *-secrets.properties
-
+*-secret.yml
+*-secrets.yml
+*.pem
+*.key
+*.p12
+*.jks
+*.pfx
+*.keystore
+*.db
+*.sqlite

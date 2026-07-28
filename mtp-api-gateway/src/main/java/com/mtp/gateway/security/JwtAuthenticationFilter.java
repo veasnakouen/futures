@@ -90,13 +90,14 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublicEndpoint(ServerHttpRequest request) {
-        String path = request.getURI().getPath();
-        return path.contains("/api/auth/login") || path.contains("/api/auth/register") || path.contains("/eureka") || path.contains("/actuator") || path.contains("/ws");
+        String path = request.getURI().getPath().toLowerCase();
+        return path.startsWith("/ws") || path.contains("/ws/") || path.equals("/login") || path.contains("/api/translations") || path.contains("/api/auth/login") || path.contains("/api/auth/register") || path.contains("/eureka") || path.contains("/actuator");
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
+        response.getHeaders().remove("WWW-Authenticate");
         return response.setComplete();
     }
 

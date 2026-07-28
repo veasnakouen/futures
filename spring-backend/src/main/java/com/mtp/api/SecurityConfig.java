@@ -34,6 +34,8 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
                 .headers(headers -> headers
                         .frameOptions(fo -> fo.deny())
                         .xssProtection(xss -> xss.disable()) // CSP covers XSS
@@ -52,13 +54,23 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
+                            response.setHeader("WWW-Authenticate", "");
                             response.getWriter().write(
                                     "{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Token expired or invalid\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write(
+                                    "{\"status\":403,\"error\":\"Forbidden\",\"message\":\"Access Denied\"}");
                         }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/ws/**", "/ws").permitAll()
                         .requestMatchers("/socket.io/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/translations/**").permitAll()
+                        .requestMatchers("/login").permitAll()
                         .requestMatchers("/api/hr/attendance/biometric").permitAll()
                         .requestMatchers("/api/hr/attendance/sync-device").permitAll()
                         .requestMatchers("/api/hr/attendance/device-users").permitAll()
@@ -68,8 +80,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/vacancies/public/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/job-applications").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/actuator/health").permitAll() // Health check for load balancers
-                        // All other endpoints require authentication
+                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated());
 
         http.addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);

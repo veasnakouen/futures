@@ -1,225 +1,60 @@
-import React from "react";
-import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Progress} from '@/lib/flowbite-compat';
-import { Heart, Activity, Award, ShieldCheck, Flame, Plus } from "lucide-react";
-import toast from "react-hot-toast";
+import React, { useState } from "react";
+import { Button, TextInput, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Badge } from '@/lib/flowbite-compat';
+import { Heart, Search, Activity, Sparkles } from "lucide-react";
 
-const WellnessModule: React.FC = () => {
-  const mockChallenges = [
-    {
-      id: 1,
-      name: "MTP 10,000 Step Challenge",
-      participants: 45,
-      duration: "Ends May 31",
-      completion: 65,
-    },
-    {
-      id: 2,
-      name: "Mindfulness Meditation Streak",
-      participants: 18,
-      duration: "Ends Jun 15",
-      completion: 42,
-    },
-    {
-      id: 3,
-      name: "Hydration Compliance Week",
-      participants: 32,
-      duration: "Ends May 22",
-      completion: 90,
-    },
+interface WellnessModuleProps {
+  programs?: any[];
+}
+
+const WellnessModule: React.FC<WellnessModuleProps> = ({ programs = [] }) => {
+  const [search, setSearch] = useState("");
+
+  const defaultPrograms = programs.length > 0 ? programs : [
+    { id: 1, title: "Annual Health & Fitness Gym Allowance", category: "Physical Health", participants: 48, status: "Active" },
+    { id: 2, title: "Workplace Mental Health & Counseling Support", category: "Mental Wellbeing", participants: 35, status: "Active" },
+    { id: 3, title: "Ergonomic Office Setup & Health Assessment", category: "Occupational Health", participants: 62, status: "Active" },
   ];
 
-  const mockSubsidies = [
-    {
-      name: "Sarah Jenkins",
-      type: "Gym Membership",
-      amount: "$45.00",
-      date: "2026-05-12",
-      status: "Approved",
-    },
-    {
-      name: "Michael Jordan",
-      type: "Mental Health App",
-      amount: "$15.00",
-      date: "2026-05-14",
-      status: "Approved",
-    },
-    {
-      name: "Emily Rose",
-      type: "Yoga Studio",
-      amount: "$30.00",
-      date: "2026-05-16",
-      status: "Pending",
-    },
-  ];
+  const filtered = defaultPrograms.filter((p) =>
+    (p.title || "").toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Title Section */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-2xl font-black dark:text-white">
-            Wellness & Health Command
-          </h3>
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
-            Nurturing Team Well-being, Fitness Challenges & Wellness Subsidies
-          </p>
+    <div className="space-y-6 animate-fade-in pb-12">
+      {/* Toolbar */}
+      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100">
+        <div className="flex items-center gap-2 px-2">
+          <Heart size={18} className="text-rose-500" />
+          <h4 className="font-black text-sm uppercase dark:text-white">Employee Health & Wellness Programs</h4>
         </div>
-        <div className="flex gap-3">
-          <Button
-            color="blue"
-            size="sm"
-            className="rounded-md shadow-lg shadow-blue-500/20 text-xs font-black uppercase"
-            onClick={() => toast.success("New wellness claim form opened")}
-          >
-            <Plus size={14} className="mr-2" /> File Wellness Claim
-          </Button>
+
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 justify-end shrink-0">
+          <div className="relative w-64">
+            <TextInput sizing="sm" placeholder="Search wellness initiatives..." value={search} onChange={(e) => setSearch(e.target.value)} icon={Search} className="text-xs" />
+          </div>
         </div>
       </div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Active Challengers
-            </span>
-            <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500 rounded-md">
-              <Flame size={16} />
-            </div>
-          </div>
-          <h4 className="text-3xl font-black dark:text-white">95 Personnel</h4>
-          <p className="text-[9px] font-bold text-emerald-500 uppercase mt-2">
-            Active steps taken: 1.2M steps
-          </p>
-        </div>
-
-        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Mental Health Days Taken
-            </span>
-            <div className="p-2 bg-blue-50 dark:bg-blue-950/30 text-blue-500 rounded-md">
-              <Heart size={16} />
-            </div>
-          </div>
-          <h4 className="text-3xl font-black dark:text-white">12 Days</h4>
-          <p className="text-[9px] font-bold text-gray-400 uppercase mt-2">
-            Low rate indicates healthy node state
-          </p>
-        </div>
-
-        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Gym Subsidy Coverage
-            </span>
-            <div className="p-2 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-500 rounded-md">
-              <ShieldCheck size={16} />
-            </div>
-          </div>
-          <h4 className="text-3xl font-black dark:text-white">88% core</h4>
-          <p className="text-[9px] font-bold text-indigo-500 uppercase mt-2">
-            Active corporate memberships
-          </p>
-        </div>
-
-        <div className="p-6 rounded-md border-none shadow-sm dark:bg-gray-800">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Wellness Index Score
-            </span>
-            <div className="p-2 bg-pink-50 dark:bg-pink-950/30 text-pink-500 rounded-md">
-              <Activity size={16} />
-            </div>
-          </div>
-          <h4 className="text-3xl font-black dark:text-white">9.2 / 10</h4>
-          <p className="text-[9px] font-bold text-emerald-500 uppercase mt-2">
-            Excellent health rating
-          </p>
-        </div>
-      </div>
-
-      {/* Challenges & Subsidy Registry */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Active Challenges */}
-        <div className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800">
-          <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2">
-            <Flame size={20} className="text-orange-500" /> Active Wellness
-            Challenges
-          </h4>
-          <div className="space-y-6">
-            {mockChallenges.map((chal) => (
-              <div
-                key={chal.id}
-                className="p-6 bg-gray-50 dark:bg-gray-700/30 rounded-md space-y-4 border-transparent hover: dark:hover: transition-all"
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-black text-sm dark:text-white">
-                      {chal.name}
-                    </p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase mt-1">
-                      {chal.duration} • {chal.participants} active participants
-                    </p>
-                  </div>
-                  <Badge color="warning" className="rounded-md">
-                    In Progress
-                  </Badge>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-black uppercase">
-                    <span className="text-gray-400">
-                      Team Challenge Progress
-                    </span>
-                    <span className="text-orange-600">
-                      {chal.completion}% Done
-                    </span>
-                  </div>
-                  <Progress
-                    progress={chal.completion}
-                    color="yellow"
-                    size="sm"
-                  />
-                </div>
-              </div>
+      {/* Table */}
+      <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white">
+        <Table hoverable className="w-full">
+          <TableHead className="bg-gray-50 dark:bg-gray-700">
+            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Wellness Initiative</TableHeadCell>
+            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Focus Category</TableHeadCell>
+            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Enrolled Staff</TableHeadCell>
+            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Status</TableHeadCell>
+          </TableHead>
+          <TableBody className="divide-y dark:divide-gray-700">
+            {filtered.map((p, idx) => (
+              <TableRow key={p.id || idx} className="bg-white dark:bg-gray-800 hover:bg-gray-50">
+                <TableCell className="px-4 py-3 font-bold text-xs uppercase dark:text-white">{p.title}</TableCell>
+                <TableCell className="px-4 py-3 text-xs text-gray-500">{p.category}</TableCell>
+                <TableCell className="px-4 py-3 text-xs font-mono font-bold text-blue-600">{p.participants} Members</TableCell>
+                <TableCell className="px-4 py-3"><Badge color="success" className="text-[8px] uppercase">{p.status}</Badge></TableCell>
+              </TableRow>
             ))}
-          </div>
-        </div>
-
-        {/* Gym Subsidies Tracker */}
-        <div className="p-8 rounded-md border-none shadow-sm dark:bg-gray-800">
-          <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2">
-            <Award size={20} className="text-indigo-600" /> Subsidy Claims Log
-          </h4>
-          <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
-            {mockSubsidies.map((sub, idx) => (
-              <div
-                key={idx}
-                className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md flex justify-between items-center border-transparent hover: dark:hover: transition-all"
-              >
-                <div>
-                  <p className="font-black text-xs dark:text-white leading-none">
-                    {sub.name}
-                  </p>
-                  <p className="text-[8px] font-bold text-gray-400 uppercase mt-1">
-                    {sub.type} • {sub.date}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-mono text-xs font-black text-blue-600">
-                    {sub.amount}
-                  </p>
-                  <Badge
-                    color={sub.status === "Approved" ? "success" : "warning"}
-                    className="rounded-md mt-1 text-[8px]"
-                  >
-                    {sub.status}
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

@@ -49,6 +49,14 @@ public class InventoryItem {
 
     private Double weight;
 
+    private String unitOfMeasure;
+    private String supplierName;
+    private String donorName;
+    private String grantCode;
+    private String locationBin;
+    private String batchNumber;
+    private String expiryDate;
+
     private Boolean active = true;
 
     private Boolean featured = false;

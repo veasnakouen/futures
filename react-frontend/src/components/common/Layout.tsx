@@ -140,7 +140,11 @@ const Layout = ({ children, title }: LayoutProps) => {
             updateUser({ photo });
           }
         })
-        .catch((err) => console.error("Failed to fetch user profile", err));
+        .catch((err) => {
+          if (err?.response?.status !== 503) {
+            console.warn("Failed to fetch user profile:", err.message);
+          }
+        });
     }
   }, [user, updateUser]);
 
@@ -324,50 +328,66 @@ const Layout = ({ children, title }: LayoutProps) => {
         className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0 border-l" : "left-0 border-r"} z-40 ${getSidebarBgClass()} transform transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMenuOpen ? "translate-x-0" : sidebarPosition === "right" ? "translate-x-full" : "-translate-x-full"} ${isSidebarCollapsed ? "w-20" : "w-64"} flex flex-col`}
       >
         <div
-          className={`p-6 flex items-center ${isSidebarCollapsed ? "justify-center" : "justify-between"}`}
+          className={`px-5 py-5 flex items-center ${isSidebarCollapsed ? "justify-center" : "justify-between"} border-b border-gray-100 dark:border-gray-800/60 mb-2`}
         >
           {!isSidebarCollapsed && (
-            <div className="flex items-center gap-3">
-              {appLogo ? (
-                <img
-                  src={appLogo}
-                  alt="Logo"
-                  className="max-w-[36px] max-h-[36px] object-contain rounded-xl shadow-sm hover:scale-110 transition-transform duration-300 cursor-pointer"
-                />
-              ) : (
-                <div className="relative">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                    <Shield size={18} />
-                  </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900" />
+            <div className="flex items-center gap-3 group cursor-pointer">
+              <div className="relative p-0.5 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_15px_rgba(99,102,241,0.25)] group-hover:shadow-[0_0_25px_rgba(168,85,247,0.45)] transition-all duration-300 transform group-hover:scale-105">
+                <div className="w-10 h-10 rounded-[14px] bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden">
+                  {appLogo ? (
+                    <img
+                      src={appLogo}
+                      alt="Logo"
+                      className="w-full h-full object-cover rounded-[14px]"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 flex items-center justify-center text-white">
+                      <Shield size={20} className="drop-shadow" />
+                    </div>
+                  )}
                 </div>
-              )}
+                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-900 ring-2 ring-emerald-400/30 animate-pulse" />
+              </div>
+
               <div className="flex flex-col">
-                <span
-                  className={`font-extrabold text-base tracking-tight leading-none ${sidebarTheme === "brand" ? "text-white" : "dark:text-white text-gray-900"}`}
-                >
-                  MTP
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`font-black text-lg tracking-tight leading-none ${
+                      sidebarTheme === "brand"
+                        ? "text-white"
+                        : "text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 dark:from-indigo-400 dark:via-purple-300 dark:to-cyan-300"
+                    }`}
+                  >
+                    MTP
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black tracking-wider uppercase bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                    PRO
+                  </span>
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-400 leading-none mt-1 flex items-center gap-1">
+                  PLATFORM <span className="w-1 h-1 rounded-full bg-emerald-400"></span> ECOSYSTEM
                 </span>
-                <span className="text-[9px] font-bold uppercase tracking-widest text-indigo-400 dark:text-indigo-400 leading-none mt-0.5">Platform</span>
               </div>
             </div>
           )}
-          {isSidebarCollapsed &&
-            (appLogo ? (
-              <img
-                src={appLogo}
-                alt="Logo"
-                className="max-w-[36px] max-h-[36px] object-contain rounded-lg shadow-sm"
-                title="MTP System"
-              />
-            ) : (
-              <div
-                className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30"
-                title="MTP System"
-              >
-                <Shield size={18} />
+          {isSidebarCollapsed && (
+            <div className="relative p-0.5 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_15px_rgba(99,102,241,0.25)] hover:scale-110 transition-transform duration-300 cursor-pointer" title="MTP System">
+              <div className="w-10 h-10 rounded-[14px] bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden">
+                {appLogo ? (
+                  <img
+                    src={appLogo}
+                    alt="Logo"
+                    className="w-full h-full object-cover rounded-[14px]"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 flex items-center justify-center text-white">
+                    <Shield size={20} />
+                  </div>
+                )}
               </div>
-            ))}
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
+            </div>
+          )}
           <button
             className={`lg:hidden ${sidebarTheme === "brand" ? "text-white" : "dark:text-white"} ${isSidebarCollapsed ? "hidden" : ""}`}
             onClick={() => setIsMenuOpen(false)}

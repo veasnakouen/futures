@@ -11,7 +11,7 @@ import PlacementsPage from "./PlacementsPage";
 import ModernTabs from "@/components/common/ModernTabs";
 
 // New HR Recruitment ATS Pipeline Module
-import RecruitmentModule from "@/features/hr/components/RecruitmentModule";
+import RecruitmentModule from "@/features/hr/components/recruitment/RecruitmentModule";
 import { 
   useVacancies, 
   useRecruitmentStats, 

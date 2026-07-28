@@ -45,6 +45,16 @@ export const placementSchema = z.object({
   status: z.string().min(1, "Status is required"),
 });
 
+export const jobTipSchema = z.object({
+  referrerCandidateId: z.string().min(1, "Referrer candidate is required"),
+  companyName: z.string().min(1, "Company name is required"),
+  jobTitle: z.string().min(1, "Job title is required"),
+  positionsCount: z.coerce.number().min(1, "At least 1 position required"),
+  estimatedSalary: z.string().optional().or(z.literal("")),
+  notes: z.string().optional().or(z.literal("")),
+});
+
 export interface VacancyFormData extends z.infer<typeof vacancySchema> {}
 export interface ClientFormData extends z.infer<typeof clientSchema> {}
 export interface PlacementFormData extends z.infer<typeof placementSchema> {}
+export interface JobTipFormData extends z.infer<typeof jobTipSchema> {}

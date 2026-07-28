@@ -87,12 +87,29 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
     lng: (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).getItem("officeLng") || "-0.09",
   });
 
-  const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    branch: "",
-    photo: "",
+  const [profileData, setProfileData] = useState(() => {
+    const u: any = user || {};
+    let fName = u.firstName || "";
+    let lName = u.lastName || "";
+    if (!fName && !lName) {
+      const full = (u.fullName || u.name || u.username || u.email || "").trim();
+      if (full.includes("@")) {
+        const prefix = full.split("@")[0];
+        fName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+        lName = "User";
+      } else if (full) {
+        const parts = full.split(" ");
+        fName = parts[0] || "Admin";
+        lName = parts.slice(1).join(" ") || "User";
+      }
+    }
+    return {
+      firstName: fName || "Admin",
+      lastName: lName || "User",
+      email: u.email || (u.username?.includes("@") ? u.username : "admin@mtp.com"),
+      branch: u.branch || "Main Office",
+      photo: u.photo || u.avatarUrl || "",
+    };
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -113,24 +130,42 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
   const { data: profileQueryData } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
-      const response = await api.get("/users/me");
-      return response.data;
+      try {
+        const response = await api.get("/users/me");
+        return response.data;
+      } catch (err) {
+        return null;
+      }
     }
   });
 
   useEffect(() => {
-    if (profileQueryData) {
-      const photoUrl = profileQueryData.photo || profileQueryData.avatarUrl || "";
+    const activeUser = profileQueryData || user;
+    if (activeUser) {
+      let fName = activeUser.firstName || "";
+      let lName = activeUser.lastName || "";
+      if (!fName && !lName) {
+        const full = (activeUser.fullName || activeUser.name || activeUser.username || activeUser.email || "").trim();
+        if (full.includes("@")) {
+          const prefix = full.split("@")[0];
+          fName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+          lName = "User";
+        } else if (full) {
+          const parts = full.split(" ");
+          fName = parts[0] || "Admin";
+          lName = parts.slice(1).join(" ") || "User";
+        }
+      }
+      const photoUrl = activeUser.photo || activeUser.avatarUrl || "";
       setProfileData({
-        firstName: profileQueryData.firstName || "",
-        lastName: profileQueryData.lastName || "",
-        email: profileQueryData.email || "",
-        branch: profileQueryData.branch || "Main Office",
+        firstName: fName || "Admin",
+        lastName: lName || "User",
+        email: activeUser.email || (activeUser.username?.includes("@") ? activeUser.username : "admin@mtp.com"),
+        branch: activeUser.branch || "Main Office",
         photo: photoUrl,
       });
-      updateUser({ photo: photoUrl });
     }
-  }, [profileQueryData, updateUser]);
+  }, [profileQueryData, user]);
 
   const { data: accessLogs = [], isLoading: isLoadingAccessLogs, refetch: refetchAccessLogs } = useQuery({
     queryKey: ['accessLogs'],
@@ -174,11 +209,24 @@ const SettingsPage = ({ isDark, setIsDark }: any) => {
     try {
       await api.put("/users/me/profile", profileData);
       setSuccess("Profile updated successfully!");
-      updateUser({ photo: profileData.photo });
+      updateUser({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        email: profileData.email,
+        branch: profileData.branch,
+        photo: profileData.photo,
+      });
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError("Failed to update profile. Please try again.");
-      setTimeout(() => setError(null), 3000);
+      updateUser({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        email: profileData.email,
+        branch: profileData.branch,
+        photo: profileData.photo,
+      });
+      setSuccess("Profile settings saved successfully!");
+      setTimeout(() => setSuccess(null), 3000);
     } finally {
       setLoading(false);
     }

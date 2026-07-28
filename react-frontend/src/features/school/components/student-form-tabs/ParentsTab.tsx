@@ -3,7 +3,7 @@ import { StudentFormTabProps } from "./StudentFormSchema";
 
 export default function ParentsTab({
   form,
-  t,
+  t = (k) => k,
   parentsData,
 }: StudentFormTabProps) {
   const { watch, setValue } = form;
@@ -27,78 +27,61 @@ export default function ParentsTab({
     );
   };
 
+  const list = parentsData?.content || (Array.isArray(parentsData) ? parentsData : []);
+
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-4 animate-fade-in text-xs">
       <div>
-        <label className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 block">
-          {t("selectParentsGuardians")}
+        <label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">
+          {t("selectParentsGuardians") || "Select Parents / Guardians"}
         </label>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-          {t("chooseParentsDesc")}
+        <p className="text-[10px] text-gray-400">
+          {t("chooseParentsDesc") || "Choose parents or guardians to link with this student."}
         </p>
       </div>
-      {(!parentsData || (parentsData.content ? parentsData.content.length === 0 : parentsData.length === 0)) && (
+
+      {list.length === 0 ? (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center">
-          <p className="text-sm text-gray-500 italic">No parents found in the database.</p>
+          <p className="text-xs text-gray-500 italic">No parents found in database.</p>
         </div>
-      )}
-      <div className="grid grid-cols-1 gap-3">
-        {(parentsData?.content || (Array.isArray(parentsData) ? parentsData : [])).map((parent: any) => {
-          const isSelected = currentParentRelationships.some((pr: any) => pr.parentId === parent.id);
-          return (
-            <div
-              key={parent.id}
-              className={`flex flex-col p-4 rounded-xl transition-all duration-200 cursor-pointer ${isSelected ? "bg-blue-50 border border-blue-300 dark:bg-blue-900/20 dark:border-blue-700" : "bg-white border border-gray-100 dark:border-gray-800 hover:border-blue-300 hover:shadow-sm dark:bg-gray-800"}`}
-              onClick={(e) => {
-                // Prevent toggling when clicking the select dropdown
-                if ((e.target as HTMLElement).tagName !== 'SELECT') {
-                  handleParentToggle(parent.id);
-                }
-              }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className={`flex items-center justify-center w-5 h-5 rounded-md mr-3 ${isSelected ? 'bg-blue-600 border border-blue-600' : 'bg-white border border-gray-300 dark:bg-gray-700 dark:border-gray-600'}`}>
-                    {isSelected && (
-                      <svg className="w-3.5 h-3.5 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5.917 5.724 10.5 15 1.5" />
-                      </svg>
-                    )}
-                  </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-2">
+          {list.map((parent: any) => {
+            const isSelected = currentParentRelationships.some((pr: any) => pr.parentId === parent.id);
+            return (
+              <div
+                key={parent.id}
+                className={`p-3 rounded-xl border flex justify-between items-center cursor-pointer transition-all ${
+                  isSelected ? "bg-blue-50 border-blue-300 dark:bg-blue-900/30" : "bg-gray-50 dark:bg-gray-800"
+                }`}
+                onClick={() => handleParentToggle(parent.id)}
+              >
+                <div className="flex items-center gap-3">
+                  <input type="checkbox" checked={isSelected} readOnly className="rounded text-blue-600" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {parent.name}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {parent.contactNumber}
-                    </p>
+                    <p className="font-bold text-xs">{parent.firstName} {parent.lastName}</p>
+                    <p className="text-[10px] text-gray-400">{parent.phone || parent.email || "No contact info"}</p>
                   </div>
                 </div>
 
                 {isSelected && (
-                  <div className="w-1/3" onClick={e => e.stopPropagation()}>
-                    <select
-                      className="w-full px-2 py-1.5 text-sm font-medium border-blue-200 dark:border-blue-800 rounded bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-400 focus:ring-2 focus:ring-blue-500 shadow-sm"
-                      value={currentParentRelationships.find((pr: any) => pr.parentId === parent.id)?.relationshipType || "MOTHER"}
-                      onChange={(e) => handleRelationshipTypeChange(parent.id, e.target.value)}
-                    >
-                      <option value="MOTHER">{t("mother")}</option>
-                      <option value="FATHER">{t("father")}</option>
-                      <option value="UNCLE">{t("uncle")}</option>
-                      <option value="AUNT">{t("aunt")}</option>
-                      <option value="BROTHER">{t("brother")}</option>
-                      <option value="SISTER">{t("sister")}</option>
-                      <option value="GRANDPARENT">{t("grandparent")}</option>
-                      <option value="GUARDIAN">{t("guardian")}</option>
-                      <option value="OTHER">{t("other")}</option>
-                    </select>
-                  </div>
+                  <select
+                    value={currentParentRelationships.find((pr: any) => pr.parentId === parent.id)?.relationshipType || "MOTHER"}
+                    onChange={(e) => handleRelationshipTypeChange(parent.id, e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-xs font-bold rounded-lg border-gray-300 dark:bg-gray-700 h-8"
+                  >
+                    <option value="MOTHER">Mother</option>
+                    <option value="FATHER">Father</option>
+                    <option value="GUARDIAN">Guardian</option>
+                    <option value="OTHER">Other</option>
+                  </select>
                 )}
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

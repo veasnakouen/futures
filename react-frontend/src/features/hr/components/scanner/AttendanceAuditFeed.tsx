@@ -1,6 +1,6 @@
 import React from "react";
 import { History, Download, Check, QrCode } from "lucide-react";
-import { format } from "date-fns";
+import { safeFormatDate } from "@/utils/dateUtils";
 import { AttendanceLog } from "./scannerTypes";
 
 interface AttendanceAuditFeedProps {
@@ -65,7 +65,7 @@ export default function AttendanceAuditFeed({
                 </div>
               </div>
               <span className="text-[9px] font-mono font-bold text-gray-400 shrink-0">
-                {format(new Date(log.timestamp), "HH:mm:ss")}
+                {safeFormatDate(log.timestamp, "HH:mm:ss")}
               </span>
             </div>
           ))}

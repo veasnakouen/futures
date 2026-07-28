@@ -70,6 +70,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
+        evictIfOverfilled(loginBuckets);
+        evictIfOverfilled(reportBuckets);
+        evictIfOverfilled(generalBuckets);
+
         Bucket bucket;
         if (path.startsWith("/api/auth/login")) {
             bucket = loginBuckets.computeIfAbsent(ip, k -> createLoginBucket());
@@ -89,6 +93,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
             response.getWriter().write(
                     "{\"status\":429,\"error\":\"Too Many Requests\"," +
                             "\"message\":\"Rate limit exceeded. Please slow down.\",\"path\":\"" + path + "\"}");
+        }
+    }
+
+    private void evictIfOverfilled(Map<String, Bucket> map) {
+        if (map.size() > 5000) {
+            map.clear();
         }
     }
 

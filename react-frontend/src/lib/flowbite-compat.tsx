@@ -354,11 +354,21 @@ export const Table = ({ hoverable, ...props }: any) => <STable {...props} />;
 export const TableBody = STableBody;
 export const TableRow = STableRow;
 export const TableCell = STableCell;
-export const TableHead = ({ children, className }: any) => (
-  <STableHeader className={className}>
-    <STableRow>{children}</STableRow>
-  </STableHeader>
-);
+export const TableHead = ({ children, className }: any) => {
+  const childrenArray = React.Children.toArray(children);
+  const hasTableRowChild = childrenArray.some((child: any) => {
+    if (!React.isValidElement(child)) return false;
+    const type: any = child.type;
+    const name = type?.displayName || type?.name || (typeof type === "string" ? type : "");
+    return name.includes("Row") || name === "tr" || name === "STableRow" || name === "TableRow";
+  });
+
+  return (
+    <STableHeader className={className}>
+      {hasTableRowChild ? children : <STableRow>{children}</STableRow>}
+    </STableHeader>
+  );
+};
 export const TableHeadCell = STableHead;
 // Modal mapping
 export const ModalHeader = ({ children, className }: any) => {

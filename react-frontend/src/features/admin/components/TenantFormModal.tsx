@@ -1,231 +1,91 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import {Modal, Button, Label, TextInput, Select, ToggleSwitch, Alert, Spinner, Datepicker} from '@/lib/flowbite-compat';
-import { CreateTenantCommand, TenantDto, tenantService } from '@/services/tenantService';
-import { X } from 'lucide-react';
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Modal, ModalBody, Label, TextInput, Select } from "@/lib/flowbite-compat";
+import CustomModalHeader from "@/components/common/CustomModalHeader";
+import CustomModalFooter from "@/components/common/CustomModalFooter";
+import { toast } from "react-hot-toast";
 
-interface TenantFormModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    tenantToEdit: TenantDto | null;
-    onSuccess: () => void;
+export interface TenantFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  tenantToEdit?: any;
+  onSave?: (data: any) => Promise<void>;
+  [key: string]: any;
 }
 
-const TenantFormModal = ({ isOpen, onClose, tenantToEdit, onSuccess }: TenantFormModalProps) => {
-    const { t } = useTranslation();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+export default function TenantFormModal({
+  isOpen,
+  onClose,
+  tenantToEdit,
+  onSave = async () => {},
+}: TenantFormModalProps) {
+  const isEdit = !!tenantToEdit;
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<any>();
 
-    const [formData, setFormData] = useState<CreateTenantCommand>({
-        id: '',
-        name: '',
-        managerEmail: '',
-        isActive: true,
-        subscriptionEndDate: '',
-        maxDevices: 10,
-        allowedModules: []
-    });
+  useEffect(() => {
+    if (isOpen) {
+      if (tenantToEdit) reset(tenantToEdit);
+      else reset({ status: "ACTIVE", subscriptionPlan: "ENTERPRISE" });
+    }
+  }, [isOpen, tenantToEdit, reset]);
 
-    useEffect(() => {
-        if (tenantToEdit) {
-            setFormData({
-                id: tenantToEdit.id,
-                name: tenantToEdit.name,
-                managerEmail: tenantToEdit.managerEmail || '',
-                isActive: tenantToEdit.isActive,
-                subscriptionEndDate: tenantToEdit.subscriptionEndDate || '',
-                maxDevices: tenantToEdit.maxDevices,
-                allowedModules: tenantToEdit.allowedModules || []
-            });
-        } else {
-            setFormData({
-                id: '',
-                name: '',
-                managerEmail: '',
-                isActive: true,
-                subscriptionEndDate: '',
-                maxDevices: 10,
-                allowedModules: []
-            });
-        }
-        setError(null);
-    }, [tenantToEdit, isOpen]);
+  const onSubmit = async (data: any) => {
+    try {
+      await onSave(data);
+      toast.success(isEdit ? "Tenant updated" : "Tenant registered");
+      onClose();
+    } catch {
+      toast.error("Failed to save tenant configuration");
+    }
+  };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  if (!isOpen) return null;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-        try {
-            const command: CreateTenantCommand = {
-                ...formData,
-                managerEmail: formData.managerEmail || null,
-                subscriptionEndDate: formData.subscriptionEndDate || null
-            };
+  return (
+    <Modal show={isOpen} onClose={onClose} size="md" dismissible={false}>
+      <CustomModalHeader
+        title={isEdit ? "Modify Tenant Account" : "Provision Multi-Tenant Node"}
+        subtitle="System Governance"
+        onClose={onClose}
+      />
+      <ModalBody className="p-6 bg-white dark:bg-gray-800 space-y-4 text-xs">
+        <form id="tenant-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Tenant Name</Label>
+            <TextInput {...register("name", { required: "Name is required" })} sizing="sm" placeholder="e.g. Royal Phnom Penh Hospital" />
+            {errors.name && <p className="text-red-500 text-[10px]">{errors.name.message as string}</p>}
+          </div>
 
-            if (tenantToEdit) {
-                await tenantService.updateTenant(tenantToEdit.id, command);
-            } else {
-                await tenantService.createTenant(command);
-            }
-            onSuccess();
-            onClose();
-        } catch (err: any) {
-            setError(err.response?.data?.message || t("failedToSaveTenant"));
-        } finally {
-            setLoading(false);
-        }
-    };
+          <div>
+            <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Domain Key / Slug</Label>
+            <TextInput {...register("domainKey", { required: "Domain key is required" })} sizing="sm" placeholder="royal-hospital" />
+          </div>
 
-    return (
-        <Modal show={isOpen} onClose={onClose} size="md">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                <div className="flex justify-between items-center p-5 border-b bg-gray-50 dark:bg-gray-800/50 shrink-0">
-                    <h3 className="text-lg font-black text-gray-900 dark:text-white">
-                        {tenantToEdit ? t("editOrganization") : t("createOrganization")}
-                    </h3>
-                    <button
-                        onClick={onClose}
-                        className="flex h-8 w-8 min-w-[2rem] min-h-[2rem] shrink-0 aspect-square items-center justify-center rounded-full p-0 bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-900 hover:rotate-90 hover:scale-110 active:scale-95 transition-all duration-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
-                    >
-            <X size={20} />
-                    </button>
-                </div>
-
-                <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
-                    {error && (
-                        <Alert color="failure" className="mb-4">
-                            {error}
-                        </Alert>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <Label htmlFor="id">{t("tenantIdUniqueKey")}</Label>
-                            <TextInput
-                                id="id"
-                                name="id"
-                                placeholder="e.g. clinic-a"
-                                value={formData.id}
-                                onChange={handleChange}
-                                disabled={!!tenantToEdit}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="name">{t("organizationName")}</Label>
-                            <TextInput
-                                id="name"
-                                name="name"
-                                placeholder="e.g. Main Street Clinic"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="managerEmail">{t("managerEmail")}</Label>
-                            <TextInput
-                                id="managerEmail"
-                                name="managerEmail"
-                                type="email"
-                                placeholder="manager@clinic.com"
-                                value={formData.managerEmail || ''}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="flex justify-between items-center pt-2">
-                            <div>
-                                <Label className="text-gray-900 dark:text-white font-bold">{t("status")}</Label>
-                                <p className="text-xs text-gray-500">{t("enableSuspendTenantAccess")}</p>
-                            </div>
-                            <ToggleSwitch
-                                checked={formData.isActive}
-                                onChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="subscriptionEndDate">{t("subscriptionEndDate")}</Label>
-                            <Datepicker
-                                id="subscriptionEndDate"
-                                name="subscriptionEndDate"
-                                value={formData.subscriptionEndDate || ''}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="maxDevices">{t("maxAllowedDevices")}</Label>
-                            <TextInput
-                                id="maxDevices"
-                                name="maxDevices"
-                                type="number"
-                                min="1"
-                                value={formData.maxDevices}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="pt-2">
-                            <Label className="text-gray-900 dark:text-white font-bold mb-2 block">{t("modulePermissions")}</Label>
-                            <div className="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
-                                {[
-                                    { id: 'CLINIC', label: t("clinicManagement") },
-                                    { id: 'SCHOOL', label: t("schoolManagement") },
-                                    { id: 'HOTEL', label: t("hotelHospitality") },
-                                    { id: 'BILLING', label: t("billingFinance") },
-                                    { id: 'HR', label: t("humanResources") },
-                                    { id: 'STOCK', label: t("stockInventory") },
-                                    { id: 'POS', label: t("posSystem") }
-                                ].map(mod => (
-                                    <div key={mod.id} className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            id={`mod-${mod.id}`}
-                                            className="w-4 h-4 text-blue-600 bg-gray-100 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700"
-                                            checked={formData.allowedModules.includes(mod.id)}
-                                            onChange={(e) => {
-                                                const newModules = e.target.checked
-                                                    ? [...formData.allowedModules, mod.id]
-                                                    : formData.allowedModules.filter(m => m !== mod.id);
-                                                setFormData({ ...formData, allowedModules: newModules });
-                                            }}
-                                        />
-                                        <label htmlFor={`mod-${mod.id}`} className="text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer">
-                                            {mod.label}
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3 pt-4 border-t mt-6">
-                            <Button
-                                type="button"
-                                color="light"
-                                className="flex-1"
-                                onClick={onClose}
-                            >
-                                {t("cancel")}
-                            </Button>
-                            <Button
-                                type="submit"
-                                color="blue"
-                                className="flex-1"
-                                disabled={loading}
-                            >
-                                {loading ? <Spinner size="sm" className="mr-2" /> : null}
-                                {tenantToEdit ? t("saveChanges") : t("createTenant")}
-                            </Button>
-                        </div>
-                    </form>
-                </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Subscription Plan</Label>
+              <Select {...register("subscriptionPlan")} sizing="sm">
+                <option value="STARTER">Starter</option>
+                <option value="PROFESSIONAL">Professional</option>
+                <option value="ENTERPRISE">Enterprise</option>
+              </Select>
             </div>
-        </Modal>
-    );
-};
-
-export default TenantFormModal;
+            <div>
+              <Label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Status</Label>
+              <Select {...register("status")} sizing="sm">
+                <option value="ACTIVE">Active</option>
+                <option value="SUSPENDED">Suspended</option>
+              </Select>
+            </div>
+          </div>
+        </form>
+      </ModalBody>
+      <CustomModalFooter
+        onClose={onClose}
+        isEditMode={isEdit}
+        submitText={isEdit ? "Update Tenant" : "Provision Node"}
+        formId="tenant-form"
+      />
+    </Modal>
+  );
+}
