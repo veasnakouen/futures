@@ -1,7 +1,9 @@
 import React from "react";
 import { Modal, ModalBody, ModalFooter, Button, TextInput, Label } from '@/lib/flowbite-compat';
 import CustomModalHeader from "@/components/common/CustomModalHeader";
-import { Box, Package, Upload } from "lucide-react";
+import { Wand2 } from "lucide-react";
+import api from "@/services/api";
+import toast from "react-hot-toast";
 
 interface WarehouseRegistrationModalProps {
   isOpen: boolean;
@@ -45,9 +47,8 @@ const WarehouseRegistrationModal: React.FC<WarehouseRegistrationModalProps> = ({
               key={s.step}
               type="button"
               onClick={() => setCurrentStep(s.step)}
-              className={`font-black uppercase text-[10px] px-3 py-1.5 rounded-lg ${
-                currentStep >= s.step ? "bg-blue-600 text-white" : "text-gray-400"
-              }`}
+              className={`font-black uppercase text-[10px] px-3 py-1.5 rounded-lg ${currentStep >= s.step ? "bg-blue-600 text-white" : "text-gray-400"
+                }`}
             >
               {s.title}
             </button>
@@ -63,7 +64,21 @@ const WarehouseRegistrationModal: React.FC<WarehouseRegistrationModalProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-[10px] font-black text-gray-400 uppercase mb-1 block">SKU Code</Label>
-                <TextInput placeholder="SKU-10022" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} sizing="sm" />
+                <div className="flex gap-2">
+                  <TextInput placeholder="SKU-10022" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} sizing="sm" className="flex-1" />
+                  <Button type="button" color="light" size="xs" onClick={async () => {
+                    try {
+                      const res = await api.get('/stock/inventory/generate-sku');
+                      setFormData({ ...formData, sku: res.data.sku });
+                      toast.success("SKU Generated");
+                    } catch (e: any) {
+                      toast.error("Failed to generate SKU");
+                      console.error("SKU Gen Error:", e?.response?.data || e.message);
+                    }
+                  }}>
+                    <Wand2 size={14} className="text-indigo-600" />
+                  </Button>
+                </div>
               </div>
               <div>
                 <Label className="text-[10px] font-black text-gray-400 uppercase mb-1 block">Category</Label>

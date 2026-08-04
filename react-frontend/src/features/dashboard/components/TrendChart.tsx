@@ -58,9 +58,9 @@ const TrendChart: React.FC<TrendChartProps> = ({ data = [] }) => {
       duration={600}
       triggerOnce={true}
     >
-      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
+      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] border border-gray-200/80 dark:border-gray-700/60 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
         {/* Header and Filter Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-200/80 dark:border-gray-700/60 shrink-0">
           <div>
             <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
               Registered Vacancies

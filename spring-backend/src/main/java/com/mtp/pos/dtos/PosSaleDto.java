@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class PosSaleDto {
     private String id;
+    private String idempotencyKey;
     private String cashierId;
     private String paymentMethod;
     private BigDecimal totalAmount;

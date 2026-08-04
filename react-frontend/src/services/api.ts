@@ -29,7 +29,21 @@ api.interceptors.request.use(
 
 // Response Interceptor
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Automatically unwrap Spring Boot ApiResponse wrapper { success: true, message: "...", data: ... }
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "success" in response.data &&
+      "data" in response.data &&
+      response.data.data !== null &&
+      response.data.data !== undefined
+    ) {
+      const originalPayload = response.data;
+      response.data = originalPayload.data;
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 

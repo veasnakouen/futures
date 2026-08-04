@@ -161,7 +161,8 @@ public class DatabaseManagementController {
         settings.put("backupPathLocal", databaseBackupService.getSetting("backup.path.local", "C:\\Backups"));
         settings.put("backupCloudEnabled", databaseBackupService.getSetting("backup.cloud.s3.enabled", "false"));
         settings.put("backupCloudAccessKey", databaseBackupService.getSetting("backup.cloud.s3.accessKey", ""));
-        settings.put("backupCloudSecretKey", databaseBackupService.getSetting("backup.cloud.s3.secretKey", ""));
+        String rawSecret = databaseBackupService.getSetting("backup.cloud.s3.secretKey", "");
+        settings.put("backupCloudSecretKey", rawSecret != null && !rawSecret.isEmpty() ? "********" : "");
         settings.put("backupCloudRegion", databaseBackupService.getSetting("backup.cloud.s3.region", "us-east-1"));
         settings.put("backupCloudBucket", databaseBackupService.getSetting("backup.cloud.s3.bucket", ""));
         settings.put("backupScheduleEnabled", databaseBackupService.getSetting("backup.schedule.enabled", "false"));
@@ -173,6 +174,9 @@ public class DatabaseManagementController {
     @PostMapping("/backup-settings")
     public ResponseEntity<?> saveBackupSettings(@RequestBody Map<String, String> payload) {
         payload.forEach((key, value) -> {
+            if ("backupCloudSecretKey".equals(key) && "********".equals(value)) {
+                return; // Do not overwrite existing secret key with mask
+            }
             String dbKey = switch (key) {
                 case "backupPathLocal" -> "backup.path.local";
                 case "backupCloudEnabled" -> "backup.cloud.s3.enabled";
@@ -196,7 +200,7 @@ public class DatabaseManagementController {
     @PostMapping("/backup")
     public ResponseEntity<?> backupDatabase(@RequestBody Map<String, String> payload) {
         String type = payload.getOrDefault("type", "full").toLowerCase();
-        
+
         try {
             String fileName = databaseBackupService.runBackup(type);
             Map<String, Object> response = new HashMap<>();
@@ -204,7 +208,7 @@ public class DatabaseManagementController {
             response.put("message", "Database backup successful");
             response.put("file", fileName);
             response.put("type", type);
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Failed to backup database: ", e);

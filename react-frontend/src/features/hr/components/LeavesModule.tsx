@@ -42,16 +42,16 @@ const LeavesModule: React.FC<LeavesModuleProps> = ({
     (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("leavesViewMode", viewMode);
   }, [viewMode]);
 
-const safeFormatDate = (dateVal: any, formatStr: string, fallback: string = "—") => {
-  if (!dateVal) return fallback;
-  try {
-    const d = new Date(dateVal);
-    if (isNaN(d.getTime())) return fallback;
-    return format(d, formatStr);
-  } catch {
-    return fallback;
-  }
-};
+  const safeFormatDate = (dateVal: any, formatStr: string, fallback: string = "—") => {
+    if (!dateVal) return fallback;
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return fallback;
+      return format(d, formatStr);
+    } catch {
+      return fallback;
+    }
+  };
 
   const safeLeaves = Array.isArray(globalLeaves) ? globalLeaves : [];
 

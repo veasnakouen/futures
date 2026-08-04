@@ -2,6 +2,10 @@ server:
   port: 8080
   address: 0.0.0.0
   max-http-request-header-size: 8388608
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
   netty:
     max-initial-line-length: 8388608
 
@@ -17,7 +21,11 @@ spring:
     gateway:
       httpclient:
         connect-timeout: 5000
-        response-timeout: 15s
+        response-timeout: 30s
+        pool:
+          type: ELASTIC
+          max-idle-time: 30000ms
+          max-life-time: 60000ms
       default-filters:
         - name: RequestSize
           args:

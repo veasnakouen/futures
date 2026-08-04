@@ -28,10 +28,15 @@ public class HousekeepingTaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HousekeepingTaskQueryResultDto> getById(@PathVariable Integer id) {
-        return getByIdHandler.handle(new GetHousekeepingTaskByIdQuery(id))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<HousekeepingTaskQueryResultDto> getById(@PathVariable String id) {
+        try {
+            Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
+            return getByIdHandler.handle(new GetHousekeepingTaskByIdQuery(numericId))
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
@@ -40,10 +45,16 @@ public class HousekeepingTaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HousekeepingTaskQueryResultDto> update(@PathVariable Integer id, @Valid @RequestBody UpdateHousekeepingTaskCommand command) {
-        command.setId(id);
-        return updateHandler.handle(command)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<HousekeepingTaskQueryResultDto> update(@PathVariable String id,
+            @Valid @RequestBody UpdateHousekeepingTaskCommand command) {
+        try {
+            Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
+            command.setId(numericId);
+            return updateHandler.handle(command)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

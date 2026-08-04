@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Badge, Avatar, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell } from '@/lib/flowbite-compat';
-import { Clock, MapPin, User } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 import { safeFormatDate } from "@/utils/dateUtils";
+import ModernPagination from "@/components/common/ModernPagination";
 
 interface AttendanceMatrixTabProps {
   attendanceData: any[];
@@ -14,15 +15,26 @@ const AttendanceMatrixTab: React.FC<AttendanceMatrixTabProps> = ({
   searchQuery,
   statusFilter,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
+
   const filteredData = attendanceData.filter((item) => {
     const nameMatch = (item.employeeName || item.employeeId || "").toLowerCase().includes(searchQuery.toLowerCase());
     const statusMatch = !statusFilter || item.status === statusFilter;
     return nameMatch && statusMatch;
   });
 
+  const totalItems = filteredData.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <div className="space-y-4">
-      <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white">
+      <div className="border border-gray-100 dark:border-gray-800 shadow-sm dark:bg-gray-800 rounded-2xl overflow-hidden bg-white">
         <div className="overflow-x-auto overflow-y-auto custom-scrollbar w-full max-h-[60vh]">
           <Table hoverable className="w-full">
             <TableHead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20">
@@ -33,14 +45,14 @@ const AttendanceMatrixTab: React.FC<AttendanceMatrixTabProps> = ({
               <TableHeadCell className="py-3.5 px-4 text-[10px] font-black uppercase tracking-widest">Status</TableHeadCell>
             </TableHead>
             <TableBody className="divide-y dark:divide-gray-700">
-              {filteredData.length === 0 ? (
+              {paginatedData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-10 text-xs font-bold text-gray-400 uppercase tracking-widest">
                     No attendance logs match filter
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredData.map((item, idx) => (
+                paginatedData.map((item, idx) => (
                   <TableRow key={item.id || idx} className="bg-white dark:bg-gray-800 hover:bg-gray-50">
                     <TableCell className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -75,6 +87,18 @@ const AttendanceMatrixTab: React.FC<AttendanceMatrixTabProps> = ({
           </Table>
         </div>
       </div>
+
+      <ModernPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 };

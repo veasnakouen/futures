@@ -22,9 +22,14 @@ import java.util.stream.Collectors;
 import com.mtp.auth.repositories.TenantRepository;
 import com.mtp.auth.repositories.UserRepository;
 import com.mtp.auth.models.Tenant;
+import lombok.extern.slf4j.Slf4j;
+
+
 
 @Service
+@Slf4j
 public class LoginCommandHandler implements CommandHandler<LoginCommand, AuthResponseDto> {
+
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
@@ -34,8 +39,8 @@ public class LoginCommandHandler implements CommandHandler<LoginCommand, AuthRes
     private final UserRepository userRepository;
 
     public LoginCommandHandler(AuthenticationManager authenticationManager, JwtUtils jwtUtils,
-                               RefreshTokenService refreshTokenService, LoginHistoryService loginHistoryService,
-                               TenantRepository tenantRepository, UserRepository userRepository) {
+            RefreshTokenService refreshTokenService, LoginHistoryService loginHistoryService,
+            TenantRepository tenantRepository, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
@@ -48,7 +53,7 @@ public class LoginCommandHandler implements CommandHandler<LoginCommand, AuthRes
     public AuthResponseDto handle(LoginCommand command) {
         String username = command.getRequestDto().getUsername();
         String password = command.getRequestDto().getPassword();
-        
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
@@ -81,38 +86,60 @@ public class LoginCommandHandler implements CommandHandler<LoginCommand, AuthRes
                 }
             }
 
-            // Record successful login audit log
-            loginHistoryService.recordEvent(userPrincipal.getUsername(), "Success", "Standard (12MB)", command.getServletRequest());
+            // Record successful login audit log safely
+            try {
+                loginHistoryService.recordEvent(userPrincipal.getUsername(), "Success", "Standard (12MB)",
+                        command.getServletRequest());
+            } catch (Exception auditEx) {
+                log.warn("Failed to record login audit log event: {}", auditEx.getMessage());
+            }
 
             return new AuthResponseDto(jwt, refreshToken.getToken(),
                     userPrincipal.getUsername(), userPrincipal.getEmail(), roles, tenantType, allowedModules);
 
         } catch (org.springframework.security.authentication.LockedException le) {
-            loginHistoryService.recordEvent(username, "Failed (Locked)", "Light", command.getServletRequest());
-            throw new ResponseStatusException(HttpStatus.LOCKED, "Account is temporarily locked. Please try again later.");
+            try {
+                loginHistoryService.recordEvent(username, "Failed (Locked)", "Light", command.getServletRequest());
+            } catch (Exception ignored) {
+            }
+            throw new ResponseStatusException(HttpStatus.LOCKED,
+                    "Account is temporarily locked. Please try again later.");
+        } catch (org.springframework.web.server.ResponseStatusException rse) {
+            throw rse;
         } catch (Exception e) {
-            // Record failed login audit log
-            loginHistoryService.recordEvent(username, "Failed", "Light (1.5MB)", command.getServletRequest());
-
-            java.util.Optional<com.mtp.auth.models.User> optUser = userRepository.findByUserName(username);
-            if (optUser.isEmpty()) {
-                optUser = userRepository.findByEmail(username);
+            // Record failed login audit log safely
+            try {
+                loginHistoryService.recordEvent(username, "Failed", "Light (1.5MB)", command.getServletRequest());
+            } catch (Exception ignored) {
             }
 
-            if (optUser.isPresent()) {
-                com.mtp.auth.models.User user = optUser.get();
-                if (user.isLockoutEnabled()) {
-                    user.setAccessFailedCount(user.getAccessFailedCount() + 1);
-                    int remaining = 5 - user.getAccessFailedCount();
-                    if (remaining <= 0) {
-                        user.setLockoutEnd(java.time.Instant.now().plus(15, java.time.temporal.ChronoUnit.MINUTES));
-                        userRepository.save(user);
-                        throw new ResponseStatusException(HttpStatus.LOCKED, "Account locked due to too many failed attempts. Try again in 15 minutes.");
-                    } else {
-                        userRepository.save(user);
-                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials. " + remaining + " attempts remaining.");
+            try {
+                java.util.Optional<com.mtp.auth.models.User> optUser = userRepository.findByUserName(username);
+                if (optUser.isEmpty()) {
+                    optUser = userRepository.findByEmail(username);
+                }
+
+                if (optUser.isPresent()) {
+                    com.mtp.auth.models.User user = optUser.get();
+                    if (user.isLockoutEnabled()) {
+                        user.setAccessFailedCount(user.getAccessFailedCount() + 1);
+                        int remaining = 5 - user.getAccessFailedCount();
+                        if (remaining <= 0) {
+                            user.setLockoutEnd(java.time.Instant.now().plus(15, java.time.temporal.ChronoUnit.MINUTES));
+                            userRepository.save(user);
+                            throw new ResponseStatusException(HttpStatus.LOCKED,
+                                    "Account locked due to too many failed attempts. Try again in 15 minutes.");
+                        } else {
+                            userRepository.save(user);
+                            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                                    "Invalid credentials. " + remaining + " attempts remaining.");
+                        }
                     }
                 }
+            } catch (ResponseStatusException rse) {
+                throw rse;
+            } catch (Exception ex) {
+                log.warn("Failed to process user lockout count: {}", ex.getMessage());
             }
 
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed: Invalid credentials");

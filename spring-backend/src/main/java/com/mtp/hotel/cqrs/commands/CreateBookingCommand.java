@@ -12,5 +12,14 @@ public class CreateBookingCommand {
     @NotNull(message = "Check in date is required") private LocalDate checkInDate;
     @NotNull(message = "Check out date is required") private LocalDate checkOutDate;
     private BigDecimal totalPrice;
+    private BigDecimal totalAmount;
     private String status = "CONFIRMED";
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount != null ? totalAmount : totalPrice;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice != null ? totalPrice : totalAmount;
+    }
 }

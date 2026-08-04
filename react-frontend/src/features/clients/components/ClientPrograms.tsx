@@ -174,7 +174,7 @@ const ClientPrograms: React.FC<ClientProgramsProps> = ({ clientId }) => {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10 pb-12">
       {/* Overview Metrics Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-5 rounded-2xl shadow-xl flex items-center gap-4">
+        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/80 dark:border-gray-700/60 p-5 rounded-2xl shadow-xl flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 shrink-0">
             <Briefcase size={22} />
           </div>
@@ -184,7 +184,7 @@ const ClientPrograms: React.FC<ClientProgramsProps> = ({ clientId }) => {
           </div>
         </div>
 
-        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-5 rounded-2xl shadow-xl flex items-center gap-4">
+        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/80 dark:border-gray-700/60 p-5 rounded-2xl shadow-xl flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 shrink-0">
             <Clock size={22} />
           </div>
@@ -194,7 +194,7 @@ const ClientPrograms: React.FC<ClientProgramsProps> = ({ clientId }) => {
           </div>
         </div>
 
-        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-5 rounded-2xl shadow-xl flex items-center gap-4">
+        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/80 dark:border-gray-700/60 p-5 rounded-2xl shadow-xl flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/20 shrink-0">
             <Award size={22} />
           </div>
@@ -204,7 +204,7 @@ const ClientPrograms: React.FC<ClientProgramsProps> = ({ clientId }) => {
           </div>
         </div>
 
-        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-5 rounded-2xl shadow-xl flex items-center gap-4">
+        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/80 dark:border-gray-700/60 p-5 rounded-2xl shadow-xl flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/20 shrink-0">
             <BarChart2 size={22} />
           </div>
@@ -216,7 +216,7 @@ const ClientPrograms: React.FC<ClientProgramsProps> = ({ clientId }) => {
       </div>
 
       {/* Main Header & Toolbar */}
-      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-6 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200/80 dark:border-gray-700/60 p-6 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/25 shrink-0">
             <Layers size={22} />

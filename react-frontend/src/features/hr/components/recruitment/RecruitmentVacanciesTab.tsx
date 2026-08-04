@@ -127,9 +127,14 @@ const RecruitmentVacanciesTab: React.FC<RecruitmentVacanciesTabProps> = ({
           </Table>
         </div>
       )}
-      {filteredVacancies.length > vacanciesPerPage && (
-        <ModernPagination currentPage={vacancyPage} totalPages={Math.ceil(filteredVacancies.length / vacanciesPerPage)} onPageChange={setVacancyPage} totalItems={filteredVacancies.length} pageSize={vacanciesPerPage} onPageSizeChange={() => {}} />
-      )}
+      <ModernPagination
+        currentPage={vacancyPage}
+        totalPages={Math.max(1, Math.ceil(filteredVacancies.length / vacanciesPerPage))}
+        onPageChange={setVacancyPage}
+        totalItems={filteredVacancies.length}
+        pageSize={vacanciesPerPage}
+        onPageSizeChange={() => {}}
+      />
     </motion.div>
   );
 };

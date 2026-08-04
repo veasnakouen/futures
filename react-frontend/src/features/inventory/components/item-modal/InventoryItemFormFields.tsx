@@ -64,7 +64,7 @@ const InventoryItemFormFields: React.FC<InventoryItemFormFieldsProps> = ({
             onValueChange={(val) => setValue("category", { id: parseInt(val), name: val }, { shouldValidate: true })}
             disabled={isViewMode}
           >
-            <SelectTrigger className="w-full h-9 text-xs border bg-white dark:bg-gray-700/50 rounded-md">
+            <SelectTrigger className="w-full h-9 text-xs border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 rounded-md text-gray-900 dark:text-gray-100">
               <SelectValue placeholder="Select Category..." />
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-gray-800 border shadow-2xl">
@@ -83,7 +83,7 @@ const InventoryItemFormFields: React.FC<InventoryItemFormFieldsProps> = ({
             onValueChange={(val) => setValue("departmentId", parseInt(val), { shouldValidate: true })}
             disabled={isViewMode}
           >
-            <SelectTrigger className="w-full h-9 text-xs border bg-white dark:bg-gray-700/50 rounded-md">
+            <SelectTrigger className="w-full h-9 text-xs border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 rounded-md text-gray-900 dark:text-gray-100">
               <SelectValue placeholder="Select Department..." />
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-gray-800 border shadow-2xl">

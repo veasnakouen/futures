@@ -35,7 +35,7 @@ const StatusDistribution: React.FC<StatusDistributionProps> = ({
       duration={600}
       triggerOnce={true}
     >
-      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
+      <div className="h-full flex flex-col bg-white dark:bg-gray-800/40 dark:backdrop-blur-md p-8 rounded-md shadow-[0_2px_12px_-3px_rgba(0,0,0,0.02)] border border-gray-200/80 dark:border-gray-700/60 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-shadow duration-300">
         <div className="flex items-center justify-between mb-8 shrink-0">
           <h4 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
             Client Status

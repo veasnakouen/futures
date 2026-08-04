@@ -45,8 +45,21 @@ public class CaseController {
     }
 
     @GetMapping("/client/{clientId}")
-    public List<Case> getByClient(@PathVariable Integer clientId) {
-        return repository.findByClientId(clientId);
+    public ResponseEntity<List<Case>> getByClient(@PathVariable String clientId) {
+        try {
+            if (clientId == null || clientId.trim().isEmpty()) {
+                return ResponseEntity.ok(java.util.Collections.emptyList());
+            }
+            String numericOnly = clientId.replaceAll("[^0-9]", "");
+            if (numericOnly.isEmpty()) {
+                return ResponseEntity.ok(java.util.Collections.emptyList());
+            }
+            Integer idInt = Integer.parseInt(numericOnly);
+            List<Case> cases = repository.findByClientId(idInt);
+            return ResponseEntity.ok(cases != null ? cases : java.util.Collections.emptyList());
+        } catch (Exception e) {
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
     }
 
     @Autowired

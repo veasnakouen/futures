@@ -28,20 +28,20 @@ const FALLBACK_BRANCHES: BranchDto[] = [
 ];
 
 async function getBranches(): Promise<BranchDto[]> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth-token")?.value;
-  const tenantId = cookieStore.get("tenant-type")?.value;
-
-  if (!token) return FALLBACK_BRANCHES;
-
-  const headers: HeadersInit = {
-    Authorization: `Bearer ${token}`
-  };
-  if (tenantId) {
-    headers["X-Tenant-ID"] = tenantId;
-  }
-
   try {
+    const cookieStore = await Promise.resolve(cookies());
+    const token = cookieStore?.get ? cookieStore.get("auth-token")?.value : null;
+    const tenantId = cookieStore?.get ? cookieStore.get("tenant-type")?.value : null;
+
+    if (!token) return FALLBACK_BRANCHES;
+
+    const headers: HeadersInit = {
+      Authorization: `Bearer ${token}`
+    };
+    if (tenantId) {
+      headers["X-Tenant-ID"] = tenantId;
+    }
+
     const res = await fetch("http://127.0.0.1:8080/api/school/branches", {
       headers,
       cache: "no-store",
@@ -62,7 +62,12 @@ async function getBranches(): Promise<BranchDto[]> {
 }
 
 export default async function BranchesPage() {
-  const branches = await getBranches();
+  let branches = FALLBACK_BRANCHES;
+  try {
+    branches = await getBranches();
+  } catch (err) {
+    console.warn("[School Service] Component execution exception, using default fallback branches:", err);
+  }
 
   return (
     <>

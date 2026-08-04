@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, TextInput, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Badge } from '@/lib/flowbite-compat';
 import { Calendar, Search, Plus, Clock } from "lucide-react";
+import ModernPagination from "@/components/common/ModernPagination";
 
 import { ShiftScheduleModal } from "./ShiftScheduleModal";
 import { ScheduleAssignmentModal } from "./ScheduleAssignmentModal";
@@ -17,8 +18,15 @@ const SchedulingModule: React.FC<SchedulingModuleProps> = ({
   onAssignShift,
 }) => {
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const [isShiftModalOpen, setIsShiftModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
   const defaultShifts = shifts.length > 0 ? shifts : [
     { id: 1, name: "Morning Operational Shift", startTime: "08:00", endTime: "17:00", duration: "8 Hours", employeesCount: 14 },
@@ -30,10 +38,14 @@ const SchedulingModule: React.FC<SchedulingModuleProps> = ({
     (s.name || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalItems = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const paginatedShifts = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Toolbar */}
-      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100">
+      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="flex items-center gap-2 px-2">
           <Calendar size={18} className="text-blue-600" />
           <h4 className="font-black text-sm uppercase dark:text-white">Shift Scheduling & Roster Control</h4>
@@ -53,30 +65,50 @@ const SchedulingModule: React.FC<SchedulingModuleProps> = ({
       </div>
 
       {/* Shifts Table */}
-      <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white">
+      <div className="border border-gray-100 dark:border-gray-800 shadow-sm dark:bg-gray-800 rounded-2xl overflow-hidden bg-white">
         <Table hoverable className="w-full">
           <TableHead className="bg-gray-50 dark:bg-gray-700">
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Shift Template</TableHeadCell>
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Start Time</TableHeadCell>
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">End Time</TableHeadCell>
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Duration</TableHeadCell>
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Assigned Staff</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Shift Template</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Start Time</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">End Time</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Duration</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Assigned Staff</TableHeadCell>
           </TableHead>
           <TableBody className="divide-y dark:divide-gray-700">
-            {filtered.map((s, idx) => (
-              <TableRow key={s.id || idx} className="bg-white dark:bg-gray-800 hover:bg-gray-50">
-                <TableCell className="px-4 py-3 font-bold text-xs uppercase dark:text-white">{s.name}</TableCell>
-                <TableCell className="px-4 py-3 text-xs font-mono">{s.startTime}</TableCell>
-                <TableCell className="px-4 py-3 text-xs font-mono">{s.endTime}</TableCell>
-                <TableCell className="px-4 py-3 text-xs font-bold">{s.duration}</TableCell>
-                <TableCell className="px-4 py-3">
-                  <Badge color="info" className="text-[8px] uppercase">{s.employeesCount} Personnel</Badge>
+            {paginatedShifts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-10 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  No shift templates found
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedShifts.map((s, idx) => (
+                <TableRow key={s.id || idx} className="bg-white dark:bg-gray-800 hover:bg-gray-50">
+                  <TableCell className="px-4 py-3 font-bold text-xs uppercase dark:text-white">{s.name}</TableCell>
+                  <TableCell className="px-4 py-3 text-xs font-mono">{s.startTime}</TableCell>
+                  <TableCell className="px-4 py-3 text-xs font-mono">{s.endTime}</TableCell>
+                  <TableCell className="px-4 py-3 text-xs font-bold">{s.duration}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    <Badge color="info" className="text-[8px] uppercase">{s.employeesCount} Personnel</Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
+
+      <ModernPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setCurrentPage(1);
+        }}
+      />
 
       {/* Modals */}
       <ShiftScheduleModal isOpen={isShiftModalOpen} onClose={() => setIsShiftModalOpen(false)} year={new Date().getFullYear()} />

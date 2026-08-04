@@ -54,10 +54,10 @@ const EmployeeRegistrationModal: React.FC<EmployeeRegistrationModalProps> = ({
     <Modal show={isOpen} onClose={onClose} size="5xl">
       <CustomModalHeader title={isEditMode ? "Edit Staff Profile" : "Register New Employee"} subtitle="HR Workforce Onboarding Portal" onClose={onClose} />
       <form onSubmit={hookSubmit(onSubmit)}>
-        <ModalBody className="p-0 bg-white dark:bg-gray-800">
-          <div className="flex flex-col md:flex-row min-h-[520px] max-h-[75vh]">
-            {/* Left Nav (Non-scrollable, shrink-wrapped sidebar) */}
-            <div className="w-full md:w-64 bg-gray-50/80 dark:bg-gray-900 border-r border-gray-200/80 dark:border-gray-800 p-4 space-y-1 shrink-0 select-none overflow-hidden flex flex-col justify-start">
+        <ModalBody className="p-0 bg-white dark:bg-gray-800 overflow-hidden">
+          <div className="flex flex-col md:flex-row h-[520px]">
+            {/* Left Nav (Fixed height, smooth scrollbar) */}
+            <div className="w-full md:w-64 bg-gray-50/80 dark:bg-gray-900 border-r border-gray-200/80 dark:border-gray-800 p-4 space-y-1 shrink-0 select-none overflow-y-auto custom-scrollbar h-full flex flex-col justify-start">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -74,8 +74,8 @@ const EmployeeRegistrationModal: React.FC<EmployeeRegistrationModalProps> = ({
               ))}
             </div>
 
-            {/* Right Tab Body */}
-            <div className="flex-1 p-6 overflow-y-auto">
+            {/* Right Tab Body (Fixed height, smooth scrollbar) */}
+            <div className="flex-1 p-6 overflow-y-auto custom-scrollbar h-full">
               {regTab === "personal" && (
                 <PersonalDataTab
                   formMethods={formMethods}

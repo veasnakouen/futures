@@ -36,15 +36,20 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const user = authService.getCurrentUser();
-    if (user) {
+    if (user && user.token) {
       // 1. Fetch existing notifications on load safely
-      api.get("/notifications")
-        .then(res => {
-          const list = res.data?.data?.content || res.data?.content || res.data?.data || res.data || [];
+      api
+        .get("/notifications")
+        .then((res) => {
+          const list =
+            res.data?.data?.content ||
+            res.data?.content ||
+            res.data?.data ||
+            res.data ||
+            [];
           setNotifications(Array.isArray(list) ? list : []);
         })
-        .catch(err => {
-          console.warn("Failed to fetch notifications (service starting or offline):", err?.message);
+        .catch(() => {
           setNotifications([]);
         });
 

@@ -100,14 +100,12 @@ export default function StudentList({
         </Table>
       </div>
 
-      {totalPages > 1 && (
-        <ModernPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-          totalItems={totalElements}
-        />
-      )}
+      <ModernPagination
+        currentPage={currentPage}
+        totalPages={totalPages || 1}
+        onPageChange={onPageChange}
+        totalItems={totalElements}
+      />
     </div>
   );
 }

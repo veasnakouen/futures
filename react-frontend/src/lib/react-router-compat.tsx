@@ -48,8 +48,8 @@ export const useParams = useNextParams;
 
 // Next.js Link doesn't support 'to' prop directly, so we map it
 export const Link = React.forwardRef<HTMLAnchorElement, any>(
-  ({ to, ...props }, ref) => {
-    return <NextLink href={to || props.href || '#'} ref={ref} {...props} />;
+  ({ to, prefetch = false, ...props }, ref) => {
+    return <NextLink href={to || props.href || '#'} prefetch={prefetch} ref={ref} {...props} />;
   }
 );
 Link.displayName = 'Link';

@@ -31,7 +31,7 @@ public class SystemHoliday {
     private LocalDate endDate;
 
     private String category;
-    
+
     private String description;
 
     @Column(name = "is_deleted", nullable = false)

@@ -59,7 +59,7 @@ export function DataTableHeaderToolbar<T>({
       <div className="flex items-center gap-2">
         {enableColumnToggle && (
           <Dropdown
-            label={<div className="p-2 rounded-lg border bg-white dark:bg-gray-800 text-xs font-bold flex items-center gap-1.5"><Columns size={14} /> Columns</div>}
+            label={<div className="p-2 rounded-xl border border-gray-200/60 dark:border-gray-700/50 bg-white dark:bg-gray-800 text-xs font-bold flex items-center gap-1.5 shadow-xs"><Columns size={14} /> Columns</div>}
             inline
             arrowIcon={false}
           >
@@ -72,7 +72,7 @@ export function DataTableHeaderToolbar<T>({
                     key={key}
                     type="button"
                     onClick={() => toggleColumn(key)}
-                    className="w-full flex items-center justify-between px-3 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 font-bold"
+                    className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-bold"
                   >
                     <span>{typeof col.header === "string" ? col.header : `Column ${idx + 1}`}</span>
                     {isVisible && <Check size={14} className="text-emerald-500 ml-2" />}
@@ -84,18 +84,18 @@ export function DataTableHeaderToolbar<T>({
         )}
 
         {enableViewToggle && (
-          <div className="flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg border">
+          <div className="flex items-center p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/60 dark:border-gray-700/50">
             <button
               type="button"
               onClick={() => setViewMode("TABLE")}
-              className={`p-1.5 rounded-md ${viewMode === "TABLE" ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm" : "text-gray-400"}`}
+              className={`p-1.5 rounded-lg transition-all ${viewMode === "TABLE" ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm" : "text-gray-400"}`}
             >
               <List size={16} />
             </button>
             <button
               type="button"
               onClick={() => setViewMode("GRID")}
-              className={`p-1.5 rounded-md ${viewMode === "GRID" ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm" : "text-gray-400"}`}
+              className={`p-1.5 rounded-lg transition-all ${viewMode === "GRID" ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm" : "text-gray-400"}`}
             >
               <LayoutGrid size={16} />
             </button>

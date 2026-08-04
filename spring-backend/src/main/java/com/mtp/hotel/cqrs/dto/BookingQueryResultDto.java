@@ -12,5 +12,14 @@ public class BookingQueryResultDto {
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private BigDecimal totalPrice;
+    private BigDecimal totalAmount;
     private String status;
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount != null ? totalAmount : totalPrice;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice != null ? totalPrice : totalAmount;
+    }
 }

@@ -2,32 +2,31 @@ package com.mtp.api.security;
 
 import com.mtp.api.models.User;
 import com.mtp.api.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("Login attempt for user/email: " + username);
-        User user = userRepository.findByUserName(username)
-                .orElseGet(() -> userRepository.findByEmail(username)
-                        .orElseGet(() -> {
-                            System.out.println("User NOT found in database: " + username);
-                            throw new UsernameNotFoundException("User not found: " + username);
-                        }));
-        // Initialize lazy collections to prevent LazyInitializationException in JwtRequestFilter
-        user.getRoles().size();
-        user.getRoles().forEach(role -> role.getPermissions().size());
+        log.debug("Authenticating user/email: {}", username);
+        User user = userRepository.findByIdentityWithRolesAndPermissions(username)
+                .orElseThrow(() -> {
+                    log.warn("User not found during authentication: {}", username);
+                    return new UsernameNotFoundException("User not found: " + username);
+                });
 
-        System.out.println("User found in database. Verifying password...");
         return new UserPrincipal(user);
     }
 }

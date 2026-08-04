@@ -27,13 +27,13 @@ const CustomModalFooter: React.FC<CustomModalFooterProps> = ({
   const defaultSubmitText = isEditMode ? "Update Record" : "Save Record";
   return (
     <div
-      className={`flex justify-end items-center w-full px-6 py-3.5 bg-slate-50/90 dark:bg-[#090c10]/90 backdrop-blur-xl rounded-b-2xl ${hideBorder ? "" : "border-t border-slate-200/60 dark:border-white/[0.05] shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]"}`}
+      className={`flex justify-end items-center w-full px-6 py-3.5 bg-slate-50/90 dark:bg-[#090c10]/90 backdrop-blur-xl rounded-b-2xl ${hideBorder ? "" : "border-t border-gray-200/80 dark:border-gray-700/60 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]"}`}
     >
       <div className="flex items-center gap-3">
       <button
         type="button"
         onClick={onClose}
-        className="px-5 py-2.5 text-[10px] font-black tracking-widest text-slate-500 uppercase bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.07] rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.07] hover:text-slate-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-white/10 transition-all shadow-sm hover:shadow active:scale-95"
+        className="px-5 py-2.5 text-[10px] font-black tracking-widest text-slate-500 uppercase bg-white dark:bg-white/[0.04] border border-gray-200/80 dark:border-gray-700/60 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.07] hover:text-slate-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-white/10 transition-all shadow-sm hover:shadow active:scale-95"
       >
         {cancelText}
       </button>

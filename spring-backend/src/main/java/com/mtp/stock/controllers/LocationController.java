@@ -29,7 +29,13 @@ public class LocationController {
 
     @GetMapping
     public List<Location> getAllLocations() {
-        return locationRepository.findAll();
+        List<Location> list = locationRepository.findAll();
+        for (Location loc : list) {
+            if (loc.getStatus() == null) {
+                loc.setStatus("ONLINE");
+            }
+        }
+        return list;
     }
 
     @PostMapping

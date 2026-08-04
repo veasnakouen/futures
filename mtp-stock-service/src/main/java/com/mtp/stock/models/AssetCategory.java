@@ -28,7 +28,7 @@ public class AssetCategory {
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private AssetCategory parentCategory;
 
-    @Column(length = 5, unique = true)
+    @Column(length = 5)
     private String prefixCode;
 
     @Column(nullable = false)

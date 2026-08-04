@@ -25,10 +25,10 @@ public class QRCodeService {
         claims.put("type", "attendance_qr");
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(String.valueOf(departmentId))
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + (isPermanent ? PERMANENT_TIME : EXPIRATION_TIME)))
+                .claims(claims)
+                .subject(String.valueOf(departmentId))
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + (isPermanent ? PERMANENT_TIME : EXPIRATION_TIME)))
                 .signWith(key)
                 .compact();
     }

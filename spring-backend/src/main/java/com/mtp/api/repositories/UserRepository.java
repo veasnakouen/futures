@@ -17,4 +17,10 @@ public interface UserRepository extends JpaRepository<User, String> {
         org.springframework.data.domain.Page<User> searchUsers(
                         @org.springframework.data.repository.query.Param("search") String search,
                         org.springframework.data.domain.Pageable pageable);
+
+        @org.springframework.data.jpa.repository.Query("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles r LEFT JOIN FETCH r.permissions WHERE LOWER(u.userName) = LOWER(:identity) OR LOWER(u.email) = LOWER(:identity)")
+        Optional<User> findByIdentityWithRolesAndPermissions(@org.springframework.data.repository.query.Param("identity") String identity);
+
+        @org.springframework.data.jpa.repository.Query("SELECT u FROM User u WHERE u.email IS NOT NULL AND LOWER(TRIM(u.email)) NOT IN (SELECT LOWER(TRIM(e.email)) FROM Employee e WHERE e.email IS NOT NULL)")
+        java.util.List<User> findUsersNotLinkedToEmployee();
 }

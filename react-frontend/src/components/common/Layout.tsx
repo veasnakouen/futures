@@ -1,55 +1,25 @@
 "use client";
 import React from "react";
-import { Link, useLocation, useNavigate } from '@/lib/react-router-compat';
+import { useLocation, useNavigate } from "@/lib/react-router-compat";
 import {
   LayoutDashboard,
   Users,
-  FileBarChart,
-  Settings,
-  Sun,
-  Moon,
-  LogOut,
-  Shield,
-  UserCircle,
-  Bell,
-  History,
-  Briefcase,
-  FolderKanban,
-  Package,
-  LifeBuoy,
-  Building2,
-  Languages,
-  User,
-  ChevronDown,
-  DollarSign,
-  MessageCircle,
-  Inbox,
-  Monitor,
-  Menu,
   ChevronLeft,
   ChevronRight,
-  Handshake,
-  GraduationCap,
-  BookOpen,
-  Activity,
-  Stethoscope,
-  CreditCard,
-  Receipt,
-  Bed,
-  MapPin,
 } from "lucide-react";
-import { Dropdown, DropdownItem, DropdownHeader, DropdownDivider } from '@/lib/flowbite-compat';
 import { useTranslation } from "react-i18next";
-import authService from '../../services/authService';
+import authService from "../../services/authService";
 import Chat from "../../features/chat/components/Chat";
 import NetworkDrawer from "./NetworkDrawer";
 import UserProfileDropdown from "./UserProfileDropdown";
-import { motion } from "framer-motion";
-import { useTheme } from '../../contexts/ThemeContext';
-import { useNotifications } from '../../contexts/NotificationContext';
-import { useAuthStore } from '../../store/authStore';
-import api from '../../services/api';
-import { getFaceFocusedUrl } from '../../utils/cloudinary';
+import { useTheme } from "../../contexts/ThemeContext";
+import { useNotifications } from "../../contexts/NotificationContext";
+import { useAuthStore } from "../../store/authStore";
+import api from "../../services/api";
+import { getNavSections } from "./layout/navConfig";
+import SidebarBrandHeader from "./layout/SidebarBrandHeader";
+import SidebarNav from "./layout/SidebarNav";
+import NotificationDropdownMenu from "./layout/NotificationDropdownMenu";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -58,40 +28,98 @@ interface LayoutProps {
   title?: string;
 }
 
-const Layout = ({ children, title }: LayoutProps) => {
-  const {
-    theme,
-    setTheme,
-    isDark,
-    sidebarPosition,
-    sidebarTheme,
-    topbarTheme,
-  } = useTheme();
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { isDark, sidebarPosition, sidebarTheme, topbarTheme } = useTheme();
   const { notifications, unreadCount, markAsRead } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isNetworkOpen, setIsNetworkOpen] = React.useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(() => {
-    return (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).getItem("isSidebarCollapsed") === "true";
+    return (
+      (typeof window !== "undefined"
+        ? window.localStorage
+        : { getItem: () => null, setItem: () => { }, removeItem: () => { } }
+      ).getItem("isSidebarCollapsed") === "true"
+    );
   });
-  const [expandedSections, setExpandedSections] = React.useState<Record<string, boolean>>({});
+  const { user, updateUser } = useAuthStore();
+  const sidebarRef = React.useRef<HTMLElement>(null);
+  const [appLogo, setAppLogo] = React.useState<string | null>(null);
+
+  const [expandedSections, setExpandedSections] = React.useState<
+    Record<string, boolean>
+  >(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = window.localStorage.getItem("expandedSections");
+        if (saved) return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse expandedSections from localStorage", e);
+      }
+    }
+    return {};
+  });
+
+  const isAdmin =
+    Array.isArray(user?.roles) &&
+    user.roles.some((role: any) => {
+      const roleName = (
+        typeof role === "string" ? role : role?.name || ""
+      ).toUpperCase();
+      return roleName.includes("ADMIN");
+    });
+
+  const navSections = React.useMemo(() => getNavSections(t, isAdmin), [t, isAdmin]);
+
+  // Auto-expand sidebar section matching active route on page load & navigation
+  React.useEffect(() => {
+    if (!location?.pathname) return;
+    const currentPath = location.pathname;
+    const activeSection = navSections.find((section) =>
+      section.links.some((link) => currentPath.startsWith(link.to))
+    );
+    if (activeSection) {
+      setExpandedSections((prev) => {
+        if (prev[activeSection.title] === false || prev[activeSection.title] === undefined) {
+          const next = { ...prev, [activeSection.title]: true };
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem("expandedSections", JSON.stringify(next));
+          }
+          return next;
+        }
+        return prev;
+      });
+    }
+  }, [location?.pathname, navSections]);
 
   const toggleSection = (title: string) => {
-    setExpandedSections(prev => ({ ...prev, [title]: prev[title] === false ? true : false }));
+    setExpandedSections((prev) => {
+      const isCurrentlyExpanded = prev[title] !== false;
+      const next = {
+        ...prev,
+        [title]: !isCurrentlyExpanded,
+      };
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("expandedSections", JSON.stringify(next));
+      }
+      return next;
+    });
   };
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed((prev) => {
       const next = !prev;
-      (typeof window !== "undefined" ? window.localStorage : { getItem: () => null, setItem: () => { }, removeItem: () => { } }).setItem("isSidebarCollapsed", String(next));
+      (
+        typeof window !== "undefined"
+          ? window.localStorage
+          : { getItem: () => null, setItem: () => { }, removeItem: () => { } }
+      ).setItem("isSidebarCollapsed", String(next));
       return next;
     });
   };
-  const { user, updateUser } = useAuthStore();
-  const sidebarRef = React.useRef<HTMLElement>(null);
-  const [appLogo, setAppLogo] = React.useState<string | null>(null);
 
   const loadAppLogo = () => {
     api
@@ -118,7 +146,7 @@ const Layout = ({ children, title }: LayoutProps) => {
       if (sidebarRef.current) {
         sessionStorage.setItem(
           "sidebarScrollPos",
-          sidebarRef.current.scrollTop.toString(),
+          sidebarRef.current.scrollTop.toString()
         );
       }
     };
@@ -131,13 +159,21 @@ const Layout = ({ children, title }: LayoutProps) => {
   }, []);
 
   React.useEffect(() => {
-    if (user && !user.photo) {
+    if (user) {
       api
         .get("/users/me")
         .then((res) => {
-          const photo = res.data.photo || res.data.avatarUrl;
-          if (photo) {
-            updateUser({ photo });
+          const profile = res.data?.data || res.data;
+          if (profile) {
+            const photo = profile.photo || profile.avatarUrl || profile.picture;
+            updateUser({
+              photo: photo || user.photo,
+              avatarUrl: photo || user.avatarUrl,
+              firstName: profile.firstName || user.firstName,
+              lastName: profile.lastName || user.lastName,
+              fullName: profile.fullName || user.fullName,
+              email: profile.email || user.email,
+            });
           }
         })
         .catch((err) => {
@@ -146,17 +182,22 @@ const Layout = ({ children, title }: LayoutProps) => {
           }
         });
     }
-  }, [user, updateUser]);
+  }, []);
 
   const isActive = (path: string) => {
     if (path.includes("?")) {
       const [pathname, search] = path.split("?");
-      return location.pathname.startsWith(pathname) && location.search.includes(search);
+      return (
+        location.pathname.startsWith(pathname) &&
+        location.search.includes(search)
+      );
     }
     if (path === "/") {
       return location.pathname === "/";
     }
-    return location.pathname === path || location.pathname.startsWith(path + "/");
+    return (
+      location.pathname === path || location.pathname.startsWith(path + "/")
+    );
   };
 
   const handleLogout = () => {
@@ -180,140 +221,10 @@ const Layout = ({ children, title }: LayoutProps) => {
     return "bg-white/85 dark:bg-[#0d1117]/90 border-gray-200/80 dark:border-white/[0.04] shadow-sm dark:shadow-black/20";
   };
 
-  const getSidebarLinkClass = (active: boolean) => {
-    if (active) {
-      if (sidebarTheme === "brand") return "bg-white/20 text-white font-bold shadow-sm rounded-md";
-      if (sidebarTheme === "dark") return "bg-white/10 text-white font-bold shadow-sm rounded-md";
-      return "bg-indigo-100/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm rounded-md";
-    }
-    if (sidebarTheme === "brand")
-      return "text-indigo-200/80 hover:bg-white/10 hover:text-white rounded-md";
-    if (sidebarTheme === "dark")
-      return "text-gray-400 hover:bg-white/5 hover:text-white rounded-md";
-    return "text-gray-500 dark:text-gray-400 hover:bg-indigo-50/80 dark:hover:bg-white/[0.04] hover:text-indigo-600 dark:hover:text-indigo-300 rounded-md";
-  };
-
-  const navSections: {
-    title: string;
-    links: {
-      to: string;
-      icon: React.ElementType;
-      label: string;
-      subLinks?: { to: string; label: string }[];
-    }[];
-  }[] = [
-      {
-        title: t("operations"),
-        links: [
-          { to: "/", icon: LayoutDashboard, label: t("dashboard") },
-          { to: "/cases", icon: FolderKanban, label: t("cases") },
-          // { to: "/logbook", icon: History, label: t("logbook") },
-          { to: "/inventory", icon: Package, label: t("inventory") },
-        ],
-      },
-      {
-        title: t("recruitment"),
-        links: [{ to: "/recruitment", icon: Handshake, label: t("recruitment") }],
-      },
-      {
-        title: t("humanResources"),
-        links: [
-          { to: "/employees", icon: Users, label: t("Hr") },
-          { to: "/leaves", icon: Briefcase, label: t("leaveManagement") },
-        ],
-      },
-      {
-        title: t("schoolManagement"),
-        links: [
-          { to: "/school/branches", icon: MapPin, label: t("branches") },
-          { to: "/school/students", icon: Users, label: t("students") },
-          { to: "/school/outreach", icon: MapPin, label: t("outreach") },
-          { to: "/school/case-management", icon: Briefcase, label: t("caseManagement") },
-          { to: "/school/departments", icon: Building2, label: t("departments") },
-          { to: "/school/department-inbox", icon: Inbox, label: t("departmentInbox") },
-          { to: "/school/teachers", icon: Briefcase, label: t("teachers") },
-          { to: "/school/courses", icon: BookOpen, label: t("courses") },
-          { to: "/school/enrollments", icon: GraduationCap, label: t("enrollments") },
-          { to: "/school/parents", icon: Users, label: t("parents") },
-          { to: "/school/extracurriculars", icon: Activity, label: t("activities") },
-        ],
-      },
-      {
-        title: t("clinicManagement"),
-        links: [
-          { to: "/clinic", icon: LayoutDashboard, label: t("dashboard") },
-          { to: "/clinic/ipd", icon: Bed, label: "IPD Wards" },
-          { to: "/clinic/patients", icon: Users, label: t("patients") },
-          { to: "/clinic/appointments", icon: History, label: t("appointments") },
-          { to: "/clinic/doctors", icon: Briefcase, label: t("doctors") },
-          { to: "/clinic/prescriptions", icon: Stethoscope, label: t("prescriptions") },
-          { to: "/clinic/lab-orders", icon: Activity, label: t("labOrders") },
-          { to: "/clinic/medical-records", icon: BookOpen, label: t("medicalRecords") },
-        ],
-      },
-      {
-        title: t("billingAndFinance"),
-        links: [
-          { to: "/billing/invoices", icon: Receipt, label: t("invoices") },
-          { to: "/billing/payments", icon: CreditCard, label: t("payments") },
-        ],
-      },
-      {
-        title: t("hospitalityAndHotel"),
-        links: [
-          { to: "/hotel/bookings", icon: History, label: t("bookings") },
-          { to: "/hotel/guests", icon: Users, label: t("guests") },
-          { to: "/hotel/rooms", icon: Bed, label: t("rooms") },
-          { to: "/hotel/housekeeping", icon: Package, label: t("housekeeping") },
-        ],
-      },
-      {
-        title: t("retailAndPos"),
-        links: [
-          { to: "/pos", icon: Monitor, label: t("posTerminal") },
-          { to: "/pos/products", icon: Package, label: t("products") },
-          { to: "/pos/sales", icon: Receipt, label: t("salesHistory") },
-        ],
-      },
-      {
-        title: t("systemAndCore"),
-        links: [
-          { to: "/support", icon: LifeBuoy, label: t("supportPortal") },
-          { to: "/reports", icon: FileBarChart, label: t("reports") },
-          { to: "/chat", icon: MessageCircle, label: t("liveTeamChat") },
-          { to: "/settings", icon: Settings, label: t("settings") },
-          { to: "/settings/locations", icon: Building2, label: t("locationManagement") },
-        ],
-      },
-    ];
-
-  // Debugging user roles
-  React.useEffect(() => {
-    if (user) {
-      console.log("Current User Roles:", user.roles);
-    }
-  }, [user]);
-
-  const isAdmin =
-    Array.isArray(user?.roles) &&
-    user.roles.some((role: any) => {
-      const roleName = (
-        typeof role === "string" ? role : role?.name || ""
-      ).toUpperCase();
-      return roleName.includes("ADMIN");
-    });
-
-  if (isAdmin) {
-    navSections[2].links.push({
-      to: "/admin",
-      icon: Shield,
-      label: t("administration"),
-    });
-  }
-
   return (
     <div
-      className={`flex h-screen bg-[#f4f5f9] dark:bg-[#080c14] transition-colors overflow-hidden ${sidebarPosition === "right" ? "flex-row-reverse" : ""}`}
+      className={`flex h-screen bg-[#f4f5f9] dark:bg-[#080c14] transition-colors overflow-hidden ${sidebarPosition === "right" ? "flex-row-reverse" : ""
+        }`}
     >
       {/* Mobile Backdrop */}
       {isMenuOpen && (
@@ -325,164 +236,38 @@ const Layout = ({ children, title }: LayoutProps) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0 border-l" : "left-0 border-r"} z-40 ${getSidebarBgClass()} transform transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMenuOpen ? "translate-x-0" : sidebarPosition === "right" ? "translate-x-full" : "-translate-x-full"} ${isSidebarCollapsed ? "w-20" : "w-64"} flex flex-col`}
+        className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0 border-l" : "left-0 border-r"
+          } z-40 ${getSidebarBgClass()} transform transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMenuOpen
+            ? "translate-x-0"
+            : sidebarPosition === "right"
+              ? "translate-x-full"
+              : "-translate-x-full"
+          } ${isSidebarCollapsed ? "w-20" : "w-64"} flex flex-col`}
       >
-        <div
-          className={`px-5 py-5 flex items-center ${isSidebarCollapsed ? "justify-center" : "justify-between"} border-b border-gray-100 dark:border-gray-800/60 mb-2`}
-        >
-          {!isSidebarCollapsed && (
-            <div className="flex items-center gap-3 group cursor-pointer">
-              <div className="relative p-0.5 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_15px_rgba(99,102,241,0.25)] group-hover:shadow-[0_0_25px_rgba(168,85,247,0.45)] transition-all duration-300 transform group-hover:scale-105">
-                <div className="w-10 h-10 rounded-[14px] bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden">
-                  {appLogo ? (
-                    <img
-                      src={appLogo}
-                      alt="Logo"
-                      className="w-full h-full object-cover rounded-[14px]"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 flex items-center justify-center text-white">
-                      <Shield size={20} className="drop-shadow" />
-                    </div>
-                  )}
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-900 ring-2 ring-emerald-400/30 animate-pulse" />
-              </div>
+        <SidebarBrandHeader
+          isSidebarCollapsed={isSidebarCollapsed}
+          sidebarTheme={sidebarTheme}
+          sidebarPosition={sidebarPosition}
+          appLogo={appLogo}
+          setIsMenuOpen={setIsMenuOpen}
+        />
 
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className={`font-black text-lg tracking-tight leading-none ${
-                      sidebarTheme === "brand"
-                        ? "text-white"
-                        : "text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 dark:from-indigo-400 dark:via-purple-300 dark:to-cyan-300"
-                    }`}
-                  >
-                    MTP
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded-full text-[8px] font-black tracking-wider uppercase bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                    PRO
-                  </span>
-                </div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-400 leading-none mt-1 flex items-center gap-1">
-                  PLATFORM <span className="w-1 h-1 rounded-full bg-emerald-400"></span> ECOSYSTEM
-                </span>
-              </div>
-            </div>
-          )}
-          {isSidebarCollapsed && (
-            <div className="relative p-0.5 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_15px_rgba(99,102,241,0.25)] hover:scale-110 transition-transform duration-300 cursor-pointer" title="MTP System">
-              <div className="w-10 h-10 rounded-[14px] bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden">
-                {appLogo ? (
-                  <img
-                    src={appLogo}
-                    alt="Logo"
-                    className="w-full h-full object-cover rounded-[14px]"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 flex items-center justify-center text-white">
-                    <Shield size={20} />
-                  </div>
-                )}
-              </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-            </div>
-          )}
-          <button
-            className={`lg:hidden ${sidebarTheme === "brand" ? "text-white" : "dark:text-white"} ${isSidebarCollapsed ? "hidden" : ""}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            <LogOut
-              size={20}
-              className={sidebarPosition === "right" ? "" : "rotate-180"}
-            />
-          </button>
-        </div>
+        <SidebarNav
+          navSections={navSections}
+          isSidebarCollapsed={isSidebarCollapsed}
+          expandedSections={expandedSections}
+          toggleSection={toggleSection}
+          isActive={isActive}
+          setIsMenuOpen={setIsMenuOpen}
+          sidebarRef={sidebarRef}
+        />
 
-        <nav
-          ref={sidebarRef}
-          className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto custom-scrollbar"
-        >
-          {navSections.map((section) => {
-            const isExpanded = expandedSections[section.title] !== false; // Default to expanded
-            return (
-              <div key={section.title} className="space-y-1 mb-2">
-                {!isSidebarCollapsed && (
-                  <button
-                    onClick={() => toggleSection(section.title)}
-                    className="w-full flex items-center justify-between px-3 mb-1 mt-5 group outline-none cursor-pointer"
-                  >
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400/70 dark:text-white/25 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
-                      {section.title}
-                    </span>
-                    <ChevronDown
-                      size={12}
-                      className={`text-gray-400/50 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-transform duration-300 ${!isExpanded ? "-rotate-90" : ""
-                        }`}
-                    />
-                  </button>
-                )}
-                {isSidebarCollapsed && <div className="h-4"></div>}
-
-                <div className={`space-y-1 overflow-hidden transition-all duration-300 ${!isExpanded && !isSidebarCollapsed ? "max-h-0 opacity-0" : "max-h-[1000px] opacity-100"}`}>
-                  {section.links.map((link) => {
-                    const active = isActive(link.to);
-                    return (
-                      <div key={link.to} className="flex flex-col">
-                        <Link
-                          to={link.to}
-                          title={isSidebarCollapsed ? link.label : undefined}
-                          onClick={() => setIsMenuOpen(false)}
-                          className={`relative flex items-center ${isSidebarCollapsed ? "justify-center p-3" : "px-3 py-2"} rounded-xl transition-all duration-200 group ${active ? "font-bold shadow-sm" : "text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50/50 dark:hover:bg-white/[0.02]"}`}
-                        >
-                          {active && (
-                            <motion.div
-                              layoutId="active-sidebar-item"
-                              className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-500/20 to-violet-500/20 dark:from-indigo-500/30 dark:to-violet-500/30 shadow-inner"
-                              initial={false}
-                              transition={{
-                                type: "spring",
-                                stiffness: 380,
-                                damping: 35,
-                              }}
-                            />
-                          )}
-                          <div className={`relative z-10 flex items-center gap-3`}>
-                            <link.icon size={isSidebarCollapsed ? 20 : 16} className={active ? "text-indigo-600 dark:text-indigo-400" : "group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"} />
-                            {!isSidebarCollapsed && (
-                              <span className={`text-[11.5px] font-semibold tracking-tight ${active ? "text-indigo-700 dark:text-indigo-300 font-extrabold" : "transition-colors"}`}>
-                                {link.label}
-                              </span>
-                            )}
-                          </div>
-                        </Link>
-                        {link.subLinks && !isSidebarCollapsed && (
-                          <div className="ml-10 mt-1 flex flex-col space-y-1">
-                            {link.subLinks.map((subLink: any) => (
-                              <Link
-                                key={subLink.to}
-                                to={subLink.to}
-                                onClick={() => setIsMenuOpen(false)}
-                                className="text-xs text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 py-1"
-                              >
-                                {subLink.label}
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </nav>
-
+        {/* Sidebar Footer Controls */}
         <div className="p-4 border-t border-gray-100 dark:border-white/[0.04] flex flex-col gap-2 shrink-0">
           <button
             onClick={toggleSidebar}
-            className={`flex items-center hover:bg-indigo-50 dark:hover:bg-white/[0.04] rounded-xl transition-all text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 ${isSidebarCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2"}`}
+            className={`flex items-center hover:bg-indigo-50 dark:hover:bg-white/[0.04] rounded-xl transition-all text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 ${isSidebarCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2"
+              }`}
             title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isSidebarCollapsed ? (
@@ -495,7 +280,8 @@ const Layout = ({ children, title }: LayoutProps) => {
             )}
           </button>
           <div
-            className={`flex items-center ${isSidebarCollapsed ? "justify-center p-2" : "gap-2.5 px-3 py-2"} bg-emerald-50/60 dark:bg-emerald-500/[0.06] rounded-xl border border-emerald-200/60 dark:border-emerald-500/10`}
+            className={`flex items-center ${isSidebarCollapsed ? "justify-center p-2" : "gap-2.5 px-3 py-2"
+              } bg-emerald-50/60 dark:bg-emerald-500/[0.06] rounded-xl border border-emerald-200/60 dark:border-emerald-500/10`}
             title={isSidebarCollapsed ? "System Operational" : undefined}
           >
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
@@ -520,11 +306,9 @@ const Layout = ({ children, title }: LayoutProps) => {
             >
               <LayoutDashboard size={24} />
             </button>
-            {/* Title removed per user request */}
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Tenant switcher dropdown removed per user request */}
             <button
               onClick={() => setIsNetworkOpen(true)}
               className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-white/[0.05] rounded-xl transition-all relative"
@@ -532,102 +316,26 @@ const Layout = ({ children, title }: LayoutProps) => {
             >
               <Users size={18} />
             </button>
-            <Dropdown
-              arrowIcon={false}
-              inline
-              label={
-                <div
-                  className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-white/[0.05] rounded-xl transition-all relative cursor-pointer"
-                  title="Notifications"
-                >
-                  <Bell size={18} />
-                  {unreadCount > 0 ? (
-                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-md ring-2 ring-white dark:ring-[#0d1117]">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </span>
-                  ) : (
-                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-200 dark:bg-white/[0.1] text-gray-500 dark:text-gray-400 text-[9px] font-bold shadow-md ring-2 ring-white dark:ring-[#0d1117]">
-                      0
-                    </span>
-                  )}
-                </div>
-              }
-            >
-              <DropdownHeader className="px-4 py-3 bg-gray-50/50 dark:bg-white/[0.02] border-b border-gray-100 dark:border-white/[0.05]">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-black text-gray-800 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                    <Bell size={14} className="text-indigo-500" />
-                    Notifications
-                  </span>
-                  {unreadCount > 0 && (
-                    <span className="text-[9px] font-bold bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                      {unreadCount} New
-                    </span>
-                  )}
-                </div>
-              </DropdownHeader>
-              <div className="max-h-[400px] overflow-y-auto custom-scrollbar w-80">
-                {notifications.length === 0 ? (
-                  <div className="px-6 py-10 flex flex-col items-center justify-center text-center gap-4 bg-white dark:bg-[#0d1117] animate-fade-in-up">
-                    <div className="relative group cursor-default">
-                      <div className="absolute inset-0 bg-indigo-500/20 dark:bg-indigo-500/10 rounded-full animate-ping [animation-duration:3s]" />
-                      <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 flex items-center justify-center shadow-inner shadow-indigo-100 dark:shadow-indigo-900/20 transform transition-transform group-hover:scale-110 group-hover:-rotate-3 duration-500">
-                        <Inbox size={26} strokeWidth={1.5} className="text-indigo-500 dark:text-indigo-400" />
-                        <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_8px_rgba(129,140,248,0.8)]" />
-                        <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse [animation-delay:500ms] shadow-[0_0_8px_rgba(167,139,250,0.8)]" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-black bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent uppercase tracking-[0.2em] mt-2">
-                        All caught up!
-                      </p>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium px-4 leading-relaxed">
-                        Your inbox is clear. New alerts will magically appear here when they arrive.
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  notifications.map((n) => (
-                    <DropdownItem
-                      key={n.id}
-                      onClick={() => {
-                        if (!n.read) markAsRead(n.id);
-                      }}
-                      className={`px-4 py-3 border-b border-gray-50 dark:border-white/[0.02] last:border-0 hover:bg-indigo-50/50 dark:hover:bg-white/[0.04] transition-colors ${!n.read ? "bg-blue-50/30 dark:bg-blue-900/10" : ""}`}
-                    >
-                      <div className="flex gap-3 w-full">
-                        <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${!n.read ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" : "bg-transparent"}`} />
-                        <div className={`flex flex-col gap-1 w-full text-left ${!n.read ? "opacity-100" : "opacity-60 hover:opacity-100 transition-opacity"}`}>
-                          <div className="flex justify-between items-start gap-2">
-                            <span className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">
-                              {n.title}
-                            </span>
-                            <span className="text-[9px] font-bold text-indigo-500 shrink-0 uppercase tracking-wider">
-                              {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
-                          <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
-                            {n.message}
-                          </p>
-                        </div>
-                      </div>
-                    </DropdownItem>
-                  ))
-                )}
-              </div>
-            </Dropdown>
+
+            <NotificationDropdownMenu
+              notifications={notifications}
+              unreadCount={unreadCount}
+              markAsRead={markAsRead}
+            />
 
             <UserProfileDropdown
               user={user}
-              theme={theme}
-              setTheme={setTheme}
+              theme={isDark ? "dark" : "light"}
+              setTheme={() => { }}
               handleLogout={handleLogout}
             />
           </div>
         </header>
+
         <div className="flex-1 overflow-y-auto bg-[#f4f5f9] dark:bg-[#080c14] p-4 lg:p-6">
           {children}
         </div>
+
         <Chat />
         <NetworkDrawer
           isOpen={isNetworkOpen}

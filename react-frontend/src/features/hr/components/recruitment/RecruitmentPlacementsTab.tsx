@@ -99,20 +99,16 @@ const RecruitmentPlacementsTab: React.FC<RecruitmentPlacementsTabProps> = ({
           </Table>
         </div>
       </div>
-      {filteredPlacements.length > placementsPerPage && (
-        <div className="mt-8">
-          <ModernPagination
-            currentPage={placementPage}
-            totalPages={Math.ceil(
-              filteredPlacements.length / placementsPerPage
-            )}
-            onPageChange={setPlacementPage}
-            totalItems={filteredPlacements.length}
-            pageSize={placementsPerPage}
-            onPageSizeChange={() => {}}
-          />
-        </div>
-      )}
+      <div className="mt-8">
+        <ModernPagination
+          currentPage={placementPage}
+          totalPages={Math.max(1, Math.ceil(filteredPlacements.length / placementsPerPage))}
+          onPageChange={setPlacementPage}
+          totalItems={filteredPlacements.length}
+          pageSize={placementsPerPage}
+          onPageSizeChange={() => {}}
+        />
+      </div>
     </motion.div>
   );
 };

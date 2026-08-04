@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +34,7 @@ public class LocationController {
     // --- Locations ---
 
     @GetMapping
+    @Cacheable(value = "locations", key = "'all'")
     public List<Location> getAllLocations() {
         // Auto-discover services from Eureka
         List<String> services = discoveryClient.getServices();
@@ -72,6 +76,7 @@ public class LocationController {
     }
 
     @PostMapping
+    @CacheEvict(value = "locations", allEntries = true)
     public Location createLocation(@RequestBody Location location) {
         return locationRepository.save(location);
     }

@@ -69,39 +69,84 @@ const LocationItemLedger: React.FC<LocationItemLedgerProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y text-xs">
-                {locationItems.map((itemLoc: any) => (
-                  <TableRow key={itemLoc.id}>
-                    <TableCell className="font-black dark:text-white">
-                      {itemLoc.inventoryItem?.name}
-                      <span className="block text-[9px] text-gray-400 uppercase">{itemLoc.inventoryItem?.sku || "NO-SKU"}</span>
-                    </TableCell>
-                    <TableCell>{itemLoc.inventoryItem?.category?.name || "General"}</TableCell>
-                    <TableCell className="font-mono text-gray-500">${(itemLoc.inventoryItem?.price || 0).toFixed(2)}</TableCell>
-                    <TableCell>
-                      <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                        {itemLoc.quantity} {itemLoc.inventoryItem?.unit}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className={`text-[9px] font-bold uppercase px-2 py-1 rounded-full ${itemLoc.quantity > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                        {itemLoc.quantity > 0 ? "In Stock" : "Depleted"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onConsumeItem(itemLoc)}><MinusCircle className="mr-2 h-4 w-4" /> Consume / Use</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onAdjustItem(itemLoc)}><Settings2 className="mr-2 h-4 w-4" /> Adjust Stock</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600" onClick={() => onRemoveItem(itemLoc)}><Trash2 className="mr-2 h-4 w-4" /> Remove</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {locationItems.map((itemLoc: any) => {
+                  const itemId = itemLoc.inventoryItem?.id ?? itemLoc.inventoryItemId ?? itemLoc.itemId ?? itemLoc.id;
+                  const itemName = itemLoc.inventoryItem?.name || itemLoc.name || "Item #" + itemId;
+                  const itemSku = itemLoc.inventoryItem?.sku || itemLoc.sku || "NO-SKU";
+                  const itemCategory = itemLoc.inventoryItem?.category?.name || itemLoc.category || "General";
+                  const itemPrice = itemLoc.inventoryItem?.price ?? itemLoc.price ?? 0;
+                  const itemUnit = itemLoc.inventoryItem?.unit || itemLoc.unit || "units";
+                  const isAvailable = (itemLoc.quantity || 0) > 0;
+
+                  return (
+                    <TableRow key={itemLoc.id || itemId} className="hover:bg-gray-50/80 dark:hover:bg-gray-700/50 transition-colors">
+                      <TableCell className="font-bold text-gray-900 dark:text-white">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                          <div>
+                            <div>{itemName}</div>
+                            <span className="text-[10px] text-gray-400 font-mono font-normal uppercase">{itemSku}</span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-600 dark:text-gray-300">{itemCategory}</TableCell>
+                      <TableCell className="font-mono text-gray-600 dark:text-gray-300">${itemPrice.toFixed(2)}</TableCell>
+                      <TableCell>
+                        <span className="inline-flex items-center gap-1 font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/40 border border-blue-200/60 dark:border-blue-800 px-2.5 py-1 rounded-md text-xs">
+                          {itemLoc.quantity} <span className="text-[10px] font-normal opacity-70">{itemUnit}</span>
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${
+                          isAvailable
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                            : "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800"
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${isAvailable ? "bg-emerald-500" : "bg-rose-500"}`} />
+                          {isAvailable ? "In Stock" : "Depleted"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48 shadow-xl rounded-xl border border-gray-100 dark:border-gray-800">
+                            {onOpenTransferModal && (
+                              <DropdownMenuItem
+                                onClick={() => onOpenTransferModal(selectedLocation.toString(), itemId)}
+                                className="cursor-pointer font-medium text-xs flex items-center gap-2 py-2"
+                              >
+                                <ArrowRightLeft className="h-4 w-4 text-blue-500" /> Transfer / Move
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              onClick={() => onConsumeItem(itemLoc)}
+                              className="cursor-pointer font-medium text-xs flex items-center gap-2 py-2 text-amber-700 dark:text-amber-400"
+                            >
+                              <MinusCircle className="h-4 w-4 text-amber-500" /> Consume / Use
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => onAdjustItem(itemLoc)}
+                              className="cursor-pointer font-medium text-xs flex items-center gap-2 py-2 text-indigo-700 dark:text-indigo-400"
+                            >
+                              <Settings2 className="h-4 w-4 text-indigo-500" /> Adjust Stock
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="cursor-pointer font-medium text-xs flex items-center gap-2 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                              onClick={() => onRemoveItem(itemLoc)}
+                            >
+                              <Trash2 className="h-4 w-4 text-rose-500" /> Remove from Node
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

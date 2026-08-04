@@ -1,5 +1,5 @@
 import React from "react";
-import { User, getAvatarStyle, getInitials, formatFullName } from "./UserAvatarHelper";
+import { User, getAvatarStyle, getInitials, formatFullName, getUserAvatarUrl, DEFAULT_USER_AVATAR } from "./UserAvatarHelper";
 import { Badge, Checkbox } from "@/lib/flowbite-compat";
 import { Key, Eye, EyeOff, Camera, RefreshCw, MoreVertical, Edit } from "lucide-react";
 
@@ -41,21 +41,15 @@ export const UserTableRow: React.FC<UserTableRowProps> = ({
         <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
           <div className="flex items-center gap-3">
             <div className="relative">
-              {user.avatarUrl ? (
-                <img
-                  src={user.avatarUrl}
-                  alt={user.userName}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-500/20"
-                />
-              ) : (
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs shadow-sm ring-2 ${getAvatarStyle(
-                    user.id || user.userName
-                  )}`}
-                >
-                  {getInitials(user)}
-                </div>
-              )}
+              <img
+                src={getUserAvatarUrl(user)}
+                alt={user.userName}
+                className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/20 shadow-sm"
+                onError={(e: any) => {
+                  e.target.onerror = null;
+                  e.target.src = DEFAULT_USER_AVATAR;
+                }}
+              />
               <span
                 className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${
                   user.isActive ? "bg-emerald-500" : "bg-gray-400"

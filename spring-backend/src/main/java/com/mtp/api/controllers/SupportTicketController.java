@@ -54,11 +54,21 @@ public class SupportTicketController {
     @PutMapping("/{id}")
     public ResponseEntity<SupportTicket> update(@PathVariable Long id, @RequestBody SupportTicket updatedTicket) {
         return ticketRepository.findById(id).map(ticket -> {
-            ticket.setTitle(updatedTicket.getTitle());
-            ticket.setDescription(updatedTicket.getDescription());
-            ticket.setPriority(updatedTicket.getPriority());
-            ticket.setCategory(updatedTicket.getCategory());
-            ticket.setStatus(updatedTicket.getStatus());
+            if (updatedTicket.getTitle() != null && !updatedTicket.getTitle().trim().isEmpty()) {
+                ticket.setTitle(updatedTicket.getTitle());
+            }
+            if (updatedTicket.getDescription() != null) {
+                ticket.setDescription(updatedTicket.getDescription());
+            }
+            if (updatedTicket.getPriority() != null) {
+                ticket.setPriority(updatedTicket.getPriority());
+            }
+            if (updatedTicket.getCategory() != null) {
+                ticket.setCategory(updatedTicket.getCategory());
+            }
+            if (updatedTicket.getStatus() != null && !updatedTicket.getStatus().trim().isEmpty()) {
+                ticket.setStatus(updatedTicket.getStatus());
+            }
             return ResponseEntity.ok(ticketRepository.save(ticket));
         }).orElse(ResponseEntity.notFound().build());
     }

@@ -1,38 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell } from '@/lib/flowbite-compat';
-import { Award, CheckCircle, Calendar } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { format } from "date-fns";
+import ModernPagination from "@/components/common/ModernPagination";
 
 interface TrainingCertificatesTabProps {
   certificates: any[];
 }
 
-const TrainingCertificatesTab: React.FC<TrainingCertificatesTabProps> = ({ certificates }) => {
+const TrainingCertificatesTab: React.FC<TrainingCertificatesTabProps> = ({ certificates = [] }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const safeCertificates = Array.isArray(certificates) ? certificates : [];
+  const totalItems = safeCertificates.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const paginatedCerts = safeCertificates.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <h4 className="font-black text-sm uppercase dark:text-white">Certified Personnel Ledger</h4>
         <p className="text-[10px] text-gray-400 font-bold uppercase">Verified employee certifications and skill accreditations</p>
       </div>
 
-      <div className="border-none shadow-sm dark:bg-gray-800 rounded-md overflow-hidden bg-white">
+      <div className="border border-gray-100 dark:border-gray-800 shadow-sm dark:bg-gray-800 rounded-2xl overflow-hidden bg-white">
         <Table hoverable className="w-full">
           <TableHead className="bg-gray-50 dark:bg-gray-700">
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Employee</TableHeadCell>
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Course Title</TableHeadCell>
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Issue Date</TableHeadCell>
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Certificate Code</TableHeadCell>
-            <TableHeadCell className="py-3 px-4 text-[10px] uppercase">Status</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Employee</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Course Title</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Issue Date</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Certificate Code</TableHeadCell>
+            <TableHeadCell className="py-3.5 px-4 text-[10px] uppercase">Status</TableHeadCell>
           </TableHead>
           <TableBody className="divide-y dark:divide-gray-700">
-            {certificates.length === 0 ? (
+            {paginatedCerts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-xs font-bold text-gray-400 uppercase">
+                <TableCell colSpan={5} className="text-center py-10 text-xs font-bold text-gray-400 uppercase tracking-widest">
                   No certification records found
                 </TableCell>
               </TableRow>
             ) : (
-              certificates.map((cert, idx) => (
+              paginatedCerts.map((cert, idx) => (
                 <TableRow key={cert.id || idx} className="bg-white dark:bg-gray-800 hover:bg-gray-50">
                   <TableCell className="px-4 py-3 font-bold text-xs uppercase">{cert.employeeName || "Employee"}</TableCell>
                   <TableCell className="px-4 py-3 text-xs text-blue-600 font-bold">{cert.courseTitle || "Course"}</TableCell>
@@ -49,6 +58,18 @@ const TrainingCertificatesTab: React.FC<TrainingCertificatesTabProps> = ({ certi
           </TableBody>
         </Table>
       </div>
+
+      <ModernPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 };

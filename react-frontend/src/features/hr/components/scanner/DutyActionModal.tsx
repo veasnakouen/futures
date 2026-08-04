@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Zap,
   Coffee,
@@ -47,7 +48,7 @@ export default function DutyActionModal({
   location,
   nearestBranch,
 }: DutyActionModalProps) {
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
   const [breakDuration, setBreakDuration] = useState<number>(60);
   const [emergencyWard, setEmergencyWard] = useState<string>("ER / Trauma Unit");
@@ -89,8 +90,8 @@ export default function DutyActionModal({
     });
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/80 backdrop-blur-md animate-fade-in">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
       <div className="bg-white dark:bg-gray-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-800 space-y-6 relative overflow-hidden">
         {/* Top Accent Gradient Bar */}
         <div
@@ -332,6 +333,7 @@ export default function DutyActionModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

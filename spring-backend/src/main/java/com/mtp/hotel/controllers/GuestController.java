@@ -28,10 +28,15 @@ public class GuestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GuestQueryResultDto> getById(@PathVariable Integer id) {
-        return getByIdHandler.handle(new GetGuestByIdQuery(id))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<GuestQueryResultDto> getById(@PathVariable String id) {
+        try {
+            Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
+            return getByIdHandler.handle(new GetGuestByIdQuery(numericId))
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
@@ -40,10 +45,15 @@ public class GuestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GuestQueryResultDto> update(@PathVariable Integer id, @Valid @RequestBody UpdateGuestCommand command) {
-        command.setId(id);
-        return updateHandler.handle(command)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<GuestQueryResultDto> update(@PathVariable String id, @Valid @RequestBody UpdateGuestCommand command) {
+        try {
+            Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
+            command.setId(numericId);
+            return updateHandler.handle(command)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

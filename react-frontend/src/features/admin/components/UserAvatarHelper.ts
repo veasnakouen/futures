@@ -58,3 +58,12 @@ export const formatFullName = (u: User) => {
   }
   return `${first} ${last}`.trim() || u.userName;
 };
+
+export const DEFAULT_USER_AVATAR = "/default.png";
+
+export const getUserAvatarUrl = (u: User): string => {
+  if (u.avatarUrl && u.avatarUrl.trim().length > 0) {
+    return u.avatarUrl;
+  }
+  return DEFAULT_USER_AVATAR;
+};

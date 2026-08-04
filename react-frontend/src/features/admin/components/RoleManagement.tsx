@@ -58,13 +58,17 @@ const RoleManagement = () => {
   const itemsPerPage = 6;
 
   const RESOURCES = [
-    "Dashboard",
     "Users",
-    "Clients",
+    "Roles",
+    "Cases",
     "Inventory",
+    "HR",
+    "School",
+    "Clinic",
+    "Billing",
+    "Hotel",
+    "POS",
     "Reports",
-    "Support",
-    "Finance",
     "System",
   ];
   const ACTIONS = ["READ", "CREATE", "UPDATE", "DELETE", "EXPORT", "ADMIN"];
@@ -86,10 +90,13 @@ const RoleManagement = () => {
       console.warn("Failed to fetch roles/permissions from backend, using fallback layer", e);
       if (roles.length === 0) {
         setRoles([
-          { id: "1", name: "SUPER_ADMIN", description: "Full system control", permissions: ["READ", "WRITE", "DELETE", "ADMIN"] },
-          { id: "2", name: "ADMIN", description: "Administrative access", permissions: ["READ", "WRITE"] },
-          { id: "3", name: "MANAGER", description: "Operational manager access", permissions: ["READ", "UPDATE"] },
-          { id: "4", name: "USER", description: "Standard user access", permissions: ["READ"] },
+          { id: "1", name: "SUPERADMIN", description: "Platform-wide root access across all services & tenants", permissions: ["SYSTEM_CONFIG", "USER_WRITE", "ROLE_MANAGE", "CASES_WRITE", "INVENTORY_WRITE", "CLINIC_WRITE", "BILLING_WRITE"] },
+          { id: "2", name: "ADMIN", description: "Administrative governance, user, and role management access", permissions: ["USER_READ", "USER_WRITE", "ROLE_MANAGE", "CASES_READ", "REPORTS_EXPORT"] },
+          { id: "3", name: "HR_ADMIN", description: "Workforce management, employee profiles, and leave approvals", permissions: ["HR_READ", "HR_WRITE", "USER_READ", "REPORTS_EXPORT"] },
+          { id: "4", name: "SCHOOL_ADMIN", description: "Academic administration, courses, departments, and students", permissions: ["SCHOOL_READ", "SCHOOL_WRITE", "REPORTS_EXPORT"] },
+          { id: "5", name: "CLINIC_ADMIN", description: "Clinical operations, medical records, doctors, and IPD wards", permissions: ["CLINIC_READ", "CLINIC_WRITE", "REPORTS_EXPORT"] },
+          { id: "6", name: "FINANCE_MANAGER", description: "Financial ledgers, invoices, and payment processing", permissions: ["BILLING_READ", "BILLING_WRITE", "REPORTS_EXPORT"] },
+          { id: "7", name: "USER", description: "Standard operational user role with assigned module access", permissions: ["USER_READ", "CASES_READ"] },
         ]);
       }
     } finally {
@@ -129,9 +136,26 @@ const RoleManagement = () => {
       setShowCreateRoleModal(false);
       setNewRole({ name: "" });
       setSelectedNewRolePerms([]);
-      fetchData();
+      fetchData(true);
     } catch (e: any) {
       toast.error("Failed to create role");
+    }
+  };
+
+  const handleCreatePermission = async () => {
+    if (!newPerm.name.trim()) return toast.error("Permission identifier is required");
+    try {
+      await api.post("/admin/permissions", {
+        name: newPerm.name.trim().toUpperCase(),
+        description: newPerm.description.trim(),
+        resource: newPerm.resource || "System",
+      });
+      toast.success("Permission created successfully");
+      setShowCreatePermModal(false);
+      setNewPerm({ name: "", description: "", resource: "" });
+      fetchData(true);
+    } catch (e: any) {
+      toast.error(e?.response?.data || "Failed to create permission");
     }
   };
 
@@ -167,11 +191,15 @@ const RoleManagement = () => {
             onChange={(val: any) => setSearchTerm(typeof val === "string" ? val : val?.target?.value || "")}
             placeholder={t("searchRoles") || "Search roles..."}
           />
+          <Button color="light" onClick={() => setShowCreatePermModal(true)} className="rounded-xl font-bold border-gray-200 dark:border-gray-700">
+            <BookmarkPlus size={18} className="mr-2 text-indigo-600 dark:text-indigo-400" />
+            <span>Add Permission</span>
+          </Button>
           <Button color="blue" onClick={() => setShowCreateRoleModal(true)} className="rounded-xl font-bold">
             <PlusCircle size={18} className="mr-2" />
             <span>{t("createRole")}</span>
           </Button>
-          <Button color="gray" onClick={fetchData} className="rounded-xl">
+          <Button color="gray" onClick={() => fetchData(true)} className="rounded-xl">
             <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
           </Button>
         </div>
@@ -257,6 +285,62 @@ const RoleManagement = () => {
           onSubmit={handleCreateRole}
           onClose={() => setShowCreateRoleModal(false)}
           submitText={t("createRole") || "Create Role"}
+        />
+      </Modal>
+
+      {/* Create Permission Modal */}
+      <Modal
+        show={showCreatePermModal}
+        onClose={() => setShowCreatePermModal(false)}
+        size="md"
+      >
+        <CustomModalHeader
+          title="Create Custom Permission"
+          onClose={() => setShowCreatePermModal(false)}
+        />
+        <ModalBody className="space-y-4">
+          <div>
+            <Label htmlFor="permName" value="Permission Identifier" />
+            <TextInput
+              id="permName"
+              value={newPerm.name}
+              onChange={(e) => setNewPerm({ ...newPerm, name: e.target.value })}
+              placeholder="e.g. INVENTORY_AUDIT_EXPORT"
+              required
+              className="mt-1 font-mono uppercase"
+            />
+          </div>
+          <div>
+            <Label htmlFor="permResource" value="Target Resource / Domain" />
+            <Select
+              id="permResource"
+              value={newPerm.resource}
+              onChange={(e) => setNewPerm({ ...newPerm, resource: e.target.value })}
+              className="mt-1"
+            >
+              <option value="">Select Domain Resource...</option>
+              {RESOURCES.map((res) => (
+                <option key={res} value={res}>
+                  {res}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="permDesc" value="Description" />
+            <TextInput
+              id="permDesc"
+              value={newPerm.description}
+              onChange={(e) => setNewPerm({ ...newPerm, description: e.target.value })}
+              placeholder="e.g. Allows auditing and exporting stock inventory records"
+              className="mt-1"
+            />
+          </div>
+        </ModalBody>
+        <CustomModalFooter
+          onSubmit={handleCreatePermission}
+          onClose={() => setShowCreatePermModal(false)}
+          submitText="Create Permission"
         />
       </Modal>
     </div>

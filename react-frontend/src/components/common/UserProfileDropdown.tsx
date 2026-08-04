@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, LogOut, ChevronDown } from "lucide-react";
 import { useNavigate } from "@/lib/react-router-compat";
-import { getFaceFocusedUrl } from "@/utils/cloudinary";
+import { getFaceFocusedUrl, getAvatarDataUrl } from "@/utils/cloudinary";
 
 import UserProfileHeaderCard from "./user-dropdown/UserProfileHeaderCard";
 import UserProfileThemeSwitcher from "./user-dropdown/UserProfileThemeSwitcher";
@@ -22,8 +22,13 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({
   handleLogout,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setImgError(false);
+  }, [user?.photo, user?.avatarUrl, user?.picture]);
 
   // Close on outside click
   useEffect(() => {
@@ -46,9 +51,24 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({
     ? "Administrator"
     : "Standard User";
 
-  const photoUrl = user?.photo
-    ? getFaceFocusedUrl(user.photo, 120)
-    : user?.avatarUrl || user?.picture || null;
+  const getPhotoUrl = () => {
+    const raw =
+      user?.photo ||
+      user?.avatarUrl ||
+      user?.picture ||
+      user?.profilePicture ||
+      user?.imageUrl ||
+      user?.photoUrl ||
+      user?.avatar ||
+      (typeof window !== "undefined" ? localStorage.getItem("user_profile_photo") || localStorage.getItem("user_avatar") : null);
+
+    if (raw && !imgError) return getFaceFocusedUrl(raw, 120);
+
+    const nameStr = user?.username || user?.email || "Superadmin User";
+    return getAvatarDataUrl(nameStr);
+  };
+
+  const photoUrl = getPhotoUrl();
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -60,17 +80,12 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({
         <div className="relative shrink-0">
           <div className="w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] aspect-square rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 p-[2px] shadow-md group-hover:scale-105 transition-transform duration-300">
             <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full overflow-hidden flex items-center justify-center">
-              {photoUrl ? (
-                <img
-                  src={photoUrl}
-                  alt={user?.username || "Avatar"}
-                  className="w-full h-full object-cover rounded-full"
-                />
-              ) : (
-                <span className="font-black text-xs bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent uppercase">
-                  {(user?.username || user?.email || "AD").slice(0, 2)}
-                </span>
-              )}
+              <img
+                src={photoUrl}
+                alt={user?.username || "Avatar"}
+                className="w-full h-full object-cover rounded-full"
+                onError={() => setImgError(true)}
+              />
             </div>
           </div>
           {/* Active Status Pulse Dot */}

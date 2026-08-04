@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/api";
 import { Button, TextInput, Label, Modal, ModalBody } from "@/lib/flowbite-compat";
-import { Plus, Trash2, Edit3, Settings } from "lucide-react";
+import { Plus, Trash2, Edit3, Settings, Wand2 } from "lucide-react";
 import toast from "react-hot-toast";
 import CustomModalHeader from "@/components/common/CustomModalHeader";
 import CustomModalFooter from "@/components/common/CustomModalFooter";
+import ConfirmModal from "@/components/common/ConfirmModal";
 
 interface AssetCategory {
   id: number;
@@ -21,55 +22,102 @@ export default function AssetCategorySettings() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<AssetCategory | null>(null);
-  const [formData, setFormData] = useState({ name: "", description: "", prefixCode: "", isActive: true, requiresExpiryDate: false, requiresSerialTracking: false });
+  const [categoryToDelete, setCategoryToDelete] = useState<AssetCategory | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    prefixCode: "",
+    isActive: true,
+    requiresExpiryDate: false,
+    requiresSerialTracking: false
+  });
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["inventory-categories"],
     queryFn: async () => {
       const response = await api.get("/stock/categories");
-      return response.data;
+      return response.data || [];
     },
+    staleTime: 5 * 60 * 1000,
+    placeholderData: (prev) => prev,
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => api.post("/stock/categories", data),
-    onSuccess: () => {
+    mutationFn: async (data: any) => {
+      const res = await api.post("/stock/categories", data);
+      return res.data;
+    },
+    onSuccess: (newCat: any) => {
+      if (newCat && newCat.id) {
+        queryClient.setQueryData<AssetCategory[]>(["inventory-categories"], (old = []) => [...old, newCat]);
+      }
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
       toast.success("Category created successfully");
       setIsModalOpen(false);
     },
-    onError: () => toast.error("Failed to create category"),
+    onError: (err: any) => {
+      const msg = err.response?.data?.message || (typeof err.response?.data === "string" ? err.response.data : null) || "Failed to create category";
+      toast.error(msg);
+    },
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => api.put(`/stock/categories/${id}`, data),
-    onSuccess: () => {
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const res = await api.put(`/stock/categories/${id}`, data);
+      return res.data;
+    },
+    onSuccess: (updatedCat: any, variables) => {
+      const itemToUpdate = updatedCat?.id ? updatedCat : { ...variables.data, id: variables.id };
+      queryClient.setQueryData<AssetCategory[]>(["inventory-categories"], (old = []) =>
+        old.map((cat) => (cat.id === variables.id ? { ...cat, ...itemToUpdate } : cat))
+      );
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
       toast.success("Category updated successfully");
       setIsModalOpen(false);
     },
-    onError: () => toast.error("Failed to update category"),
+    onError: (err: any) => {
+      const msg = err.response?.data?.message || (typeof err.response?.data === "string" ? err.response.data : null) || "Failed to update category";
+      toast.error(msg);
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => api.delete(`/stock/categories/${id}`),
-    onSuccess: () => {
+    mutationFn: async (id: number) => {
+      await api.delete(`/stock/categories/${id}`);
+      return id;
+    },
+    onSuccess: (deletedId: number) => {
+      queryClient.setQueryData<AssetCategory[]>(["inventory-categories"], (old = []) =>
+        old.filter((cat) => cat.id !== deletedId)
+      );
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
       toast.success("Category deleted successfully");
+      setCategoryToDelete(null);
     },
-    onError: () => toast.error("Failed to delete category"),
+    onError: (err: any) => {
+      const msg = err.response?.data?.message || (typeof err.response?.data === "string" ? err.response.data : null) || "Failed to delete category";
+      toast.error(msg);
+      setCategoryToDelete(null);
+    },
   });
 
   const openCreateModal = () => {
     setEditingCategory(null);
-    setFormData({ name: "", description: "", prefixCode: "", isActive: true, requiresExpiryDate: false, requiresSerialTracking: false });
+    setFormData({
+      name: "",
+      description: "",
+      prefixCode: "",
+      isActive: true,
+      requiresExpiryDate: false,
+      requiresSerialTracking: false
+    });
     setIsModalOpen(true);
   };
 
   const openEditModal = (cat: AssetCategory) => {
     setEditingCategory(cat);
     setFormData({ 
-      name: cat.name, 
+      name: cat.name || "", 
       description: cat.description || "",
       prefixCode: cat.prefixCode || "",
       isActive: cat.isActive !== false,
@@ -80,12 +128,36 @@ export default function AssetCategorySettings() {
   };
 
   const handleSubmit = () => {
-    if (!formData.name) return toast.error("Name is required");
+    const trimmedName = formData.name.trim();
+    if (!trimmedName) return toast.error("Category name is required");
+
+    const payload = {
+      name: trimmedName,
+      description: formData.description?.trim() ? formData.description.trim() : null,
+      prefixCode: formData.prefixCode?.trim() ? formData.prefixCode.trim().toUpperCase() : null,
+      isActive: formData.isActive,
+      requiresExpiryDate: formData.requiresExpiryDate,
+      requiresSerialTracking: formData.requiresSerialTracking,
+    };
+
     if (editingCategory) {
-      updateMutation.mutate({ id: editingCategory.id, data: formData });
+      updateMutation.mutate({ id: editingCategory.id, data: payload });
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(payload);
     }
+  };
+
+  const generateSmartPrefix = (name: string) => {
+    const cleanName = name.replace(/[^A-Za-z\s]/g, '').trim();
+    if (!cleanName) return "";
+    const words = cleanName.split(/\s+/);
+    if (words.length === 1) {
+      return words[0].substring(0, 4).toUpperCase();
+    }
+    if (words.length === 2) {
+      return (words[0].substring(0, 2) + words[1].substring(0, 2)).toUpperCase();
+    }
+    return words.map(w => w[0]).join('').substring(0, 4).toUpperCase();
   };
 
   return (
@@ -100,14 +172,15 @@ export default function AssetCategorySettings() {
             <p className="text-xs font-bold text-gray-500">Manage categories for inventory items</p>
           </div>
         </div>
-        <Button color="indigo" onClick={openCreateModal} className="rounded-md">
-          <Plus size={16} className="mr-2" /> New Category
+        <Button color="blue" onClick={openCreateModal} className="font-black uppercase tracking-widest text-[10px]">
+          <Plus size={14} className="mr-2" />
+          New Category
         </Button>
       </div>
 
       <div className="p-6">
         {isLoading ? (
-          <div className="animate-pulse space-y-4">
+          <div className="space-y-3 animate-pulse">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-16 bg-gray-100 dark:bg-gray-700 rounded-lg"></div>
             ))}
@@ -139,11 +212,11 @@ export default function AssetCategorySettings() {
                     </h4>
                   </div>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => openEditModal(cat)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-md transition-colors">
+                    <button onClick={() => openEditModal(cat)} className="p-1.5 text-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-md transition-colors" title="Edit Category">
                       <Edit3 size={14} />
                     </button>
                     {cat.isActive !== false && (
-                      <button onClick={() => deleteMutation.mutate(cat.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors">
+                      <button onClick={() => setCategoryToDelete(cat)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-gray-700 rounded-md transition-colors" title="Delete Category">
                         <Trash2 size={14} />
                       </button>
                     )}
@@ -162,31 +235,58 @@ export default function AssetCategorySettings() {
         )}
       </div>
 
-      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="md" dismissible={false}>
-        <CustomModalHeader
-          title={editingCategory ? "Edit Category" : "New Category"}
-          subtitle="System Settings"
-          onClose={() => setIsModalOpen(false)}
+      {/* CREATE/EDIT MODAL */}
+      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} size="md">
+        <CustomModalHeader 
+          title={editingCategory ? "Edit Category" : "New Category"} 
+          subtitle={editingCategory ? "Modify category details" : "Create a new asset group"}
+          onClose={() => setIsModalOpen(false)} 
         />
         <ModalBody className="p-6">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Category Name</Label>
+                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Category Name *</Label>
                 <TextInput
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    const newName = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      name: newName
+                    }));
+                  }}
                   placeholder="e.g. IT Equipment"
+                  required
                 />
               </div>
               <div>
                 <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">SKU Prefix (Optional)</Label>
-                <TextInput
-                  value={formData.prefixCode}
-                  onChange={(e) => setFormData({ ...formData, prefixCode: e.target.value })}
-                  placeholder="e.g. ELEC"
-                  maxLength={5}
-                />
+                <div className="flex gap-2">
+                  <TextInput
+                    value={formData.prefixCode}
+                    onChange={(e) => setFormData({ ...formData, prefixCode: e.target.value.toUpperCase() })}
+                    placeholder="e.g. ELECTRON"
+                    maxLength={10}
+                    className="flex-1"
+                  />
+                  <Button type="button" color="light" size="xs" onClick={() => {
+                    if (formData.name) {
+                       const autoPrefix = generateSmartPrefix(formData.name);
+                       setFormData({ ...formData, prefixCode: autoPrefix });
+                       toast.success("Prefix Generated");
+                    } else {
+                       toast.error("Please enter a Category Name first");
+                    }
+                  }} title="Auto-generate from Category Name">
+                    <Wand2 size={14} className="text-indigo-600" />
+                  </Button>
+                </div>
+                {formData.prefixCode && (
+                  <p className="mt-1.5 text-[9px] text-gray-400 font-semibold">
+                    Items in this category will be numbered as <span className="text-indigo-500 font-black">{formData.prefixCode}-00001</span>
+                  </p>
+                )}
               </div>
             </div>
             <div>
@@ -222,6 +322,23 @@ export default function AssetCategorySettings() {
           submitDisabled={createMutation.isPending || updateMutation.isPending}
         />
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!categoryToDelete}
+        title="Delete Asset Category"
+        message={`Are you sure you want to delete or deactivate the category "${categoryToDelete?.name}"? Items linked to this category may be affected.`}
+        confirmText="Yes, Delete Category"
+        cancelText="Cancel"
+        type="danger"
+        isLoading={deleteMutation.isPending}
+        onConfirm={() => {
+          if (categoryToDelete) {
+            deleteMutation.mutate(categoryToDelete.id);
+          }
+        }}
+        onClose={() => setCategoryToDelete(null)}
+      />
     </div>
   );
 }

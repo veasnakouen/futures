@@ -2,7 +2,6 @@ package com.mtp.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,15 +24,12 @@ public class User {
     @Column(name = "Id", length = 128, columnDefinition = "nvarchar(128)")
     private String id;
 
-    @NotNull
     @Size(max = 255)
     private String firstName;
 
-    @NotNull
     @Size(max = 255)
     private String lastName;
 
-    @NotNull
     @Size(max = 255)
     private String branch;
 
@@ -57,6 +53,7 @@ public class User {
     private String email;
     private String userName;
     private String passwordHash;
+
     @Column(name = "PasswordText")
     private String passwordText; // Stored for administrative reference (Security Risk)
     @Column(columnDefinition = "NVARCHAR(MAX)")

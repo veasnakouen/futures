@@ -88,7 +88,11 @@ const TransferStockModal: React.FC<TransferStockModalProps> = ({
     onSuccess: () => {
       toast.success("Stock moved successfully!");
       queryClient.invalidateQueries({ queryKey: ["inventory"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-items"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-summary"] });
       queryClient.invalidateQueries({ queryKey: ["location-items"] });
+      queryClient.invalidateQueries({ queryKey: ["locations-management"] });
+      queryClient.invalidateQueries({ queryKey: ["item-stock-distribution"] });
       onClose();
     },
     onError: (err: any) => {

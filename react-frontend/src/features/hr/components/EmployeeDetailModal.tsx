@@ -67,76 +67,79 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
         onClose={onClose}
       />
 
-      <ModalBody className="p-6 bg-white dark:bg-gray-900 space-y-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
-        {/* Top Header Card */}
-        <div className="p-5 bg-gradient-to-r from-gray-50 via-blue-50/30 to-indigo-50/20 dark:from-gray-800 dark:via-gray-800/80 dark:to-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700/80 shadow-sm flex flex-col md:flex-row items-center md:items-start gap-5">
-          <div className="relative shrink-0">
-            <img
-              src={photoUrl}
-              alt={`${fn} ${ln}`}
-              className="w-20 h-20 rounded-2xl object-cover border-4 border-white dark:border-gray-700 shadow-md"
-            />
-            <div className="absolute -bottom-1 -right-1 bg-emerald-500 border-2 border-white dark:border-gray-800 w-4 h-4 rounded-full shadow-sm"></div>
-          </div>
-
-          <div className="flex-1 text-center md:text-left space-y-1 min-w-0">
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-              <h3 className="font-black text-xl text-gray-900 dark:text-white uppercase tracking-tight">
-                {fn} {ln}
-              </h3>
-              <Badge color="info" className="text-[9px] font-black uppercase tracking-wider py-0.5 px-2.5">
-                {status}
-              </Badge>
-              <Badge color="gray" className="text-[9px] font-black uppercase tracking-wider py-0.5 px-2.5">
-                {gender}
-              </Badge>
+      <ModalBody className="p-6 bg-white dark:bg-gray-900 space-y-5 h-[560px] max-h-[80vh] overflow-y-auto custom-scrollbar flex flex-col justify-between">
+        <div className="space-y-5 flex-1 flex flex-col">
+          {/* Top Header Card */}
+          <div className="p-5 bg-gradient-to-r from-gray-50 via-blue-50/30 to-indigo-50/20 dark:from-gray-800 dark:via-gray-800/80 dark:to-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700/80 shadow-sm flex flex-col md:flex-row items-center md:items-start gap-5 shrink-0">
+            <div className="relative shrink-0">
+              <img
+                src={photoUrl}
+                alt={`${fn} ${ln}`}
+                className="w-20 h-20 rounded-2xl object-cover border-4 border-white dark:border-gray-700 shadow-md"
+              />
+              <div className="absolute -bottom-1 -right-1 bg-emerald-500 border-2 border-white dark:border-gray-800 w-4 h-4 rounded-full shadow-sm"></div>
             </div>
 
-            <p className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider truncate">
-              {pos} &bull; {dept}
-            </p>
+            <div className="flex-1 text-center md:text-left space-y-1 min-w-0">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                <h3 className="font-black text-xl text-gray-900 dark:text-white uppercase tracking-tight">
+                  {fn} {ln}
+                </h3>
+                <Badge color="info" className="text-[9px] font-black uppercase tracking-wider py-0.5 px-2.5">
+                  {status}
+                </Badge>
+                <Badge color="gray" className="text-[9px] font-black uppercase tracking-wider py-0.5 px-2.5">
+                  {gender}
+                </Badge>
+              </div>
 
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-[11px] text-gray-500 dark:text-gray-400 pt-1">
-              <span className="flex items-center gap-1 font-bold">
-                <Building size={13} className="text-indigo-500" /> {branch}
-              </span>
-              <span className="flex items-center gap-1 font-bold">
-                <Mail size={13} className="text-blue-500" /> {email}
-              </span>
-              <span className="flex items-center gap-1 font-mono font-bold">
-                <Phone size={13} className="text-emerald-500" /> {phone}
-              </span>
+              <p className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider truncate">
+                {pos} &bull; {dept}
+              </p>
+
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-[11px] text-gray-500 dark:text-gray-400 pt-1">
+                <span className="flex items-center gap-1 font-bold">
+                  <Building size={13} className="text-indigo-500" /> {branch}
+                </span>
+                <span className="flex items-center gap-1 font-bold">
+                  <Mail size={13} className="text-blue-500" /> {email}
+                </span>
+                <span className="flex items-center gap-1 font-mono font-bold">
+                  <Phone size={13} className="text-emerald-500" /> {phone}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Navigation Tabs Bar (Clean, non-clipping responsive design) */}
-        <div className="flex flex-wrap items-center gap-1.5 border-b border-gray-100 dark:border-gray-800 pb-3">
-          {[
-            { id: "OVERVIEW", label: "Overview", icon: <User size={13} /> },
-            { id: "EMPLOYMENT", label: "Employment", icon: <Briefcase size={13} /> },
-            { id: "FINANCIAL", label: "Financial", icon: <DollarSign size={13} /> },
-            { id: "EDUCATION", label: "Education", icon: <GraduationCap size={13} /> },
-            { id: "DOCUMENTS", label: "Documents", icon: <FileText size={13} /> },
-            { id: "JOBS", label: "Placements", icon: <Award size={13} /> },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-                activeTab === tab.id
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                  : "bg-gray-100/80 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-            >
-              {tab.icon} <span>{tab.label}</span>
-            </button>
-          ))}
-        </div>
+          {/* Navigation Tabs Bar (Clean, non-clipping responsive design) */}
+          <div className="flex flex-wrap items-center gap-1.5 border-b border-gray-100 dark:border-gray-800 pb-3 shrink-0">
+            {[
+              { id: "OVERVIEW", label: "Overview", icon: <User size={13} /> },
+              { id: "EMPLOYMENT", label: "Employment", icon: <Briefcase size={13} /> },
+              { id: "FINANCIAL", label: "Financial", icon: <DollarSign size={13} /> },
+              { id: "EDUCATION", label: "Education", icon: <GraduationCap size={13} /> },
+              { id: "DOCUMENTS", label: "Documents", icon: <FileText size={13} /> },
+              { id: "JOBS", label: "Placements", icon: <Award size={13} /> },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                  activeTab === tab.id
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                    : "bg-gray-100/80 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                {tab.icon} <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
 
-        {/* Tab 1: Profile Overview */}
-        {activeTab === "OVERVIEW" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+          {/* Dynamic Tab Body Container with fixed flex grow fill */}
+          <div className="flex-1 flex flex-col justify-start">
+            {/* Tab 1: Profile Overview */}
+            {activeTab === "OVERVIEW" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in my-auto">
             <div className="p-5 bg-gray-50/70 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-700/80 space-y-4">
               <h4 className="font-black text-xs uppercase tracking-widest text-gray-400 flex items-center gap-2">
                 <User size={14} className="text-blue-500" /> Personal Identity Details
@@ -383,7 +386,9 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
             </div>
           </div>
         )}
-      </ModalBody>
+      </div>
+    </div>
+  </ModalBody>
 
       <ModalFooter className="bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-800 justify-end">
         <Button color="gray" onClick={onClose} className="font-black uppercase text-[10px] px-8 h-10 rounded-xl">

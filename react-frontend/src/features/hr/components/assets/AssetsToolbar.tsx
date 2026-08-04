@@ -1,11 +1,11 @@
 import React from "react";
 import { Button } from "@/lib/flowbite-compat";
 import SearchInput from "@/components/common/SearchInput";
-import { LayoutGrid, List, Download, SlidersHorizontal, Plus } from "lucide-react";
+import { LayoutGrid, List, Download, SlidersHorizontal, Plus, Layers } from "lucide-react";
 
 interface AssetsToolbarProps {
-  viewMode: "GRID" | "TABLE";
-  setViewMode: (mode: "GRID" | "TABLE") => void;
+  viewMode: "ACCORDION" | "GRID" | "TABLE";
+  setViewMode: (mode: "ACCORDION" | "GRID" | "TABLE") => void;
   typeFilter: string;
   setTypeFilter: (type: string) => void;
   assetTypes: string[];
@@ -29,25 +29,38 @@ export const AssetsToolbar: React.FC<AssetsToolbarProps> = ({
   onOpenRegister,
 }) => {
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-white/50 dark:bg-gray-800/50 p-4 rounded-md shadow-sm border border-gray-100 dark:border-gray-700">
-      {/* View Switcher */}
-      <div className="relative flex shrink-0 bg-gray-100/80 dark:bg-gray-900/60 p-1 rounded-md w-24">
+    <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-white/50 dark:bg-gray-800/50 p-4 rounded-xl shadow-xs border border-gray-100 dark:border-gray-700">
+      {/* 3-Mode View Switcher */}
+      <div className="relative flex shrink-0 bg-gray-100/80 dark:bg-gray-900/60 p-1 rounded-xl w-36 shadow-inner">
+        <button
+          onClick={() => setViewMode("ACCORDION")}
+          title="Grouped Accordion View"
+          className={`flex-1 py-1.5 flex items-center justify-center rounded-lg transition-all cursor-pointer ${
+            viewMode === "ACCORDION"
+              ? "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm font-bold scale-100"
+              : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          }`}
+        >
+          <Layers size={16} />
+        </button>
         <button
           onClick={() => setViewMode("GRID")}
-          className={`flex-1 py-1.5 flex items-center justify-center rounded-md transition-all ${
+          title="Card Grid View"
+          className={`flex-1 py-1.5 flex items-center justify-center rounded-lg transition-all cursor-pointer ${
             viewMode === "GRID"
-              ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm font-bold"
-              : "text-gray-400 hover:text-gray-600"
+              ? "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm font-bold scale-100"
+              : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           }`}
         >
           <LayoutGrid size={16} />
         </button>
         <button
           onClick={() => setViewMode("TABLE")}
-          className={`flex-1 py-1.5 flex items-center justify-center rounded-md transition-all ${
+          title="Table / List View"
+          className={`flex-1 py-1.5 flex items-center justify-center rounded-lg transition-all cursor-pointer ${
             viewMode === "TABLE"
-              ? "bg-white dark:bg-gray-800 text-blue-600 shadow-sm font-bold"
-              : "text-gray-400 hover:text-gray-600"
+              ? "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm font-bold scale-100"
+              : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           }`}
         >
           <List size={16} />

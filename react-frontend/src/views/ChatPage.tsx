@@ -170,7 +170,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
     <>
       <div className="flex h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-gray-900 animate-fade-in">
         {/* Modern Sidebar */}
-        <div className="w-80 bg-gray-50 dark:bg-gray-900/50 flex flex-col border-r">
+        <div className="w-80 bg-gray-50 dark:bg-gray-900/50 flex flex-col border-r border-gray-100/80 dark:border-gray-800/40">
           {/* Sidebar Header */}
           <div className="p-6 pb-4">
             <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
@@ -199,10 +199,10 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
               </div>
               <button
                 onClick={() => switchChannel("public")}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeChannel ==="public"?"bg-blue-600 text-white shadow-md shadow-blue-500/20":"hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"}`}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeChannel === "public" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"}`}
               >
                 <div
-                  className={`p-2 rounded-lg ${activeChannel ==="public"?"bg-white/20":"bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"}`}
+                  className={`p-2 rounded-lg ${activeChannel === "public" ? "bg-white/20" : "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"}`}
                 >
                   <Hash size={16} />
                 </div>
@@ -226,17 +226,19 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
                     <button
                       key={idx}
                       onClick={() => switchChannel(onlineUser)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all group ${isActive ?"bg-white dark:bg-gray-800 shadow-sm ":"hover:bg-white/50 dark:hover:bg-gray-800/50 border-transparent"}`}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all group ${isActive ? "bg-white dark:bg-gray-800 shadow-sm " : "hover:bg-white/50 dark:hover:bg-gray-800/50 border-transparent"}`}
                     >
-                      <div className="relative">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-black shadow-inner">
-                          {onlineUser?.substring(0, 2).toUpperCase() || "U"}
-                        </div>
-                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full shadow-sm"></div>
+                      <div className="relative shrink-0">
+                        <img
+                          src="/default.png"
+                          alt={onlineUser}
+                          className="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-indigo-500/20"
+                        />
+                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full shadow-sm"></div>
                       </div>
                       <div className="flex-1 min-w-0 text-left">
                         <p
-                          className={`text-sm truncate ${isActive ?"font-black text-gray-900 dark:text-white":"font-bold text-gray-700 dark:text-gray-300"}`}
+                          className={`text-sm truncate ${isActive ? "font-black text-gray-900 dark:text-white" : "font-bold text-gray-700 dark:text-gray-300"}`}
                         >
                           {onlineUser}
                         </p>
@@ -246,7 +248,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
                       </div>
                       <MessageCircle
                         size={14}
-                        className={`${isActive ?"text-blue-500 opacity-100":"text-gray-300 opacity-0 group-hover:opacity-100"} transition-opacity`}
+                        className={`${isActive ? "text-blue-500 opacity-100" : "text-gray-300 opacity-0 group-hover:opacity-100"} transition-opacity`}
                       />
                     </button>
                   );
@@ -259,10 +261,10 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
         {/* Chat Area */}
         <div className="flex-1 flex flex-col bg-white dark:bg-gray-900 relative">
           {/* Header */}
-          <div className="h-[72px] px-6 border-b flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md absolute top-0 left-0 right-0 z-10">
+          <div className="h-[72px] px-6 border-b border-gray-100/80 dark:border-gray-800/40 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md absolute top-0 left-0 right-0 z-10">
             <div className="flex items-center gap-4">
               <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-inner ${activeChannel ==="public"?"bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/40 text-blue-600 dark:text-blue-400":"bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 text-purple-600 dark:text-purple-400"}`}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-inner ${activeChannel === "public" ? "bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/40 text-blue-600 dark:text-blue-400" : "bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 text-purple-600 dark:text-purple-400"}`}
               >
                 {activeChannel === "public" ? (
                   <Hash size={24} />
@@ -298,7 +300,7 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
               <button className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-full transition-all">
                 <Video size={18} />
               </button>
-              <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+              <div className="w-px h-5 bg-gray-200/50 dark:bg-gray-700/50 mx-1"></div>
               <button className="p-2.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all">
                 <Search size={18} />
               </button>
@@ -337,12 +339,14 @@ const ChatPage = ({ isDark, setIsDark }: any) => {
               return (
                 <div
                   key={idx}
-                  className={`flex gap-3 max-w-[80%] ${isMe ?"ml-auto flex-row-reverse":""} group animate-in fade-in slide-in-from-bottom-2 duration-300`}
+                  className={`flex gap-3 max-w-[80%] ${isMe ? "ml-auto flex-row-reverse" : ""} group animate-in fade-in slide-in-from-bottom-2 duration-300`}
                 >
                   {!isMe && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md shrink-0 mt-auto mb-1">
-                      {msg.sender?.substring(0, 2).toUpperCase() || "U"}
-                    </div>
+                    <img
+                      src="/default.png"
+                      alt={msg.sender}
+                      className="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-indigo-500/20 shrink-0 mt-auto mb-1"
+                    />
                   )}
 
                   <div

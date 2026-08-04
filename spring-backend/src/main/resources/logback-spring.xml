@@ -3,22 +3,54 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     
     <springProperty scope="context" name="springAppName" source="spring.application.name" defaultValue="spring-backend"/>
+    <springProperty scope="context" name="activeProfile" source="spring.profiles.active" defaultValue="default"/>
 
+    <!-- 1. Console Appender for Local Development -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>localhost:5000</destination>
+    <!-- 2. Local Rolling JSON File Appender -->
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${springAppName}.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/${springAppName}-%d{yyyy-MM-dd}.%i.json.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"app_name":"${springAppName}"}</customFields>
+            <customFields>{"app_name":"${springAppName}","env":"${activeProfile}"}</customFields>
         </encoder>
     </appender>
 
+    <!-- 3. Direct Logstash TCP Socket Appender -->
+    <appender name="LOGSTASH_TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>localhost:5000</destination>
+        <keepAliveDuration>5 minutes</keepAliveDuration>
+        <reconnectionDelay>10 seconds</reconnectionDelay>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app_name":"${springAppName}","env":"${activeProfile}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- 4. Async Non-Blocking Wrapper for Logstash -->
+    <appender name="ASYNC_LOGSTASH" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="LOGSTASH_TCP"/>
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+    </appender>
+
+    <!-- Logger Overrides -->
+    <logger name="com.mtp" level="DEBUG"/>
+    <logger name="org.springframework.web" level="INFO"/>
+    <logger name="org.hibernate" level="WARN"/>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="LOGSTASH"/>
+        <appender-ref ref="JSON_FILE"/>
+        <appender-ref ref="ASYNC_LOGSTASH"/>
     </root>
 </configuration>

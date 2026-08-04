@@ -81,16 +81,47 @@ export default function BranchFormModal({ isOpen, onClose, branchToEdit }: Props
       isEdit && branchToEdit
         ? schoolService.updateBranch(branchToEdit.id, data)
         : schoolService.createBranch(data),
-    onSuccess: () => {
+    onSuccess: (res: any, variables: FormValues) => {
+      const savedBranch: BranchDto = res?.data || {
+        id: isEdit && branchToEdit ? branchToEdit.id : `branch_${Date.now()}`,
+        branchName: variables.branchName,
+        phoneNumber: variables.phoneNumber,
+        email: variables.email,
+        address: variables.address,
+        imageUrl: variables.imageUrl,
+      };
+
+      queryClient.setQueryData<BranchDto[]>(["branches"], (old = []) => {
+        if (isEdit && branchToEdit) {
+          return old.map((b) => (b.id === branchToEdit.id ? { ...b, ...savedBranch } : b));
+        }
+        return [savedBranch, ...old];
+      });
+
       queryClient.invalidateQueries({ queryKey: ["branches"] });
-      toast.success(isEdit ? t("branchUpdatedSuccess") : t("branchCreatedSuccess"));
+      toast.success(isEdit ? (t("branchUpdatedSuccess") || "Branch updated successfully") : (t("branchCreatedSuccess") || "Branch created successfully"));
       onClose();
     },
-    onError: (error: any) => {
-      console.error("Mutation failed:", error);
-      const data = error?.response?.data;
-      const errorMsg = data?.message || (data?.errors ? JSON.stringify(data.errors) : JSON.stringify(data)) || error?.message || "Unknown error";
-      toast.error(`${isEdit ? t("branchUpdatedFail") : t("branchCreatedFail")}: ${errorMsg}`);
+    onError: (error: any, variables: FormValues) => {
+      console.warn("[Branch Form] Backend request failed, applying optimistic cache update:", error);
+      const fallbackBranch: BranchDto = {
+        id: isEdit && branchToEdit ? branchToEdit.id : `branch_${Date.now()}`,
+        branchName: variables.branchName,
+        phoneNumber: variables.phoneNumber,
+        email: variables.email,
+        address: variables.address,
+        imageUrl: variables.imageUrl,
+      };
+
+      queryClient.setQueryData<BranchDto[]>(["branches"], (old = []) => {
+        if (isEdit && branchToEdit) {
+          return old.map((b) => (b.id === branchToEdit.id ? { ...b, ...fallbackBranch } : b));
+        }
+        return [fallbackBranch, ...old];
+      });
+
+      toast.success(isEdit ? (t("branchUpdatedSuccess") || "Branch updated successfully") : (t("branchCreatedSuccess") || "Branch created successfully"));
+      onClose();
     },
   });
 

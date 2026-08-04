@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PosCatalogGrid, { CategoryFilter } from "../components/PosCatalogGrid";
-import CheckoutModal, { CustomerProfile } from "../components/CheckoutModal";
+import PosCartPanel from "../components/PosCartPanel";
+import CheckoutModal from "../components/CheckoutModal";
 import ProductFormModal from "../components/ProductFormModal";
 import { posService, PosProductDto } from "../../../services/posService";
 import { toast } from "react-hot-toast";
@@ -17,6 +18,8 @@ export default function PosDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [taxRate, setTaxRate] = useState<number>(0.10);
+  const [orderDiscount, setOrderDiscount] = useState<number>(0);
 
   useEffect(() => {
     loadProducts();
@@ -41,10 +44,32 @@ export default function PosDashboard() {
     });
   };
 
-  const totalAmount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const handleUpdateQuantity = (id: string, delta: number) => {
+    setCart((prev) =>
+      prev
+        .map((item) => {
+          if (item.product.id === id) {
+            const newQty = item.quantity + delta;
+            return newQty > 0 ? { ...item, quantity: newQty } : null;
+          }
+          return item;
+        })
+        .filter(Boolean) as CartItem[]
+    );
+  };
+
+  const handleClearCart = () => {
+    setCart([]);
+  };
+
+  const totalItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const discountedSubtotal = Math.max(0, subtotal - orderDiscount);
+  const taxAmount = discountedSubtotal * taxRate;
+  const finalTotal = discountedSubtotal + taxAmount;
 
   return (
-    <div className="flex h-screen bg-slate-100 dark:bg-slate-950 overflow-hidden">
+    <div className="flex h-screen bg-slate-100 dark:bg-slate-950 overflow-hidden border-none">
       {/* Main Catalog View */}
       <PosCatalogGrid
         products={products}
@@ -54,38 +79,26 @@ export default function PosDashboard() {
         onSearchChange={setSearchQuery}
         onAddToCart={handleAddToCart}
         onOpenCustomModal={() => setIsProductModalOpen(true)}
-        cashierName="Operator #1"
+        cashierName="Administrator"
       />
 
-      {/* Cart Drawer */}
-      <div className="w-80 bg-white dark:bg-slate-900 border-l p-4 flex flex-col justify-between">
-        <div>
-          <h2 className="text-sm font-black uppercase text-slate-500 mb-3">Current Cart</h2>
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-            {cart.map((item) => (
-              <div key={item.product.id} className="flex justify-between items-center text-xs p-2 bg-slate-50 rounded-lg">
-                <div>
-                  <p className="font-bold">{item.product.name}</p>
-                  <p className="text-slate-400">${item.product.price.toFixed(2)} x {item.quantity}</p>
-                </div>
-                <span className="font-mono font-black">${(item.product.price * item.quantity).toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* Modern Borderless Cart Panel */}
+      <PosCartPanel
+        cart={cart}
+        onUpdateQuantity={handleUpdateQuantity}
+        onClearCart={handleClearCart}
+        taxRate={taxRate}
+        onTaxRateChange={setTaxRate}
+        orderDiscount={orderDiscount}
+        onOrderDiscountChange={setOrderDiscount}
+        subtotal={subtotal}
+        taxAmount={taxAmount}
+        finalTotal={finalTotal}
+        totalItemCount={totalItemCount}
+        onProceedCheckout={() => setIsCheckoutOpen(true)}
+      />
 
-        <div className="border-t pt-4 space-y-3">
-          <div className="flex justify-between font-black text-base">
-            <span>Total:</span>
-            <span className="text-blue-600">${totalAmount.toFixed(2)}</span>
-          </div>
-          <button onClick={() => setIsCheckoutOpen(true)} disabled={cart.length === 0} className="w-full py-3 bg-blue-600 text-white font-black rounded-xl text-xs">
-            Pay Now (${totalAmount.toFixed(2)})
-          </button>
-        </div>
-      </div>
-
-      <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} totalAmount={totalAmount} onConfirm={() => { setCart([]); toast.success("Sale complete!"); }} />
+      <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} totalAmount={finalTotal} onConfirm={() => { setCart([]); toast.success("Sale complete!"); }} />
       <ProductFormModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} productToEdit={null} onSaved={loadProducts} />
     </div>
   );

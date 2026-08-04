@@ -73,7 +73,8 @@ public class AttendanceController {
     }
 
     @PostMapping("/manual")
-    public ResponseEntity<ApiResponse<Attendance>> submitManualLog(@Valid @RequestBody ManualAttendanceRequest request) {
+    public ResponseEntity<ApiResponse<Attendance>> submitManualLog(
+            @Valid @RequestBody ManualAttendanceRequest request) {
         Attendance attendance = attendanceService.submitManualLog(request);
         return ResponseEntity.ok(ApiResponse.success("Manual attendance logged successfully", attendance));
     }
@@ -115,7 +116,8 @@ public class AttendanceController {
     }
 
     @PutMapping("/devices/{id}")
-    public ResponseEntity<ApiResponse<BiometricDevice>> updateDevice(@PathVariable Integer id, @RequestBody BiometricDevice device) {
+    public ResponseEntity<ApiResponse<BiometricDevice>> updateDevice(@PathVariable Integer id,
+            @RequestBody BiometricDevice device) {
         device.setId(id);
         BiometricDevice updated = attendanceService.saveDevice(device);
         return ResponseEntity.ok(ApiResponse.success("Biometric device updated successfully", updated));
@@ -148,7 +150,8 @@ public class AttendanceController {
         try {
             Integer departmentId = qrCodeService.validateAndGetDepartmentId(token);
             if (departmentId == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Invalid or expired QR code"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("Invalid or expired QR code"));
             }
             return attendanceService.processQrScan(employeeId, departmentId, lat, lng);
         } catch (Exception e) {

@@ -1,10 +1,13 @@
 package com.mtp.api.security;
 
+import com.mtp.api.config.TenantResolver;
+import com.mtp.api.services.LoginHistoryService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,24 +18,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
-    private com.mtp.api.services.LoginHistoryService loginHistoryService;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final JwtUtils jwtUtils;
+    private final LoginHistoryService loginHistoryService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
         final String authorizationHeader = request.getHeader("Authorization");
-        System.out.println("Processing request: " + request.getMethod() + " " + request.getRequestURI());
-        System.out.println("Authorization Header: " + (authorizationHeader != null ? "Present" : "MISSING"));
 
         String username = null;
         String jwt = null;
@@ -41,15 +39,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtils.extractUsername(jwt);
-                // Set tenant identifier from JWT claims for Hibernate multi-tenancy
                 String tenantId = jwtUtils.extractClaim(jwt, claims -> claims.get("tenantId", String.class));
                 if (tenantId != null && !tenantId.isBlank()) {
-                    com.mtp.api.config.TenantResolver.setCurrentTenant(tenantId);
+                    TenantResolver.setCurrentTenant(tenantId);
                 }
-                System.out.println("Extracted username from JWT: " + username);
             } catch (Exception e) {
-                System.out.println("JWT token parsing failed: " + e.getMessage());
-                logger.warn("JWT token parsing failed: " + e.getMessage());
+                log.warn("JWT token parsing failed for {}: {}", request.getRequestURI(), e.getMessage());
                 loginHistoryService.recordEvent("Invalid Token / Intruder", "Suspicious", "API Access (25KB)", request);
             }
         }
@@ -65,13 +60,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                System.out.println("Validated request for: " + username + " to " + request.getRequestURI());
+                log.debug("Authenticated user {} for endpoint {}", username, request.getRequestURI());
             }
         }
         try {
             chain.doFilter(request, response);
         } finally {
-            com.mtp.api.config.TenantResolver.clear();
+            TenantResolver.clear();
         }
     }
 }

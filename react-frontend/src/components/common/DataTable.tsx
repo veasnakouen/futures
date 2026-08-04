@@ -123,13 +123,13 @@ export function DataTable<T>({
 
       {footer && <div>{footer}</div>}
 
-      {totalPages && totalPages > 1 && onPageChange && (
+      {onPageChange && (
         <ModernPagination
           currentPage={currentPage || 1}
-          totalPages={totalPages}
+          totalPages={totalPages || Math.max(1, Math.ceil((totalItems ?? data.length) / (pageSize || 10)))}
           onPageChange={onPageChange}
-          totalItems={totalItems}
-          pageSize={pageSize}
+          totalItems={totalItems ?? data.length}
+          pageSize={pageSize || 10}
           onPageSizeChange={onPageSizeChange}
         />
       )}

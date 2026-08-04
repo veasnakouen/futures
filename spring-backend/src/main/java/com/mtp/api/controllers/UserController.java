@@ -92,4 +92,14 @@ public class UserController extends BaseCrudController<UserDto, String, UserServ
         service.changePassword(username, request);
         return ResponseEntity.ok(ApiResponse.success("Password updated successfully", "OK"));
     }
+
+    // IDE Suggestion
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse<UserDto>> getProfile(Authentication authentication) {
+        String username = authentication.getName();
+        return service.findByUserName(username)
+                .map(userDto -> ResponseEntity.ok(ApiResponse.success("Fetched user profile", userDto)))
+                .orElse(ResponseEntity.status(404).body(ApiResponse.error("User not found")));
+    }
+
 }

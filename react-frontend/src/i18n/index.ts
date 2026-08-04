@@ -55,7 +55,7 @@ export const syncDatabaseTranslations = async () => {
       console.log("[i18n] Synchronized dynamic translations from database");
     }
   } catch (err) {
-    console.warn("[i18n] Operating in local bundle mode (database translation service initializing or offline)");
+    // Operating in local bundle mode (local i18n JSON bundles active)
   }
 };
 

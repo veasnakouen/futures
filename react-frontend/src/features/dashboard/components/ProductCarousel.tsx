@@ -215,51 +215,92 @@ const ProductCarousel: React.FC = () => {
 
   useEffect(() => {
     let isMounted = true;
-    // Fetch assets with a timeout so it doesn't hang indefinitely
-    api
-      .get("/stock/inventory", {
-        params: { page: 0, size: 10 },
-        timeout: 15000,
-      })
-      .then((res) => {
-        if (!isMounted) return;
-        const items = res.data?.content || res.data || [];
 
-        if (Array.isArray(items) && items.length > 0) {
-          // Sort items with images first
-          const sortedItems = [...items].sort((a, b) => {
-            const aHasImg = a.imageUrl && a.imageUrl.trim() !== "";
-            const bHasImg = b.imageUrl && b.imageUrl.trim() !== "";
-            return (bHasImg ? 1 : 0) - (aHasImg ? 1 : 0);
-          });
+    const loadCarouselData = async () => {
+      let items: any[] = [];
 
-          const mappedItems = sortedItems.map((item: any) => ({
-            ...item,
-            category: item.category?.name || "Equipment",
-            sku: item.sku || "N/A",
-            quantity: item.stockQuantity || 0,
-            unit: "pcs",
-            unitPrice: item.price || 0,
-            location: item.department?.name || "Stock Node",
-            description: item.description || "Available in stock node for deployment.",
-            status: item.stockQuantity > 0 ? "Available" : "Out of Stock",
-          }));
-
-          setProducts(mappedItems.slice(0, 10));
-          return;
+      // 1. Try POS Products Catalog (/pos/products)
+      try {
+        const res = await api.get("/pos/products", { params: { page: 0, size: 10 }, timeout: 10000 });
+        const posData = res.data?.content || res.data || [];
+        if (Array.isArray(posData) && posData.length > 0) {
+          items = [...items, ...posData];
         }
-        // Fallback to placeholder if no items returned
-        setProducts(FALLBACK_PRODUCTS);
-      })
-      .catch((err) => {
-        if (!isMounted) return;
-        console.warn("Failed to fetch assets for carousel:", err.message);
-        setProducts(FALLBACK_PRODUCTS);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
+      } catch (e) {}
 
+      // 2. Try Hotel Rooms Catalog (/hotel/rooms)
+      try {
+        const res = await api.get("/hotel/rooms", { params: { page: 0, size: 10 }, timeout: 10000 });
+        const roomData = res.data?.content || res.data || [];
+        if (Array.isArray(roomData) && roomData.length > 0) {
+          const mappedRooms = roomData.map((room: any) => ({
+            id: `room-${room.id}`,
+            name: `Room ${room.roomNumber} - ${room.roomType}`,
+            sku: `ROOM-${room.roomNumber}`,
+            category: "Hotel Suite",
+            quantity: room.capacity || 1,
+            unit: "room",
+            unitPrice: room.pricePerNight || 0,
+            location: `Floor ${room.floorNumber || 1}`,
+            status: room.status || "AVAILABLE",
+            description: room.amenities || room.bedType || "Luxury accommodation suite ready for booking.",
+            imageUrl: room.imageUrl || "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
+          }));
+          items = [...items, ...mappedRooms];
+        }
+      } catch (e) {}
+
+      // 3. Fallback to Stock Inventory or Assets if items list is small
+      if (items.length < 5) {
+        try {
+          const res = await api.get("/stock/inventory", { params: { page: 0, size: 10 }, timeout: 10000 });
+          const stockData = res.data?.content || res.data || [];
+          if (Array.isArray(stockData) && stockData.length > 0) {
+            items = [...items, ...stockData];
+          }
+        } catch (e) {}
+
+        if (items.length === 0) {
+          try {
+            const res = await api.get("/assets", { params: { page: 0, size: 10 }, timeout: 10000 });
+            const assetData = res.data?.content || res.data || [];
+            if (Array.isArray(assetData) && assetData.length > 0) {
+              items = [...items, ...assetData];
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (!isMounted) return;
+
+      if (Array.isArray(items) && items.length > 0) {
+        const sortedItems = [...items].sort((a, b) => {
+          const aHasImg = a.imageUrl && a.imageUrl.trim() !== "";
+          const bHasImg = b.imageUrl && b.imageUrl.trim() !== "";
+          return (bHasImg ? 1 : 0) - (aHasImg ? 1 : 0);
+        });
+
+        const mappedItems = sortedItems.map((item: any) => ({
+          ...item,
+          category: item.category?.name || item.category || "General",
+          sku: item.sku || item.assetCode || "N/A",
+          quantity: item.stockQuantity || item.quantity || 1,
+          unit: item.unit || "pcs",
+          unitPrice: item.price || item.unitPrice || item.pricePerNight || 0,
+          location: item.department?.name || item.location || "Main Office Node",
+          description: item.description || "Available in enterprise system for active deployment.",
+          status: item.status || ((item.stockQuantity ?? item.quantity ?? 1) > 0 ? "In Stock" : "Out of Stock"),
+          imageUrl: item.imageUrl || "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=800&q=80",
+        }));
+
+        setProducts(mappedItems.slice(0, 10));
+      } else {
+        setProducts(FALLBACK_PRODUCTS);
+      }
+      setLoading(false);
+    };
+
+    loadCarouselData();
     return () => {
       isMounted = false;
     };

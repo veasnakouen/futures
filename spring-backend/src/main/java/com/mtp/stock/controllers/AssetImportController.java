@@ -49,10 +49,10 @@ public class AssetImportController {
         }
 
         try {
-            int count = importService.importFromExcel(file);
+            String jobId = importService.startImportAsync(file);
             return ResponseEntity.ok(Map.of(
-                "message", "Successfully imported data from Excel",
-                "count", count
+                "message", "Successfully started Excel import",
+                "jobId", jobId
             ));
         } catch (IOException e) {
             return ResponseEntity.status(500).body(Map.of("message", "Error processing file: " + e.getMessage()));

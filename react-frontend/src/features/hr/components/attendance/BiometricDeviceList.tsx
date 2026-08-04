@@ -45,6 +45,9 @@ const BiometricDeviceList: React.FC<BiometricDeviceListProps> = ({
   onRemoveDevice,
   onClearUsers,
 }) => {
+  const safeDevices = Array.isArray(devices) ? devices : [];
+  const safeUsers = Array.isArray(deviceUsers) ? deviceUsers : [];
+
   return (
     <div className="flex-1 p-8 overflow-y-auto border-r">
       <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">
@@ -53,12 +56,12 @@ const BiometricDeviceList: React.FC<BiometricDeviceListProps> = ({
       <div className="space-y-4">
         {isLoading ? (
           <div className="flex justify-center py-10"><Spinner size="xl" /></div>
-        ) : devices.length === 0 ? (
+        ) : safeDevices.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">No devices registered</p>
           </div>
         ) : (
-          devices.map((device) => (
+          safeDevices.map((device) => (
             <div key={device.id} className="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-md group hover:border-indigo-500/30 border transition-all">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
@@ -103,7 +106,7 @@ const BiometricDeviceList: React.FC<BiometricDeviceListProps> = ({
         )}
       </div>
 
-      {deviceUsers.length > 0 && (
+      {safeUsers.length > 0 && (
         <div className="mt-6 border-t pt-6">
           <div className="flex justify-between items-center mb-4">
             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Hardware User Registry</h4>
@@ -113,7 +116,7 @@ const BiometricDeviceList: React.FC<BiometricDeviceListProps> = ({
             <div className="grid grid-cols-2 text-[9px] font-black text-gray-400 uppercase bg-gray-50 dark:bg-gray-700 px-4 py-2">
               <span>PIN</span><span>Name</span>
             </div>
-            {deviceUsers.map((u: any, i: number) => (
+            {safeUsers.map((u: any, i: number) => (
               <div key={i} className="grid grid-cols-2 px-4 py-2 font-bold dark:text-white hover:bg-gray-50">
                 <span className="font-mono">{u.userId}</span><span>{u.name}</span>
               </div>

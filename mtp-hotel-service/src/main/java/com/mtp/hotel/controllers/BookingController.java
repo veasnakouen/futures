@@ -22,16 +22,23 @@ public class BookingController {
     private final GetAllBookingsQueryHandler getAllHandler;
     private final GetBookingByIdQueryHandler getByIdHandler;
 
+    // @RequestMapping(value = "", method = RequestMethod.GET, produces =
+    // MediaType.APPLICATION_JSON_VALUE)
     @GetMapping
     public Page<BookingQueryResultDto> getAll(Pageable pageable) {
         return getAllHandler.handle(new GetAllBookingsQuery(pageable.getPageNumber(), pageable.getPageSize()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookingQueryResultDto> getById(@PathVariable Integer id) {
-        return getByIdHandler.handle(new GetBookingByIdQuery(id))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BookingQueryResultDto> getById(@PathVariable String id) {
+        try {
+            Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
+            return getByIdHandler.handle(new GetBookingByIdQuery(numericId))
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
@@ -39,11 +46,19 @@ public class BookingController {
         return createHandler.handle(command);
     }
 
+    // @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces =
+    // MediaType.APPLICATION_JSON_VALUE)
     @PutMapping("/{id}")
-    public ResponseEntity<BookingQueryResultDto> update(@PathVariable Integer id, @Valid @RequestBody UpdateBookingCommand command) {
-        command.setId(id);
-        return updateHandler.handle(command)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BookingQueryResultDto> update(@PathVariable String id,
+            @Valid @RequestBody UpdateBookingCommand command) {
+        try {
+            Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
+            command.setId(numericId);
+            return updateHandler.handle(command)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

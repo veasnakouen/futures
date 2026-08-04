@@ -76,8 +76,7 @@ class FlyweightApiCache {
       console.warn("Background cache revalidation failed", err);
     }
   }
-
-  /**
+  /**s
    * Invalidate cache entries matching a URL prefix or pattern.
    * Call after POST/PUT/DELETE mutations to maintain data freshness.
    */

@@ -49,9 +49,11 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({ isOpen, onC
     try {
       setIsLoading(true);
       const res = await api.get("/hr/attendance/devices");
-      setDevices(res.data);
+      const list = Array.isArray(res.data) ? res.data : (res.data?.content || res.data?.devices || []);
+      setDevices(list);
     } catch {
       toast.error("Failed to load biometric nodes");
+      setDevices([]);
     } finally {
       setIsLoading(false);
     }
@@ -88,17 +90,17 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({ isOpen, onC
   };
 
   const testConnection = async (id: number) => {
-    const dev = devices.find((d) => d.id === id);
+    const dev = (Array.isArray(devices) ? devices : []).find((d) => d.id === id);
     if (!dev) return;
     setIsTesting(id.toString());
     try {
       const res = await api.get(`/hr/attendance/test-connection?ipAddress=${dev.ipAddress}&port=${dev.port}`);
       if (res.data === true) {
         toast.success(`Handshake successful: Node ${dev.ipAddress} is active`);
-        setDevices(devices.map((d) => (d.id === id ? { ...d, status: "Online" } : d)));
+        setDevices((prev) => (Array.isArray(prev) ? prev : []).map((d) => (d.id === id ? { ...d, status: "Online" } : d)));
       } else {
         toast.error(`Node ${dev.ipAddress} is unreachable on port ${dev.port}`);
-        setDevices(devices.map((d) => (d.id === id ? { ...d, status: "Offline" } : d)));
+        setDevices((prev) => (Array.isArray(prev) ? prev : []).map((d) => (d.id === id ? { ...d, status: "Offline" } : d)));
       }
     } catch {
       toast.error(`Network fault on route to ${dev.ipAddress}`);
@@ -108,7 +110,7 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({ isOpen, onC
   };
 
   const probeDevice = async (id: number) => {
-    const dev = devices.find((d) => d.id === id);
+    const dev = (Array.isArray(devices) ? devices : []).find((d) => d.id === id);
     if (!dev) return;
     setIsProbing(id.toString());
     try {
@@ -125,10 +127,12 @@ const BiometricDeviceModal: React.FC<BiometricDeviceModalProps> = ({ isOpen, onC
     setIsFetchingUsers(ip);
     try {
       const res = await api.get(`/hr/attendance/device-users?ipAddress=${ip}`);
-      setDeviceUsers(res.data);
-      toast.success(`Retrieved ${res.data.length} users from hardware node`);
+      const list = Array.isArray(res.data) ? res.data : (res.data?.content || res.data?.users || []);
+      setDeviceUsers(list);
+      toast.success(`Retrieved ${list.length} users from hardware node`);
     } catch {
       toast.error("Failed to read user registry from device");
+      setDeviceUsers([]);
     } finally {
       setIsFetchingUsers(null);
     }

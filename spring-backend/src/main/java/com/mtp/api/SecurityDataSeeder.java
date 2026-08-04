@@ -31,18 +31,57 @@ public class SecurityDataSeeder implements CommandLineRunner {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public void run(String... args) throws Exception {
-        // 1. Create Permissions
+        // 1. Create Generic Domain Permissions
         Permission userRead = createPermissionIfNotFound("USER_READ", "Read user data");
-        Permission userWrite = createPermissionIfNotFound("USER_WRITE", "Create/Edit users");
+        Permission userWrite = createPermissionIfNotFound("USER_WRITE", "Create and edit users");
         Permission roleManage = createPermissionIfNotFound("ROLE_MANAGE", "Manage roles and permissions");
         Permission systemConfig = createPermissionIfNotFound("SYSTEM_CONFIG", "Manage system-wide configurations");
 
+        Permission casesRead = createPermissionIfNotFound("CASES_READ", "View operational case files");
+        Permission casesWrite = createPermissionIfNotFound("CASES_WRITE", "Create and edit case files");
+        
+        Permission inventoryRead = createPermissionIfNotFound("INVENTORY_READ", "View inventory and stock ledgers");
+        Permission inventoryWrite = createPermissionIfNotFound("INVENTORY_WRITE", "Manage stock and inventory transactions");
+
+        Permission hrRead = createPermissionIfNotFound("HR_READ", "View employee profiles and leave requests");
+        Permission hrWrite = createPermissionIfNotFound("HR_WRITE", "Manage HR records, leaves, and payroll");
+
+        Permission schoolRead = createPermissionIfNotFound("SCHOOL_READ", "View school courses, students, and enrollments");
+        Permission schoolWrite = createPermissionIfNotFound("SCHOOL_WRITE", "Manage school branches, courses, and students");
+
+        Permission clinicRead = createPermissionIfNotFound("CLINIC_READ", "View medical records and doctor appointments");
+        Permission clinicWrite = createPermissionIfNotFound("CLINIC_WRITE", "Manage patients, prescriptions, and IPD wards");
+
+        Permission billingRead = createPermissionIfNotFound("BILLING_READ", "View invoices and financial reports");
+        Permission billingWrite = createPermissionIfNotFound("BILLING_WRITE", "Process payments and manage billing invoices");
+
+        Permission hotelRead = createPermissionIfNotFound("HOTEL_READ", "View room availability and guest bookings");
+        Permission hotelWrite = createPermissionIfNotFound("HOTEL_WRITE", "Manage hotel bookings, rooms, and housekeeping");
+
+        Permission posRead = createPermissionIfNotFound("POS_READ", "View POS terminal sales history");
+        Permission posWrite = createPermissionIfNotFound("POS_WRITE", "Operate POS terminal and manage products");
+
+        Permission reportsExport = createPermissionIfNotFound("REPORTS_EXPORT", "Generate and export business reports");
+
+        Set<Permission> allPerms = new java.util.HashSet<>(Set.of(
+            userRead, userWrite, roleManage, systemConfig,
+            casesRead, casesWrite, inventoryRead, inventoryWrite,
+            hrRead, hrWrite, schoolRead, schoolWrite,
+            clinicRead, clinicWrite, billingRead, billingWrite,
+            hotelRead, hotelWrite, posRead, posWrite, reportsExport
+        ));
+
         // 2. Create Roles
-        Role superAdminRole = createRoleIfNotFound("SUPERADMIN",
-                new java.util.HashSet<>(Set.of(userRead, userWrite, roleManage, systemConfig)));
-        Role adminRole = createRoleIfNotFound("ADMIN",
-                new java.util.HashSet<>(Set.of(userRead, userWrite, roleManage)));
-        Role userRole = createRoleIfNotFound("USER", new java.util.HashSet<>(Set.of(userRead)));
+        Role superAdminRole = createRoleIfNotFound("SUPERADMIN", allPerms);
+        Role adminRole = createRoleIfNotFound("ADMIN", new java.util.HashSet<>(Set.of(
+            userRead, userWrite, roleManage, casesRead, casesWrite,
+            inventoryRead, inventoryWrite, hrRead, hrWrite, billingRead, reportsExport
+        )));
+        Role hrRole = createRoleIfNotFound("HR_ADMIN", new java.util.HashSet<>(Set.of(userRead, hrRead, hrWrite, reportsExport)));
+        Role schoolRole = createRoleIfNotFound("SCHOOL_ADMIN", new java.util.HashSet<>(Set.of(userRead, schoolRead, schoolWrite, reportsExport)));
+        Role clinicRole = createRoleIfNotFound("CLINIC_ADMIN", new java.util.HashSet<>(Set.of(userRead, clinicRead, clinicWrite, reportsExport)));
+        Role financeRole = createRoleIfNotFound("FINANCE_MANAGER", new java.util.HashSet<>(Set.of(billingRead, billingWrite, reportsExport)));
+        Role userRole = createRoleIfNotFound("USER", new java.util.HashSet<>(Set.of(userRead, casesRead, inventoryRead)));
 
         // 3. Ensure a SuperAdmin user exists
         User sa = userRepository.findAll().stream()

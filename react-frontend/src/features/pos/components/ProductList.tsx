@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, Edit2, Trash2, Package } from "lucide-react";
 import { PosProductDto } from "../../../services/posService";
+import ModernPagination from "@/components/common/ModernPagination";
 
 export interface ProductListProps {
   products?: PosProductDto[];
@@ -20,10 +21,22 @@ export default function ProductList({
   onAddNew = () => {},
 }: ProductListProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filteredProducts = products.filter((p) =>
     (p.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
     (p.sku || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  const totalPages = Math.ceil(filteredProducts.length / pageSize) || 1;
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
 
   return (
@@ -44,7 +57,7 @@ export default function ProductList({
         </Button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
         <Table>
           <TableHeader className="bg-gray-50 dark:bg-gray-800 text-[10px] uppercase font-black text-gray-400">
             <TableRow>
@@ -57,7 +70,7 @@ export default function ProductList({
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y text-xs">
-            {filteredProducts.map((product) => (
+            {paginatedProducts.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="font-bold dark:text-white flex items-center gap-2">
                   <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-gray-400">
@@ -76,7 +89,7 @@ export default function ProductList({
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
                     <Button variant="ghost" size="sm" onClick={() => onEdit(product)} className="h-8 w-8 p-0 text-blue-600"><Edit2 size={14} /></Button>
-                    <Button variant="ghost" size="sm" onClick={() => product.id && onDelete(product.id)} className="h-8 w-8 p-0 text-red-600"><Trash2 size={14} /></Button>
+                    <Button variant="ghost" size="sm" onClick={() => product.id && onDelete(product)} className="h-8 w-8 p-0 text-red-600"><Trash2 size={14} /></Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -84,6 +97,18 @@ export default function ProductList({
           </TableBody>
         </Table>
       </div>
+
+      <ModernPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalItems={filteredProducts.length}
+        pageSize={pageSize}
+        onPageSizeChange={(newSize) => {
+          setPageSize(newSize);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 }

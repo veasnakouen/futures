@@ -80,7 +80,7 @@ export default function ChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 left-6 z-[9999] w-[350px] sm:w-[400px] h-[500px] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-24 left-6 z-[9999] w-[350px] sm:w-[400px] h-[500px] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200/80 dark:border-gray-700/60"
           >
             {/* Header */}
             <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
@@ -117,7 +117,7 @@ export default function ChatWidget() {
                       {msg.sender === "user" ? <User size={16} /> : <Bot size={16} />}
                     </div>
                     <div
-                      className={`p-3 rounded-2xl text-sm ${msg.sender === "user" ? "bg-blue-600 text-white rounded-tr-sm" : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-sm  rounded-tl-sm"}`}
+                      className={`p-3 rounded-2xl text-sm ${msg.sender === "user" ? "bg-blue-600 text-white rounded-tr-sm" : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-sm rounded-tl-sm border border-gray-200/60 dark:border-gray-700/40"}`}
                     >
                       {msg.text}
                     </div>
@@ -130,7 +130,7 @@ export default function ChatWidget() {
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 flex items-center justify-center">
                       <Bot size={16} />
                     </div>
-                    <div className="p-3 rounded-2xl bg-white dark:bg-gray-800 shadow-sm rounded-tl-sm flex items-center gap-1.5">
+                    <div className="p-3 rounded-2xl bg-white dark:bg-gray-800 shadow-sm rounded-tl-sm flex items-center gap-1.5 border border-gray-200/60 dark:border-gray-700/40">
                       <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
                       <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
                       <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
@@ -142,7 +142,7 @@ export default function ChatWidget() {
             </div>
 
             {/* Input Area */}
-            <div className="p-3 border-t bg-white dark:bg-gray-800">
+            <div className="p-3 border-t border-gray-200/80 dark:border-gray-700/60 bg-white dark:bg-gray-800">
               <form onSubmit={handleSend} className="flex gap-2">
                 <input
                   type="text"

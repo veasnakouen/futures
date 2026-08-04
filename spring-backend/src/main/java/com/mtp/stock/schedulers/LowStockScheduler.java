@@ -2,8 +2,8 @@ package com.mtp.stock.schedulers;
 
 import com.mtp.stock.models.InventoryItem;
 import com.mtp.stock.repositories.InventoryRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,15 +18,14 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class LowStockScheduler {
 
-    @Autowired
-    private InventoryRepository inventoryRepository;
+    private final InventoryRepository inventoryRepository;
+    private final RestTemplate resilientRestTemplate;
 
     @Value("${notification.service.url:http://localhost:8081}")
     private String notificationServiceUrl;
-
-    private final RestTemplate restTemplate = new RestTemplate();
 
     /**
      * Runs every day at 8:00 AM to check for items that require restocking.
@@ -48,7 +47,7 @@ public class LowStockScheduler {
                 sendNotificationRequest("admin", title, message, "LOW_STOCK_ALERT");
                 notificationsSent++;
             } catch (Exception e) {
-                log.error("Failed to send low stock notification for item {}: {}", item.getSku(), e.getMessage());
+                log.warn("Resilient fallback: Low stock notification skipped for item {} because notification service at {} is offline", item.getSku(), notificationServiceUrl);
             }
         }
 
@@ -57,17 +56,17 @@ public class LowStockScheduler {
 
     private void sendNotificationRequest(String recipient, String title, String message, String type) {
         String url = notificationServiceUrl + "/api/notifications/test";
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        
-        Map<String, String> payload = new HashMap<>();
-        payload.put("recipientUsername", recipient);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("recipient", recipient);
         payload.put("title", title);
         payload.put("message", message);
         payload.put("type", type);
-        
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(payload, headers);
-        restTemplate.postForEntity(url, request, String.class);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+        resilientRestTemplate.postForEntity(url, request, String.class);
     }
 }

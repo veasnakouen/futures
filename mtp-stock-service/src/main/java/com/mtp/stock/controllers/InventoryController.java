@@ -60,6 +60,45 @@ public class InventoryController {
         stats.put("lowStock", lowStock != null ? lowStock : 0L);
         stats.put("outOfStock", outOfStock != null ? outOfStock : 0L);
         stats.put("totalItems", totalItems);
+
+        try {
+            org.springframework.data.domain.Pageable topPage = org.springframework.data.domain.PageRequest.of(0, 4, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "stockQuantity"));
+            org.springframework.data.domain.Page<com.mtp.stock.models.InventoryItem> topItemsPage = inventoryRepository.findAll(topPage);
+            
+            java.util.List<java.util.Map<String, Object>> topItemsList = new java.util.ArrayList<>();
+            for (com.mtp.stock.models.InventoryItem itm : topItemsPage.getContent()) {
+                java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
+                itemMap.put("id", itm.getId());
+                itemMap.put("name", itm.getName());
+                itemMap.put("sku", itm.getSku());
+                itemMap.put("category", itm.getCategory() != null ? itm.getCategory().getName() : "General");
+                itemMap.put("stockQuantity", itm.getStockQuantity() != null ? itm.getStockQuantity() : 0);
+                itemMap.put("price", itm.getPrice() != null ? itm.getPrice() : 0.0);
+                topItemsList.add(itemMap);
+            }
+            stats.put("topItems", topItemsList);
+        } catch (Exception ignored) {}
+
+        try {
+            if (transactionRepository != null) {
+                org.springframework.data.domain.Pageable recentPage = org.springframework.data.domain.PageRequest.of(0, 5, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "transactionDate"));
+                org.springframework.data.domain.Page<com.mtp.stock.models.InventoryTransaction> recentTxPage = transactionRepository.findAll(recentPage);
+                
+                java.util.List<java.util.Map<String, Object>> txList = new java.util.ArrayList<>();
+                for (com.mtp.stock.models.InventoryTransaction tx : recentTxPage.getContent()) {
+                    java.util.Map<String, Object> txMap = new java.util.HashMap<>();
+                    txMap.put("id", tx.getId());
+                    txMap.put("itemName", tx.getItem() != null ? tx.getItem().getName() : "General Item");
+                    txMap.put("type", tx.getType() != null ? tx.getType().name() : "TRANSFER");
+                    txMap.put("quantity", tx.getQuantity() != null ? tx.getQuantity() : 0);
+                    txMap.put("department", tx.getDepartment() != null ? tx.getDepartment().getName() : "Main Branch");
+                    txMap.put("date", tx.getTransactionDate() != null ? tx.getTransactionDate().toString() : "");
+                    txList.add(txMap);
+                }
+                stats.put("recentTransfers", txList);
+            }
+        } catch (Exception ignored) {}
+
         return ResponseEntity.ok(stats);
     }
 
@@ -69,8 +108,18 @@ public class InventoryController {
         
         if (categoryId != null) {
             java.util.Optional<com.mtp.stock.models.AssetCategory> catOpt = categoryRepository.findById(categoryId);
-            if (catOpt.isPresent() && catOpt.get().getPrefixCode() != null && !catOpt.get().getPrefixCode().trim().isEmpty()) {
-                prefix = catOpt.get().getPrefixCode().trim().toUpperCase();
+            if (catOpt.isPresent()) {
+                com.mtp.stock.models.AssetCategory cat = catOpt.get();
+                if (cat.getPrefixCode() != null && !cat.getPrefixCode().trim().isEmpty()) {
+                    prefix = cat.getPrefixCode().trim().toUpperCase();
+                } else if (cat.getName() != null && !cat.getName().trim().isEmpty()) {
+                    String derived = cat.getName().replaceAll("[^A-Za-z]", "").toUpperCase();
+                    if (derived.length() > 6) {
+                        prefix = derived.substring(0, 6);
+                    } else if (!derived.isEmpty()) {
+                        prefix = derived;
+                    }
+                }
             }
         }
         
@@ -121,7 +170,24 @@ public class InventoryController {
     public InventoryItem create(@jakarta.validation.Valid @RequestBody InventoryItem item) {
         if (item.getSku() == null || item.getSku().trim().isEmpty()) {
             Long catId = item.getCategory() != null ? item.getCategory().getId() : null;
-            item.setSku(generateSku(catId).getBody().get("sku"));
+            String generatedSku = generateSku(catId).getBody().get("sku");
+            
+            // Concurrency safety loop
+            int attempts = 0;
+            while (inventoryRepository.existsBySkuIgnoreCase(generatedSku) && attempts < 10) {
+                generatedSku = generateSku(catId).getBody().get("sku");
+                if (inventoryRepository.existsBySkuIgnoreCase(generatedSku)) {
+                    generatedSku = generatedSku + "-" + (System.currentTimeMillis() % 10000);
+                }
+                attempts++;
+            }
+            item.setSku(generatedSku.trim());
+        } else {
+            String trimmedSku = item.getSku().trim();
+            if (inventoryRepository.existsBySkuIgnoreCase(trimmedSku)) {
+                throw new IllegalArgumentException("SKU already exists: " + trimmedSku);
+            }
+            item.setSku(trimmedSku);
         }
 
         if (item.getImageUrl() != null && item.getImageUrl().startsWith("data:image")) {

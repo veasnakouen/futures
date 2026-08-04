@@ -18,7 +18,7 @@ public class InventoryItem {
     private Long id;
 
     @Version
-    private Long version;
+    private Long version = 0L;
 
     @jakarta.validation.constraints.Size(max = 50, message = "SKU cannot exceed 50 characters")
     private String sku;
@@ -76,8 +76,19 @@ public class InventoryItem {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String imageUrl;
 
+    @PostLoad
+    @PrePersist
+    protected void ensureVersion() {
+        if (this.version == null) {
+            this.version = 0L;
+        }
+    }
+
     @PreUpdate
     protected void onUpdate() {
+        if (this.version == null) {
+            this.version = 0L;
+        }
         updatedAt = LocalDateTime.now();
     }
 

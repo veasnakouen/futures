@@ -1,37 +1,39 @@
 server:
   port: 8087
   max-http-request-header-size: 8MB
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
 spring:
+  threads:
+    virtual:
+      enabled: true
   cloud:
     compatibility-verifier:
       enabled: false
   application:
     name: mtp-school-service
   datasource:
-    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=MtpSchoolDB;encrypt=true;trustServerCertificate=true;loginTimeout=30;
+    url: jdbc:sqlserver://localhost\SQLEXPRESS;databaseName=MtpAppDB2018_full;encrypt=true;trustServerCertificate=true;
     username: sa
-    password: ${DB_PASSWORD:123}
+    password: ${DB_PASSWORD:Password123!}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
+    open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     database-platform: org.hibernate.dialect.SQLServerDialect
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         dialect: org.hibernate.dialect.SQLServerDialect
         tenant_identifier_resolver: com.mtp.school.config.tenant.TenantIdentifierResolver
 
 eureka:
   client:
-    serviceUrl:
+    service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
-    preferIpAddress: true
-
-logging:
-  level:
-    org.apache.coyote.http11: TRACE
-    org.apache.tomcat.util.http: TRACE
-    org.springframework.web: DEBUG
+    prefer-ip-address: true

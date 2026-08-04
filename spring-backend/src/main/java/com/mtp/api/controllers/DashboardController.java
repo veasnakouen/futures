@@ -4,8 +4,6 @@ import com.mtp.api.repositories.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -35,7 +33,7 @@ public class DashboardController {
     public Map<String, Object> getDashboardStats() {
         try {
             long totalClients = clientRepository.count();
-            
+
             // Distribution by Status (optimized DB group query)
             List<Map<String, Object>> statusDistribution = clientRepository.countByStatus().stream()
                     .map(row -> {
@@ -82,7 +80,7 @@ public class DashboardController {
             response.put("statusDistribution", statusDistribution);
             response.put("genderDistribution", genderDistribution);
             response.put("registrationTrend", registrationTrend);
-            
+
             // Tickets by Person
             List<Map<String, Object>> ticketsPerPerson = ticketRepository.countTicketsPerAssignee().stream()
                     .map(row -> {
@@ -125,7 +123,7 @@ public class DashboardController {
             return response;
         } catch (Exception e) {
             log.error("Dashboard stats error: ", e);
-            
+
             // Return fallback mock data
             Map<String, Object> fallback = new HashMap<>();
             fallback.put("totalClients", 0);
@@ -137,7 +135,7 @@ public class DashboardController {
             fallback.put("monthlyReports", 0);
             fallback.put("totalTickets", 0);
             fallback.put("warning", "Running in fallback mode due to database error");
-            
+
             return fallback;
         }
     }
@@ -151,10 +149,16 @@ public class DashboardController {
             LocalDate date = now.minusDays(i);
             Map<String, Object> point = new HashMap<>();
             point.put("date", date.toString()); // "yyyy-MM-dd"
-            // Most days have 0 registrations, some have 1-5 registrations to simulate real activity
+            // Most days have 0 registrations, some have 1-5 registrations to simulate real
+            // activity
             point.put("count", random.nextInt(6) == 0 ? 1 + random.nextInt(4) : 0);
             trend.add(point);
         }
         return trend;
+    }
+
+    @GetMapping(value = { "/test" })
+    public String test() {
+        return "hello worl";
     }
 }

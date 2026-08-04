@@ -27,6 +27,9 @@ public interface InventoryRepository extends JpaRepository<InventoryItem, Long> 
     @org.springframework.data.jpa.repository.Query("SELECT MAX(i.sku) FROM InventoryItem i WHERE i.sku LIKE CONCAT(:prefix, '%')")
     String findMaxSkuByPrefix(@org.springframework.data.repository.query.Param("prefix") String prefix);
 
+    boolean existsBySkuIgnoreCase(String sku);
+    java.util.Optional<InventoryItem> findBySkuIgnoreCase(String sku);
+
     @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.category.name FROM InventoryItem i WHERE i.category IS NOT NULL")
     List<String> findDistinctCategories();
 

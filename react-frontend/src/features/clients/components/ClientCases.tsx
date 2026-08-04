@@ -30,10 +30,17 @@ const ClientCases: React.FC<ClientCasesProps> = ({ clientId }) => {
   const fetchCases = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/cases/client/${clientId}`);
-      setCases(response.data || []);
+      if (!clientId) {
+        setCases([]);
+        return;
+      }
+      const cleanId = String(clientId).replace(/\D/g, "") || clientId;
+      const response = await api.get(`/cases/client/${cleanId}`);
+      const data = response.data?.value || response.data || [];
+      setCases(Array.isArray(data) ? data : []);
     } catch (err) {
-      toast.error("Failed to load cases");
+      console.warn("[ClientCases] Unable to fetch cases for client:", clientId, err);
+      setCases([]);
     } finally {
       setLoading(false);
     }

@@ -29,21 +29,54 @@ public class AssetCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<AssetCategory> create(@Valid @RequestBody AssetCategory category) {
+    public ResponseEntity<?> create(@Valid @RequestBody AssetCategory category) {
+        if (category.getName() == null || category.getName().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Category name is required");
+        }
+        category.setName(category.getName().trim());
         if (categoryRepository.findByNameIgnoreCase(category.getName()).isPresent()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Category name '" + category.getName() + "' already exists");
+        }
+        if (category.getPrefixCode() != null && category.getPrefixCode().trim().isEmpty()) {
+            category.setPrefixCode(null);
+        } else if (category.getPrefixCode() != null) {
+            category.setPrefixCode(category.getPrefixCode().trim().toUpperCase());
+        }
+        if (category.getDescription() != null && category.getDescription().trim().isEmpty()) {
+            category.setDescription(null);
+        }
+        if (category.getIsActive() == null) {
+            category.setIsActive(true);
         }
         return ResponseEntity.ok(categoryRepository.save(category));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AssetCategory> update(@PathVariable Long id, @Valid @RequestBody AssetCategory categoryData) {
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody AssetCategory categoryData) {
         java.util.Optional<AssetCategory> existingOpt = categoryRepository.findById(id);
         if (existingOpt.isPresent()) {
             AssetCategory existing = existingOpt.get();
-            existing.setName(categoryData.getName());
-            existing.setDescription(categoryData.getDescription());
-            existing.setPrefixCode(categoryData.getPrefixCode());
+            if (categoryData.getName() != null && !categoryData.getName().trim().isEmpty()) {
+                String trimmedName = categoryData.getName().trim();
+                java.util.Optional<AssetCategory> withSameName = categoryRepository.findByNameIgnoreCase(trimmedName);
+                if (withSameName.isPresent() && !withSameName.get().getId().equals(id)) {
+                    return ResponseEntity.badRequest().body("Category name '" + trimmedName + "' already exists");
+                }
+                existing.setName(trimmedName);
+            }
+            
+            if (categoryData.getDescription() != null && categoryData.getDescription().trim().isEmpty()) {
+                existing.setDescription(null);
+            } else if (categoryData.getDescription() != null) {
+                existing.setDescription(categoryData.getDescription().trim());
+            }
+
+            String prefix = categoryData.getPrefixCode();
+            if (prefix != null && prefix.trim().isEmpty()) {
+                prefix = null;
+            }
+            existing.setPrefixCode(prefix != null ? prefix.trim().toUpperCase() : null);
+
             if (categoryData.getIsActive() != null) existing.setIsActive(categoryData.getIsActive());
             if (categoryData.getRequiresExpiryDate() != null) existing.setRequiresExpiryDate(categoryData.getRequiresExpiryDate());
             if (categoryData.getRequiresSerialTracking() != null) existing.setRequiresSerialTracking(categoryData.getRequiresSerialTracking());
@@ -52,7 +85,7 @@ public class AssetCategoryController {
             
             if (categoryData.getParentCategory() != null && categoryData.getParentCategory().getId() != null) {
                 if (categoryData.getParentCategory().getId().equals(id)) {
-                    return ResponseEntity.badRequest().build();
+                    return ResponseEntity.badRequest().body("Category cannot be its own parent");
                 }
                 existing.setParentCategory(categoryData.getParentCategory());
             } else {

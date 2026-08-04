@@ -47,7 +47,7 @@ const TrainingCoursesTab: React.FC<TrainingCoursesTabProps> = ({
                 <h4 className="font-black text-base dark:text-white uppercase mb-1">{course.title || course.name}</h4>
                 <p className="text-xs text-gray-500 line-clamp-2 mb-4">{course.description || "Comprehensive skill development program."}</p>
               </div>
-              <div className="flex justify-between items-center text-[10px] font-bold text-gray-400 border-t pt-3">
+              <div className="flex justify-between items-center text-[10px] font-bold text-gray-400 pt-1">
                 <span className="flex items-center gap-1"><Clock size={12} /> {course.duration || "4 Weeks"}</span>
                 <span className="flex items-center gap-1"><Award size={12} className="text-emerald-500" /> {course.level || "Intermediate"}</span>
               </div>

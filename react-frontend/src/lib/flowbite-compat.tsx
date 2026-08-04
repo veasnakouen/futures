@@ -268,25 +268,22 @@ export const Select = React.forwardRef(
   ({ className, icon: Icon, children, ...props }: any, ref: any) => {
     return (
       <div className="relative w-full">
-        {" "}
         {Icon && (
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
-            {" "}
-            <Icon className="h-4 w-4" />{" "}
+            <Icon className="h-4 w-4" />
           </div>
-        )}{" "}
+        )}
         <select
           ref={ref}
           className={cn(
-            "flex h-10 w-full rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/30 dark:focus-visible:ring-indigo-400/30 transition-all duration-200 focus:shadow-md disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+            "flex h-10 w-full rounded-lg border border-gray-200/80 dark:border-gray-700/60 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/30 dark:focus-visible:ring-indigo-400/30 transition-all duration-200 focus:shadow-md disabled:cursor-not-allowed disabled:opacity-50 md:text-sm [&>option]:bg-white [&>option]:dark:bg-gray-900 [&>option]:text-gray-900 [&>option]:dark:text-gray-100",
             Icon ? "pl-10" : "",
             className
           )}
           {...props}
         >
-          {" "}
-          {children}{" "}
-        </select>{" "}
+          {children}
+        </select>
       </div>
     );
   },
@@ -391,14 +388,20 @@ export const ModalHeader = ({ children, className }: any) => {
     </SDialogHeader>
   );
 };
-export const ModalBody = ({ children, className }: any) => (
-  <div
-    className={`p-6 max-h-[70vh] overflow-y-auto bg-gray-50/50 dark:bg-[#0a0a0a] ${className || ""}`}
-  >
-    {" "}
-    {children}{" "}
-  </div>
-);
+export const ModalBody = ({ children, className }: any) => {
+  const hasCustomLayout = className && (className.includes("overflow-") || className.includes("max-h-"));
+  return (
+    <div
+      className={cn(
+        "p-6 bg-gray-50/50 dark:bg-[#0a0a0a]",
+        !hasCustomLayout && "max-h-[70vh] overflow-y-auto",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+};
 export const ModalFooter = ({ children, className }: any) => (
   <SDialogFooter
     className={`px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-md flex items-center justify-end gap-3 ${className || ""}`}
@@ -492,7 +495,8 @@ export const Popover = ({ content, children, placement, trigger }: any) => {
       </SPopoverTrigger>
       <SPopoverContent
         side={placement === "bottom" ? "bottom" : placement === "top" ? "top" : placement === "right" ? "right" : placement === "left" ? "left" : "bottom"}
-        className="w-auto p-0 border-none bg-transparent shadow-none"
+        align="start"
+        className="w-auto p-0 border-none bg-transparent shadow-none z-[100]"
       >
         {content}
       </SPopoverContent>

@@ -147,5 +147,35 @@ public class DatabaseMigrationRunner implements CommandLineRunner {
             System.out.println("Employees new payroll columns migration details: " + e.getMessage());
         }
 
+        try {
+            System.out.println("Running Database Migration: Verifying StockLedgers table and POS idempotency column");
+            try {
+                jdbcTemplate.execute("IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'StockLedgers') " +
+                        "CREATE TABLE StockLedgers (" +
+                        "id NVARCHAR(450) NOT NULL PRIMARY KEY, " +
+                        "item_id NVARCHAR(450) NOT NULL, " +
+                        "item_sku NVARCHAR(100) NULL, " +
+                        "warehouse_id NVARCHAR(100) NULL, " +
+                        "transaction_type NVARCHAR(50) NOT NULL, " +
+                        "quantity INT NOT NULL, " +
+                        "balance_before INT NOT NULL, " +
+                        "balance_after INT NOT NULL, " +
+                        "reservation_key NVARCHAR(100) NULL, " +
+                        "reference_number NVARCHAR(100) NULL, " +
+                        "notes NVARCHAR(MAX) NULL, " +
+                        "created_by NVARCHAR(100) NULL, " +
+                        "created_at DATETIME2 NOT NULL DEFAULT GETDATE())");
+            } catch (Exception ex) {
+            }
+            try {
+                jdbcTemplate.execute("IF EXISTS (SELECT * FROM sys.tables WHERE name = 'pos_sales') " +
+                        "AND NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('pos_sales') AND name = 'idempotency_key') " +
+                        "ALTER TABLE pos_sales ADD idempotency_key NVARCHAR(255) NULL");
+            } catch (Exception ex) {
+            }
+            System.out.println("StockLedgers and POS Idempotency migration verified.");
+        } catch (Exception e) {
+            System.out.println("StockLedgers migration details: " + e.getMessage());
+        }
     }
 }

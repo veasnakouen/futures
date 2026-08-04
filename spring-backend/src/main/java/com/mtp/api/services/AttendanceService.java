@@ -16,7 +16,7 @@ public interface AttendanceService {
     Attendance submitManualLog(ManualAttendanceRequest request);
     void syncDeviceData(String deviceIp);
     boolean testConnection(String ipAddress, int port);
-    List<com.mtp.api.utils.ZkDeviceClient.ZkUser> getDeviceUsers(String deviceIp);
+    List<com.mtp.api.utils.zk.ZkUser> getDeviceUsers(String deviceIp);
     
     // Device Management
     List<com.mtp.api.models.BiometricDevice> getAllDevices();

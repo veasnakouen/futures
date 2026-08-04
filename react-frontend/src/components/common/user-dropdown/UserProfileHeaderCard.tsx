@@ -1,5 +1,6 @@
 import React from "react";
 import { ShieldCheck, User as UserIcon } from "lucide-react";
+import { getFaceFocusedUrl, getAvatarDataUrl } from "@/utils/cloudinary";
 
 interface UserProfileHeaderCardProps {
   user: any;
@@ -12,6 +13,32 @@ export const UserProfileHeaderCard: React.FC<UserProfileHeaderCardProps> = ({
   userRole,
   photoUrl,
 }) => {
+  const [imgError, setImgError] = React.useState(false);
+
+  const getEffectivePhotoUrl = () => {
+    const raw =
+      photoUrl ||
+      user?.photo ||
+      user?.avatarUrl ||
+      user?.picture ||
+      user?.profilePicture ||
+      user?.imageUrl ||
+      user?.photoUrl ||
+      user?.avatar ||
+      (typeof window !== "undefined" ? localStorage.getItem("user_profile_photo") || localStorage.getItem("user_avatar") : null);
+
+    if (raw && !imgError) return getFaceFocusedUrl(raw, 120);
+
+    const nameStr = user?.fullName || user?.name || user?.username || user?.email || "Superadmin User";
+    return getAvatarDataUrl(nameStr);
+  };
+
+  const effectivePhotoUrl = getEffectivePhotoUrl();
+
+  React.useEffect(() => {
+    setImgError(false);
+  }, [photoUrl, user?.photo]);
+
   // Extract user display name avoiding email duplication
   const getDisplayName = () => {
     if (user?.fullName) return user.fullName;
@@ -25,22 +52,7 @@ export const UserProfileHeaderCard: React.FC<UserProfileHeaderCardProps> = ({
     return "System Administrator";
   };
 
-  // Generate 2-character initials
-  const getInitials = () => {
-    const nameStr = user?.fullName || user?.name || user?.username || user?.email || "Admin";
-    if (nameStr.includes("@")) {
-      const prefix = nameStr.split("@")[0];
-      return prefix.slice(0, 2).toUpperCase();
-    }
-    const parts = nameStr.trim().split(" ");
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return nameStr.slice(0, 2).toUpperCase();
-  };
-
   const displayName = getDisplayName();
-  const initials = getInitials();
 
   return (
     <div className="p-5 bg-blue-50/80 dark:bg-slate-900/90 border-b border-gray-200/80 dark:border-gray-800 relative z-10">
@@ -48,20 +60,12 @@ export const UserProfileHeaderCard: React.FC<UserProfileHeaderCardProps> = ({
         {/* Avatar Container */}
         <div className="w-12 h-12 min-w-[3rem] min-h-[3rem] aspect-square rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 p-[2px] shadow-lg shadow-blue-500/20 shrink-0">
           <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full overflow-hidden flex items-center justify-center">
-            {photoUrl ? (
-              <img
-                src={photoUrl}
-                alt={displayName}
-                className="w-full h-full object-cover rounded-full"
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = "none";
-                }}
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white font-black text-sm flex items-center justify-center tracking-wider">
-                {initials}
-              </div>
-            )}
+            <img
+              src={effectivePhotoUrl}
+              alt={displayName}
+              className="w-full h-full object-cover rounded-full"
+              onError={() => setImgError(true)}
+            />
           </div>
         </div>
 

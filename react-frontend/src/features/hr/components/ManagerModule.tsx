@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {Button, Badge, Table, TableHead, TableBody, TableRow, TableCell, TableHeadCell, Avatar, Spinner} from '@/lib/flowbite-compat';
+import ModernPagination from "@/components/common/ModernPagination";
 import {
   Users,
   ClipboardCheck,
@@ -16,6 +17,8 @@ const ManagerModule: React.FC = () => {
   const [reports, setReports] = useState<any[]>([]);
   const [pendingLeaves, setPendingLeaves] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   useEffect(() => {
     fetchManagerData();
@@ -73,6 +76,11 @@ const ManagerModule: React.FC = () => {
       </div>
     );
   }
+
+  const safePendingLeaves = Array.isArray(pendingLeaves) ? pendingLeaves : [];
+  const totalItems = safePendingLeaves.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const paginatedLeaves = safePendingLeaves.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -156,88 +164,104 @@ const ManagerModule: React.FC = () => {
       {/* Leave Approvals & Direct Reports Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Pending Leave Approvals */}
-        <div className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md">
-          <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
-            <ClipboardCheck size={20} className="text-amber-500" /> Pending
-            Leave Approvals
-          </h4>
-          <div className="overflow-x-auto">
-            <Table hoverable className="border-none w-full relative">
-              <TableHead className="bg-gray-50/50 dark:bg-gray-700/50 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                <TableHeadCell className="py-4">Employee</TableHeadCell>
-                <TableHeadCell className="py-4">Type</TableHeadCell>
-                <TableHeadCell className="py-4">Start Date</TableHeadCell>
-                <TableHeadCell className="py-4">End Date</TableHeadCell>
-                <TableHeadCell className="py-4 text-right">
-                  Actions
-                </TableHeadCell>
-              </TableHead>
-              <TableBody className="divide-y dark:divide-gray-700">
-                {pendingLeaves.length === 0 ? (
-                  <TableRow className="bg-white dark:bg-gray-800">
-                    <TableCell
-                      colSpan={5}
-                      className="text-center py-10 text-xs font-black text-gray-400 uppercase tracking-widest"
-                    >
-                      No pending leave requests
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  pendingLeaves.map((req) => {
-                    const empName = req.employee
-                      ? `${req.employee.firstNameEnglish} ${req.employee.lastNameEnglish}`
-                      : "Unknown";
-                    return (
-                      <TableRow
-                        key={req.id}
-                        className="bg-white dark:bg-gray-800 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-700/30"
+        <div className="lg:col-span-2 p-8 rounded-md border-none shadow-sm dark:bg-gray-800 bg-white/50 backdrop-blur-md flex flex-col justify-between">
+          <div>
+            <h4 className="font-black text-lg dark:text-white mb-6 flex items-center gap-2 uppercase tracking-tight">
+              <ClipboardCheck size={20} className="text-amber-500" /> Pending
+              Leave Approvals
+            </h4>
+            <div className="overflow-x-auto">
+              <Table hoverable className="border-none w-full relative">
+                <TableHead className="bg-gray-50/50 dark:bg-gray-700/50 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  <TableHeadCell className="py-4">Employee</TableHeadCell>
+                  <TableHeadCell className="py-4">Type</TableHeadCell>
+                  <TableHeadCell className="py-4">Start Date</TableHeadCell>
+                  <TableHeadCell className="py-4">End Date</TableHeadCell>
+                  <TableHeadCell className="py-4 text-right">
+                    Actions
+                  </TableHeadCell>
+                </TableHead>
+                <TableBody className="divide-y dark:divide-gray-700">
+                  {paginatedLeaves.length === 0 ? (
+                    <TableRow className="bg-white dark:bg-gray-800">
+                      <TableCell
+                        colSpan={5}
+                        className="text-center py-10 text-xs font-black text-gray-400 uppercase tracking-widest"
                       >
-                        <TableCell className="font-black dark:text-white text-xs py-4">
-                          {empName}
-                        </TableCell>
-                        <TableCell className="text-xs py-4 uppercase tracking-tight">
-                          {req.leaveType}
-                        </TableCell>
-                        <TableCell className="text-xs text-gray-500 py-4 font-mono">
-                          {req.startDate
-                            ? format(new Date(req.startDate), "MMM dd, yyyy")
-                            : "N/A"}
-                        </TableCell>
-                        <TableCell className="text-xs text-gray-500 py-4 font-mono">
-                          {req.endDate
-                            ? format(new Date(req.endDate), "MMM dd, yyyy")
-                            : "N/A"}
-                        </TableCell>
-                        <TableCell className="text-right py-4">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              size="xs"
-                              color="success"
-                              onClick={() =>
-                                handleAction(req.id, empName, "Approved")
-                              }
-                              className="p-1 rounded-md"
-                            >
-                              <CheckCircle size={14} className="mr-1" /> Approve
-                            </Button>
-                            <Button
-                              size="xs"
-                              color="failure"
-                              onClick={() =>
-                                handleAction(req.id, empName, "Rejected")
-                              }
-                              className="p-1 rounded-md"
-                            >
-                              <XCircle size={14} className="mr-1" /> Deny
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
+                        No pending leave requests
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    paginatedLeaves.map((req) => {
+                      const empName = req.employee
+                        ? `${req.employee.firstNameEnglish} ${req.employee.lastNameEnglish}`
+                        : "Unknown";
+                      return (
+                        <TableRow
+                          key={req.id}
+                          className="bg-white dark:bg-gray-800 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-700/30"
+                        >
+                          <TableCell className="font-black dark:text-white text-xs py-4">
+                            {empName}
+                          </TableCell>
+                          <TableCell className="text-xs py-4 uppercase tracking-tight">
+                            {req.leaveType}
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-500 py-4 font-mono">
+                            {req.startDate
+                              ? format(new Date(req.startDate), "MMM dd, yyyy")
+                              : "N/A"}
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-500 py-4 font-mono">
+                            {req.endDate
+                              ? format(new Date(req.endDate), "MMM dd, yyyy")
+                              : "N/A"}
+                          </TableCell>
+                          <TableCell className="text-right py-4">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                size="xs"
+                                color="success"
+                                onClick={() =>
+                                  handleAction(req.id, empName, "Approved")
+                                }
+                                className="p-1 rounded-md"
+                              >
+                                <CheckCircle size={14} className="mr-1" /> Approve
+                              </Button>
+                              <Button
+                                size="xs"
+                                color="failure"
+                                onClick={() =>
+                                  handleAction(req.id, empName, "Rejected")
+                                }
+                                className="p-1 rounded-md"
+                              >
+                                <XCircle size={14} className="mr-1" /> Deny
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+            <ModernPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              totalItems={totalItems}
+              pageSize={pageSize}
+              onPageSizeChange={(size) => {
+                setPageSize(size);
+                setCurrentPage(1);
+              }}
+            />
           </div>
         </div>
 

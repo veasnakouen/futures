@@ -32,7 +32,7 @@ export function DataTableViewTable<T>({
   });
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border overflow-hidden">
+    <div className="bg-white dark:bg-gray-800/90 rounded-2xl shadow-sm border border-gray-100/80 dark:border-gray-800/60 overflow-hidden">
       <div className="overflow-x-auto">
         <Table className="w-full text-left text-xs">
           <TableHead className="bg-gray-50 dark:bg-gray-700/50 text-[10px] uppercase font-black text-gray-400">

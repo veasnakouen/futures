@@ -8,6 +8,23 @@ interface RoleTableProps {
   onAssignPermissions: (role: any) => void;
 }
 
+const getRoleDescription = (role: any, t: (k: string) => string) => {
+  if (role.description && role.description !== "Default Role Desc") {
+    return role.description;
+  }
+  const name = (role.name || "").toUpperCase();
+  if (name.includes("SUPERADMIN")) return "Platform-wide root access across all services & tenants";
+  if (name.includes("ADMIN")) return "Administrative governance, user, and role management access";
+  if (name.includes("HR")) return "Workforce management, employee profiles, and leave approvals";
+  if (name.includes("SCHOOL")) return "Academic administration, courses, departments, and students";
+  if (name.includes("CLINIC")) return "Clinical operations, medical records, doctors, and IPD wards";
+  if (name.includes("FINANCE") || name.includes("BILLING")) return "Financial ledgers, invoices, and payment processing";
+  if (name.includes("HOTEL")) return "Hospitality management, room allocations, and guest bookings";
+  if (name.includes("POS")) return "Point of Sale operations, products catalog, and transactions";
+  if (name.includes("MANAGER")) return "Domain operational management & audit policy access";
+  return t("defaultRoleDesc") || "Standard operational user role with assigned module access";
+};
+
 export const RoleTable: React.FC<RoleTableProps> = ({
   roles,
   t,
@@ -34,7 +51,7 @@ export const RoleTable: React.FC<RoleTableProps> = ({
               {role.name}
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium line-clamp-2 mb-4">
-              {role.description || t("defaultRoleDesc")}
+              {getRoleDescription(role, t)}
             </p>
           </div>
 

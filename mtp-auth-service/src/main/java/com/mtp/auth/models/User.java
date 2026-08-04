@@ -25,15 +25,12 @@ public class User {
     @Column(name = "Id", length = 128, columnDefinition = "nvarchar(128)")
     private String id;
 
-    @NotNull
     @Size(max = 255)
     private String firstName;
 
-    @NotNull
     @Size(max = 255)
     private String lastName;
 
-    @NotNull
     @Size(max = 255)
     private String branch;
 

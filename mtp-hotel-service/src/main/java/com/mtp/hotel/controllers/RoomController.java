@@ -26,12 +26,16 @@ public class RoomController {
     public Page<RoomQueryResultDto> getAll(Pageable pageable) {
         return getAllHandler.handle(new GetAllRoomsQuery(pageable.getPageNumber(), pageable.getPageSize()));
     }
-
     @GetMapping("/{id}")
-    public ResponseEntity<RoomQueryResultDto> getById(@PathVariable Integer id) {
-        return getByIdHandler.handle(new GetRoomByIdQuery(id))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<RoomQueryResultDto> getById(@PathVariable String id) {
+        try {
+            Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
+            return getByIdHandler.handle(new GetRoomByIdQuery(numericId))
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
@@ -40,10 +44,16 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoomQueryResultDto> update(@PathVariable Integer id, @Valid @RequestBody UpdateRoomCommand command) {
-        command.setId(id);
-        return updateHandler.handle(command)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<RoomQueryResultDto> update(@PathVariable String id,
+            @Valid @RequestBody UpdateRoomCommand command) {
+        try {
+            Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
+            command.setId(numericId);
+            return updateHandler.handle(command)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

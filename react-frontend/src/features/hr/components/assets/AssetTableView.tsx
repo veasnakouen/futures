@@ -1,8 +1,35 @@
 import React, { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Badge, Spinner } from "@/lib/flowbite-compat";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeadCell,
+  TableRow,
+  Badge,
+  Spinner,
+  Dropdown,
+  DropdownItem,
+  DropdownHeader,
+  DropdownDivider,
+} from "@/lib/flowbite-compat";
 import ModernPagination from "@/components/common/ModernPagination";
 import { getAssetIcon } from "./AssetGridCard";
-import { Zap, LayoutGrid, Trash2, Box, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Zap,
+  LayoutGrid,
+  Trash2,
+  Box,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  RotateCcw,
+  UserPlus,
+  Printer,
+  Eye,
+  Edit3,
+  MoreVertical,
+} from "lucide-react";
 
 interface AssetTableViewProps {
   assets: any[];
@@ -224,28 +251,121 @@ export const AssetTableView: React.FC<AssetTableViewProps> = ({
                   </TableCell>
 
                   <TableCell className="py-4 px-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => onOpenDetails(a)}
-                        className="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 transition-colors cursor-pointer"
-                        title="View Details"
-                      >
-                        <Zap size={14} />
-                      </button>
-                      <button
-                        onClick={() => onOpenEdit(a)}
-                        className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 transition-colors cursor-pointer"
-                        title="Edit Asset"
-                      >
-                        <LayoutGrid size={14} />
-                      </button>
-                      <button
-                        onClick={() => onDelete(a.id)}
-                        className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 transition-colors cursor-pointer"
-                        title="Delete Asset"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                    <div className="flex items-center justify-end">
+                      <div className="relative inline-block text-left">
+                        <Dropdown
+                          label=""
+                          dismissOnClick={true}
+                          renderTrigger={() => (
+                            <button
+                              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-200 rounded-md transition-colors cursor-pointer"
+                              title="More Operations"
+                            >
+                              <MoreVertical size={16} />
+                            </button>
+                          )}
+                          theme={{
+                            floating: {
+                              base: "z-50 w-48 focus:outline-none shadow-2xl rounded-2xl overflow-hidden",
+                              style: {
+                                auto: "border-none rounded-2xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl text-gray-900 dark:text-white p-1",
+                              },
+                            },
+                          }}
+                        >
+                          <DropdownHeader className="border-none">
+                            <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-2 py-1">
+                              Asset Operations
+                            </span>
+                          </DropdownHeader>
+                          
+                          <DropdownItem
+                            onClick={() => setTimeout(() => onOpenDetails(a), 0)}
+                            className="rounded-xl mb-1 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group/item"
+                          >
+                            <div className="flex items-center gap-2.5 py-1">
+                              <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 rounded-lg group-hover/item:scale-110 transition-transform">
+                                <Eye size={13} />
+                              </div>
+                              <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                View Details
+                              </span>
+                            </div>
+                          </DropdownItem>
+                          
+                          <DropdownItem
+                            onClick={() => setTimeout(() => onOpenEdit(a), 0)}
+                            className="rounded-xl mb-1 hover:bg-amber-50 dark:hover:bg-amber-900/20 group/item"
+                          >
+                            <div className="flex items-center gap-2.5 py-1">
+                              <div className="p-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 rounded-lg group-hover/item:scale-110 transition-transform">
+                                <Edit3 size={13} />
+                              </div>
+                              <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                Edit Record
+                              </span>
+                            </div>
+                          </DropdownItem>
+                          
+                          <DropdownDivider className="my-1 border-none" />
+                          {a?.status === "Assigned" ? (
+                            <DropdownItem
+                              onClick={() => setTimeout(() => onProcessReturn(a), 0)}
+                              className="rounded-xl mb-1 hover:bg-orange-50 dark:hover:bg-orange-900/20 group/item"
+                            >
+                              <div className="flex items-center gap-2.5 py-1">
+                                <div className="p-1.5 bg-orange-100 dark:bg-orange-900/40 text-orange-600 rounded-lg group-hover/item:scale-110 transition-transform">
+                                  <RotateCcw size={13} />
+                                </div>
+                                <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                  Return to Stock
+                                </span>
+                              </div>
+                            </DropdownItem>
+                          ) : (
+                            <DropdownItem
+                              onClick={() => setTimeout(() => onOpenAssign(a), 0)}
+                              className="rounded-xl mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/20 group/item"
+                            >
+                              <div className="flex items-center gap-2.5 py-1">
+                                <div className="p-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 rounded-lg group-hover/item:scale-110 transition-transform">
+                                  <UserPlus size={13} />
+                                </div>
+                                <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                  Assign to Staff
+                                </span>
+                              </div>
+                            </DropdownItem>
+                          )}
+                          <DropdownItem
+                            onClick={() => setTimeout(() => onGenerateLabel(a), 0)}
+                            className="rounded-xl mb-1 hover:bg-gray-50 dark:hover:bg-gray-700/50 group/item"
+                          >
+                            <div className="flex items-center gap-2.5 py-1">
+                              <div className="p-1.5 bg-gray-100 dark:bg-gray-700/40 text-gray-600 rounded-lg group-hover/item:scale-110 transition-transform">
+                                <Printer size={13} />
+                              </div>
+                              <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                                Print Tag
+                              </span>
+                            </div>
+                          </DropdownItem>
+                          <DropdownDivider className="my-1 border-none" />
+                          <DropdownItem
+                            onClick={() => setTimeout(() => onDelete(a.id), 0)}
+                            className="rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 group/item"
+                          >
+                            <div className="flex items-center gap-2.5 py-1">
+                              <div className="p-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 rounded-lg group-hover/item:scale-110 transition-transform">
+                                <Trash2 size={13} />
+                              </div>
+                              <span className="font-bold text-xs text-rose-650">
+                                Purge Asset
+                              </span>
+                            </div>
+                          </DropdownItem>
+                        </Dropdown>
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>

@@ -76,7 +76,14 @@
 }
 
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-body-family: 'Inter', system-ui, sans-serif;
+  --font-heading-family: 'Inter', system-ui, sans-serif;
+  --font-base-size: 16px;
+  --font-letter-spacing: 0em;
+
+  font-family: var(--font-body-family);
+  font-size: var(--font-base-size);
+  letter-spacing: var(--font-letter-spacing);
   line-height: 1.5;
   font-weight: 400;
 
@@ -88,6 +95,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading-family);
 }
 
 body {

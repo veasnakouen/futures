@@ -11,6 +11,10 @@ import {
   isSameMonth,
   isSameDay,
   isToday,
+  isBefore,
+  isAfter,
+  startOfDay,
+  endOfDay,
 } from "date-fns";
 import { Calendar, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
@@ -20,6 +24,8 @@ interface DatePickerProps {
   onChange: (date: Date) => void;
   placeholder?: string;
   disabled?: boolean;
+  minDate?: Date | null;
+  maxDate?: Date | null;
   className?: string;
   label?: string;
 }
@@ -45,6 +51,8 @@ export default function DatePicker({
   onChange,
   placeholder = "Select date...",
   disabled,
+  minDate,
+  maxDate,
   className,
   label,
 }: DatePickerProps) {
@@ -100,9 +108,9 @@ export default function DatePicker({
   const calendarDays = buildCalendarDays();
 
   const popupContent = (
-    <div className="bg-white/95 backdrop-blur-xl dark:bg-gray-800/95 /60 rounded-xl shadow-xl shadow-blue-500/10 overflow-hidden w-full min-w-[290px] max-h-[85vh] sm:max-h-[none] overflow-y-auto custom-scrollbar flex flex-col">
+    <div className="bg-white/95 backdrop-blur-xl dark:bg-gray-800/95 border border-gray-200/80 dark:border-gray-700/60 rounded-xl shadow-xl shadow-blue-500/10 overflow-hidden w-full min-w-[290px] max-h-[85vh] sm:max-h-[none] overflow-y-auto custom-scrollbar flex flex-col">
       {/* Header */}
-      <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b /50 bg-gray-50/50 dark:bg-gray-900/30">
+      <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-200/80 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/30">
         <button
           type="button"
           onClick={() => setViewDate(subMonths(viewDate, 1))}
@@ -210,12 +218,27 @@ export default function DatePicker({
               const isSelected = value && isSameDay(day, value);
               const isCurrentMonth = isSameMonth(day, viewDate);
               const isCurrentDay = isToday(day);
+              const isDisabledDay =
+                (minDate && isBefore(startOfDay(day), startOfDay(minDate))) ||
+                (maxDate && isAfter(endOfDay(day), endOfDay(maxDate)));
+
               return (
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => handleDayClick(day)}
-                  className={`h-9 w-9 mx-auto flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200 hover:scale-110 active:scale-95 ${isSelected ?"bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold shadow-md shadow-blue-500/30": isCurrentDay && isCurrentMonth ?"bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold border-blue-200 dark:border-blue-700/50": isCurrentMonth ?"text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700":"text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/30"}`}
+                  disabled={!!isDisabledDay}
+                  onClick={() => !isDisabledDay && handleDayClick(day)}
+                  className={`h-9 w-9 mx-auto flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200 ${
+                    isDisabledDay
+                      ? "opacity-25 cursor-not-allowed text-gray-400 dark:text-gray-600 pointer-events-none line-through"
+                      : isSelected
+                      ? "bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold shadow-md shadow-blue-500/30 hover:scale-110 active:scale-95"
+                      : isCurrentDay && isCurrentMonth
+                      ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold border-blue-200 dark:border-blue-700/50 hover:scale-110 active:scale-95"
+                      : isCurrentMonth
+                      ? "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-110 active:scale-95"
+                      : "text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/30 hover:scale-110 active:scale-95"
+                  }`}
                 >
                   {format(day, "d")}
                 </button>
@@ -227,18 +250,30 @@ export default function DatePicker({
 
       {/* Footer */}
       {!showMonthPicker && !showYearPicker && (
-        <div className="px-3 pb-3 flex justify-between items-center">
-          <button
-            type="button"
-            onClick={() => handleDayClick(new Date())}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
-          >
-            Today
-          </button>
+        <div className="px-3 pb-2.5 flex justify-between items-center border-t border-gray-100 dark:border-gray-700/50 pt-2 mt-1">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => handleDayClick(new Date())}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
+            >
+              Today
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onChange(null as any);
+                setOpen(false);
+              }}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+            >
+              Clear
+            </button>
+          </div>
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+            className="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
           >
             Close
           </button>
@@ -248,7 +283,7 @@ export default function DatePicker({
   );
 
   return (
-    <div className={`relative w-full ${className ??""}`}>
+    <div className={`relative w-full ${className ?? ""}`}>
       {label && (
         <label className="mb-1 block text-[10px] uppercase font-black text-gray-400">
           {label}
@@ -260,27 +295,27 @@ export default function DatePicker({
           <button
             type="button"
             disabled={disabled}
-            className={`flex items-center gap-2 w-full px-3 py-2.5 bg-white dark:bg-gray-800 rounded-xl cursor-pointer select-none transition-all duration-200 ease-out ${disabled ?"opacity-50 cursor-not-allowed":"hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/5"} ${open ?"border-blue-500 ring-4 ring-blue-500/10 dark:border-blue-500":""}`}
+            className={`flex items-center gap-2 w-full px-3 py-2 bg-white dark:bg-gray-800 rounded-xl cursor-pointer select-none transition-all duration-200 ease-out border border-gray-200 dark:border-gray-700 ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/5"} ${open ? "border-blue-500 ring-4 ring-blue-500/10 dark:border-blue-500" : ""}`}
           >
             <Calendar
-              size={16}
-              className={`shrink-0 transition-colors ${open ?"text-blue-500":"text-gray-400"}`}
+              size={15}
+              className={`shrink-0 transition-colors ${open ? "text-blue-500" : "text-gray-400"}`}
             />
             <span
-              className={`text-sm flex-1 whitespace-nowrap truncate text-left ${value ?"text-gray-900 dark:text-white font-medium":"text-gray-400"}`}
+              className={`text-xs flex-1 whitespace-nowrap truncate text-left font-mono font-bold ${value ? "text-gray-900 dark:text-white" : "text-gray-400"}`}
             >
               {value ? format(value, "MMM dd, yyyy") : placeholder}
             </span>
             <ChevronDown
               size={14}
-              className={`shrink-0 text-gray-400 transition-transform duration-150 ${open ?"rotate-180":""}`}
+              className={`shrink-0 text-gray-400 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
             />
           </button>
         </PopoverTrigger>
         <PopoverContent
           align="start"
           sideOffset={8}
-          className="p-0 border-none shadow-none bg-transparent w-auto"
+          className="p-0 border-none shadow-2xl bg-transparent w-auto z-[9999]"
           style={{ maxHeight: "var(--radix-popover-content-available-height)" }}
         >
           {popupContent}

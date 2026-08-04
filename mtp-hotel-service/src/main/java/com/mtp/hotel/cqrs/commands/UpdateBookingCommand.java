@@ -13,5 +13,14 @@ public class UpdateBookingCommand {
     @NotNull(message = "Check in date is required") private LocalDate checkInDate;
     @NotNull(message = "Check out date is required") private LocalDate checkOutDate;
     private BigDecimal totalPrice;
+    private BigDecimal totalAmount;
     private String status;
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount != null ? totalAmount : totalPrice;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice != null ? totalPrice : totalAmount;
+    }
 }

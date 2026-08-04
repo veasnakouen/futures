@@ -22,16 +22,25 @@ interface ModernPaginationProps {
 
 const ModernPagination: React.FC<ModernPaginationProps> = ({
   currentPage,
-  totalPages,
+  totalPages: totalPagesProp,
   onPageChange,
   totalItems,
-  pageSize,
+  pageSize = 10,
   onPageSizeChange,
   pageSizeOptions = [10, 25, 50, 100],
   showInfo = true,
   className = "",
 }) => {
   const [goToPage, setGoToPage] = useState("");
+
+  const totalPages = Math.max(
+    1,
+    totalPagesProp > 0
+      ? totalPagesProp
+      : totalItems && pageSize
+      ? Math.ceil(totalItems / pageSize)
+      : 1
+  );
 
   const handleGoToPage = (e: React.FormEvent) => {
     e.preventDefault();

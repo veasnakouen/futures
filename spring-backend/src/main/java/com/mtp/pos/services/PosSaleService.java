@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,9 +32,18 @@ public class PosSaleService {
 
     @Transactional
     public PosSaleDto createSale(PosSaleDto dto) {
+        // Idempotency Protection: Check if this transaction key was already processed
+        if (dto.getIdempotencyKey() != null && !dto.getIdempotencyKey().trim().isEmpty()) {
+            Optional<PosSale> existing = repository.findByIdempotencyKey(dto.getIdempotencyKey().trim());
+            if (existing.isPresent()) {
+                return mapToDto(existing.get());
+            }
+        }
+
         PosSale sale = PosSale.builder()
-                .cashierId(dto.getCashierId())
-                .paymentMethod(dto.getPaymentMethod())
+                .idempotencyKey(dto.getIdempotencyKey())
+                .cashierId(dto.getCashierId() != null ? dto.getCashierId() : "cashier-1")
+                .paymentMethod(dto.getPaymentMethod() != null ? dto.getPaymentMethod() : "CASH")
                 .totalAmount(dto.getTotalAmount())
                 .receiptNumber(dto.getReceiptNumber())
                 .items(new ArrayList<>())
@@ -52,17 +62,17 @@ public class PosSaleService {
                         .build();
                 sale.getItems().add(item);
 
-                // Update product stock
-                PosProduct product = productRepository.findById(itemDto.getProductId())
-                        .orElseThrow(() -> new RuntimeException("Product not found: " + itemDto.getProductId()));
-                
-                int newQuantity = product.getStockQuantity() - itemDto.getQuantity();
-                product.setStockQuantity(Math.max(newQuantity, 0)); // Prevent negative stock
-                
-                if (product.getStockQuantity() == 0) {
-                    product.setStatus("OUT_OF_STOCK");
+                // Update product stock if product exists in catalog
+                if (itemDto.getProductId() != null) {
+                    productRepository.findById(itemDto.getProductId()).ifPresent(product -> {
+                        int newQuantity = product.getStockQuantity() - itemDto.getQuantity();
+                        product.setStockQuantity(Math.max(newQuantity, 0));
+                        if (product.getStockQuantity() == 0) {
+                            product.setStatus("OUT_OF_STOCK");
+                        }
+                        productRepository.save(product);
+                    });
                 }
-                productRepository.save(product);
             }
         }
 
@@ -72,12 +82,13 @@ public class PosSaleService {
     private PosSaleDto mapToDto(PosSale sale) {
         PosSaleDto dto = new PosSaleDto();
         dto.setId(sale.getId());
+        dto.setIdempotencyKey(sale.getIdempotencyKey());
         dto.setCashierId(sale.getCashierId());
         dto.setPaymentMethod(sale.getPaymentMethod());
         dto.setTotalAmount(sale.getTotalAmount());
         dto.setReceiptNumber(sale.getReceiptNumber());
         dto.setTransactionDate(sale.getTransactionDate());
-        
+
         if (sale.getItems() != null) {
             dto.setItems(sale.getItems().stream().map(item -> {
                 PosSaleItemDto itemDto = new PosSaleItemDto();

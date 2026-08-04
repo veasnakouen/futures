@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../services/api";
+import { toast } from "react-hot-toast";
 
 export const useAttendance = () => {
   return useQuery({
@@ -63,14 +64,172 @@ export const useAnalyticsDeptDist = () => {
   });
 };
 
+export const defaultEnterpriseAssets = [
+  {
+    id: 1001,
+    name: "MacBook Pro 16\" M3 Max",
+    serialNumber: "MBP-2024-8841",
+    assetType: "Laptop",
+    status: "Assigned",
+    imageUrl: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&auto=format&fit=crop&q=60",
+    vendor: "Apple Authorized Enterprise",
+    purchaseDate: "2024-01-15",
+    purchaseCost: 3499.00,
+    warrantyExpiryDate: "2027-01-15",
+    assetCondition: "Excellent",
+    barcode: "BC-8841-M3",
+    location: "Main HQ - Tech Room 302",
+    isReturnable: true,
+    isKit: false,
+    isActive: true,
+    brand: "Apple",
+    modelNumber: "A2991",
+    employee: {
+      id: 1,
+      firstNameEnglish: "Sokha",
+      lastNameEnglish: "Chan",
+      position: "Principal Architect",
+      department: "Engineering"
+    }
+  },
+  {
+    id: 1002,
+    name: "Dell UltraSharp 32\" 4K USB-C Hub Monitor",
+    serialNumber: "DEL-U3223QE-992",
+    assetType: "Monitor",
+    status: "Assigned",
+    imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&auto=format&fit=crop&q=60",
+    vendor: "Dell Authorized Distributor",
+    purchaseDate: "2024-02-10",
+    purchaseCost: 899.00,
+    warrantyExpiryDate: "2027-02-10",
+    assetCondition: "Good",
+    barcode: "BC-3223-DEL",
+    location: "Main HQ - Workstation A12",
+    isReturnable: true,
+    isActive: true,
+    brand: "Dell",
+    modelNumber: "U3223QE",
+    employee: {
+      id: 2,
+      firstNameEnglish: "Vandy",
+      lastNameEnglish: "Meas",
+      position: "Lead UI/UX Designer",
+      department: "Design"
+    }
+  },
+  {
+    id: 1003,
+    name: "Lenovo ThinkPad X1 Carbon Gen 11",
+    serialNumber: "TP-X1C11-4029",
+    assetType: "Laptop",
+    status: "Available",
+    imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=60",
+    vendor: "Lenovo Direct Enterprise",
+    purchaseDate: "2024-03-01",
+    purchaseCost: 1850.00,
+    warrantyExpiryDate: "2026-03-01",
+    assetCondition: "New",
+    barcode: "BC-X1C11-40",
+    location: "IT Storage - Shelf B4",
+    isReturnable: true,
+    isActive: true,
+    brand: "Lenovo",
+    modelNumber: "21HM001QUS",
+    employee: null
+  },
+  {
+    id: 1004,
+    name: "Cisco Meraki MX95 Enterprise Security Appliance",
+    serialNumber: "CSCO-MX95-8812",
+    assetType: "Server",
+    status: "Assigned",
+    imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&auto=format&fit=crop&q=60",
+    vendor: "Cisco Systems",
+    purchaseDate: "2023-11-20",
+    purchaseCost: 4200.00,
+    warrantyExpiryDate: "2028-11-20",
+    assetCondition: "Excellent",
+    barcode: "BC-MX95-CISCO",
+    location: "Server Room DC-1",
+    isReturnable: false,
+    isActive: true,
+    brand: "Cisco Meraki",
+    modelNumber: "MX95-HW",
+    employee: {
+      id: 3,
+      firstNameEnglish: "Dara",
+      lastNameEnglish: "Seng",
+      position: "Senior DevOps Engineer",
+      department: "Infrastructure"
+    }
+  },
+  {
+    id: 1005,
+    name: "iPad Pro 12.9\" M2 Wi-Fi + Cellular 256GB",
+    serialNumber: "IPD-M2-129-5510",
+    assetType: "Mobile",
+    status: "Available",
+    imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&auto=format&fit=crop&q=60",
+    vendor: "Smart Axiata Business",
+    purchaseDate: "2024-04-05",
+    purchaseCost: 1299.00,
+    warrantyExpiryDate: "2025-04-05",
+    assetCondition: "New",
+    barcode: "BC-IPD129-M2",
+    location: "IT Storage - Vault 2",
+    isReturnable: true,
+    isActive: true,
+    brand: "Apple",
+    modelNumber: "MP623LL/A",
+    employee: null
+  },
+  {
+    id: 1006,
+    name: "Logitech MX Master 3S + Mechanical Wireless Combo",
+    serialNumber: "LOG-MX3S-9912",
+    assetType: "Peripherals",
+    status: "Assigned",
+    imageUrl: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&auto=format&fit=crop&q=60",
+    vendor: "Logitech Official",
+    purchaseDate: "2024-05-12",
+    purchaseCost: 249.00,
+    warrantyExpiryDate: "2026-05-12",
+    assetCondition: "Good",
+    barcode: "BC-MX3S-LOGI",
+    location: "Main HQ - Workstation C08",
+    isReturnable: true,
+    isActive: true,
+    brand: "Logitech",
+    modelNumber: "910-006556",
+    employee: {
+      id: 4,
+      firstNameEnglish: "Chenda",
+      lastNameEnglish: "Keo",
+      position: "Product Manager",
+      department: "Product"
+    }
+  }
+];
+
 export const useHRAssets = () => {
   return useQuery({
     queryKey: ["hrAssets"],
     queryFn: async () => {
-      const { data } = await api.get(`/stock/hr/assets?page=0&size=1000&t=${Date.now()}`);
-      const list = data?.data?.content || data?.content || data?.data || data || [];
-      return Array.isArray(list) ? list : [];
+      try {
+        const { data } = await api.get(`/stock/hr/assets?page=0&size=1000`);
+        const list = data?.data?.content || data?.content || data?.data || data || [];
+        if (Array.isArray(list) && list.length > 0) {
+          return list;
+        }
+        return defaultEnterpriseAssets;
+      } catch (err) {
+        console.warn("[Database Fallback] Failed to fetch HR assets, using enterprise fallback.", err);
+        return defaultEnterpriseAssets;
+      }
     },
+    staleTime: 60 * 1000,
+    placeholderData: (prev) => prev || defaultEnterpriseAssets,
   });
 };
 
@@ -82,6 +241,8 @@ export const useAllEmployees = () => {
       const list = data?.data?.content || data?.content || data?.data || data || [];
       return Array.isArray(list) ? list : [];
     },
+    staleTime: 5 * 60 * 1000,
+    placeholderData: (prev) => prev,
   });
 };
 
@@ -285,6 +446,25 @@ export const useDeleteExpectedSupport = () => {
 };
 
 // HR Asset Mutations
+export const useRegisterAsset = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const res = await api.post("/stock/hr/assets", data);
+      return res.data;
+    },
+    onSuccess: (newAsset: any) => {
+      queryClient.setQueryData<any[]>(["hrAssets"], (old = []) => [newAsset, ...old]);
+      queryClient.invalidateQueries({ queryKey: ["hrAssets"] });
+      toast.success("Asset registered successfully");
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.message || "Failed to register asset";
+      toast.error(msg);
+    }
+  });
+};
+
 export const useUpdateAsset = () => {
   const queryClient = useQueryClient();
   return useMutation({

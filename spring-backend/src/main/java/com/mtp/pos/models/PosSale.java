@@ -25,6 +25,9 @@ public class PosSale {
     @Version
     private Long version;
 
+    @Column(name = "idempotency_key", unique = true)
+    private String idempotencyKey;
+
     @Column(name = "cashier_id", nullable = false)
     private String cashierId;
 

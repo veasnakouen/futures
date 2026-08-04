@@ -1,5 +1,6 @@
 import api from './api';
 import { offlineSyncService } from './offlineSyncService';
+import { indexedDbService } from './indexedDbService';
 
 export interface PosProductDto {
     id?: string;
@@ -68,6 +69,7 @@ export interface PosSaleDto {
     discountAmount?: number;
     receiptNumber: string;
     transactionDate: string;
+    idempotencyKey?: string;
     domainType?: string;
     notes?: string;
     items: PosSaleItemDto[];
@@ -104,9 +106,16 @@ export const posService = {
         try {
             const response = await api.get('/pos/products');
             const data = response.data?.value || response.data || [];
-            if (Array.isArray(data) && data.length > 0) return data;
+            if (Array.isArray(data)) {
+                indexedDbService.saveProducts(data);
+                return data;
+            }
         } catch (error) {
-            console.warn("[posService] Backend POS microservice unavailable. Using fallback multi-domain catalog.");
+            console.warn("[posService] Backend POS microservice unavailable. Attempting IndexedDB offline fallback.");
+            const offlineProducts = await indexedDbService.getProducts();
+            if (offlineProducts && offlineProducts.length > 0) {
+                return offlineProducts;
+            }
         }
         return MOCK_UNIVERSAL_PRODUCTS;
     },
@@ -156,17 +165,22 @@ export const posService = {
     },
 
     createSale: async (data: PosSaleDto): Promise<PosSaleDto> => {
+        const idempotencyKey = data.idempotencyKey || `idemp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        const payload = { ...data, idempotencyKey };
+
         try {
             if (!offlineSyncService.isOnline()) {
-                offlineSyncService.queueSaleLocally(data);
-                return data;
+                await offlineSyncService.queueSaleLocally(payload, idempotencyKey);
+                return payload;
             }
-            const response = await api.post('/pos/sales', data);
+            const response = await api.post('/pos/sales', payload, {
+                headers: { 'X-Idempotency-Key': idempotencyKey }
+            });
             return response.data;
         } catch (error) {
-            console.warn("[posService] Backend server unreachable. Queuing sale locally for sync:", data);
-            offlineSyncService.queueSaleLocally(data);
-            return data;
+            console.warn("[posService] Backend server unreachable. Queuing sale in IndexedDB for sync:", payload);
+            await offlineSyncService.queueSaleLocally(payload, idempotencyKey);
+            return payload;
         }
     },
 

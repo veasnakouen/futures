@@ -54,7 +54,7 @@ export const useAssetsModule = ({
   onUpdate,
   onDelete,
 }: UseAssetsModuleProps) => {
-  const [viewMode, setViewMode] = useState<"GRID" | "TABLE">("GRID");
+  const [viewMode, setViewMode] = useState<"ACCORDION" | "GRID" | "TABLE">("ACCORDION");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
   const [itemsPerRow, setItemsPerRow] = useState("4");
@@ -79,6 +79,10 @@ export const useAssetsModule = ({
   // Details State
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [viewingAsset, setViewingAsset] = useState<any>(null);
+
+  // Print Label State
+  const [isPrintLabelModalOpen, setIsPrintLabelModalOpen] = useState(false);
+  const [labelAsset, setLabelAsset] = useState<any>(null);
 
   // Assignment State
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -359,13 +363,8 @@ export const useAssetsModule = ({
   };
 
   const generateAssetLabel = (asset: any) => {
-    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: [80, 50] });
-    doc.setFontSize(10);
-    doc.text("MTP PROPERTY TAG", 40, 10, { align: "center" });
-    doc.text(`ASSET: ${asset.name}`, 10, 20);
-    doc.text(`S/N: ${asset.serialNumber}`, 10, 25);
-    doc.save(`Label_${asset.serialNumber}.pdf`);
-    toast.success("Asset identification tag generated");
+    setLabelAsset(asset);
+    setIsPrintLabelModalOpen(true);
   };
 
   return {
@@ -401,6 +400,10 @@ export const useAssetsModule = ({
     isDetailsModalOpen,
     setIsDetailsModalOpen,
     viewingAsset,
+    isPrintLabelModalOpen,
+    setIsPrintLabelModalOpen,
+    labelAsset,
+    setLabelAsset,
     isAssignModalOpen,
     setIsAssignModalOpen,
     selectedAsset,

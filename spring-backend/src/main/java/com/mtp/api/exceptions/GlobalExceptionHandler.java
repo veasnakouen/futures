@@ -101,6 +101,13 @@ public class GlobalExceptionHandler {
                 body(409, "Consistency Conflict", "The record was updated by another user while you were editing. Please refresh and try again.", req.getRequestURI()));
     }
 
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleTypeMismatch(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+        log.warn("Parameter type mismatch on [{}]: parameter '{}' expects {}", req.getRequestURI(), ex.getName(), ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "valid format");
+        return ResponseEntity.badRequest().body(
+                body(400, "Bad Request", "Invalid parameter format for '" + ex.getName() + "'", req.getRequestURI()));
+    }
+
     // 500 — Catch-all: never expose internal details to the client
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAll(Exception ex, HttpServletRequest req) {
