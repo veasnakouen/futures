@@ -10,13 +10,12 @@ import java.time.LocalDate;
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.room.id = :roomId " +
-           "AND b.status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN') " +
-           "AND b.checkInDate < :checkOutDate AND b.checkOutDate > :checkInDate " +
-           "AND (:excludeBookingId IS NULL OR b.id != :excludeBookingId)")
+            "AND b.status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN') " +
+            "AND b.checkInDate < :checkOutDate AND b.checkOutDate > :checkInDate " +
+            "AND (:excludeBookingId IS NULL OR b.id != :excludeBookingId)")
     long countOverlappingBookings(
             @Param("roomId") Integer roomId,
             @Param("checkInDate") LocalDate checkInDate,
             @Param("checkOutDate") LocalDate checkOutDate,
-            @Param("excludeBookingId") Integer excludeBookingId
-    );
+            @Param("excludeBookingId") Integer excludeBookingId);
 }

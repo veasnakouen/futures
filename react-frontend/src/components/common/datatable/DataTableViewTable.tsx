@@ -32,10 +32,10 @@ export function DataTableViewTable<T>({
   });
 
   return (
-    <div className="bg-white dark:bg-gray-800/90 rounded-2xl shadow-sm border border-gray-100/80 dark:border-gray-800/60 overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="w-full flex flex-col relative animate-slide-up h-full">
+      <div className="relative [&>div]:!overflow-visible w-full h-full">
         <Table className="w-full text-left text-xs">
-          <TableHead className="bg-gray-50 dark:bg-gray-700/50 text-[10px] uppercase font-black text-gray-400">
+          <TableHead className="bg-gray-50 dark:bg-gray-700/50 text-[10px] uppercase font-black text-gray-400 sticky top-0 z-10 shadow-[0_1px_0_0_#e5e7eb] dark:shadow-[0_1px_0_0_#374151]">
             <TableRow>
               {visibleColumns.map((col, idx) => {
                 const key = (col.accessorKey as string) || (typeof col.header === "string" ? col.header : `col-${idx}`);
@@ -66,9 +66,11 @@ export function DataTableViewTable<T>({
           <TableBody className="divide-y text-xs">
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={visibleColumns.length || 1} className="py-16 text-center">
-                  <Spinner size="lg" />
-                  <p className="mt-2 text-gray-400 font-bold uppercase tracking-widest text-[10px]">Loading Records...</p>
+                <TableCell colSpan={visibleColumns.length || 1} className="py-16">
+                  <div className="flex flex-col items-center justify-center">
+                    <Spinner size="lg" />
+                    <p className="mt-2 text-gray-400 font-bold uppercase tracking-widest text-[10px]">Loading Records...</p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : data.length === 0 ? (

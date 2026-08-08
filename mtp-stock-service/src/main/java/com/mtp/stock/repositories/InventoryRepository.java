@@ -39,6 +39,24 @@ public interface InventoryRepository extends JpaRepository<InventoryItem, Long> 
         @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.department FROM InventoryItem i WHERE i.department IS NOT NULL")
         List<com.mtp.stock.models.stubs.DepartmentStub> findDistinctDepartments();
 
+        @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.unitOfMeasure FROM InventoryItem i WHERE i.unitOfMeasure IS NOT NULL AND i.unitOfMeasure != ''")
+        List<String> findDistinctUoms();
+
+        @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.brand FROM InventoryItem i WHERE i.brand IS NOT NULL AND i.brand != ''")
+        List<String> findDistinctBrands();
+
+        @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.locationBin FROM InventoryItem i WHERE i.locationBin IS NOT NULL AND i.locationBin != ''")
+        List<String> findDistinctLocationBins();
+
+        @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.donorName FROM InventoryItem i WHERE i.donorName IS NOT NULL AND i.donorName != ''")
+        List<String> findDistinctDonors();
+
+        @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.grantCode FROM InventoryItem i WHERE i.grantCode IS NOT NULL AND i.grantCode != ''")
+        List<String> findDistinctGrantCodes();
+
+        @org.springframework.data.jpa.repository.Query("SELECT DISTINCT i.supplierName FROM InventoryItem i WHERE i.supplierName IS NOT NULL AND i.supplierName != ''")
+        List<String> findDistinctSuppliers();
+
         @EntityGraph(attributePaths = { "category", "department" })
         @org.springframework.data.jpa.repository.Query("SELECT i FROM InventoryItem i WHERE LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(i.sku) LIKE LOWER(CONCAT('%', :search, '%'))")
         Page<InventoryItem> findBySearch(@org.springframework.data.repository.query.Param("search") String search,

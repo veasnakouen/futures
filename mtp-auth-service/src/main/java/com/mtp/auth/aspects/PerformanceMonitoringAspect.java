@@ -13,7 +13,8 @@ public class PerformanceMonitoringAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(PerformanceMonitoringAspect.class);
 
-    // Matches any handle method inside classes ending with CommandHandler or QueryHandler in the cqrs or handlers packages
+    // Matches any handle method inside classes ending with CommandHandler or
+    // QueryHandler in the cqrs or handlers packages
     @Around("execution(* com.mtp.auth..*CommandHandler.handle(..)) || execution(* com.mtp.auth..*QueryHandler.handle(..))")
     public Object monitorTimeAndSpaceComplexity(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().toShortString();

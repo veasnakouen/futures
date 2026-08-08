@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
         log.error("Database integrity violation on [{}]: {}", req.getRequestURI(), ex.getMessage());
         String message = "Database constraint violation. Please ensure ID number is unique and all required fields are provided.";
         if (ex.getMessage() != null && ex.getMessage().contains("duplicate")) {
-            message = "An employee with this ID number already exists in the system.";
+            message = "A record with this unique identifier (e.g., name, ID, or email) already exists in the system.";
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 body(409, "Conflict", message, req.getRequestURI()));

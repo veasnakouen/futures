@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const inventorySchema = z.object({
+  version: z.number().optional(),
   name: z.string().min(1, "Item name is required").max(255),
   sku: z.string().max(50).optional().or(z.literal("")),
   category: z.any().optional(),

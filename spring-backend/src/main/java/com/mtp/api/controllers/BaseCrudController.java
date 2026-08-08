@@ -4,6 +4,7 @@ import com.mtp.api.dto.ApiResponse;
 import com.mtp.api.services.BaseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -29,13 +30,13 @@ public abstract class BaseCrudController<T, ID, S extends BaseService<T, ID>> {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<T>> create(@RequestBody T entity) {
+    public ResponseEntity<ApiResponse<T>> create(@Valid @RequestBody T entity) {
         T created = service.save(entity);
         return ResponseEntity.ok(ApiResponse.success("Created successfully", created));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<T>> update(@PathVariable ID id, @RequestBody T entity) {
+    public ResponseEntity<ApiResponse<T>> update(@PathVariable ID id, @Valid @RequestBody T entity) {
         T updated = service.update(id, entity);
         return ResponseEntity.ok(ApiResponse.success("Updated successfully", updated));
     }
@@ -45,4 +46,5 @@ public abstract class BaseCrudController<T, ID, S extends BaseService<T, ID>> {
         service.deleteById(id);
         return ResponseEntity.ok(ApiResponse.success("Deleted successfully", null));
     }
+
 }

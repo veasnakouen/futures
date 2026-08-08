@@ -1,4 +1,5 @@
 plugins {
+	
 	id 'java'
 	id 'org.springframework.boot' version '3.4.1'
 	id 'io.spring.dependency-management' version '1.1.7'
@@ -23,6 +24,8 @@ repositories {
 }
 
 dependencies {
+	annotationProcessor 'org.springframework:spring-context-indexer'
+	testAnnotationProcessor 'org.springframework:spring-context-indexer'
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -31,6 +34,9 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+	// Database & Flyway
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-sqlserver'
 	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
 
 	compileOnly 'org.projectlombok:lombok'

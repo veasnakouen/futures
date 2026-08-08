@@ -476,7 +476,7 @@ const InventorySummary: React.FC<InventorySummaryProps> = ({ stats, state }) => 
                       background: `conic-gradient(#6366f1 ${activePercent}%, #e2e8f0 ${activePercent}%)`,
                     }}
                   >
-                    <div className="absolute w-18 h-18 bg-white dark:bg-gray-850 rounded-full flex flex-col items-center justify-center shadow-inner">
+                    <div className="absolute w-[72px] h-[72px] bg-white dark:bg-gray-850 rounded-full flex flex-col items-center justify-center shadow-inner">
                       <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400">
                         {activePercent}%
                       </span>
@@ -652,10 +652,10 @@ const InventorySummary: React.FC<InventorySummaryProps> = ({ stats, state }) => 
                   </button>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-auto max-h-[400px] relative">
                   {realTransfers && realTransfers.length > 0 ? (
                     <table className="w-full text-left border-collapse">
-                      <thead>
+                      <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800 shadow-[0_1px_0_0_#e5e7eb] dark:shadow-[0_1px_0_0_#374151]">
                         <tr>
                           <th className="py-2 px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200/60 dark:border-gray-700">
                             Item
@@ -699,7 +699,7 @@ const InventorySummary: React.FC<InventorySummaryProps> = ({ stats, state }) => 
                     </table>
                   ) : (
                     <table className="w-full text-left border-collapse">
-                      <thead>
+                      <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800 shadow-[0_1px_0_0_#e5e7eb] dark:shadow-[0_1px_0_0_#374151]">
                         <tr>
                           <th className="py-2 px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200/60 dark:border-gray-700">
                             Route

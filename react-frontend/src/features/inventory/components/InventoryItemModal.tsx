@@ -26,6 +26,15 @@ interface InventoryItemModalProps {
   handleSubmit: (e: React.FormEvent) => void;
   categories: any[];
   locations: any[];
+  uomOptions: string[];
+  brandOptions: string[];
+  binOptions: string[];
+  donorOptions: string[];
+  grantCodeOptions: string[];
+  supplierOptions: string[];
+  onRenameOption?: (field: any, oldValue: string, newValue: string) => Promise<void> | void;
+  onDeleteOption?: (field: any, value: string) => Promise<void> | void;
+  onOpenManageModal?: (type: any) => void;
 }
 
 const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
@@ -41,6 +50,15 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
   handleSubmit,
   categories,
   locations,
+  uomOptions,
+  brandOptions,
+  binOptions,
+  donorOptions,
+  grantCodeOptions,
+  supplierOptions,
+  onRenameOption,
+  onDeleteOption,
+  onOpenManageModal,
 }) => {
   const [isGeneratingSku, setIsGeneratingSku] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "history">("overview");
@@ -116,8 +134,6 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
     enabled: !!itemId && isViewMode && activeTab === "history",
   });
 
-  const supplierOptions = ["Pharma Global Co.", "MedTech Supplies", "Office Pro LLC", "General Logistics", "BioHealth Ltd"];
-
   return (
     <Modal show={isOpen} onClose={onClose} size="2xl" dismissible={false}>
       <CustomModalHeader
@@ -125,16 +141,17 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
         subtitle="System Node: Inventory_Control_Alpha"
         onClose={onClose}
       />
-      <ModalBody className="bg-white dark:bg-gray-800 p-0 overflow-visible">
+      <ModalBody className="bg-white dark:bg-gray-800 p-0 overflow-hidden flex flex-col">
         {isViewMode && (
-          <PillTabs
-            className="mx-8 mt-4"
-            activeTab={activeTab}
-            onTabChange={setActiveTab as any}
-            tabs={[{ id: "overview", label: "Overview" }, { id: "history", label: "Stock History" }]}
-          />
+          <div className="px-8 pt-4 shrink-0 border-b border-gray-100 dark:border-gray-700 pb-2">
+            <PillTabs
+              activeTab={activeTab}
+              onTabChange={setActiveTab as any}
+              tabs={[{ id: "overview", label: "Overview" }, { id: "history", label: "Stock History" }]}
+            />
+          </div>
         )}
-        <div className="p-8">
+        <div className="p-8 flex-1 overflow-y-auto min-h-0 max-h-[65vh]">
           {activeTab === "overview" && (
             <form id="inventory-form" onSubmit={handleSubmit} className="space-y-6">
               <InventoryItemFormFields
@@ -147,8 +164,16 @@ const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                 categories={categories}
                 locations={locations}
                 supplierOptions={supplierOptions}
+                uomOptions={uomOptions}
+                brandOptions={brandOptions}
+                binOptions={binOptions}
+                donorOptions={donorOptions}
+                grantCodeOptions={grantCodeOptions}
                 onGenerateSku={handleGenerateSku}
                 onImageChange={handleImageChange}
+                onRenameOption={onRenameOption}
+                onDeleteOption={onDeleteOption}
+                onOpenManageModal={onOpenManageModal}
               />
               {isViewMode && itemId && (
                 <InventoryItemStockDistribution distLoading={distLoading} stockDistribution={stockDistribution} />

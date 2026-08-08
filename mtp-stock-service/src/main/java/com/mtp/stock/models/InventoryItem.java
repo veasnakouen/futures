@@ -7,8 +7,12 @@ import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.hibernate.envers.Audited;
+
 @Entity
 @Table(name = "InventoryItems")
+@Inheritance(strategy = InheritanceType.JOINED)
+@Audited
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +20,9 @@ public class InventoryItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Version
+    private Long version;
 
     @jakarta.validation.constraints.Size(max = 50, message = "SKU cannot exceed 50 characters")
     private String sku;
@@ -29,6 +36,7 @@ public class InventoryItem {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
+    @org.hibernate.envers.Audited(targetAuditMode = org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED)
     private AssetCategory category;
     private String brand;
 
@@ -44,18 +52,34 @@ public class InventoryItem {
     @Column(name = "quantity")
     private Integer stockQuantity;
 
+    @Column(name = "unit")
+    private String unitOfMeasure;
+
+    @Column(name = "vendor")
+    private String supplierName;
+
+    @Column(name = "donorOrPartnerName")
+    private String donorName;
+
+    @Column(name = "costCenter")
+    private String grantCode;
+
+    @Column(name = "binLocation")
+    private String locationBin;
+
+    @Column(name = "batchNumber")
+    private String batchNumber;
+
+    @Column(name = "expirationDate")
+    private String expiryDate;
+
+    @Transient
+    private Integer allocatedQuantity = 0;
+
     @jakarta.validation.constraints.Min(value = 0, message = "Reorder level cannot be negative")
     private Integer reorderLevel;
 
     private Double weight;
-
-    private String unitOfMeasure;
-    private String supplierName;
-    private String donorName;
-    private String grantCode;
-    private String locationBin;
-    private String batchNumber;
-    private String expiryDate;
 
     private Boolean active = true;
 
@@ -94,6 +118,22 @@ public class InventoryItem {
         this.stockQuantity = (this.stockQuantity == null ? 0 : this.stockQuantity) + amount;
     }
 
+    public void allocateStock(int amount) {
+        if (amount < 0)
+            throw new IllegalArgumentException("Cannot allocate negative stock");
+        if (getAvailableStock() < amount)
+            throw new IllegalStateException("Insufficient available stock to allocate");
+        this.allocatedQuantity = (this.allocatedQuantity == null ? 0 : this.allocatedQuantity) + amount;
+    }
+
+    public void deallocateStock(int amount) {
+        if (amount < 0)
+            throw new IllegalArgumentException("Cannot deallocate negative stock");
+        if (this.allocatedQuantity == null || this.allocatedQuantity < amount)
+            throw new IllegalStateException("Cannot deallocate more than currently allocated");
+        this.allocatedQuantity -= amount;
+    }
+
     public void removeStock(int amount) {
         if (amount < 0)
             throw new IllegalArgumentException("Cannot remove negative stock");
@@ -105,7 +145,13 @@ public class InventoryItem {
 
     public boolean requiresRestocking() {
         int threshold = (this.reorderLevel != null) ? this.reorderLevel : 0;
-        return this.stockQuantity != null && this.stockQuantity <= threshold;
+        return getAvailableStock() <= threshold;
+    }
+
+    public int getAvailableStock() {
+        int qty = this.stockQuantity != null ? this.stockQuantity : 0;
+        int alloc = this.allocatedQuantity != null ? this.allocatedQuantity : 0;
+        return qty - alloc;
     }
 
     public BigDecimal calculateTotalValue() {

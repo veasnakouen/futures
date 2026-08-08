@@ -45,7 +45,8 @@ public class GuestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GuestQueryResultDto> update(@PathVariable String id, @Valid @RequestBody UpdateGuestCommand command) {
+    public ResponseEntity<GuestQueryResultDto> update(@PathVariable String id,
+            @Valid @RequestBody UpdateGuestCommand command) {
         try {
             Integer numericId = Integer.parseInt(id.replaceAll("[^0-9]", ""));
             command.setId(numericId);

@@ -54,7 +54,7 @@ export default function GlobalATSBoard() {
   const fetchApplications = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/job-applications?page=0&size=500');
+      const response = await api.get('/job-applications?page=1&size=100');
       const items = response.data?.content || response.data;
       if (Array.isArray(items) && items.length > 0) {
         setApplications(items);

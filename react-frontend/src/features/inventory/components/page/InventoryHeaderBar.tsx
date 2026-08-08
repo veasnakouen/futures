@@ -1,8 +1,9 @@
 import React from "react";
 import { Button } from "@/lib/flowbite-compat";
-import { Package, MapPin, Activity, Box, Plus } from "lucide-react";
+import { Package, MapPin, Activity, Box, Plus, Building2, Layers } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
 
 interface Props {
   state: any;
@@ -41,7 +42,7 @@ export default function InventoryHeaderBar({ state }: Props) {
       queryClient.prefetchQuery({
         queryKey: ["hrAssets"],
         queryFn: async () => {
-          const { data } = await api.get("/stock/hr/assets?page=0&size=1000");
+          const { data } = await api.get("/stock/hr/assets?page=1&size=100");
           const list = data?.data?.content || data?.content || data?.data || data || [];
           return Array.isArray(list) ? list : [];
         },
@@ -65,6 +66,13 @@ export default function InventoryHeaderBar({ state }: Props) {
   );
   const outOfStockCount = criticalItems.filter((item: any) => item.stockQuantity === 0).length;
   const lowStockCount = criticalItems.length - outOfStockCount;
+
+  const { user } = useAuthStore();
+  const isSuperAdmin = user?.roles?.some(
+    (r) =>
+      typeof r === "string" &&
+      (r.toUpperCase().includes("SUPER_ADMIN") || r.toUpperCase().includes("SUPERADMIN"))
+  ) ?? false;
 
   return (
     <div className="space-y-4">
@@ -112,6 +120,7 @@ export default function InventoryHeaderBar({ state }: Props) {
             { id: "inventory", label: t("inventoryLedger"), icon: <Package size={18} /> },
             { id: "locations", label: t("locationsManagement"), icon: <MapPin size={18} /> },
             { id: "assets", label: t("companyAssets"), icon: <Activity size={18} /> },
+            { id: "partners", label: "Partner Network", icon: <Building2 size={18} /> },
             { id: "categories", label: "Categories", icon: <Box size={18} /> },
           ].map((item) => (
             <button
@@ -130,6 +139,16 @@ export default function InventoryHeaderBar({ state }: Props) {
         </nav>
 
         <div className="flex gap-2">
+          {isSuperAdmin && (
+            <Button
+              color="light"
+              size="sm"
+              onClick={() => state.openManageModal("unitOfMeasure")}
+              className="rounded text-[10px] font-bold uppercase tracking-wider h-9 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950"
+            >
+              <Layers size={14} className="mr-1.5 text-purple-600 dark:text-purple-400" /> Master Lookups
+            </Button>
+          )}
           <Button
             color="light"
             size="sm"

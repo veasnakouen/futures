@@ -11,10 +11,13 @@ import InventoryTable from "@/features/inventory/components/page/InventoryTable"
 import LocationsModule from "@/features/inventory/components/LocationsModule";
 import AssetCategorySettings from "@/features/inventory/components/AssetCategorySettings";
 import AssetsModule from "@/features/hr/components/AssetsModule";
+import PartnersModule from "@/features/inventory/components/partners/PartnersModule";
 
 // Lazy Modals
 const InventoryItemModal = React.lazy(() => import("@/features/inventory/components/InventoryItemModal"));
 const TransferStockModal = React.lazy(() => import("@/features/inventory/components/TransferStockModal"));
+const StockTransactionModal = React.lazy(() => import("@/features/inventory/components/StockTransactionModal"));
+const MasterDataManageModal = React.lazy(() => import("@/features/inventory/components/MasterDataManageModal"));
 
 interface InventoryPageProps {
   isDark?: boolean;
@@ -52,10 +55,11 @@ const InventoryPage: React.FC<InventoryPageProps> = () => {
     deleteAsset,
     refetchAssets,
     stats,
+    supplierOptions,
   } = state;
 
   return (
-    <div className="space-y-8 animate-fade-in max-w-[1600px] mx-auto pb-12">
+    <div className="space-y-4 animate-fade-in max-w-[1600px] mx-auto pb-4">
       {/* Header Bar & Sub Navigation */}
       <InventoryHeaderBar state={state} />
 
@@ -101,7 +105,12 @@ const InventoryPage: React.FC<InventoryPageProps> = () => {
         />
       </div>
 
-      {/* Tab 4: Categories */}
+      {/* Tab 4: Partner Network */}
+      <div className={activeModule === "partners" ? "block animate-fade-in" : "hidden"}>
+        <PartnersModule />
+      </div>
+
+      {/* Tab 5: Categories */}
       <div className={activeModule === "categories" ? "block animate-fade-in" : "hidden"}>
         <AssetCategorySettings />
       </div>
@@ -118,10 +127,37 @@ const InventoryPage: React.FC<InventoryPageProps> = () => {
             register={formMethods.register}
             errors={formMethods.formState.errors}
             setValue={formMethods.setValue}
-            watch={formMethods.watch}
-            handleSubmit={hookSubmit(onFormSubmit)}
-            categories={categories}
-            locations={locations}
+            watch={state.formMethods.watch}
+            handleSubmit={state.hookSubmit(state.onFormSubmit)}
+            categories={state.categories}
+            locations={state.locations}
+            uomOptions={state.uomOptions}
+            brandOptions={state.brandOptions}
+            binOptions={state.binOptions}
+            donorOptions={state.donorOptions}
+            grantCodeOptions={state.grantCodeOptions}
+            supplierOptions={supplierOptions}
+            onRenameOption={state.handleRenameAttribute}
+            onDeleteOption={state.handleDeleteAttribute}
+            onOpenManageModal={state.openManageModal}
+          />
+        )}
+
+        {/* Master Data Management Modal (Superadmin Only) */}
+        {state.isManageModalOpen && (
+          <MasterDataManageModal
+            isOpen={state.isManageModalOpen}
+            onClose={() => state.setIsManageModalOpen(false)}
+            initialType={state.manageModalInitialType}
+            uomOptions={state.uomOptions}
+            brandOptions={state.brandOptions}
+            supplierOptions={state.supplierOptions}
+            binOptions={state.binOptions}
+            donorOptions={state.donorOptions}
+            grantCodeOptions={state.grantCodeOptions}
+            onRenameOption={state.handleRenameAttribute}
+            onDeleteOption={state.handleDeleteAttribute}
+            onAddOption={state.handleAddAttribute}
           />
         )}
 
@@ -132,6 +168,15 @@ const InventoryPage: React.FC<InventoryPageProps> = () => {
             onClose={() => setIsTransferModalOpen(false)}
             defaultSourceLocationId={transferDefaultSource}
             defaultItemId={transferDefaultItem}
+          />
+        )}
+        {/* Stock Transaction Modal */}
+        {state.isTransactionModalOpen && state.selectedItemForTx && (
+          <StockTransactionModal
+            isOpen={state.isTransactionModalOpen}
+            onClose={() => state.setIsTransactionModalOpen(false)}
+            item={state.selectedItemForTx}
+            onSuccess={() => {}}
           />
         )}
       </Suspense>

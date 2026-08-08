@@ -102,10 +102,10 @@ export const AssetTableView: React.FC<AssetTableViewProps> = ({
   }, [assets, sortField, sortDirection]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 animate-slide-up overflow-hidden rounded-2xl">
-      <div className="overflow-x-auto">
+    <div className="animate-slide-up w-full h-full">
+      <div className="relative [&>div]:!overflow-visible w-full h-full">
         <Table hoverable>
-          <TableHead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 select-none">
+          <TableHead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 select-none sticky top-0 z-10 shadow-[0_1px_0_0_#e5e7eb] dark:shadow-[0_1px_0_0_#374151]">
             <TableHeadCell
               className="py-4 px-6 font-black uppercase text-[9px] tracking-widest text-gray-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
               onClick={() => handleSort("name")}

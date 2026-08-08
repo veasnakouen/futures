@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Badge, Progress } from "@/lib/flowbite-compat";
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, Badge, Progress, Dropdown } from "@/lib/flowbite-compat";
 import { format } from "date-fns";
-import { UserPlus, FileText, Trash2, Edit, ArrowUpDown, ArrowUp, ArrowDown, RefreshCw, CheckCircle2, PauseCircle, Clock, RotateCcw, CheckCircle, Laptop, Wrench, Globe, Stethoscope, Tag, Building2, Server } from "lucide-react";
+import { UserPlus, FileText, Trash2, Edit, ArrowUpDown, ArrowUp, ArrowDown, RefreshCw, CheckCircle2, PauseCircle, Clock, RotateCcw, CheckCircle, Laptop, Wrench, Globe, Stethoscope, Tag, Building2, Server, MoreVertical } from "lucide-react";
 import ModernPagination from "@/components/common/ModernPagination";
 
 import { toast } from "react-hot-toast";
@@ -357,47 +357,31 @@ export const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
                     </TableCell>
 
                     <TableCell className="py-3.5 px-4 text-right">
-                      <div className="inline-flex items-center gap-1 p-1 bg-gray-50/90 dark:bg-gray-800/90 rounded-xl border border-gray-100 dark:border-gray-700/80 shadow-sm backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-2 group-hover:translate-x-0">
+                      <Dropdown label={<MoreVertical size={16} className="text-gray-500" />} inline arrowIcon={false}>
                         {canAssign && (
-                          <button
-                            onClick={() => onOpenAssignModal(ticket)}
-                            className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white dark:bg-blue-950/60 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-                            title="Assign Ticket to Technician"
-                          >
-                            <UserPlus size={14} />
-                          </button>
+                          <Dropdown.Item onClick={() => onOpenAssignModal(ticket)} icon={UserPlus}>
+                            Assign Technician
+                          </Dropdown.Item>
                         )}
                         {canAssess && (
-                          <button
-                            onClick={() => onOpenAssessmentModal(ticket.id)}
-                            className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-                            title="Technical Assessment & Product Replacement"
-                          >
-                            <FileText size={14} />
-                          </button>
+                          <Dropdown.Item onClick={() => onOpenAssessmentModal(ticket.id)} icon={FileText}>
+                            Technical Assessment
+                          </Dropdown.Item>
                         )}
                         {onUpdateTicketStatus && canAssign && (
                           <>
                             {ticket.status !== "SUSPENDED" && ticket.status !== "CLOSED" && (
-                              <button
-                                onClick={() => onUpdateTicketStatus(ticket.id, "SUSPENDED")}
-                                className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-                                title="Suspend Ticket (Vendor/Part Delay)"
-                              >
-                                <PauseCircle size={14} />
-                              </button>
+                              <Dropdown.Item onClick={() => onUpdateTicketStatus(ticket.id, "SUSPENDED")} icon={PauseCircle}>
+                                Suspend Ticket
+                              </Dropdown.Item>
                             )}
                             {ticket.status !== "ON_HOLD" && ticket.status !== "CLOSED" && (
-                              <button
-                                onClick={() => onUpdateTicketStatus(ticket.id, "ON_HOLD")}
-                                className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-600 text-amber-600 hover:text-white dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-                                title="Put Ticket On Hold"
-                              >
-                                <Clock size={14} />
-                              </button>
+                              <Dropdown.Item onClick={() => onUpdateTicketStatus(ticket.id, "ON_HOLD")} icon={Clock}>
+                                Put On Hold
+                              </Dropdown.Item>
                             )}
                             {ticket.status !== "RESOLVED" && ticket.status !== "CLOSED" && (
-                              <button
+                              <Dropdown.Item
                                 onClick={() => {
                                   const isUnassigned = !ticket.assigneeId || ticket.assigneeId === "" || String(ticket.assigneeId).toLowerCase() === "unassigned";
                                   if (isUnassigned) {
@@ -407,40 +391,30 @@ export const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
                                   }
                                   onUpdateTicketStatus(ticket.id, "RESOLVED");
                                 }}
-                                className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-                                title="Complete Ticket & Start 48H Window"
+                                icon={CheckCircle2}
                               >
-                                <CheckCircle2 size={14} />
-                              </button>
+                                Complete Ticket
+                              </Dropdown.Item>
                             )}
                             {(ticket.status === "RESOLVED" || ticket.status === "CLOSED" || ticket.status === "IN_PROGRESS") && (
-                              <button
-                                onClick={() => onUpdateTicketStatus(ticket.id, "REOPENED")}
-                                className="p-1.5 rounded-lg bg-purple-50 hover:bg-purple-600 text-purple-600 hover:text-white dark:bg-purple-950/60 dark:text-purple-300 dark:hover:bg-purple-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-                                title="Re-open Ticket (Fix Failed within 48 Hours)"
-                              >
-                                <RotateCcw size={14} />
-                              </button>
+                              <Dropdown.Item onClick={() => onUpdateTicketStatus(ticket.id, "REOPENED")} icon={RotateCcw}>
+                                Re-open Ticket
+                              </Dropdown.Item>
                             )}
                           </>
                         )}
-                        <button
-                          onClick={() => onOpenEditTicketModal(ticket)}
-                          className="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-                          title="Edit Ticket Details"
-                        >
-                          <Edit size={14} />
-                        </button>
+                        <Dropdown.Item onClick={() => onOpenEditTicketModal(ticket)} icon={Edit}>
+                          Edit Ticket
+                        </Dropdown.Item>
                         {canDelete && (
-                          <button
-                            onClick={() => onDeleteTicketConfirm(ticket.id)}
-                            className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-                            title="Delete Ticket (Admin Only)"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <>
+                            <Dropdown.Divider />
+                            <Dropdown.Item onClick={() => onDeleteTicketConfirm(ticket.id)} icon={Trash2} className="text-rose-600 focus:text-rose-700">
+                              Delete Ticket
+                            </Dropdown.Item>
+                          </>
                         )}
-                      </div>
+                      </Dropdown>
                     </TableCell>
                   </TableRow>
                 );

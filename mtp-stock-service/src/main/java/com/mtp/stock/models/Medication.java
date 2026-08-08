@@ -1,21 +1,35 @@
 package com.mtp.stock.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-public class Medication {
-@Id
-@GeneratedValue(strategy = GenerationType.UUID)
-private String id;
-
-@org.hibernate.annotations.TenantId
-@Column(name = "tenant_id")
-private String tenantId;
-private String name;
-private String genericName;
-@Enumerated
-private String Category;
+@Entity
+@Table(name = "Medications")
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class Medication extends InventoryItem {
+    
+    @jakarta.persistence.Column(name = "generic_name")
+    private String genericName;
+    
+    @jakarta.persistence.Column(name = "dosage")
+    private String dosage;
+    
+    @jakarta.persistence.Column(name = "active_ingredient")
+    private String activeIngredient;
+    
+    @jakarta.persistence.Column(name = "is_prescription_required")
+    private Boolean isPrescriptionRequired;
+    
+    @jakarta.persistence.Column(name = "storage_temperature_range")
+    private String storageTemperatureRange;
+    
+    @jakarta.persistence.Column(name = "medical_category")
+    private String medicalCategory;
 }

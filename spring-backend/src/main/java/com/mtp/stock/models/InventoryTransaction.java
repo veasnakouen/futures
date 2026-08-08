@@ -43,6 +43,14 @@ public class InventoryTransaction {
     private AssetDonor donor;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RetailerId")
+    private InventoryRetailer retailer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CustomerId")
+    private InventoryCustomer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DepartmentId")
     private DepartmentStub department; // For internal transfers
 

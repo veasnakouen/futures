@@ -1,6 +1,7 @@
 package com.mtp.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mtp.api.dtos.EmployeeDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ class EmployeeControllerTest {
     @DisplayName("POST /employees — should return 400 when firstName is blank")
     @WithMockUser(roles = "ADMIN")
     void createEmployee_blankFirstName_returns400() throws Exception {
-        EmployeeController.EmployeeDTO dto = new EmployeeController.EmployeeDTO();
+        EmployeeDTO dto = new EmployeeDTO();
         // Intentionally leave firstNameEnglish blank — should fail @NotBlank
         dto.setLastNameEnglish("Doe");
         dto.setIdNo("MTP-TEST-001");
@@ -71,7 +72,7 @@ class EmployeeControllerTest {
     @DisplayName("POST /employees — should return 400 when email is invalid")
     @WithMockUser(roles = "ADMIN")
     void createEmployee_invalidEmail_returns400() throws Exception {
-        EmployeeController.EmployeeDTO dto = new EmployeeController.EmployeeDTO();
+        EmployeeDTO dto = new EmployeeDTO();
         dto.setFirstNameEnglish("John");
         dto.setLastNameEnglish("Doe");
         dto.setIdNo("MTP-TEST-002");

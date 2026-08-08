@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
+import { withCache } from "../lib/cache";
 
 export const useAttendance = () => {
   return useQuery({
@@ -215,19 +216,15 @@ export const defaultEnterpriseAssets = [
 export const useHRAssets = () => {
   return useQuery({
     queryKey: ["hrAssets"],
-    queryFn: async () => {
-      try {
-        const { data } = await api.get(`/stock/hr/assets?page=0&size=1000`);
-        const list = data?.data?.content || data?.content || data?.data || data || [];
-        if (Array.isArray(list) && list.length > 0) {
-          return list;
-        }
-        return defaultEnterpriseAssets;
-      } catch (err) {
-        console.warn("[Database Fallback] Failed to fetch HR assets, using enterprise fallback.", err);
-        return defaultEnterpriseAssets;
-      }
-    },
+    queryFn: () =>
+      withCache(
+        "hrAssets",
+        async () => {
+          const { data } = await api.get(`/stock/hr/assets?page=1&size=100`);
+          return data?.data?.content || data?.content || data?.data || data || [];
+        },
+        { fallback: defaultEnterpriseAssets, ttlMs: 30 * 60 * 1000 }
+      ),
     staleTime: 60 * 1000,
     placeholderData: (prev) => prev || defaultEnterpriseAssets,
   });
@@ -236,11 +233,15 @@ export const useHRAssets = () => {
 export const useAllEmployees = () => {
   return useQuery({
     queryKey: ["employees"],
-    queryFn: async () => {
-      const { data } = await api.get(`/employees?page=0&size=1000`);
-      const list = data?.data?.content || data?.content || data?.data || data || [];
-      return Array.isArray(list) ? list : [];
-    },
+    queryFn: () =>
+      withCache(
+        "employees",
+        async () => {
+          const { data } = await api.get(`/employees?page=1&size=100`);
+          return data?.data?.content || data?.content || data?.data || data || [];
+        },
+        { fallback: [], ttlMs: 15 * 60 * 1000 }
+      ),
     staleTime: 5 * 60 * 1000,
     placeholderData: (prev) => prev,
   });
@@ -274,7 +275,7 @@ export const useVacancies = () => {
     queryKey: ["vacancies"],
     queryFn: async () => {
       try {
-        const { data } = await api.get(`/vacancies?page=0&size=100`);
+        const { data } = await api.get(`/vacancies?page=1&size=100`);
         const list = data?.data?.content || data?.content || data?.data || data || [];
         return Array.isArray(list) ? list : [];
       } catch (err) {
@@ -316,19 +317,15 @@ export const useRecruitmentStats = () => {
 export const usePlacements = () => {
   return useQuery({
     queryKey: ["placements"],
-    queryFn: async () => {
-      try {
-        const { data } = await api.get(`/placements?page=0&size=100`);
-        const list = data?.data?.content || data?.content || data?.data || data || [];
-        return Array.isArray(list) ? list : [];
-      } catch (err) {
-        console.warn("[Database Connection Warning] Serving resilient placement ledger fallback.", err);
-        return [
-          { id: 1, clientName: "Sokha Chan", companyName: "Phnom Penh Tech", jobPositionName: "Fullstack Engineer", salary: 1800, placementDate: "2026-06-15", placementType: "Direct Hire" },
-          { id: 2, clientName: "Vandy Meas", companyName: "Angkor Retail", jobPositionName: "POS Manager", salary: 1500, placementDate: "2026-05-20", placementType: "Direct Hire" },
-        ];
-      }
-    },
+    queryFn: () =>
+      withCache(
+        "placements",
+        async () => {
+          const { data } = await api.get(`/placements?page=1&size=100`);
+          return data?.data?.content || data?.content || data?.data || data || [];
+        },
+        { fallback: [], ttlMs: 10 * 60 * 1000 }
+      ),
   });
 };
 
@@ -337,7 +334,7 @@ export const useEmployers = () => {
     queryKey: ["employers"],
     queryFn: async () => {
       try {
-        const { data } = await api.get(`/employers?page=0&size=100`);
+        const { data } = await api.get(`/employers?page=1&size=100`);
         const list = data?.data?.content || data?.content || data?.data || data || [];
         return Array.isArray(list) ? list : [];
       } catch (err) {

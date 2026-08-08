@@ -61,6 +61,10 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/api/auth/**
+        - id: stock-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/stock/**
         - id: school-service
           uri: http://localhost:8087
           predicates:

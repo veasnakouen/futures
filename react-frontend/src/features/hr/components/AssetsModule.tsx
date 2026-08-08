@@ -4,7 +4,6 @@ import ModernPagination from "@/components/common/ModernPagination";
 import useAssetsModule from "./assets/useAssetsModule";
 import AssetsMetricsBanner from "./assets/AssetsMetricsBanner";
 import AssetsToolbar from "./assets/AssetsToolbar";
-import AssetAccordionView from "./assets/AssetAccordionView";
 import AssetGridCard from "./assets/AssetGridCard";
 import AssetTableView from "./assets/AssetTableView";
 import AssetRegistrationModal from "./assets/AssetRegistrationModal";
@@ -94,7 +93,7 @@ const AssetsModule: React.FC<AssetsModuleProps> = (props) => {
   } = useAssetsModule(props);
 
   return (
-    <div className="space-y-8 animate-fade-in pb-12">
+    <div className="space-y-4 animate-fade-in pb-4">
       {/* 1. Metrics Banner */}
       <AssetsMetricsBanner
         totalAssets={totalAssets}
@@ -117,81 +116,73 @@ const AssetsModule: React.FC<AssetsModuleProps> = (props) => {
       />
 
       {/* 3. Main Data View (ACCORDION vs GRID vs TABLE) */}
-      {paginatedAssets.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-12 text-center border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col items-center justify-center">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
-            <span className="text-2xl font-black">📦</span>
+      <div className="bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 animate-slide-up rounded-2xl flex flex-col overflow-hidden h-[calc(100vh-210px)] min-h-[500px]">
+        {paginatedAssets.length === 0 ? (
+          <div className="p-12 text-center flex flex-col items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
+              <span className="text-2xl font-black">📦</span>
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No Company Assets Found</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mb-6">
+              No equipment or assets match your current filter. Register your first hardware or asset to start tracking inventory assignments.
+            </p>
+            <button
+              onClick={handleOpenRegister}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-500/25 transition-all duration-200 transform hover:scale-105 active:scale-95"
+            >
+              + Register New Asset
+            </button>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No Company Assets Found</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mb-6">
-            No equipment or assets match your current filter. Register your first hardware or asset to start tracking inventory assignments.
-          </p>
-          <button
-            onClick={handleOpenRegister}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-500/25 transition-all duration-200 transform hover:scale-105 active:scale-95"
-          >
-            + Register New Asset
-          </button>
-        </div>
-      ) : viewMode === "ACCORDION" ? (
-        <AssetAccordionView
-          assets={paginatedAssets}
-          assetCategories={assetCategories}
-          onProcessReturn={handleProcessReturn}
-          onOpenAssign={handleOpenAssign}
-          onGenerateLabel={generateAssetLabel}
-          onOpenDetails={handleOpenDetails}
-          onOpenEdit={handleOpenEdit}
-          onDelete={handleDelete}
-          onOpenRegister={handleOpenRegister}
-        />
-      ) : viewMode === "GRID" ? (
-        <div className={`grid gap-6 ${itemsPerRow === "3" ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
-          {paginatedAssets.map((asset) => (
-            <AssetGridCard
-              key={asset.id}
-              asset={asset}
-              onProcessReturn={handleProcessReturn}
-              onOpenAssign={handleOpenAssign}
-              onGenerateLabel={generateAssetLabel}
-              onOpenDetails={handleOpenDetails}
-              onOpenEdit={handleOpenEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      ) : (
-        <AssetTableView
-          assets={paginatedAssets}
-          isLoading={props.isLoading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalFiltered={totalFiltered}
-          pageSize={pageSize}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={setPageSize}
-          onProcessReturn={handleProcessReturn}
-          onOpenAssign={handleOpenAssign}
-          onGenerateLabel={generateAssetLabel}
-          onOpenDetails={handleOpenDetails}
-          onOpenEdit={handleOpenEdit}
-          onDelete={handleDelete}
-        />
-      )}
-
-      {/* Global Pagination Bar for Grid & Table views */}
-      {!props.isLoading && (
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-          <ModernPagination
+        ) : viewMode === "GRID" ? (
+          <div className={`grid gap-6 p-6 ${itemsPerRow === "3" ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
+            {paginatedAssets.map((asset) => (
+              <AssetGridCard
+                key={asset.id}
+                asset={asset}
+                onProcessReturn={handleProcessReturn}
+                onOpenAssign={handleOpenAssign}
+                onGenerateLabel={generateAssetLabel}
+                onOpenDetails={handleOpenDetails}
+                onOpenEdit={handleOpenEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex-1 overflow-auto w-full relative">
+            <AssetTableView
+            assets={paginatedAssets}
+            isLoading={props.isLoading}
             currentPage={currentPage}
-            totalPages={totalPages || 1}
-            onPageChange={setCurrentPage}
-            totalItems={totalFiltered}
+            totalPages={totalPages}
+            totalFiltered={totalFiltered}
             pageSize={pageSize}
+            onPageChange={setCurrentPage}
             onPageSizeChange={setPageSize}
+            onProcessReturn={handleProcessReturn}
+            onOpenAssign={handleOpenAssign}
+            onGenerateLabel={generateAssetLabel}
+            onOpenDetails={handleOpenDetails}
+            onOpenEdit={handleOpenEdit}
+            onDelete={handleDelete}
           />
         </div>
-      )}
+        )}
+
+        {/* Unified Pagination Footer */}
+        {!props.isLoading && (
+          <div className="p-4 bg-gray-50/50 dark:bg-gray-800/80 border-t border-gray-100 dark:border-gray-700">
+            <ModernPagination
+              currentPage={currentPage}
+              totalPages={totalPages || 1}
+              onPageChange={setCurrentPage}
+              totalItems={totalFiltered}
+              pageSize={pageSize}
+              onPageSizeChange={setPageSize}
+            />
+          </div>
+        )}
+      </div>
 
       {/* 4. Subcomponent Modals */}
       <AssetRegistrationModal

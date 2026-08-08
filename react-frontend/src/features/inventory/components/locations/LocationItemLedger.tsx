@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { MapPin, Package, ArrowRightLeft, MoreHorizontal, Trash2, Settings2, MinusCircle } from "lucide-react";
+import { MapPin, Package, ArrowRightLeft, MoreHorizontal, Trash2, Settings2, MinusCircle, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import ModernPagination from "@/components/common/ModernPagination";
 
 interface LocationItemLedgerProps {
   selectedLocation: number | null;
@@ -34,6 +36,71 @@ const LocationItemLedger: React.FC<LocationItemLedgerProps> = ({
     );
   }
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<string>("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const processedItems = useMemo(() => {
+    let result = [...(locationItems || [])];
+    
+    if (searchTerm) {
+      const lowerQuery = searchTerm.toLowerCase();
+      result = result.filter((itemLoc: any) => {
+        const itemName = (itemLoc.inventoryItem?.name || itemLoc.name || "").toLowerCase();
+        const itemSku = (itemLoc.inventoryItem?.sku || itemLoc.sku || "").toLowerCase();
+        const itemCategory = (itemLoc.inventoryItem?.category?.name || itemLoc.category || "").toLowerCase();
+        return itemName.includes(lowerQuery) || itemSku.includes(lowerQuery) || itemCategory.includes(lowerQuery);
+      });
+    }
+
+    result.sort((a: any, b: any) => {
+      const aName = (a.inventoryItem?.name || a.name || "").toLowerCase();
+      const bName = (b.inventoryItem?.name || b.name || "").toLowerCase();
+      const aCat = (a.inventoryItem?.category?.name || a.category || "").toLowerCase();
+      const bCat = (b.inventoryItem?.category?.name || b.category || "").toLowerCase();
+      const aPrice = a.inventoryItem?.price ?? a.price ?? 0;
+      const bPrice = b.inventoryItem?.price ?? b.price ?? 0;
+      const aQty = a.quantity || 0;
+      const bQty = b.quantity || 0;
+      const aStatus = aQty > 0 ? 1 : 0;
+      const bStatus = bQty > 0 ? 1 : 0;
+
+      let compareResult = 0;
+      switch (sortField) {
+        case "name": compareResult = aName.localeCompare(bName); break;
+        case "category": compareResult = aCat.localeCompare(bCat); break;
+        case "price": compareResult = aPrice - bPrice; break;
+        case "quantity": compareResult = aQty - bQty; break;
+        case "status": compareResult = aStatus - bStatus; break;
+      }
+      return sortDirection === "asc" ? compareResult : -compareResult;
+    });
+
+    return result;
+  }, [locationItems, searchTerm, sortField, sortDirection]);
+
+  const totalPages = Math.max(1, Math.ceil(processedItems.length / itemsPerPage));
+  const currentItems = processedItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const toggleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) return <ArrowUpDown className="w-3 h-3 ml-1 opacity-40" />;
+    return sortDirection === "asc" ? <ArrowUp className="w-3 h-3 ml-1 text-blue-500" /> : <ArrowDown className="w-3 h-3 ml-1 text-blue-500" />;
+  };
+
   return (
     <div className="border-none shadow-sm dark:bg-gray-800 rounded-md bg-white">
       <CardContent className="p-6">
@@ -41,11 +108,25 @@ const LocationItemLedger: React.FC<LocationItemLedgerProps> = ({
           <h4 className="text-sm font-bold uppercase text-gray-500 tracking-widest flex items-center gap-2">
             <MapPin size={16} /> Stock Ledger for Selected Node
           </h4>
-          {onOpenTransferModal && (
-            <Button variant="outline" size="sm" onClick={() => onOpenTransferModal(selectedLocation.toString())} className="font-bold text-[10px] uppercase h-8">
-              <ArrowRightLeft size={14} className="mr-2" /> Allocate Stock
-            </Button>
-          )}
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+              <Input 
+                placeholder="Search items..." 
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="pl-8 h-8 text-xs w-[200px]"
+              />
+            </div>
+            {onOpenTransferModal && (
+              <Button variant="outline" size="sm" onClick={() => onOpenTransferModal(selectedLocation.toString())} className="font-bold text-[10px] uppercase h-8">
+                <ArrowRightLeft size={14} className="mr-2" /> Allocate Stock
+              </Button>
+            )}
+          </div>
         </div>
 
         {itemsLoading ? (
@@ -56,20 +137,36 @@ const LocationItemLedger: React.FC<LocationItemLedgerProps> = ({
             <p className="text-sm font-black uppercase tracking-widest">No stock found here</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-auto max-h-[500px] relative border-b border-gray-100 dark:border-gray-800 [&>div]:!overflow-visible">
             <Table>
-              <TableHeader className="bg-gray-50 dark:bg-gray-800 text-[10px] font-black uppercase text-gray-400">
+              <TableHeader className="bg-gray-50 dark:bg-gray-800 text-[10px] font-black uppercase text-gray-400 sticky top-0 z-10 shadow-[0_1px_0_0_#e5e7eb] dark:shadow-[0_1px_0_0_#374151]">
                 <TableRow>
-                  <TableHead>Item</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Unit Price</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="cursor-pointer hover:text-gray-700" onClick={() => toggleSort("name")}>
+                    <div className="flex items-center">Item {getSortIcon("name")}</div>
+                  </TableHead>
+                  <TableHead className="cursor-pointer hover:text-gray-700" onClick={() => toggleSort("category")}>
+                    <div className="flex items-center">Category {getSortIcon("category")}</div>
+                  </TableHead>
+                  <TableHead className="cursor-pointer hover:text-gray-700" onClick={() => toggleSort("price")}>
+                    <div className="flex items-center">Unit Price {getSortIcon("price")}</div>
+                  </TableHead>
+                  <TableHead className="cursor-pointer hover:text-gray-700" onClick={() => toggleSort("quantity")}>
+                    <div className="flex items-center">Quantity {getSortIcon("quantity")}</div>
+                  </TableHead>
+                  <TableHead className="cursor-pointer hover:text-gray-700" onClick={() => toggleSort("status")}>
+                    <div className="flex items-center">Status {getSortIcon("status")}</div>
+                  </TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y text-xs">
-                {locationItems.map((itemLoc: any) => {
+                {currentItems.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-gray-400 text-sm">
+                      No matching items found.
+                    </TableCell>
+                  </TableRow>
+                ) : currentItems.map((itemLoc: any) => {
                   const itemId = itemLoc.inventoryItem?.id ?? itemLoc.inventoryItemId ?? itemLoc.itemId ?? itemLoc.id;
                   const itemName = itemLoc.inventoryItem?.name || itemLoc.name || "Item #" + itemId;
                   const itemSku = itemLoc.inventoryItem?.sku || itemLoc.sku || "NO-SKU";
@@ -149,6 +246,13 @@ const LocationItemLedger: React.FC<LocationItemLedgerProps> = ({
                 })}
               </TableBody>
             </Table>
+            <div className="pt-4 pb-2">
+              <ModernPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
           </div>
         )}
       </CardContent>

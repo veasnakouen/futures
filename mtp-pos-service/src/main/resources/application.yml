@@ -15,7 +15,9 @@ spring:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     database-platform: org.hibernate.dialect.SQLServerDialect
     show-sql: false
     properties:
@@ -23,6 +25,12 @@ spring:
         format_sql: false
         dialect: org.hibernate.dialect.SQLServerDialect
         tenant_identifier_resolver: com.mtp.pos.config.tenant.TenantIdentifierResolver
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: '1'
+    out-of-order: false
+    locations: classpath:db/migration
 
 eureka:
   client:

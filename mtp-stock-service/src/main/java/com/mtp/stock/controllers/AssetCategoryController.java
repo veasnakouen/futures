@@ -1,7 +1,7 @@
 package com.mtp.stock.controllers;
 
 import com.mtp.stock.models.AssetCategory;
-import com.mtp.stock.repositories.AssetCategoryRepository;
+import com.mtp.stock.services.AssetCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,104 +14,49 @@ import java.util.List;
 public class AssetCategoryController {
 
     @Autowired
-    private AssetCategoryRepository categoryRepository;
+    private AssetCategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<List<AssetCategory>> getAll() {
-        return ResponseEntity.ok(categoryRepository.findAll());
+        return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AssetCategory> getById(@PathVariable Long id) {
-        return categoryRepository.findById(id)
+        return categoryService.getCategoryById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody AssetCategory category) {
-        if (category.getName() == null || category.getName().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Category name is required");
+        try {
+            AssetCategory saved = categoryService.createCategory(category);
+            return ResponseEntity.ok(saved);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        category.setName(category.getName().trim());
-        if (categoryRepository.findByNameIgnoreCase(category.getName()).isPresent()) {
-            return ResponseEntity.badRequest().body("Category name '" + category.getName() + "' already exists");
-        }
-        if (category.getPrefixCode() != null && category.getPrefixCode().trim().isEmpty()) {
-            category.setPrefixCode(null);
-        } else if (category.getPrefixCode() != null) {
-            category.setPrefixCode(category.getPrefixCode().trim().toUpperCase());
-        }
-        if (category.getDescription() != null && category.getDescription().trim().isEmpty()) {
-            category.setDescription(null);
-        }
-        if (category.getIsActive() == null) {
-            category.setIsActive(true);
-        }
-        return ResponseEntity.ok(categoryRepository.save(category));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody AssetCategory categoryData) {
-        java.util.Optional<AssetCategory> existingOpt = categoryRepository.findById(id);
-        if (existingOpt.isPresent()) {
-            AssetCategory existing = existingOpt.get();
-            if (categoryData.getName() != null && !categoryData.getName().trim().isEmpty()) {
-                String trimmedName = categoryData.getName().trim();
-                java.util.Optional<AssetCategory> withSameName = categoryRepository.findByNameIgnoreCase(trimmedName);
-                if (withSameName.isPresent() && !withSameName.get().getId().equals(id)) {
-                    return ResponseEntity.badRequest().body("Category name '" + trimmedName + "' already exists");
-                }
-                existing.setName(trimmedName);
+        try {
+            AssetCategory updated = categoryService.updateCategory(id, categoryData);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.notFound().build();
             }
-            
-            if (categoryData.getDescription() != null && categoryData.getDescription().trim().isEmpty()) {
-                existing.setDescription(null);
-            } else if (categoryData.getDescription() != null) {
-                existing.setDescription(categoryData.getDescription().trim());
-            }
-
-            String prefix = categoryData.getPrefixCode();
-            if (prefix != null && prefix.trim().isEmpty()) {
-                prefix = null;
-            }
-            existing.setPrefixCode(prefix != null ? prefix.trim().toUpperCase() : null);
-
-            if (categoryData.getIsActive() != null) existing.setIsActive(categoryData.getIsActive());
-            if (categoryData.getRequiresExpiryDate() != null) existing.setRequiresExpiryDate(categoryData.getRequiresExpiryDate());
-            if (categoryData.getRequiresSerialTracking() != null) existing.setRequiresSerialTracking(categoryData.getRequiresSerialTracking());
-            existing.setIconName(categoryData.getIconName());
-            existing.setColorHex(categoryData.getColorHex());
-            
-            if (categoryData.getParentCategory() != null && categoryData.getParentCategory().getId() != null) {
-                if (categoryData.getParentCategory().getId().equals(id)) {
-                    return ResponseEntity.badRequest().body("Category cannot be its own parent");
-                }
-                existing.setParentCategory(categoryData.getParentCategory());
-            } else {
-                existing.setParentCategory(null);
-            }
-            
-            return ResponseEntity.ok(categoryRepository.save(existing));
-        } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        java.util.Optional<AssetCategory> existingOpt = categoryRepository.findById(id);
-        if (existingOpt.isPresent()) {
-            AssetCategory existing = existingOpt.get();
-            try {
-                categoryRepository.delete(existing);
-            } catch (Exception e) {
-                // If it fails (e.g. Foreign Key constraint), perform a Soft Delete instead
-                existing.setIsActive(false);
-                categoryRepository.save(existing);
-            }
+        try {
+            categoryService.deleteCategory(id);
             return ResponseEntity.ok().build();
-        } else {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }

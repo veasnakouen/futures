@@ -24,4 +24,22 @@ public class AssetSupplier {
 
     @Size(max = 255)
     private String contactInfo;
+
+    @Size(max = 255)
+    private String contactPerson;
+
+    @Size(max = 50)
+    private String phone;
+
+    @Size(max = 255)
+    private String email;
+
+    @Size(max = 500)
+    private String address;
+
+    @Size(max = 100)
+    private String taxId;
+
+    @Size(max = 50)
+    private String status = "ACTIVE";
 }

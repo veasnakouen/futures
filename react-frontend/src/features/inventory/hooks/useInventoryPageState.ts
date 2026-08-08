@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { inventorySchema, type InventoryFormData } from "@/schemas/inventorySchema";
+import type { MasterDataType } from "@/features/inventory/components/MasterDataManageModal";
 import {
   useHRAssets,
   useAllEmployees,
@@ -33,9 +34,11 @@ export function useInventoryPageState() {
         ? "locations"
         : searchParams?.get("tab") === "categories"
           ? "categories"
-          : "inventory";
+          : searchParams?.get("tab") === "partners"
+            ? "partners"
+            : "inventory";
 
-  const [activeModule, setActiveModule] = useState<"inventory" | "assets" | "locations" | "categories">(
+  const [activeModule, setActiveModule] = useState<"inventory" | "assets" | "locations" | "categories" | "partners">(
     initialTab as any
   );
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,12 +55,12 @@ export function useInventoryPageState() {
 
   useEffect(() => {
     const tab = searchParams?.get("tab");
-    if (tab === "assets" || tab === "inventory" || tab === "locations" || tab === "categories") {
+    if (tab === "assets" || tab === "inventory" || tab === "locations" || tab === "categories" || tab === "partners") {
       setActiveModule(tab as any);
     }
   }, [searchParams]);
 
-  const handleTabChange = (tab: "inventory" | "assets" | "locations" | "categories") => {
+  const handleTabChange = (tab: "inventory" | "assets" | "locations" | "categories" | "partners") => {
     setActiveModule(tab);
     setSearchParams({ tab });
   };
@@ -65,9 +68,13 @@ export function useInventoryPageState() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
+  const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+  const [manageModalInitialType, setManageModalInitialType] = useState<MasterDataType>("unitOfMeasure");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [selectedItemForTx, setSelectedItemForTx] = useState<any>(null);
   const [sortField, setSortField] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -198,8 +205,27 @@ export function useInventoryPageState() {
   const { data: categories = [] } = useQuery({
     queryKey: ["inventory-categories"],
     queryFn: async () => {
-      const response = await api.get("/stock/categories");
-      return response.data;
+      try {
+        const response = await api.get("/stock/categories");
+        const data = response.data || [];
+        if (data.length === 0) {
+          // Fallback mock data if DB is empty
+          return [
+            { id: 1, name: "Medical Supplies", description: "Consumable medical items" },
+            { id: 2, name: "Equipment", description: "Durable medical equipment" },
+            { id: 3, name: "Pharmaceuticals", description: "Medications and drugs" },
+            { id: 4, name: "Laboratory", description: "Lab reagents and tools" },
+            { id: 5, name: "Office Supplies", description: "General office materials" }
+          ];
+        }
+        return data;
+      } catch (err) {
+        return [
+          { id: 1, name: "Medical Supplies" },
+          { id: 2, name: "Equipment" },
+          { id: 3, name: "Pharmaceuticals" }
+        ];
+      }
     },
     staleTime: 5 * 60 * 1000,
     select: (data: any[]) =>
@@ -219,6 +245,60 @@ export function useInventoryPageState() {
     select: (data: any[]) => [...data].sort((a, b) => (a.name || "").localeCompare(b.name || "")),
   });
 
+  const { data: uomOptions = [] } = useQuery({
+    queryKey: ["inventory-uoms"],
+    queryFn: async () => {
+      const response = await api.get("/stock/inventory/uoms");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: brandOptions = [] } = useQuery({
+    queryKey: ["inventory-brands"],
+    queryFn: async () => {
+      const response = await api.get("/stock/inventory/brands");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: binOptions = [] } = useQuery({
+    queryKey: ["inventory-bins"],
+    queryFn: async () => {
+      const response = await api.get("/stock/inventory/bins");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: donorOptions = [] } = useQuery({
+    queryKey: ["inventory-donors"],
+    queryFn: async () => {
+      const response = await api.get("/stock/inventory/donors");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: grantCodeOptions = [] } = useQuery({
+    queryKey: ["inventory-grant-codes"],
+    queryFn: async () => {
+      const response = await api.get("/stock/inventory/grant-codes");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: supplierOptions = [] } = useQuery({
+    queryKey: ["inventory-suppliers"],
+    queryFn: async () => {
+      const response = await api.get("/stock/inventory/suppliers");
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   const createMutation = useMutation({
     mutationFn: (newItem: InventoryFormData) => api.post("/stock/inventory", newItem),
     onSuccess: () => {
@@ -226,6 +306,12 @@ export function useInventoryPageState() {
       queryClient.invalidateQueries({ queryKey: ["inventory-stats"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-departments"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-brands"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-uoms"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-bins"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-donors"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-grant-codes"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-suppliers"] });
       toast.success("New item added to inventory");
       setIsModalOpen(false);
     },
@@ -239,9 +325,22 @@ export function useInventoryPageState() {
       queryClient.invalidateQueries({ queryKey: ["inventory-stats"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-departments"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-brands"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-uoms"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-bins"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-donors"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-grant-codes"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-suppliers"] });
       toast.success("Item updated");
       setIsModalOpen(false);
     },
+    onError: (error: any) => {
+      if (error.response && error.response.status === 409) {
+        toast.error("Conflict: Another user has modified this item while you were editing. Please refresh and try again to avoid data loss.", { duration: 6000 });
+      } else {
+        toast.error("Failed to update item");
+      }
+    }
   });
 
   const deleteMutation = useMutation({
@@ -251,12 +350,93 @@ export function useInventoryPageState() {
       queryClient.invalidateQueries({ queryKey: ["inventory-stats"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-categories"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-departments"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-brands"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-uoms"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-bins"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-donors"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-grant-codes"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-suppliers"] });
       toast.success("Item removed from inventory");
     },
   });
 
+  const renameAttributeMutation = useMutation({
+    mutationFn: ({ field, oldValue, newValue }: { field: string; oldValue: string; newValue: string }) =>
+      api.put("/stock/inventory/attributes/rename", null, {
+        params: { field, oldValue, newValue },
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-uoms"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-brands"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-suppliers"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-bins"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-donors"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-grant-codes"] });
+      toast.success(`Renamed "${variables.oldValue}" to "${variables.newValue}"`);
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.error || err.message || "Failed to rename option";
+      toast.error(msg);
+    },
+  });
+
+  const deleteAttributeMutation = useMutation({
+    mutationFn: ({ field, value }: { field: string; value: string }) =>
+      api.delete("/stock/inventory/attributes/delete", {
+        params: { field, value },
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-uoms"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-brands"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-suppliers"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-bins"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-donors"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-grant-codes"] });
+      toast.success(`Deleted "${variables.value}" from records`);
+    },
+    onError: (err: any) => {
+      const msg = err.response?.data?.error || err.message || "Failed to delete option";
+      toast.error(msg);
+    },
+  });
+
+  const handleRenameAttribute = async (field: MasterDataType, oldValue: string, newValue: string) => {
+    await renameAttributeMutation.mutateAsync({ field, oldValue, newValue });
+  };
+
+  const handleDeleteAttribute = async (field: MasterDataType, value: string) => {
+    await deleteAttributeMutation.mutateAsync({ field, value });
+  };
+
+  const handleAddAttribute = async (field: MasterDataType, value: string) => {
+    const keyMap: Record<MasterDataType, string> = {
+      unitOfMeasure: "inventory-uoms",
+      brand: "inventory-brands",
+      supplierName: "inventory-suppliers",
+      locationBin: "inventory-bins",
+      donorName: "inventory-donors",
+      grantCode: "inventory-grant-codes",
+    };
+    const queryKey = [keyMap[field]];
+    queryClient.setQueryData(queryKey, (old: string[] = []) => {
+      if (old.some((o) => o.toLowerCase() === value.toLowerCase())) return old;
+      return Array.from(new Set([...old, value])).sort();
+    });
+    toast.success(`Added "${value}"`);
+  };
+
+  const openManageModal = (type: MasterDataType = "unitOfMeasure") => {
+    setManageModalInitialType(type);
+    setIsManageModalOpen(true);
+  };
+
   const handleEdit = (item: any) => {
     resetForm({
+      version: item.version,
       name: item.name,
       sku: item.sku || "",
       category: item.category ? { id: item.category.id } : undefined,
@@ -284,6 +464,7 @@ export function useInventoryPageState() {
 
   const handleView = (item: any) => {
     resetForm({
+      version: item.version,
       name: item.name,
       sku: item.sku || "",
       category: item.category ? { id: item.category.id } : undefined,
@@ -352,8 +533,15 @@ export function useInventoryPageState() {
     }
   };
 
+  const handleTransaction = (item: any) => {
+    setSelectedItemForTx(item);
+    setIsTransactionModalOpen(true);
+  };
+
   return {
     t,
+    searchParams,
+    setSearchParams,
     activeModule,
     setActiveModule,
     handleTabChange,
@@ -373,6 +561,11 @@ export function useInventoryPageState() {
     setSearch,
     categoryFilter,
     setCategoryFilter,
+    isTransactionModalOpen,
+    setIsTransactionModalOpen,
+    selectedItemForTx,
+    setSelectedItemForTx,
+    handleTransaction,
     sortField,
     setSortField,
     sortDir,
@@ -417,5 +610,19 @@ export function useInventoryPageState() {
     handleDelete,
     confirmDelete,
     onFormSubmit,
+    uomOptions,
+    brandOptions,
+    binOptions,
+    donorOptions,
+    grantCodeOptions,
+    supplierOptions,
+    isManageModalOpen,
+    setIsManageModalOpen,
+    manageModalInitialType,
+    setManageModalInitialType,
+    openManageModal,
+    handleRenameAttribute,
+    handleDeleteAttribute,
+    handleAddAttribute,
   };
 }

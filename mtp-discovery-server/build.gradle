@@ -24,6 +24,8 @@ ext {
 }
 
 dependencies {
+	annotationProcessor 'org.springframework:spring-context-indexer'
+	testAnnotationProcessor 'org.springframework:spring-context-indexer'
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

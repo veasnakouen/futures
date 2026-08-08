@@ -100,39 +100,52 @@ export function DataTable<T>({
         toggleColumn={toggleColumn}
       />
 
-      {viewMode === "TABLE" ? (
-        <DataTableViewTable
-          data={data}
-          columns={columns}
-          hiddenColumns={hiddenColumns}
-          isLoading={isLoading}
-          sortField={sortField}
-          sortDir={sortDir}
-          onSort={onSort}
-          emptyMessage={emptyMessage}
-          emptyIcon={emptyIcon}
-        />
-      ) : (
-        <DataTableViewGrid
-          data={data}
-          renderGridCard={renderGridCard}
-          gridCols={gridCols}
-          emptyMessage={emptyMessage}
-        />
-      )}
+      <div className="bg-white dark:bg-gray-800/90 rounded-2xl shadow-sm border border-gray-100/80 dark:border-gray-800/60 flex flex-col overflow-hidden animate-slide-up h-[calc(100vh-230px)] min-h-[500px]">
+        {viewMode === "TABLE" ? (
+          <div className="flex-1 overflow-auto w-full relative">
+            <DataTableViewTable
+              data={data}
+              columns={columns}
+              hiddenColumns={hiddenColumns}
+              isLoading={isLoading}
+              sortField={sortField}
+              sortDir={sortDir}
+              onSort={onSort}
+              emptyMessage={emptyMessage}
+              emptyIcon={emptyIcon}
+            />
+          </div>
+        ) : (
+          <div className="p-6">
+            <DataTableViewGrid
+              data={data}
+              renderGridCard={renderGridCard}
+              gridCols={gridCols}
+              emptyMessage={emptyMessage}
+            />
+          </div>
+        )}
 
-      {footer && <div>{footer}</div>}
-
-      {onPageChange && (
-        <ModernPagination
-          currentPage={currentPage || 1}
-          totalPages={totalPages || Math.max(1, Math.ceil((totalItems ?? data.length) / (pageSize || 10)))}
-          onPageChange={onPageChange}
-          totalItems={totalItems ?? data.length}
-          pageSize={pageSize || 10}
-          onPageSizeChange={onPageSizeChange}
-        />
-      )}
+        {/* Unified Footer & Pagination */}
+        {(footer || onPageChange) && (
+          <div className="p-4 bg-gray-50/50 dark:bg-gray-800/80 border-t border-gray-100/80 dark:border-gray-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex-1">{footer}</div>
+            
+            {onPageChange && (
+              <div className="shrink-0">
+                <ModernPagination
+                  currentPage={currentPage || 1}
+                  totalPages={totalPages || Math.max(1, Math.ceil((totalItems ?? data.length) / (pageSize || 10)))}
+                  onPageChange={onPageChange}
+                  totalItems={totalItems ?? data.length}
+                  pageSize={pageSize || 10}
+                  onPageSizeChange={onPageSizeChange}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

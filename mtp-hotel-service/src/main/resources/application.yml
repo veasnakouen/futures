@@ -14,13 +14,19 @@ spring:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     database-platform: org.hibernate.dialect.SQLServerDialect
     show-sql: false
     properties:
       hibernate:
         format_sql: false
         dialect: org.hibernate.dialect.SQLServerDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: '1'
+    out-of-order: false
+    locations: classpath:db/migration
 
 eureka:
   client:

@@ -12,9 +12,14 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.envers.Audited;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+
 @Data
 @Entity
 @Table(name = "clinic_stock_batches")
+@Audited
 @NoArgsConstructor
 public class StockBatch {
     @Id
@@ -24,6 +29,10 @@ public class StockBatch {
     @org.hibernate.annotations.TenantId
     @Column(name = "tenant_id")
     private String tenantId;
+    
+    @ManyToOne
+    @JoinColumn(name = "inventory_item_id")
+    private InventoryItem inventoryItem;
     private String batchNumber;
     private Integer quantityInStock;
     private LocalDate expirationDate;

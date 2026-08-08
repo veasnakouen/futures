@@ -117,7 +117,11 @@ public class AssetStagingProcessor {
                         String supplierName = parser.getCellValueAsString(row.getCell(10));
                         if (supplierName != null && !supplierName.trim().isEmpty()) {
                             assetImport.setSupplier(supplierCache.computeIfAbsent(supplierName.trim(),
-                                    name -> supplierRepository.save(new AssetSupplier(null, name, null))));
+                                    name -> {
+                                        AssetSupplier s = new AssetSupplier();
+                                        s.setName(name);
+                                        return supplierRepository.save(s);
+                                    }));
                         }
 
                         String donorName = parser.getCellValueAsString(row.getCell(11));

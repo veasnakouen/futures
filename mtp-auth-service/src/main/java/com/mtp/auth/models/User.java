@@ -2,7 +2,6 @@ package com.mtp.auth.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -69,124 +68,12 @@ public class User {
     @JoinTable(name = "AspNetUserRoles", joinColumns = @JoinColumn(name = "UserId"), inverseJoinColumns = @JoinColumn(name = "RoleId"))
     private Set<Role> roles = new HashSet<>();
 
-    // Explicit Getters/Setters to bypass Lombok issues in certain environments
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public String getPasswordText() {
-        return passwordText;
-    }
-
-    public void setPasswordText(String passwordText) {
-        this.passwordText = passwordText;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
+    // Explicit getter for isActive due to custom fallback logic
     public Boolean isActive() {
         return isActive != null ? isActive : true;
     }
 
     public void setActive(Boolean active) {
         isActive = active;
-    }
-
-    public boolean isLockoutEnabled() {
-        return lockoutEnabled;
-    }
-
-    public void setLockoutEnabled(boolean lockoutEnabled) {
-        this.lockoutEnabled = lockoutEnabled;
-    }
-
-    public int getAccessFailedCount() {
-        return accessFailedCount;
-    }
-
-    public void setAccessFailedCount(int accessFailedCount) {
-        this.accessFailedCount = accessFailedCount;
-    }
-
-    public java.time.Instant getLockoutEnd() {
-        return lockoutEnd;
-    }
-
-    public void setLockoutEnd(java.time.Instant lockoutEnd) {
-        this.lockoutEnd = lockoutEnd;
     }
 }

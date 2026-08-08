@@ -84,7 +84,8 @@ export const AssetPrintLabelModal: React.FC<AssetPrintLabelModalProps> = ({
 
   const handleDirectPrint = () => {
     if (!printAreaRef.current) return;
-    const printContent = printAreaRef.current.innerHTML;
+    // Use outerHTML to keep the container styling (border, padding, etc)
+    const printContent = printAreaRef.current.outerHTML;
     const printWindow = window.open("", "_blank", "width=800,height=600");
     if (!printWindow) {
       toast.error("Please allow popups to print asset label");
@@ -104,23 +105,43 @@ export const AssetPrintLabelModal: React.FC<AssetPrintLabelModalProps> = ({
             }
             body {
               margin: 0;
-              padding: 2mm;
               display: flex;
               align-items: center;
               justify-content: center;
+              min-height: 100vh;
               font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
+              background: white;
             }
-            .print-tag {
-              width: 100%;
-              height: 100%;
+            .print-tag-wrapper {
+              width: 100vw;
+              height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              overflow: hidden;
               page-break-inside: avoid;
+            }
+            /* Override the inline scale/shadow for the physical print */
+            .print-tag-wrapper > div {
+              transform: none !important;
+              box-shadow: none !important;
+              border: 1px solid #000 !important;
+              width: 96% !important;
+              height: 96% !important;
+              max-width: none !important;
+              margin: 0 !important;
+              /* Use flex column to ensure footer is pushed to bottom if needed, 
+                 or just let it flow naturally but scaled to fit */
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: space-between !important;
             }
           </style>
         </head>
-        <body onload="window.print(); window.close();">
-          <div class="print-tag">${printContent}</div>
+        <body onload="setTimeout(() => { window.print(); window.close(); }, 500);">
+          <div class="print-tag-wrapper">${printContent}</div>
         </body>
       </html>
     `);

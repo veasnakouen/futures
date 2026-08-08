@@ -122,9 +122,9 @@ export default function StockLedgerModal({ isOpen, onClose, itemId, itemName }: 
               <p className="text-xs font-bold">No ledger transactions found</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-auto max-h-[500px] relative">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-100 dark:bg-slate-900 text-slate-500 uppercase text-[10px] font-black tracking-wider">
+                <thead className="bg-slate-100 dark:bg-slate-900 text-slate-500 uppercase text-[10px] font-black tracking-wider sticky top-0 z-10 shadow-[0_1px_0_0_#e2e8f0] dark:shadow-[0_1px_0_0_#0f172a]">
                   <tr>
                     <th className="p-3">Timestamp</th>
                     <th className="p-3">Item</th>

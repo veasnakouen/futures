@@ -77,7 +77,7 @@ const ModernPagination: React.FC<ModernPaginationProps> = ({
 
   return (
     <div
-      className={`w-full flex flex-col md:flex-row items-center justify-between gap-4 px-5 py-3.5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm transition-all hover:shadow-md ${className}`}
+      className={`w-full flex flex-col md:flex-row items-center justify-between gap-4 py-2 transition-all ${className}`}
     >
       {/* Left Side: Info & Page Size Selector */}
       <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-xs text-gray-500 dark:text-gray-400">

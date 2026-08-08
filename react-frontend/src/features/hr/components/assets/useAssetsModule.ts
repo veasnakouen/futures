@@ -54,7 +54,7 @@ export const useAssetsModule = ({
   onUpdate,
   onDelete,
 }: UseAssetsModuleProps) => {
-  const [viewMode, setViewMode] = useState<"ACCORDION" | "GRID" | "TABLE">("ACCORDION");
+  const [viewMode, setViewMode] = useState<"GRID" | "TABLE">("TABLE");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
   const [itemsPerRow, setItemsPerRow] = useState("4");

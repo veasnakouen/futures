@@ -25,6 +25,15 @@ export default function InventoryTable({ state }: Props) {
     handleDelete,
   } = state;
 
+  const handleSort = (field: string) => {
+    if (state.sortField === field) {
+      state.setSortDir(state.sortDir === "asc" ? "desc" : "asc");
+    } else {
+      state.setSortField(field);
+      state.setSortDir("asc");
+    }
+  };
+
   const columns: ColumnDef<any>[] = [
     {
       header: "Item",
@@ -147,6 +156,20 @@ export default function InventoryTable({ state }: Props) {
               </DropdownHeader>
               
               <DropdownItem
+                onClick={() => state.handleTransaction(item)}
+                className="rounded-xl mb-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group/item"
+              >
+                <div className="flex items-center gap-2.5 py-1">
+                  <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 rounded-lg group-hover/item:scale-110 transition-transform">
+                    <Package size={13} />
+                  </div>
+                  <span className="font-bold text-xs text-gray-750 dark:text-gray-200">
+                    Stock Transaction
+                  </span>
+                </div>
+              </DropdownItem>
+
+              <DropdownItem
                 onClick={() => handleView(item)}
                 className="rounded-xl mb-1 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group/item"
               >
@@ -202,20 +225,17 @@ export default function InventoryTable({ state }: Props) {
         columns={columns}
         data={paginatedItems}
         isLoading={loading}
+        sortField={state.sortField}
+        sortDir={state.sortDir as "asc" | "desc"}
+        onSort={handleSort}
         emptyMessage="No stock inventory items found matching filters."
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalItems={totalFilteredItems}
+        pageSize={pageSize}
+        onPageSizeChange={setPageSize}
       />
-
-      {/* Pagination Controls */}
-      <div className="flex justify-end pt-2">
-        <ModernPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          totalItems={totalFilteredItems}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
-        />
-      </div>
     </div>
   );
 }

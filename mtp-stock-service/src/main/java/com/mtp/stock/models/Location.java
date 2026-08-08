@@ -5,10 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+import com.mtp.stock.models.stubs.DepartmentStub;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Locations")
+@Audited
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,6 +22,10 @@ public class Location {
 
     @NotBlank(message = "Location name is required")
     private String name;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id", nullable = true)
+    private DepartmentStub department;
 
     private String type; // e.g., WAREHOUSE, CLINIC_PHARMACY, HOTEL_STORAGE
 

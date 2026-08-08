@@ -25,6 +25,9 @@ public class StockTransferService {
     @Autowired
     private ItemLocationStockRepository itemLocationStockRepository;
 
+    @Autowired
+    private FefoAllocationEngine fefoAllocationEngine;
+
     /**
      * Initializes stock for a new item at a specific location, increasing total inventory.
      */
@@ -36,7 +39,7 @@ public class StockTransferService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Location ID"));
 
         ItemLocationStock stock = itemLocationStockRepository.findByInventoryItemIdAndLocationId(itemId, locationId)
-                .orElse(new ItemLocationStock(null, item, location, 0, 0, LocalDateTime.now()));
+                .orElse(new ItemLocationStock(null, null, item, location, 0, 0, 0, LocalDateTime.now()));
 
         stock.setQuantity(stock.getQuantity() + quantityToAdd);
         stock.setLastUpdated(LocalDateTime.now());
@@ -58,7 +61,7 @@ public class StockTransferService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Location ID"));
 
         ItemLocationStock stock = itemLocationStockRepository.findByInventoryItemIdAndLocationId(itemId, locationId)
-                .orElse(new ItemLocationStock(null, item, location, 0, 0, LocalDateTime.now()));
+                .orElse(new ItemLocationStock(null, null, item, location, 0, 0, 0, LocalDateTime.now()));
 
         stock.setQuantity(stock.getQuantity() + quantityToAllocate);
         stock.setLastUpdated(LocalDateTime.now());
@@ -87,6 +90,9 @@ public class StockTransferService {
         // Update global aggregated quantity
         item.removeStock(quantityToConsume);
         inventoryRepository.save(item);
+        
+        // Trigger FEFO engine to accurately deduct from specific batches
+        fefoAllocationEngine.executeFefoDeduction(itemId, quantityToConsume);
     }
 
     /**
@@ -112,7 +118,7 @@ public class StockTransferService {
         }
 
         ItemLocationStock targetStock = itemLocationStockRepository.findByInventoryItemIdAndLocationId(itemId, targetLocationId)
-                .orElse(new ItemLocationStock(null, item, targetLocation, 0, 0, LocalDateTime.now()));
+                .orElse(new ItemLocationStock(null, null, item, targetLocation, 0, 0, 0, LocalDateTime.now()));
 
         // Deduct from source
         sourceStock.setQuantity(sourceStock.getQuantity() - quantityToTransfer);

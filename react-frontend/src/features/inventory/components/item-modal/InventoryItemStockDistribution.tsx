@@ -21,9 +21,9 @@ const InventoryItemStockDistribution: React.FC<InventoryItemStockDistributionPro
       ) : stockDistribution.length === 0 ? (
         <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">No stock distribution recorded.</p>
       ) : (
-        <div className="bg-gray-50 dark:bg-gray-700/30 rounded-md overflow-hidden border">
+        <div className="bg-gray-50 dark:bg-gray-700/30 rounded-md overflow-auto border max-h-[400px] relative">
           <table className="w-full text-left text-xs">
-            <thead className="bg-white dark:bg-gray-800 text-[9px] uppercase tracking-widest text-gray-400 font-black">
+            <thead className="bg-white dark:bg-gray-800 text-[9px] uppercase tracking-widest text-gray-400 font-black sticky top-0 z-10 shadow-[0_1px_0_0_#e5e7eb] dark:shadow-[0_1px_0_0_#374151]">
               <tr>
                 <th className="px-4 py-2 border-b">Location</th>
                 <th className="px-4 py-2 border-b">Type</th>

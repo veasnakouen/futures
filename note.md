@@ -18,7 +18,7 @@ Here is what you need to do:
 1. act as experience professional full stack web app and devop,please analy my inventory page is that any required to make this page be fully inventory management system.
 
 2. to run all service 
-s
+
    ```
    .\start_all.bat
    ```
@@ -30,8 +30,8 @@ s
    password: Fbchhutlayveasna123!
    ```
    ```
-
-   🪧 Prommpt to create Full Features tool.
+   
+🪧 Prommpt to create Full Features tool.
    Build a Java home network security dashboard for monitoring MY OWN router/network.
 
 SCOPE (hard constraint — do not implement anything outside this):
