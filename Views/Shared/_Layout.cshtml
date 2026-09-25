@@ -93,7 +93,8 @@
                                             <input type="radio" name="placementMonitoringstatus" id="stillinPlacementChangeJobMonitoring" value="ChangedJob">Changed Job
                                         </label>
                                     </div>
-                                </div><div class="row">
+                                </div>
+                                <div class="row">
                                     <input id="placementpmonitoringsId" name="placementpmonitoringsId" type="text" style="display: none;" disabled="disabled" value="" class="form-control" />
 
                                 </div>
@@ -150,7 +151,6 @@
 
     <div id="divLoading"></div>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Scripts/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         (function ($) {
@@ -303,7 +303,6 @@
     <script>
         (function () {
             if (!window.bootstrap || !window.bootstrap.Modal) { return; }
-
             // ─────────────────────────────────────────────────────────────────────
             // Nested-modal support for Bootstrap 5
             //
@@ -326,7 +325,6 @@
             //  B) Patch Modal.prototype.show  ← most reliable approach
             //  C) show/shown/hidden.bs.modal event listeners as safety nets
             // ─────────────────────────────────────────────────────────────────────
-
             /* ── A: Protect parent from being hidden ──────────────────────────── */
             var _protectedModal = null;
 
@@ -488,44 +486,23 @@
     <script src="~/js/placement-monitoring.js"></script>
 
     <script>
-        // SignalR connection for placement monitoring
+        // SignalR connection for placement monitoring (safely guarded)
         $(function () {
-            var hubNotify = $.connection.placementMonitorHub;
-            $.connection.hub.start().done(function () {
-                getAll(0);
-            });
-            hubNotify.client.refreshEmployeeData = function () {
-                getAll(0);
-            };
-        });
-    </script>
-
-    <script>
-        // ── Bootstrap 5 nested modal fix ────────────────────────────────────────
-        // When a child modal opens on top of a parent modal, Bootstrap adds a
-        // second backdrop at z-index 1040 which overlays the child modal dialog
-        // (z-index 1055), making all buttons inside the child unclickable.
-        // Fix: stack each new modal and its backdrop above the previous one.
-        $(document).on('show.bs.modal', '.modal', function () {
-            var $visibleModals = $('.modal.show');
-            if ($visibleModals.length > 0) {
-                var zIndex = 1055 + ($visibleModals.length * 20);
-                $(this).css('z-index', zIndex);
-                setTimeout(function () {
-                    // Move the most-recently-added backdrop above previous modals
-                    $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
-                }, 0);
-            }
-        });
-
-        // Re-enable body scroll class when a nested modal closes but a parent is still open
-        $(document).on('hidden.bs.modal', '.modal', function () {
-            if ($('.modal.show').length > 0) {
-                $('body').addClass('modal-open');
+            if (window.jQuery && $.connection && $.connection.placementMonitorHub) {
+                var hubNotify = $.connection.placementMonitorHub;
+                $.connection.hub.start().done(function () {
+                    if (typeof getAll === 'function') {
+                        getAll(0);
+                    }
+                });
+                hubNotify.client.refreshEmployeeData = function () {
+                    if (typeof getAll === 'function') {
+                        getAll(0);
+                    }
+                };
             }
         });
     </script>
-
 </body>
 </html>
 

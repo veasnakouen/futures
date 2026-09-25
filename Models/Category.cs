@@ -14,5 +14,6 @@ namespace MtpApp.Models
         [Display(Name = "Category")]
         [StringLength(255)]
         public string Name { get; set; }
+
     }
 }
